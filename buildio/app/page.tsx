@@ -9,15 +9,6 @@ export default function Home() {
           </span>
         </h1>
         <nav className="space-x-6">
-          <a href="#" className="hover:text-purple-400 transition-colors">
-            Home
-          </a>
-          <a href="#" className="hover:text-purple-400 transition-colors">
-            Projects
-          </a>
-          <a href="#" className="hover:text-purple-400 transition-colors">
-            Contact
-          </a>
         </nav>
       </header>
 
@@ -28,16 +19,6 @@ export default function Home() {
             Build Something Epic
           </span>
         </h2>
-        <p className="text-lg text-gray-300 max-w-2xl mb-8">
-          You own the domain. Now own the web. Deploy your projects, showcase
-          your skills, and make the internet jealous.
-        </p>
-        <a
-          href="#"
-          className="px-6 py-3 rounded-full bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 hover:scale-105 transform transition-all shadow-lg"
-        >
-          Get Started
-        </a>
       </main>
 
       {/* Footer */}
