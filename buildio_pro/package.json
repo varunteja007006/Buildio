@@ -9,7 +9,9 @@
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "build:web": "turbo build --filter=web",
     "build:starter-template": "turbo build --filter=starter-template",
+    "build:expense-tracker": "turbo build --filter=expense-tracker",
     "start:web": "pnpm --filter=web start",
+    "start:expense-tracker": "pnpm --filter=expense-tracker start",
     "start:starter-template": "pnpm --filter=starter-template start"
   },
   "devDependencies": {
