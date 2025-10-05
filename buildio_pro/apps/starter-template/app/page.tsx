@@ -1,4 +1,8 @@
+import { add } from "@workspace/starter-package";
+
 export default function Page() {
+  const res = add(1, 2);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 text-white flex flex-col">
       {/* Header */}
@@ -19,6 +23,7 @@ export default function Page() {
           </span>
         </h2>
         <p className="text-xl">Starter Template 🚀</p>
+        <p>Output from internal package: {res}</p>
       </main>
 
       {/* Footer */}
