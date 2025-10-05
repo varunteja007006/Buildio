@@ -16,8 +16,9 @@ const fontMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Buildio.pro",
-  description: "Build something epic. Buildio.pro",
+  title: "Expense Tracker",
+  description:
+    "Expense Tracker: Tracker your expenses in epic ways. Built by Buildio.pro",
 };
 
 export default function RootLayout({

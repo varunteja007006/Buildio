@@ -1,4 +1,8 @@
-export default function Page() {
+import { db } from "@workspace/drizzle";
+
+export default async function Page() {
+  const result = await db.execute("select 1");
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 text-white flex flex-col">
       {/* Header */}
@@ -19,6 +23,7 @@ export default function Page() {
           </span>
         </h2>
         <p className="text-xl">Starter Template 🚀</p>
+        <pre>{JSON.stringify(result, null, 2)}</pre>
       </main>
 
       {/* Footer */}
