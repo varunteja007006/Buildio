@@ -16,7 +16,8 @@
         "dist/**"
       ],
       "env": [
-        "DATABASE_URL"
+        "DATABASE_URL",
+        "DATABASE_NAME"
       ]
     },
     "lint": {
@@ -35,7 +36,8 @@
     }
   },
   "globalEnv": [
-    "DATABASE_URL"
+    "DATABASE_URL",
+    "DATABASE_NAME"
   ],
   "globalDependencies": [
     ".env"
