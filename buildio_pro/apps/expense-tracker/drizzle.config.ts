@@ -4,7 +4,7 @@ import "dotenv/config";
 const DATABASE_URL = `${process.env.DATABASE_URL ?? ""}`;
 
 export default defineConfig({
-  out: "./drizzle",
+  out: "./lib/drizzle/dist",
   schema: "./lib/drizzle/db/schema",
   dialect: "postgresql",
   dbCredentials: {

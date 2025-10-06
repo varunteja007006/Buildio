@@ -10,6 +10,7 @@ export const contactUs = pgTable("contact_us", {
   name: varchar({ length: 255 }).notNull(),
   description: varchar({ length: 500 }),
   email: varchar({ length: 255 }).notNull().unique(),
+  phone: varchar({ length: 15 }),
 });
 
 export const contactUsSelectZSchema = createSelectSchema(contactUs);
