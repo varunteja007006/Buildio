@@ -5,6 +5,7 @@ import { Providers } from "@/components/providers";
 
 import "@workspace/ui/globals.css";
 import { Toaster } from "@workspace/ui/components/sonner";
+import { Footer } from "@/components/molecules/footer";
 
 const fontSans = Geist({
   subsets: ["latin"],
@@ -37,6 +38,7 @@ export default function RootLayout({
       >
         <Providers>
           {children}
+          <Footer />
           <Toaster />
         </Providers>
       </body>
