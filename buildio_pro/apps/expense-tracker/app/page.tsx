@@ -1,8 +1,8 @@
-import { db } from "@/lib/drizzle";
+import { Button } from "@workspace/ui/components/button";
+
+import Link from "next/link";
 
 export default async function Page() {
-  const res = await db.execute("SELECT 1");
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 text-white flex flex-col">
       {/* Header */}
@@ -23,7 +23,9 @@ export default async function Page() {
           </span>
         </h2>
         <p className="text-xl">Starter Template 🚀</p>
-        <pre>{JSON.stringify(res, null, 2)}</pre>
+        <Link href="/auth/sign-up">
+          <Button>Login</Button>
+        </Link>
       </main>
 
       {/* Footer */}
