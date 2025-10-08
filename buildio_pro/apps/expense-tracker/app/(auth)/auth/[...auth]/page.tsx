@@ -2,7 +2,7 @@
 
 import React from "react";
 
-import { authClient, useSession } from "@/lib/auth-client"; //import the auth client
+import { useSession, useSignInSocial } from "@/lib/auth-client"; //import the auth client
 import { Button } from "@workspace/ui/components/button";
 import { useRouter } from "next/navigation";
 
@@ -53,18 +53,15 @@ import { useRouter } from "next/navigation";
 //   }
 // );
 
-const signIn = async () => {
-  await authClient.signIn.social({
-    provider: "google",
-  });
-};
-
 export default function Page() {
   const { data, isPending } = useSession();
+  const signIn = useSignInSocial();
   const router = useRouter();
 
+  const hasId = !!data?.user.id;
+
   const redirectToDashboard = () => {
-    if (!data) {
+    if (!hasId) {
       return;
     }
 
@@ -73,7 +70,7 @@ export default function Page() {
 
   React.useEffect(() => {
     redirectToDashboard();
-  }, []);
+  }, [hasId]);
 
   if (data) {
     return null;

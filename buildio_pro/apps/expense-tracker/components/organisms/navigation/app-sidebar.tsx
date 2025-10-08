@@ -5,7 +5,6 @@ import {
   BookOpen,
   Bot,
   Frame,
-  Loader2,
   Map,
   PieChart,
   Settings2,
@@ -159,9 +158,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton asChild>
-              <Link href={"/"}>
+              <Link href={"/dashboard"}>
                 <Wallet2 className="size-8" />
-                <h1 className="font-bold text-base">Expense Tracker</h1>
+                <h1 className="font-bold text-sm">Expense Tracker</h1>
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
