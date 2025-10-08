@@ -29,6 +29,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@workspace/ui/components/sidebar";
+import { useSignOut } from "@/lib/auth-client";
 
 export function NavUser({
   user,
@@ -40,6 +41,7 @@ export function NavUser({
   };
 }>) {
   const { isMobile } = useSidebar();
+  const signOut = useSignOut();
 
   return (
     <SidebarMenu>
@@ -52,7 +54,9 @@ export function NavUser({
             >
               <Avatar className="h-8 w-8 rounded-lg">
                 <AvatarImage src={user.avatar} alt={user.name} />
-                <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                <AvatarFallback className="rounded-lg">
+                  {user.name.slice(0, 2)?.toUpperCase()}
+                </AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-medium">{user.name}</span>
@@ -102,7 +106,7 @@ export function NavUser({
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={signOut}>
               <LogOut />
               Log out
             </DropdownMenuItem>
