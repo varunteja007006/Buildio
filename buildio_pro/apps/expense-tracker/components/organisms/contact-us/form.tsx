@@ -15,6 +15,8 @@ import {
   FormLabel,
   FormMessage,
 } from "@workspace/ui/components/form";
+import { Textarea } from "@workspace/ui/components/textarea";
+import { Send } from "lucide-react";
 
 import { toast } from "sonner";
 
@@ -97,7 +99,7 @@ function ContactUsForm() {
             <FormItem>
               <FormLabel>Description</FormLabel>
               <FormControl>
-                <Input
+                <Textarea
                   placeholder="Your message..."
                   {...field}
                   value={field.value ?? ""}
@@ -108,7 +110,10 @@ function ContactUsForm() {
           )}
         />
 
-        <Button type="submit">Send</Button>
+        <Button type="submit">
+          <Send className="size-4" />
+          Send
+        </Button>
       </form>
     </Form>
   );

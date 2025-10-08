@@ -9,6 +9,7 @@ import { Separator } from "@workspace/ui/components/separator";
 import { PiggyBank, Wallet, TrendingUp, TrendingDown } from "lucide-react";
 
 import Link from "next/link";
+import { ContactUsForm } from "@/components/organisms/contact-us/form";
 
 export default function HomePage() {
   return (
@@ -172,13 +173,11 @@ function ContactSection() {
     <section className="py-24 px-6 bg-muted/50 text-center">
       <h2 className="text-3xl md:text-4xl font-bold mb-6">Contact Us</h2>
       <p className="text-slate-600 mb-8 max-w-xl mx-auto">
-        Have questions or feature requests? We’d love to hear from you.
+        {`Have questions or feature requests? We'd love to hear from you.`}
       </p>
-      <Link href="mailto:support@expensetracker.app">
-        <Button size="lg" className="rounded-full px-8">
-          support@expensetracker.app
-        </Button>
-      </Link>
+      <div className="max-w-sm mx-auto border px-4 py-6 rounded-lg bg-card shadow">
+        <ContactUsForm />
+      </div>
     </section>
   );
 }
