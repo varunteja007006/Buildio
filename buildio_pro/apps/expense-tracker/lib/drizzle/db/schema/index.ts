@@ -1,4 +1,4 @@
-import { contactUs } from "./contact-us.schema";
-import { user, account, session, verification } from "./auth-schema";
+import * as contactUsSchema from "./contact-us.schema";
+import * as authSchema from "./auth-schema";
 
-export { contactUs, user, account, session, verification };
+export const schema = { ...contactUsSchema, ...authSchema };

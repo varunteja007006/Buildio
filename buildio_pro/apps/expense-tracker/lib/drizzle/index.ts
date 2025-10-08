@@ -1,5 +1,5 @@
 import { drizzle } from "drizzle-orm/node-postgres";
-import * as schema from "./db/schema";
+import { schema } from "./db/schema";
 import "dotenv/config";
 
 const DATABASE_URL = `${process.env.DATABASE_URL ?? ""}`;
