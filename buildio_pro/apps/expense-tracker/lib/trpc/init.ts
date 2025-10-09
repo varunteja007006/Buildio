@@ -15,13 +15,16 @@ export const createTRPCContext = cache(
       headers: opts.req.headers,
     });
 
-    const user = {
-      id: authSession?.user.id,
-      name: authSession?.user.name,
-      email: authSession?.user.email,
-      emailVerified: authSession?.user.emailVerified,
-    };
+    let user = null;
 
+    if (authSession?.user) {
+      user = {
+        id: authSession?.user.id,
+        name: authSession?.user.name,
+        email: authSession?.user.email,
+        emailVerified: authSession?.user.emailVerified,
+      };
+    }
     return { user };
   }
 );
@@ -53,6 +56,7 @@ export const protectedProcedure = t.procedure.use(({ ctx, next }) => {
   if (!ctx.user?.id) {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
+
   return next({
     ctx: {
       user: ctx.user,

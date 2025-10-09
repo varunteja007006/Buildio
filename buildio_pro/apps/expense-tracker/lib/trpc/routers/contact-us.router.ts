@@ -6,15 +6,6 @@ export const contactUsRouter = createTRPCRouter({
     const list = await ctx.db.query.contactUs.findMany();
     return list;
   }),
-  // contactUsById: baseProcedure.input(z.string()).query(async (opts) => {
-  //   const { input } = opts;
-  //   const record = await db.query.contactUs.findFirst({
-  //     with: {
-  //       id: input,
-  //     },
-  //   });
-  //   return record;
-  // }),
   contactUsCreate: baseProcedure
     .input(contactUsInsertZSchema)
     .mutation(async ({ input, ctx }) => {
