@@ -22,6 +22,13 @@
       "when": 1760025157401,
       "tag": "0002_parallel_talon",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1760025649014,
+      "tag": "0003_huge_ser_duncan",
+      "breakpoints": true
     }
   ]
 }

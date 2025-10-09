@@ -1,10 +1,10 @@
-import { pgTable, text, boolean } from "drizzle-orm/pg-core";
+import { pgTable, integer, text, boolean } from "drizzle-orm/pg-core";
 import { user } from "./auth-schema";
 import { relations } from "drizzle-orm";
 import { auditTimelines, auditFields } from "./common";
 
 export const userPreferences = pgTable("user_preferences", {
-  id: text("id").primaryKey(),
+  id: integer().primaryKey().generatedAlwaysAsIdentity(),
   userId: text("user_id")
     .notNull()
     .references(() => user.id, { onDelete: "cascade" }),
