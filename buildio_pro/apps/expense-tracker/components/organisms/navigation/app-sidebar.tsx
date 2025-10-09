@@ -18,7 +18,6 @@ import {
 import { useSession } from "@/lib/auth-client";
 import Link from "next/link";
 
-// This is sample data.
 const data = {
   user: {
     name: "",

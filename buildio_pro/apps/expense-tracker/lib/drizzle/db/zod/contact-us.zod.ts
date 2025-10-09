@@ -6,9 +6,11 @@ import {
 import { schema } from "../schema";
 import { z } from "zod/v4";
 
-export const contactUsSelectZSchema = createSelectSchema(schema.contactUs);
+const { contactUs } = schema;
 
-export const contactUsInsertZSchema = createInsertSchema(schema.contactUs, {
+export const contactUsSelectZSchema = createSelectSchema(contactUs);
+
+export const contactUsInsertZSchema = createInsertSchema(contactUs, {
   name: (schema) =>
     schema
       .min(3, {
@@ -35,6 +37,6 @@ export const contactUsInsertZSchema = createInsertSchema(schema.contactUs, {
       }),
 });
 
-export const contactUsUpdateZSchema = createUpdateSchema(schema.contactUs);
+export const contactUsUpdateZSchema = createUpdateSchema(contactUs);
 
 export type ContactUsInsertFormValues = z.infer<typeof contactUsInsertZSchema>;
