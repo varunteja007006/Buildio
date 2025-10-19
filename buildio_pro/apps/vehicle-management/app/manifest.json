@@ -1,6 +1,6 @@
 {
-  "name": "buildio.pro",
-  "short_name": "buildio",
+  "name": "Fleetio",
+  "short_name": "Fleetio",
   "icons": [
     {
       "src": "/web-app-manifest-192x192.png",
