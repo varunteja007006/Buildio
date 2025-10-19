@@ -215,6 +215,9 @@ importers:
 
   apps/vehicle-management:
     dependencies:
+      '@workspace/theme':
+        specifier: workspace:*
+        version: link:../../packages/theme
       '@workspace/ui':
         specifier: workspace:*
         version: link:../../packages/ui
@@ -233,6 +236,9 @@ importers:
       react-dom:
         specifier: ^19.1.1
         version: 19.1.1(react@19.1.1)
+      tailwindcss:
+        specifier: ^4.1.11
+        version: 4.1.11
     devDependencies:
       '@types/node':
         specifier: ^20.19.9
@@ -350,6 +356,12 @@ importers:
       typescript:
         specifier: ^5.9.2
         version: 5.9.2
+
+  packages/theme:
+    dependencies:
+      tailwindcss:
+        specifier: ^4.1.11
+        version: 4.1.11
 
   packages/typescript-config: {}
 
