@@ -170,6 +170,70 @@ importers:
         specifier: ^5.9.2
         version: 5.9.2
 
+  apps/poker-planner:
+    dependencies:
+      '@hookform/resolvers':
+        specifier: ^5.2.2
+        version: 5.2.2(react-hook-form@7.64.0(react@19.1.1))
+      '@workspace/games-convex-backend':
+        specifier: workspace:*
+        version: link:../../packages/games-convex-backend
+      '@workspace/theme':
+        specifier: workspace:*
+        version: link:../../packages/theme
+      '@workspace/ui':
+        specifier: workspace:*
+        version: link:../../packages/ui
+      convex:
+        specifier: ^1.27.5
+        version: 1.27.5(react@19.1.1)
+      lucide-react:
+        specifier: ^0.475.0
+        version: 0.475.0(react@19.1.1)
+      next:
+        specifier: ^15.4.5
+        version: 15.4.6(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
+      next-themes:
+        specifier: ^0.4.6
+        version: 0.4.6(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
+      react:
+        specifier: ^19.1.1
+        version: 19.1.1
+      react-dom:
+        specifier: ^19.1.1
+        version: 19.1.1(react@19.1.1)
+      react-hook-form:
+        specifier: ^7.64.0
+        version: 7.64.0(react@19.1.1)
+      sonner:
+        specifier: ^2.0.7
+        version: 2.0.7(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
+      tailwindcss:
+        specifier: ^4.1.11
+        version: 4.1.11
+      zod:
+        specifier: ^3.25.76
+        version: 3.25.76
+    devDependencies:
+      '@types/node':
+        specifier: ^20.19.9
+        version: 20.19.9
+      '@types/react':
+        specifier: ^19.1.9
+        version: 19.1.9
+      '@types/react-dom':
+        specifier: ^19.1.7
+        version: 19.1.7(@types/react@19.1.9)
+      '@workspace/eslint-config':
+        specifier: workspace:^
+        version: link:../../packages/eslint-config
+      '@workspace/typescript-config':
+        specifier: workspace:*
+        version: link:../../packages/typescript-config
+      typescript:
+        specifier: ^5.9.2
+        version: 5.9.2
+
   apps/starter-template:
     dependencies:
       '@workspace/starter-package':
@@ -301,6 +365,9 @@ importers:
 
   packages/eslint-config:
     devDependencies:
+      '@eslint/js':
+        specifier: ^9.38.0
+        version: 9.38.0
       '@next/eslint-plugin-next':
         specifier: ^15.4.5
         version: 15.4.5
@@ -340,6 +407,9 @@ importers:
 
   packages/games-convex-backend:
     dependencies:
+      '@convex-dev/presence':
+        specifier: ^0.2.1
+        version: 0.2.1(convex@1.27.5(react@19.1.1))(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       convex:
         specifier: ^1.25.0
         version: 1.27.5(react@19.1.1)
@@ -578,6 +648,20 @@ packages:
 
   '@better-fetch/fetch@1.1.18':
     resolution: {integrity: sha512-rEFOE1MYIsBmoMJtQbl32PGHHXuG2hDxvEd7rUHE0vCBoFQVSDqaVs9hkZEtHCxRoY+CljXKFCOuJ8uxqw1LcA==}
+
+  '@convex-dev/presence@0.2.1':
+    resolution: {integrity: sha512-XBcEzb1qxV4yq3UNe+UpZbTb1ecgg14vYZWDZMA2XPh2D/x2yCxTfWyQ/vdMeX2HYiGzj2be5aRu8CK3cogQnA==}
+    peerDependencies:
+      convex: '>=1.24.8 <1.35.0'
+      expo-crypto: '>=14.1.0'
+      react: ~18.3.1 || ^19.0.0
+      react-dom: ~18.3.1 || ^19.0.0
+      react-native: '>=0.79.0'
+    peerDependenciesMeta:
+      expo-crypto:
+        optional: true
+      react-native:
+        optional: true
 
   '@cspotcode/source-map-support@0.8.1':
     resolution: {integrity: sha512-IchNf6dN4tHoMFIn/7OE8LWZ19Y6q/67Bmf6vnGREv8RSbBVb9LPJxEcnwrcwX6ixSvaiGoomAUvu4YSxXrVgw==}
@@ -1066,6 +1150,10 @@ packages:
 
   '@eslint/js@9.32.0':
     resolution: {integrity: sha512-BBpRFZK3eX6uMLKz8WxFOBIFFcGFJ/g8XuwjTHCqHROSIsopI+ddn/d5Cfh36+7+e5edVS8dbSHnBNhrLEX0zg==}
+    engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
+
+  '@eslint/js@9.38.0':
+    resolution: {integrity: sha512-UZ1VpFvXf9J06YG9xQBdnzU+kthors6KjhMAl6f4gH4usHyh31rUf2DLGInT8RFYIReYXNSydgPY0V2LuWgl7A==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
 
   '@eslint/object-schema@2.1.6':
@@ -4869,6 +4957,12 @@ snapshots:
 
   '@better-fetch/fetch@1.1.18': {}
 
+  '@convex-dev/presence@0.2.1(convex@1.27.5(react@19.1.1))(react-dom@19.1.1(react@19.1.1))(react@19.1.1)':
+    dependencies:
+      convex: 1.27.5(react@19.1.1)
+      react: 19.1.1
+      react-dom: 19.1.1(react@19.1.1)
+
   '@cspotcode/source-map-support@0.8.1':
     dependencies:
       '@jridgewell/trace-mapping': 0.3.9
@@ -5147,6 +5241,8 @@ snapshots:
       - supports-color
 
   '@eslint/js@9.32.0': {}
+
+  '@eslint/js@9.38.0': {}
 
   '@eslint/object-schema@2.1.6': {}
 
