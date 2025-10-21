@@ -11,9 +11,11 @@
     "build:web": "turbo build --filter=web",
     "build:starter-template": "turbo build --filter=starter-template",
     "build:expense-tracker": "turbo build --filter=expense-tracker",
+    "build:poker-planner": "turbo build --filter=poker-planner",
     "start:web": "pnpm --filter=web start",
     "start:expense-tracker": "pnpm --filter=expense-tracker start",
-    "start:starter-template": "pnpm --filter=starter-template start"
+    "start:starter-template": "pnpm --filter=starter-template start",
+    "start:poker-planner": "pnpm --filter=poker-planner start"
   },
   "devDependencies": {
     "@workspace/eslint-config": "workspace:*",
