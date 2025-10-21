@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "convex dev --until-success",
+    "dev": "convex dev",
+    "build": "convex dev --until-success",
     "setup": "convex dev --until-success"
   },
   "keywords": [],
