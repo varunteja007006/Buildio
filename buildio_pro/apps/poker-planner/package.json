@@ -12,6 +12,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@convex-dev/presence": "^0.2.1",
     "@hookform/resolvers": "^5.2.2",
     "@workspace/games-convex-backend": "workspace:*",
     "@workspace/theme": "workspace:*",
@@ -23,6 +24,7 @@
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-hook-form": "^7.64.0",
+    "recharts": "2.15.4",
     "sonner": "^2.0.7",
     "tailwindcss": "^4.1.11",
     "zod": "^3.25.76"
