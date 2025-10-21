@@ -9,7 +9,8 @@
     "author": "",
     "license": "ISC",
     "dependencies": {
-        "convex": "^1.25.0"
+        "convex": "^1.25.0",
+        "@convex-dev/presence": "^0.2.1"
     },
     "devDependencies": {
         "typescript": "5.8.3"

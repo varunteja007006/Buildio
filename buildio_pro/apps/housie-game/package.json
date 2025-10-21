@@ -13,7 +13,6 @@
   },
   "dependencies": {
     "@workspace/ui": "workspace:*",
-    "@workspace/starter-package": "workspace:*",
     "@workspace/games-convex-backend":"workspace:*",
     "lucide-react": "^0.475.0",
     "next": "^15.4.5",

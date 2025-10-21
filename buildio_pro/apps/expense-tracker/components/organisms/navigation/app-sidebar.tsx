@@ -36,12 +36,24 @@ const data = {
           url: "/dashboard",
         },
         {
-          title: "Analytics",
-          url: "/analytics",
+          title: "Split Bill",
+          url: "/user/split-bill",
         },
         {
-          title: "Split Bill",
-          url: "/split-bill",
+          title: "Wishlist",
+          url: "/user/wishlist",
+        },
+        {
+          title: "Catalogue",
+          url: "/user/catalogue",
+        },
+        {
+          title: "Planners",
+          url: "/user/planners",
+        },
+        {
+          title: "Analytics",
+          url: "/user/analytics",
         },
       ],
     },
