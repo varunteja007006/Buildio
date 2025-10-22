@@ -1,0 +1,1 @@
+cd ../../packages/vehicle-management-convex && npx convex deploy --cmd 'cd ../../apps/test-convex && turbo run build' --cmd-url-env-var-name NEXT_PUBLIC_CONVEX_URL

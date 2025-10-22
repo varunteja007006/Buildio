@@ -5,17 +5,21 @@
   "scripts": {
     "build": "turbo build",
     "dev": "turbo dev",
-    "dev:expense-tracker": "turbo dev --filter=expense-tracker",
     "lint": "turbo lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
+    "dev:web": "turbo dev --filter=web",
+    "dev:vehicle-management": "turbo dev --filter=vehicle-management",
+    "dev:expense-tracker": "turbo dev --filter=expense-tracker",
+    "dev:poker-planner": "turbo dev --filter=poker-planner",
+    "dev:housie-game": "turbo dev --filter=housie-game",
     "build:web": "turbo build --filter=web",
-    "build:starter-template": "turbo build --filter=starter-template",
     "build:expense-tracker": "turbo build --filter=expense-tracker",
     "build:poker-planner": "turbo build --filter=poker-planner",
+    "build:housie-game": "turbo build --filter=housie-game",
     "start:web": "pnpm --filter=web start",
     "start:expense-tracker": "pnpm --filter=expense-tracker start",
-    "start:starter-template": "pnpm --filter=starter-template start",
-    "start:poker-planner": "pnpm --filter=poker-planner start"
+    "start:poker-planner": "pnpm --filter=poker-planner start",
+    "start:housie-game": "pnpm --filter=housie-game start"
   },
   "devDependencies": {
     "@workspace/eslint-config": "workspace:*",
