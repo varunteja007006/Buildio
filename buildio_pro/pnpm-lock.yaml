@@ -240,99 +240,7 @@ importers:
         specifier: ^5.9.2
         version: 5.9.2
 
-  apps/starter-template:
-    dependencies:
-      '@workspace/starter-package':
-        specifier: workspace:*
-        version: link:../../packages/starter-package
-      '@workspace/ui':
-        specifier: workspace:*
-        version: link:../../packages/ui
-      lucide-react:
-        specifier: ^0.475.0
-        version: 0.475.0(react@19.1.1)
-      next:
-        specifier: ^15.4.5
-        version: 15.4.5(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
-      next-themes:
-        specifier: ^0.4.6
-        version: 0.4.6(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
-      react:
-        specifier: ^19.1.1
-        version: 19.1.1
-      react-dom:
-        specifier: ^19.1.1
-        version: 19.1.1(react@19.1.1)
-    devDependencies:
-      '@types/node':
-        specifier: ^20.19.9
-        version: 20.19.9
-      '@types/react':
-        specifier: ^19.1.9
-        version: 19.1.9
-      '@types/react-dom':
-        specifier: ^19.1.7
-        version: 19.1.7(@types/react@19.1.9)
-      '@workspace/eslint-config':
-        specifier: workspace:^
-        version: link:../../packages/eslint-config
-      '@workspace/typescript-config':
-        specifier: workspace:*
-        version: link:../../packages/typescript-config
-      typescript:
-        specifier: ^5.9.2
-        version: 5.9.2
-
-  apps/test-convex:
-    dependencies:
-      '@workspace/starter-package':
-        specifier: workspace:*
-        version: link:../../packages/starter-package
-      '@workspace/ui':
-        specifier: workspace:*
-        version: link:../../packages/ui
-      '@workspace/vehicle-management-convex':
-        specifier: workspace:*
-        version: link:../../packages/vehicle-management-convex
-      convex:
-        specifier: ^1.28.0
-        version: 1.28.0(react@19.1.1)
-      lucide-react:
-        specifier: ^0.475.0
-        version: 0.475.0(react@19.1.1)
-      next:
-        specifier: ^15.4.5
-        version: 15.4.6(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
-      next-themes:
-        specifier: ^0.4.6
-        version: 0.4.6(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
-      react:
-        specifier: ^19.1.1
-        version: 19.1.1
-      react-dom:
-        specifier: ^19.1.1
-        version: 19.1.1(react@19.1.1)
-    devDependencies:
-      '@types/node':
-        specifier: ^20.19.9
-        version: 20.19.9
-      '@types/react':
-        specifier: ^19.1.9
-        version: 19.1.9
-      '@types/react-dom':
-        specifier: ^19.1.7
-        version: 19.1.7(@types/react@19.1.9)
-      '@workspace/eslint-config':
-        specifier: workspace:^
-        version: link:../../packages/eslint-config
-      '@workspace/typescript-config':
-        specifier: workspace:*
-        version: link:../../packages/typescript-config
-      typescript:
-        specifier: ^5.9.2
-        version: 5.9.2
-
-  apps/vehicle-management:
+  apps/starter-app:
     dependencies:
       '@workspace/theme':
         specifier: workspace:*
@@ -355,9 +263,6 @@ importers:
       react-dom:
         specifier: ^19.1.1
         version: 19.1.1(react@19.1.1)
-      tailwindcss:
-        specifier: ^4.1.11
-        version: 4.1.11
     devDependencies:
       '@types/node':
         specifier: ^20.19.9
@@ -374,6 +279,9 @@ importers:
       '@workspace/typescript-config':
         specifier: workspace:*
         version: link:../../packages/typescript-config
+      tailwindcss:
+        specifier: ^4.1.11
+        version: 4.1.11
       typescript:
         specifier: ^5.9.2
         version: 5.9.2
@@ -472,15 +380,6 @@ importers:
       typescript:
         specifier: 5.8.3
         version: 5.8.3
-
-  packages/starter-package:
-    devDependencies:
-      '@workspace/typescript-config':
-        specifier: workspace:*
-        version: link:../typescript-config
-      typescript:
-        specifier: ^5.9.2
-        version: 5.9.2
 
   packages/theme:
     dependencies:
