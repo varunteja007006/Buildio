@@ -1,5 +1,0 @@
-#!/usr/bin/env node
-// Commit-msg hook disabled: allow any commit message
-// This file exists so the repo can keep a hooks folder, but it intentionally
-// performs no validation and always succeeds.
-process.exit(0);
