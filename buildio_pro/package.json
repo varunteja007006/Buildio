@@ -1,5 +1,5 @@
 {
-  "name": "shadcn-ui-monorepo",
+  "name": "buildio_pro_monorepo",
   "version": "0.0.1",
   "private": true,
   "scripts": {
@@ -8,16 +8,12 @@
     "lint": "turbo lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "dev:web": "turbo dev --filter=web",
-    "dev:vehicle-management": "turbo dev --filter=vehicle-management",
-    "dev:expense-tracker": "turbo dev --filter=expense-tracker",
     "dev:poker-planner": "turbo dev --filter=poker-planner",
     "dev:housie-game": "turbo dev --filter=housie-game",
     "build:web": "turbo build --filter=web",
-    "build:expense-tracker": "turbo build --filter=expense-tracker",
     "build:poker-planner": "turbo build --filter=poker-planner",
     "build:housie-game": "turbo build --filter=housie-game",
     "start:web": "pnpm --filter=web start",
-    "start:expense-tracker": "pnpm --filter=expense-tracker start",
     "start:poker-planner": "pnpm --filter=poker-planner start",
     "start:housie-game": "pnpm --filter=housie-game start"
   },
@@ -26,7 +22,7 @@
     "@workspace/typescript-config": "workspace:*",
     "prettier": "^3.6.2",
     "turbo": "^2.5.8",
-    "typescript": "5.7.3"
+    "typescript": "^5.9.2"
   },
   "packageManager": "pnpm@10.18.3",
   "engines": {
