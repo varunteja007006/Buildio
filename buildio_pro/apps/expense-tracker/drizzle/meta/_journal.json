@@ -1,0 +1,27 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1761667730028,
+      "tag": "20251028160850_jittery_power_pack",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1761671949814,
+      "tag": "20251028171909_eager_queen_noir",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1761758232966,
+      "tag": "20251029171712_glamorous_spencer_smythe",
+      "breakpoints": true
+    }
+  ]
+}

@@ -8,6 +8,7 @@
     "lint": "turbo lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "dev:web": "turbo dev --filter=web",
+    "dev:expense-tracker": "turbo dev --filter=expense-tracker",
     "dev:poker-planner": "turbo dev --filter=poker-planner",
     "dev:housie-game": "turbo dev --filter=housie-game",
     "build:web": "turbo build --filter=web",
