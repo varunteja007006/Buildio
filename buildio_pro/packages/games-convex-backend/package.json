@@ -5,7 +5,7 @@
     "scripts": {
         "dev": "convex dev",
         "setup": "convex dev --until-success",
-        "build": "convex dev --until-success"
+        "build": "npx convex deploy --yes"
     },
     "author": "",
     "license": "ISC",
