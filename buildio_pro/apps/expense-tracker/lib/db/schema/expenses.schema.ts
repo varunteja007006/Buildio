@@ -1,4 +1,4 @@
-import { pgTable, text } from "drizzle-orm/pg-core";
+import { boolean, numeric, pgTable, text } from "drizzle-orm/pg-core";
 import { auditTimeFields } from "./common.schema";
 import { user } from "./auth-schema";
 import { relations } from "drizzle-orm";
@@ -11,6 +11,9 @@ export const expense = pgTable("expense", {
 	categoryId: text("category_id")
 		.notNull()
 		.references(() => expenseCategory.id, { onDelete: "cascade" }),
+	name: text("name").notNull(),
+	expenseAmount: numeric("income").notNull(),
+	isRecurring: boolean("is_recurring").default(false),
 	...auditTimeFields,
 });
 
@@ -28,7 +31,7 @@ export const expenseCategoryRelations = relations(
 	})
 );
 
-export const incomeRelations = relations(expense, ({ one }) => ({
+export const expenseRelations = relations(expense, ({ one }) => ({
 	user: one(user, {
 		fields: [expense.userId],
 		references: [user.id],
