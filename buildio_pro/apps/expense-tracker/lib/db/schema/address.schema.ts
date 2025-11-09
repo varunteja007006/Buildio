@@ -19,7 +19,7 @@ export const state = pgTable("state", {
 	description: text("description"),
 	countryId: text("country_id")
 		.notNull()
-		.references(() => country.id, { onDelete: "set null" }),
+		.references(() => country.id, { onDelete: "cascade" }),
 	...auditTimeFields,
 });
 
@@ -38,7 +38,7 @@ export const city = pgTable("city", {
 	description: text("description"),
 	stateId: text("state_id")
 		.notNull()
-		.references(() => state.id, { onDelete: "set null" }),
+		.references(() => state.id, { onDelete: "cascade" }),
 	...auditTimeFields,
 });
 
@@ -63,7 +63,7 @@ export const address = pgTable("address", {
 	longitude: text("longitude"),
 	cityId: text("city_id")
 		.notNull()
-		.references(() => state.id, { onDelete: "set null" }),
+		.references(() => state.id, { onDelete: "cascade" }),
 	...auditTimeFields,
 });
 

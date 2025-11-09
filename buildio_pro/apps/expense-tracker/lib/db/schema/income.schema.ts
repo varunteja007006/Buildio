@@ -16,9 +16,7 @@ export const income = pgTable("income", {
 		.notNull()
 		.references(() => user.id, { onDelete: "cascade" }),
 	name: text("name"),
-	sourceId: text("source_id")
-		.notNull()
-		.references(() => incomeSource.id, { onDelete: "set null" }),
+	sourceId: text("source_id").references(() => incomeSource.id, { onDelete: "set null" }),
 	incomeAmount: numeric("income").notNull(),
 	...auditTimeFields,
 });
