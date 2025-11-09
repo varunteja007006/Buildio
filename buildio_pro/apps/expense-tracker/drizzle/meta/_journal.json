@@ -57,6 +57,13 @@
       "when": 1762693495444,
       "tag": "20251109130455_premium_true_believers",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1762706445397,
+      "tag": "20251109164045_modern_stick",
+      "breakpoints": true
     }
   ]
 }
