@@ -55,10 +55,10 @@ export const address = pgTable("address", {
 	id: text("id").primaryKey(), // serial auto-increments to bigint
 	name: text("name").notNull(),
 	description: text("description"),
-	line1: text("line1"),
+	line1: text("line1").notNull(),
 	line2: text("line2"),
 	line3: text("line3"),
-	pinCode: text("pincode"),
+	pinCode: text("pincode").notNull(),
 	latitude: text("latitude"),
 	longitude: text("longitude"),
 	cityId: text("city_id")
