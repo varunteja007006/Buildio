@@ -2,6 +2,7 @@ import { integer, pgTable, text } from "drizzle-orm/pg-core";
 import { auditTimeFields } from "./common.schema";
 import { user } from "./auth-schema";
 import { relations } from "drizzle-orm";
+import { bankAccountTypes, banks } from "./bank.schema";
 
 export const userPreferences = pgTable("user_preferences", {
 	id: text("id").primaryKey(),
@@ -69,3 +70,46 @@ export const userSettingsRelations = relations(userSettings, ({ one }) => ({
 		relationName: "user_settings_to_user",
 	}),
 }));
+
+export const userBankAccount = pgTable("user_bank_account", {
+	id: text("id").primaryKey(),
+	user_id: text("user_id")
+		.notNull()
+		.references(() => user.id, {
+			onDelete: "cascade",
+		}),
+	name: text("name").notNull(),
+	bankAccountTypeId: text("bank_account_type")
+		.notNull()
+		.references(() => bankAccountTypes.id, {
+			onDelete: "cascade",
+		}),
+	bankId: text("bank")
+		.notNull()
+		.references(() => banks.id, {
+			onDelete: "cascade",
+		}),
+	description: text("description"),
+	...auditTimeFields,
+});
+
+export const userBankAccountRelations = relations(
+	userBankAccount,
+	({ one }) => ({
+		user: one(user, {
+			fields: [userBankAccount.user_id],
+			references: [user.id],
+			relationName: "user_bank_account_to_user",
+		}),
+		bankAccountType: one(bankAccountTypes, {
+			fields: [userBankAccount.bankAccountTypeId],
+			references: [bankAccountTypes.id],
+			relationName: "user_bank_account_to_bank_account_types",
+		}),
+		bank: one(banks, {
+			fields: [userBankAccount.bankAccountTypeId],
+			references: [banks.id],
+			relationName: "user_bank_account_to_banks",
+		}),
+	})
+);
