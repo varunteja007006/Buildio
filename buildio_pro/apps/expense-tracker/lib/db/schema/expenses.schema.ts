@@ -10,7 +10,7 @@ export const expense = pgTable("expense", {
 		.references(() => user.id, { onDelete: "cascade" }),
 	categoryId: text("category_id")
 		.notNull()
-		.references(() => expenseCategory.id, { onDelete: "cascade" }),
+		.references(() => expenseCategory.id, { onDelete: "set null" }),
 	name: text("name").notNull(),
 	expenseAmount: numeric("income").notNull(),
 	isRecurring: boolean("is_recurring").default(false),

@@ -6,7 +6,7 @@ import { relations } from "drizzle-orm";
 export const incomeSource = pgTable("income_source", {
 	id: text("id").primaryKey(), // serial auto-increments to bigint
 	name: text("name").notNull(),
-	description: text("name"),
+	description: text("description"),
 	...auditTimeFields,
 });
 
@@ -18,7 +18,7 @@ export const income = pgTable("income", {
 	name: text("name"),
 	sourceId: text("source_id")
 		.notNull()
-		.references(() => incomeSource.id, { onDelete: "cascade" }),
+		.references(() => incomeSource.id, { onDelete: "set null" }),
 	incomeAmount: numeric("income").notNull(),
 	...auditTimeFields,
 });

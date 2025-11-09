@@ -29,6 +29,13 @@
       "when": 1762191601472,
       "tag": "20251103174001_fixed_quicksilver",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1762690993021,
+      "tag": "20251109122313_panoramic_kabuki",
+      "breakpoints": true
     }
   ]
 }
