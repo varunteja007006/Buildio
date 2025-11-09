@@ -2,6 +2,7 @@ import { pgTable, text, numeric } from "drizzle-orm/pg-core";
 import { auditTimeFields } from "./common.schema";
 import { user } from "./auth-schema";
 import { relations } from "drizzle-orm";
+import { paymentMethods } from "./payment.schema";
 
 export const incomeSource = pgTable("income_source", {
 	id: text("id").primaryKey(), // serial auto-increments to bigint
@@ -16,8 +17,14 @@ export const income = pgTable("income", {
 		.notNull()
 		.references(() => user.id, { onDelete: "cascade" }),
 	name: text("name"),
-	sourceId: text("source_id").references(() => incomeSource.id, { onDelete: "set null" }),
+	sourceId: text("source_id").references(() => incomeSource.id, {
+		onDelete: "set null",
+	}),
 	incomeAmount: numeric("income").notNull(),
+	paymentMethodId: text("payment_method_id").references(
+		() => paymentMethods.id,
+		{ onDelete: "set null" }
+	),
 	...auditTimeFields,
 });
 
@@ -38,4 +45,10 @@ export const incomeRelations = relations(income, ({ one }) => ({
 		references: [incomeSource.id],
 		relationName: "income_to_source",
 	}),
+	paymentMethod: one(paymentMethods, {
+		fields: [income.paymentMethodId],
+		references: [paymentMethods.id],
+		relationName: "income_to_payment_methods",
+	}),
+
 }));
