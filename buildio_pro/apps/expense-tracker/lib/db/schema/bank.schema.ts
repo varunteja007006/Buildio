@@ -1,5 +1,7 @@
 import { boolean, pgTable, text } from "drizzle-orm/pg-core";
 import { auditTimeFields } from "./common.schema";
+import { address } from "./address.schema";
+import { relations } from "drizzle-orm";
 
 /**
  * * Banks related package
@@ -7,7 +9,7 @@ import { auditTimeFields } from "./common.schema";
  */
 
 export const bankAccountTypes = pgTable("bank_account_types", {
-	// Primary Key (e.g., 'SAVINGS', 'CURRENT')
+	// name Key (e.g., 'SAVINGS', 'CURRENT')
 	// Common IDs include:
 	// - SAVINGS: Savings Account
 	// - CURRENT: Current Account
@@ -38,3 +40,37 @@ export const banks = pgTable("banks", {
 	type: text("type").notNull(),
 	...auditTimeFields,
 });
+
+export const bankAddress = pgTable("bank_address", {
+	id: text("id").primaryKey(),
+	bankId: text("bank_id")
+		.notNull()
+		.references(() => banks.id, { onDelete: "cascade" }),
+	addressId: text("address_id")
+		.notNull()
+		.references(() => address.id, { onDelete: "cascade" }),
+	...auditTimeFields,
+});
+
+// One bank has many bankAddress records
+export const bankRelations = relations(banks, ({ many }) => ({
+	bankAddresses: many(bankAddress),
+}));
+
+// One address can be associated with many bankAddress records
+export const addressRelations = relations(address, ({ many }) => ({
+	bankAddresses: many(bankAddress),
+}));
+
+// Each bankAddress belongs to exactly one bank and one address
+export const bankAddressRelations = relations(bankAddress, ({ one }) => ({
+	bank: one(banks, {
+		fields: [bankAddress.bankId],
+		references: [banks.id],
+	}),
+	address: one(address, {
+		fields: [bankAddress.addressId],
+		references: [address.id],
+	}),
+}));
+

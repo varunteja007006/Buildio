@@ -43,3 +43,10 @@ export const currencyExchangeSnapshotRelations = relations(
 		}),
 	})
 );
+
+export const currencyRelations = relations(
+	currency,
+	({ many }) => ({
+		currencyExchangeSnapshots: many(currencyExchangeSnapshot),
+	})
+);
