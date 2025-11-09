@@ -1,0 +1,428 @@
+Table audit_fields [headercolor: #175e7a] {
+	id bigint [ pk, increment, not null, unique ]
+	is_active boolean [ not null ]
+	created_by bigint
+	created_on date
+	updated_by bigint
+	updated_on date
+	deleted_by bigint
+	deleted_on date
+}
+
+Table user_app_settings [headercolor: #175e7a] {
+	id bigint [ pk, increment, not null, unique ]
+	is_active boolean [ not null ]
+	created_by bigint
+	created_on date
+	updated_by bigint
+	updated_on date
+	deleted_by bigint
+	deleted_on date
+}
+
+Table subscription_plans [headercolor: #175e7a] {
+	id bigint [ pk, increment, not null, unique ]
+	is_active boolean [ not null ]
+	created_by bigint
+	created_on date
+	updated_by bigint
+	updated_on date
+	deleted_by bigint
+	deleted_on date
+	name varchar(255)
+}
+
+Table user_subscription [headercolor: #175e7a] {
+	id bigint [ pk, increment, not null, unique ]
+	order bigint
+	is_active boolean [ not null ]
+	created_by bigint
+	created_on date
+	updated_by bigint
+	updated_on date
+	deleted_by bigint
+	deleted_on date
+}
+
+Table order [headercolor: #175e7a] {
+	id bigint [ pk, increment, not null, unique ]
+	user bigint [ not null ]
+	amount money [ not null ]
+	order_status varchar(255) [ not null ]
+	is_active boolean [ not null ]
+	created_by bigint
+	created_on date
+	updated_by bigint
+	updated_on date
+	deleted_by bigint
+	deleted_on date
+}
+
+Table investment_institutions [headercolor: #175e7a] {
+	id bigint [ pk, increment, not null, unique ]
+	name varchar(255)
+	is_active boolean [ not null ]
+	created_by bigint
+	created_on date
+	updated_by bigint
+	updated_on date
+	deleted_by bigint
+	deleted_on date
+
+	Note: 'e.g., Groww, Zerodha, SBI, etc.'
+}
+
+Table investment_type [headercolor: #175e7a] {
+	id bigint [ pk, increment, not null, unique ]
+	name varchar(255)
+	is_active boolean [ not null ]
+	created_by bigint
+	created_on date
+	updated_by bigint
+	updated_on date
+	deleted_by bigint
+	deleted_on date
+
+	Note: 'Table for SIP, FD, PPF, NPS, Stocks, Mutual Fund'
+}
+
+Table investment [headercolor: #175e7a] {
+	id bigint [ pk, increment, not null, unique ]
+	user bigint [ not null ]
+	recurring boolean [ not null ]
+	institution bigint
+	name varchar(255)
+	type bigint [ not null ]
+	amount money [ not null ]
+	sip_end_date date
+	sip_start_date date
+	is_active boolean [ not null ]
+	created_by bigint
+	created_on date
+	updated_by bigint
+	updated_on date
+	deleted_by bigint
+	deleted_on date
+}
+
+Table expense_category [headercolor: #f70202] {
+	id bigint [ pk, increment, not null, unique ]
+	name varchar(255) [ not null ]
+	is_active boolean [ not null ]
+	created_by bigint
+	created_on date
+	updated_by bigint
+	updated_on date
+	deleted_by bigint
+	deleted_on date
+}
+
+Table budget [headercolor: #175e7a] {
+	id bigint [ pk, increment, not null, unique ]
+	user bigint [ not null ]
+	name varchar(255)
+	month varchar(255) [ not null ]
+	category bigint [ not null ]
+	amount money [ not null ]
+	is_active boolean [ not null ]
+	created_by bigint
+	created_on date
+	updated_by bigint
+	updated_on date
+	deleted_by bigint
+	deleted_on date
+}
+
+Table address [headercolor: #175e7a] {
+	id bigint [ pk, increment, not null, unique ]
+	line1 varchar(255) [ not null ]
+	line2 varchar(255)
+	line3 varchar(255)
+	city bigint [ not null ]
+	pincode varchar(255) [ not null ]
+	latitude decimal
+	longitude decimal
+	is_active boolean [ not null ]
+	created_by bigint
+	created_on date
+	updated_by bigint
+	updated_on date
+	deleted_by bigint
+	deleted_on date
+}
+
+Table city [headercolor: #175e7a] {
+	id bigint [ pk, increment, not null, unique ]
+	name varchar(255) [ not null ]
+	state bigint [ not null ]
+	is_active boolean [ not null ]
+	created_by bigint
+	created_on date
+	updated_by bigint
+	updated_on date
+	deleted_by bigint
+	deleted_on date
+}
+
+Table state [headercolor: #175e7a] {
+	id bigint [ pk, increment, not null, unique ]
+	name varchar(255) [ not null ]
+	country bigint [ not null ]
+	is_active boolean [ not null ]
+	created_by bigint
+	created_on date
+	updated_by bigint
+	updated_on date
+	deleted_by bigint
+	deleted_on date
+}
+
+Table country [headercolor: #175e7a] {
+	id bigint [ pk, increment, not null, unique ]
+	name varchar(255) [ not null ]
+	is_active boolean [ not null ]
+	created_by bigint
+	created_on date
+	updated_by bigint
+	updated_on date
+	deleted_by bigint
+	deleted_on date
+}
+
+Table bank [headercolor: #175e7a] {
+	id bigint [ pk, increment, not null, unique ]
+	bank bigint [ not null ]
+	name varchar(255) [ not null ]
+	ifsc_code varchar(255) [ not null ]
+	micr_code varchar(255)
+	address bigint [ not null ]
+	contact_no varchar(255)
+	is_active boolean [ not null ]
+	created_by bigint
+	created_on date
+	updated_by bigint
+	updated_on date
+	deleted_by bigint
+	deleted_on date
+}
+
+Table bank_address [headercolor: #175e7a] {
+	id bigint [ pk, increment, not null, unique ]
+	address_id bigint
+	is_active boolean [ not null ]
+	created_by bigint
+	created_on date
+	updated_by bigint
+	updated_on date
+	deleted_by bigint
+	deleted_on date
+	original_city_name varchar(255)
+	original_state_name varchar(255)
+	original_country_name varchar(255)
+}
+
+Table account_type [headercolor: #f70505] {
+	id bigint [ pk, increment, not null, unique ]
+	name varchar(255) [ not null ]
+	description varchar(255)
+	is_active boolean [ not null ]
+	created_by bigint
+	created_on date
+	updated_by bigint
+	updated_on date
+	deleted_by bigint
+	deleted_on date
+}
+
+Table account [headercolor: #175e7a] {
+	id bigint [ pk, increment, not null, unique ]
+	name varchar(255) [ not null ]
+	type bigint [ not null ]
+	bank bigint [ not null ]
+	account_no varchar(255)
+	balance money
+	is_active boolean [ not null ]
+	created_by bigint
+	created_on date
+	updated_by bigint
+	updated_on date
+	deleted_by bigint
+	deleted_on date
+}
+
+Table provider [headercolor: #175e7a] {
+	id bigint [ pk, increment, not null, unique ]
+	name varchar(255) [ not null ]
+	is_active boolean [ not null ]
+	created_by bigint
+	created_on date
+	updated_by bigint
+	updated_on date
+	deleted_by bigint
+	deleted_on date
+}
+
+Table payment_methods [headercolor: #175e7a] {
+	id bigint [ pk, increment, not null, unique ]
+	name varchar(255)
+	provider bigint [ not null ]
+	is_active boolean [ not null ]
+	created_by bigint
+	created_on date
+	updated_by bigint
+	updated_on date
+	deleted_by bigint
+	deleted_on date
+}
+
+Table income [headercolor: #175e7a] {
+	id bigint [ pk, increment, not null, unique ]
+	user bigint [ not null ]
+	name varchar(255)
+	source bigint [ not null ]
+	income money [ not null ]
+	account bigint
+	payment_method bigint
+	is_active boolean [ not null ]
+	created_by bigint
+	created_on date
+	updated_by bigint
+	updated_on date
+	deleted_by bigint
+	deleted_on date
+}
+
+Table income_source [headercolor: #f71707] {
+	id bigint [ pk, increment, not null, unique ]
+	name varchar(255) [ not null ]
+	is_active boolean [ not null ]
+	created_by bigint
+	created_on date
+	updated_by bigint
+	updated_on date
+	deleted_by bigint
+	deleted_on date
+}
+
+Table expense [headercolor: #175e7a] {
+	id bigint [ pk, increment, not null, unique ]
+	category bigint [ not null ]
+	user bigint [ not null ]
+	name varchar(255) [ not null ]
+	expense money [ not null ]
+	recurring boolean [ not null ]
+	notes varchar(255)
+	account bigint
+	payment_method bigint
+	is_active boolean [ not null ]
+	created_by bigint
+	created_on date
+	updated_by bigint
+	updated_on date
+	deleted_by bigint
+	deleted_on date
+}
+
+Table user [headercolor: #f50707] {
+	id bigint [ pk, increment, not null, unique ]
+	firstname varchar(255) [ not null ]
+	lastname varchar(255)
+	display_name varchar(255) [ not null ]
+	email varchar(255) [ not null ]
+	phone varchar(255) [ not null ]
+	timezone timetz
+	currency varchar(255)
+	is_active boolean [ not null ]
+	created_by bigint
+	created_on date
+	updated_by bigint
+	updated_on date
+	deleted_by bigint
+	deleted_on date
+
+	Note: 'This is our main user table'
+}
+
+Ref fk_user_id_income {
+	user.id < income.user [ delete: no action, update: no action ]
+}
+
+Ref fk_user_id_expense {
+	user.id < expense.user [ delete: no action, update: no action ]
+}
+
+Ref fk_provider_id_payment_methods {
+	provider.id < payment_methods.provider [ delete: no action, update: no action ]
+}
+
+Ref fk_account_type_account_type {
+	account.type - account_type.id [ delete: no action, update: no action ]
+}
+
+Ref fk_bank_address_id_bank_branch {
+	bank_address.id - bank.address [ delete: no action, update: no action ]
+}
+
+Ref fk_country_id_state {
+	country.id - state.country [ delete: no action, update: no action ]
+}
+
+Ref fk_state_id_city {
+	state.id < city.state [ delete: no action, update: no action ]
+}
+
+Ref fk_city_id_address {
+	city.id - address.city [ delete: no action, update: no action ]
+}
+
+Ref fk_payment_methods_id_income {
+	payment_methods.id - income.payment_method [ delete: no action, update: no action ]
+}
+
+Ref fk_account_id_income {
+	account.id - income.account [ delete: no action, update: no action ]
+}
+
+Ref fk_income_source_income_source {
+	income.source - income_source.id [ delete: no action, update: no action ]
+}
+
+Ref fk_expense_account_account {
+	expense.account - account.id [ delete: no action, update: no action ]
+}
+
+Ref fk_expense_payment_method_payment_methods {
+	expense.payment_method - payment_methods.id [ delete: no action, update: no action ]
+}
+
+Ref fk_investment_type_id_investment {
+	investment_type.id - investment.type [ delete: no action, update: no action ]
+}
+
+Ref fk_user_id_investment {
+	user.id < investment.user [ delete: no action, update: no action ]
+}
+
+Ref fk_investment_institutions_id_investment {
+	investment_institutions.id - investment.institution [ delete: no action, update: no action ]
+}
+
+Ref fk_user_id_budget {
+	user.id < budget.user [ delete: no action, update: no action ]
+}
+
+Ref fk_expense_category_id_budget {
+	expense_category.id - budget.category [ delete: no action, update: no action ]
+}
+
+Ref fk_expense_category_id_expense {
+	expense_category.id - expense.category [ delete: no action, update: no action ]
+}
+
+Ref fk_bank_id_account {
+	bank.id < account.bank [ delete: no action, update: no action ]
+}
+
+Ref fk_bank_address_address_id_address {
+	bank_address.address_id > address.id [ delete: no action, update: no action ]
+}
