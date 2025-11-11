@@ -79,6 +79,7 @@ export const userBankAccount = pgTable("user_bank_account", {
 			onDelete: "cascade",
 		}),
 	name: text("name").notNull(),
+	description: text("description"),
 	bankAccountTypeId: text("bank_account_type")
 		.notNull()
 		.references(() => bankAccountTypes.id, {
@@ -89,7 +90,6 @@ export const userBankAccount = pgTable("user_bank_account", {
 		.references(() => banks.id, {
 			onDelete: "cascade",
 		}),
-	description: text("description"),
 	...auditTimeFields,
 });
 
