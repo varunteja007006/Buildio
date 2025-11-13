@@ -8,18 +8,20 @@ export const expense = pgTable("expense", {
 	userId: text("user_id")
 		.notNull()
 		.references(() => user.id, { onDelete: "cascade" }),
-	categoryId: text("category_id")
-		.notNull()
-		.references(() => expenseCategory.id, { onDelete: "cascade" }),
+	categoryId: text("category_id").references(() => expenseCategory.id, {
+		onDelete: "set null",
+	}),
 	name: text("name").notNull(),
 	expenseAmount: numeric("income").notNull(),
 	isRecurring: boolean("is_recurring").default(false),
+	account: text("account"),
 	...auditTimeFields,
 });
 
 export const expenseCategory = pgTable("expense_category", {
 	id: text("id").primaryKey(),
 	name: text("name").notNull(), // e.g., 'Groceries', 'Rent', 'Travel'
+	description: text("description").notNull(), // e.g., 'Groceries', 'Rent', 'Travel'
 	...auditTimeFields,
 });
 

@@ -1,7 +1,9 @@
 {
   "tailwindCSS.experimental.configFile": "packages/ui/src/styles/globals.css",
   "cSpell.words": [
+    "Groww",
     "housie",
+    "pincode",
     "turbopack"
   ]
 }
