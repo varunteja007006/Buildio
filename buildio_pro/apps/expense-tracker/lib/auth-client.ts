@@ -29,7 +29,7 @@ export const useSignOut = (redirectURL = "/") => {
 
 export const useSignInSocial = (
   provider: "google" | "github",
-  callbackURL = "/",
+  callbackURL = "/dashboard",
 ) => {
   return async () => {
     await authClient.signIn.social({

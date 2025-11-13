@@ -14,12 +14,14 @@ export const expense = pgTable("expense", {
 	name: text("name").notNull(),
 	expenseAmount: numeric("income").notNull(),
 	isRecurring: boolean("is_recurring").default(false),
+	account: text("account"),
 	...auditTimeFields,
 });
 
 export const expenseCategory = pgTable("expense_category", {
 	id: text("id").primaryKey(),
 	name: text("name").notNull(), // e.g., 'Groceries', 'Rent', 'Travel'
+	description: text("description").notNull(), // e.g., 'Groceries', 'Rent', 'Travel'
 	...auditTimeFields,
 });
 
