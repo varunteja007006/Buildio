@@ -1,6 +1,6 @@
 "use client";
 
-import { BadgeCheck, ChevronsUpDown, CreditCard, LogOut } from "lucide-react";
+import { ChevronsUpDown, LogOut } from "lucide-react";
 
 import {
 	Avatar,
@@ -22,30 +22,38 @@ import {
 	SidebarMenuItem,
 	useSidebar,
 } from "@workspace/ui/components/sidebar";
-import { useSession, useSignOut } from "@/lib/auth-client";
-import { NotificationModal } from "../notifications/notification-modal";
-import { PricingModal } from "../pricing/pricing-modal";
-import { BillingModal } from "../billing/billing-modal";
-import { AccountModal } from "../account/account-modal";
 
-export function NavUser() {
-	const { isMobile } = useSidebar();
-	const signOut = useSignOut();
-	const session = useSession();
+import { NotificationModal } from "@workspace/ui/components/notifications/notification-modal";
+import { PricingModal } from "@workspace/ui/components/pricing/pricing-modal";
+import { BillingModal } from "@workspace/ui/components/billing/billing-modal";
+import { AccountModal } from "@workspace/ui/components/account/account-modal";
 
-	const user = {
-		name: "",
-		email: "",
-		avatar: "",
+export type NavUserProps = {
+	user: {
+		name: string;
+		email: string;
+		avatar: string;
 	};
+	signOut: () => void;
+	userNavConfig?: {
+		showPricingModal?: boolean;
+		showAccountModal?: boolean;
+		showBillingModal?: boolean;
+		showNotificationModal?: boolean;
+	};
+};
 
-	if (!session.data?.user) {
-		return null;
-	}
-
-	user.name = session.data.user.name;
-	user.email = session.data.user.email;
-	user.avatar = session.data.user.image ?? "";
+export function NavUser({
+	user,
+	signOut,
+	userNavConfig = {
+		showPricingModal: true,
+		showAccountModal: true,
+		showBillingModal: true,
+		showNotificationModal: true,
+	},
+}: Readonly<NavUserProps>) {
+	const { isMobile } = useSidebar();
 
 	return (
 		<SidebarMenu>
@@ -89,15 +97,19 @@ export function NavUser() {
 								</div>
 							</div>
 						</DropdownMenuLabel>
-						<DropdownMenuSeparator />
+						{userNavConfig.showPricingModal && (
+							<>
+								<DropdownMenuSeparator />
+								<DropdownMenuGroup>
+									<PricingModal />
+								</DropdownMenuGroup>
+								<DropdownMenuSeparator />
+							</>
+						)}
 						<DropdownMenuGroup>
-							<PricingModal />
-						</DropdownMenuGroup>
-						<DropdownMenuSeparator />
-						<DropdownMenuGroup>
-							<AccountModal />
-							<BillingModal />
-							<NotificationModal />
+							{userNavConfig.showAccountModal && <AccountModal />}
+							{userNavConfig.showBillingModal && <BillingModal />}
+							{userNavConfig.showNotificationModal && <NotificationModal />}
 						</DropdownMenuGroup>
 						<DropdownMenuSeparator />
 						<DropdownMenuItem onClick={signOut}>

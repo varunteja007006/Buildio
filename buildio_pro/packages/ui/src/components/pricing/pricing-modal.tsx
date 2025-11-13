@@ -12,7 +12,7 @@ import {
 } from "@workspace/ui/components/dialog";
 import { DropdownMenuItem } from "@workspace/ui/components/dropdown-menu";
 import { Sparkles } from "lucide-react";
-import { PricingCards } from "./pricing-cards";
+import { PricingCards } from "@workspace/ui/components/pricing/pricing-cards";
 
 export function PricingModal() {
 	const [open, setOpen] = React.useState(false);
