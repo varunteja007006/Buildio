@@ -21,7 +21,7 @@ export function PokerResults({
     api.storyPoints.getStoryPointsStats,
     storyId && userToken
       ? { token: userToken, storyId }
-      : { token: userToken, roomCode }
+      : { token: userToken, roomCode },
   );
 
   if (!result?.success) {

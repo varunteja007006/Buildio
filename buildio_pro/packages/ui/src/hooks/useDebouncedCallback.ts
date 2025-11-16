@@ -1,10 +1,9 @@
 // The fixed and recommended implementation for useDebouncedCallback
 import React, { useRef, useCallback } from "react";
 
-export default function useDebouncedCallback<T extends (...args: any[]) => void>(
-  fn: T,
-  timeout = 500
-): T {
+export default function useDebouncedCallback<
+  T extends (...args: any[]) => void,
+>(fn: T, timeout = 500): T {
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   // We use useCallback to ensure the returned function has a stable identity
@@ -22,7 +21,7 @@ export default function useDebouncedCallback<T extends (...args: any[]) => void>
         timerRef.current = null; // Clear ref after execution
       }, timeout);
     },
-    [fn, timeout]
+    [fn, timeout],
   ) as T; // Type assertion to match the input function signature
 
   // Cleanup effect: clear the timer when the component unmounts

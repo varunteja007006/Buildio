@@ -15,7 +15,7 @@ const findUserStoryPoint = (
     userId: string;
     isCurrentUser: boolean;
     storyPoint: string | number | undefined;
-  }[]
+  }[],
 ) => {
   return list.find((item) => item.userId === userId);
 };
@@ -30,11 +30,15 @@ export function Participants({
 
   const { user, userToken } = useUserStore();
 
-  const presenceState = usePresence(api.presence, roomCode as string, user?.id!);
+  const presenceState = usePresence(
+    api.presence,
+    roomCode as string,
+    user?.id!,
+  );
 
   const roomStoryPoints = useQuery(
     api.storyPoints.getStoryPoints,
-    storyId && userToken ? { storyId, token: userToken } : "skip"
+    storyId && userToken ? { storyId, token: userToken } : "skip",
   );
 
   const updatedRoomStoryPoints = React.useMemo(
@@ -46,7 +50,7 @@ export function Participants({
             storyPoint: item.story_point,
           }))
         : [],
-    [roomStoryPoints]
+    [roomStoryPoints],
   );
 
   const participantList = React.useMemo(
@@ -59,7 +63,7 @@ export function Participants({
           hasVoted: !!foundUser?.userId,
         };
       }) ?? [],
-    [presenceState, updatedRoomStoryPoints]
+    [presenceState, updatedRoomStoryPoints],
   );
 
   if (!presenceState) {

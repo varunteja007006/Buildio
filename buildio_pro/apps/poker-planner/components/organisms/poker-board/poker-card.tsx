@@ -86,7 +86,8 @@ export function PokerCards({
           key={card.value}
           className={cn(
             "bg-white shadow dark:bg-secondary text-primary font-semibold border-primary/80 flex h-[80px] w-[60px] scale-[0.9] cursor-pointer flex-col items-center justify-center rounded-lg border-2 transition-all hover:scale-[1] hover:shadow-md disabled:cursor-not-allowed disabled:opacity-50",
-            selectedCard === card.value && "bg-primary dark:bg-primary text-primary-foreground"
+            selectedCard === card.value &&
+              "bg-primary dark:bg-primary text-primary-foreground",
           )}
           onClick={() => onCardClick(card.value)}
           disabled={!storyId}

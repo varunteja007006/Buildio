@@ -14,18 +14,20 @@
     "build:web": "turbo build --filter=web",
     "build:poker-planner": "turbo build --filter=poker-planner",
     "build:housie-game": "turbo build --filter=housie-game",
+    "build:expense-tracker": "turbo build --filter=expense-tracker",
     "start:web": "pnpm --filter=web start",
     "start:poker-planner": "pnpm --filter=poker-planner start",
-    "start:housie-game": "pnpm --filter=housie-game start"
+    "start:housie-game": "pnpm --filter=housie-game start",
+    "start:expense-tracker": "pnpm --filter=expense-tracker start"
   },
   "devDependencies": {
     "@workspace/eslint-config": "workspace:*",
     "@workspace/typescript-config": "workspace:*",
     "prettier": "^3.6.2",
-    "turbo": "^2.5.8",
+    "turbo": "^2.6.1",
     "typescript": "^5.9.2"
   },
-  "packageManager": "pnpm@10.18.3",
+  "packageManager": "pnpm@10.22.0",
   "engines": {
     "node": ">=20"
   }

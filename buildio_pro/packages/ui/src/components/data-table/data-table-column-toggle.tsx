@@ -14,11 +14,17 @@ import { Settings2 } from "lucide-react";
 import { DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu";
 import { Table } from "@tanstack/react-table";
 
-export function DataTableViewOptions<TData>({ table }: Readonly<{ table: Table<TData> }>) {
+export function DataTableViewOptions<TData>({
+  table,
+}: Readonly<{ table: Table<TData> }>) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="sm" className="ml-auto hidden h-8 lg:flex">
+        <Button
+          variant="outline"
+          size="sm"
+          className="ml-auto hidden h-8 lg:flex"
+        >
           <Settings2 />
           View
         </Button>
@@ -28,10 +34,15 @@ export function DataTableViewOptions<TData>({ table }: Readonly<{ table: Table<T
         <DropdownMenuSeparator />
         {table
           .getAllColumns()
-          .filter((column) => typeof column.accessorFn !== "undefined" && column.getCanHide())
+          .filter(
+            (column) =>
+              typeof column.accessorFn !== "undefined" && column.getCanHide(),
+          )
           .map((column) => {
             const header =
-              typeof column.columnDef.header === "string" ? column.columnDef.header : column.id;
+              typeof column.columnDef.header === "string"
+                ? column.columnDef.header
+                : column.id;
 
             return (
               <DropdownMenuCheckboxItem

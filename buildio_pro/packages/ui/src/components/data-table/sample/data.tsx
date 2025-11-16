@@ -51,7 +51,7 @@ function generatePayments(count: number): Payment[] {
       (
         f.finance?.amount?.({ min: 100, max: 2500 }) ??
         (Math.random() * 2500 + 10).toFixed(2)
-      ).toString()
+      ).toString(),
     );
     const status =
       f.helpers?.arrayElement?.(statuses) ??
@@ -72,7 +72,7 @@ function generatePayments(count: number): Payment[] {
     const createdAt =
       f.date?.recent?.({ days: 365 })?.toISOString?.() ??
       new Date(
-        Date.now() - Math.floor(Math.random() * 1000 * 60 * 60 * 24 * 365)
+        Date.now() - Math.floor(Math.random() * 1000 * 60 * 60 * 24 * 365),
       ).toISOString();
     const address = f.location?.streetAddress?.();
     const phone = f.phone?.number?.() ?? "(000) 000-0000";

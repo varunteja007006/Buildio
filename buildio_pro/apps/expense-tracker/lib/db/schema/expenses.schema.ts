@@ -2,44 +2,55 @@ import { boolean, numeric, pgTable, text } from "drizzle-orm/pg-core";
 import { auditTimeFields } from "./common.schema";
 import { user } from "./auth-schema";
 import { relations } from "drizzle-orm";
+import { budget } from "./budget.schema";
 
 export const expense = pgTable("expense", {
-	id: text("id").primaryKey(),
-	userId: text("user_id")
-		.notNull()
-		.references(() => user.id, { onDelete: "cascade" }),
-	categoryId: text("category_id")
-		.notNull()
-		.references(() => expenseCategory.id, { onDelete: "cascade" }),
-	name: text("name").notNull(),
-	expenseAmount: numeric("income").notNull(),
-	isRecurring: boolean("is_recurring").default(false),
-	...auditTimeFields,
+  id: text("id").primaryKey(),
+  userId: text("user_id")
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
+  categoryId: text("category_id").references(() => expenseCategory.id, {
+    onDelete: "set null",
+  }),
+  name: text("name").notNull(),
+  expenseAmount: numeric("income").notNull(),
+  isRecurring: boolean("is_recurring").default(false),
+  account: text("account"),
+  budget: text("budget").references(() => budget.id, {
+    onDelete: "set null",
+  }),
+  ...auditTimeFields,
 });
 
 export const expenseCategory = pgTable("expense_category", {
-	id: text("id").primaryKey(),
-	name: text("name").notNull(), // e.g., 'Groceries', 'Rent', 'Travel'
-	...auditTimeFields,
+  id: text("id").primaryKey(),
+  name: text("name").notNull(), // e.g., 'Groceries', 'Rent', 'Travel'
+  description: text("description").notNull(), // e.g., 'Groceries', 'Rent', 'Travel'
+  ...auditTimeFields,
 });
 
 export const expenseCategoryRelations = relations(
-	expenseCategory,
-	({ many }) => ({
-		// An expense category can have many individual expense records
-		expenses: many(expense),
-	})
+  expenseCategory,
+  ({ many }) => ({
+    // An expense category can have many individual expense records
+    expenses: many(expense),
+  }),
 );
 
 export const expenseRelations = relations(expense, ({ one }) => ({
-	user: one(user, {
-		fields: [expense.userId],
-		references: [user.id],
-		relationName: "expense_to_user",
-	}),
-	category: one(expenseCategory, {
-		fields: [expense.categoryId],
-		references: [expenseCategory.id],
-		relationName: "expense_to_category",
-	}),
+  user: one(user, {
+    fields: [expense.userId],
+    references: [user.id],
+    relationName: "expense_to_user",
+  }),
+  category: one(expenseCategory, {
+    fields: [expense.categoryId],
+    references: [expenseCategory.id],
+    relationName: "expense_to_category",
+  }),
+  budget: one(budget, {
+    fields: [expense.budget],
+    references: [budget.id],
+    relationName: "expense_to_budget",
+  }),
 }));

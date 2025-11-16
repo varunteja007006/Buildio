@@ -9,8 +9,7 @@ import {
   FormMessage,
   FormDescription,
 } from "@workspace/ui/components/form";
-import { cn } from "@workspace/ui/lib/utils"
-
+import { cn } from "@workspace/ui/lib/utils";
 
 /**
  * A simple color picker component using native HTML5 color input.

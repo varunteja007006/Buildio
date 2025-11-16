@@ -1,6 +1,10 @@
-"use client"
+"use client";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@workspace/ui/components/avatar";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@workspace/ui/components/avatar";
 
 import { useUserStore } from "@/lib/store/user.store";
 

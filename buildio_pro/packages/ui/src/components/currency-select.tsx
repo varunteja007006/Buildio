@@ -1,6 +1,6 @@
 import React from "react";
 
-import { cn } from "@workspace/ui/lib/utils"
+import { cn } from "@workspace/ui/lib/utils";
 
 // data
 import { currencies as AllCurrencies } from "country-data-list";
@@ -50,7 +50,7 @@ const CurrencySelect = React.forwardRef<HTMLButtonElement, CurrencySelectProps>(
       valid = true,
       ...props
     },
-    ref
+    ref,
   ) => {
     const [selectedCurrency, setSelectedCurrency] =
       React.useState<Currency | null>(null);
@@ -62,16 +62,16 @@ const CurrencySelect = React.forwardRef<HTMLButtonElement, CurrencySelectProps>(
         if (currency.code && currency.name && currency.symbol) {
           let shouldInclude = true;
 
-        //   switch (currencies) {
-        //     case "custom":
-        //       shouldInclude = customCurrencies.includes(currency.code);
-        //       break;
-        //     case "all":
-        //       shouldInclude = !allCurrencies.includes(currency.code);
-        //       break;
-        //     default:
-        //       shouldInclude = !allCurrencies.includes(currency.code);
-        //   }
+          //   switch (currencies) {
+          //     case "custom":
+          //       shouldInclude = customCurrencies.includes(currency.code);
+          //       break;
+          //     case "all":
+          //       shouldInclude = !allCurrencies.includes(currency.code);
+          //       break;
+          //     default:
+          //       shouldInclude = !allCurrencies.includes(currency.code);
+          //   }
 
           if (shouldInclude) {
             // Special handling for Euro
@@ -98,13 +98,13 @@ const CurrencySelect = React.forwardRef<HTMLButtonElement, CurrencySelectProps>(
 
       // Convert the map to an array and sort by currency name
       return Array.from(currencyMap.values()).sort((a, b) =>
-        a.name.localeCompare(b.name)
+        a.name.localeCompare(b.name),
       );
     }, [currencies]);
 
     const handleValueChange = (newValue: string) => {
       const fullCurrencyData = uniqueCurrencies.find(
-        (curr) => curr.code === newValue
+        (curr) => curr.code === newValue,
       );
       if (fullCurrencyData) {
         setSelectedCurrency(fullCurrencyData);
@@ -157,7 +157,7 @@ const CurrencySelect = React.forwardRef<HTMLButtonElement, CurrencySelectProps>(
         </SelectContent>
       </Select>
     );
-  }
+  },
 );
 
 CurrencySelect.displayName = "CurrencySelect";

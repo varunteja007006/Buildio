@@ -7,9 +7,7 @@ import {
 
 import { ExternalLink } from "lucide-react";
 
-export function OpenInNewTabBtn({
-  fileUrl,
-}: Readonly<{ fileUrl: string }>) {
+export function OpenInNewTabBtn({ fileUrl }: Readonly<{ fileUrl: string }>) {
   return (
     <Tooltip>
       <TooltipTrigger asChild>

@@ -26,7 +26,7 @@ export const UserStoreProvider = ({
 
   const user = useQuery(
     api.user.getUserByToken,
-    userToken ? { token: userToken } : "skip"
+    userToken ? { token: userToken } : "skip",
   );
 
   if (user?.success === false && user.isFound === false) {
@@ -38,7 +38,7 @@ export const UserStoreProvider = ({
       localStorage.setItem("userToken", token);
       setUserToken(token);
     },
-    [setUserToken]
+    [setUserToken],
   );
 
   React.useEffect(() => {

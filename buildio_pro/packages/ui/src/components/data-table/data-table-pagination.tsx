@@ -7,7 +7,12 @@ import {
   SelectValue,
 } from "@workspace/ui/components/select";
 
-import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from "lucide-react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
+} from "lucide-react";
 
 import { Table } from "@tanstack/react-table";
 
@@ -15,7 +20,9 @@ interface DataTablePaginationProps<TData> {
   table: Table<TData>;
 }
 
-export function DataTablePagination<TData>({ table }: Readonly<DataTablePaginationProps<TData>>) {
+export function DataTablePagination<TData>({
+  table,
+}: Readonly<DataTablePaginationProps<TData>>) {
   return (
     <>
       <div className="hidden md:flex flex-row items-center justify-between px-2 w-full gap-3">
@@ -39,8 +46,8 @@ export function DataTableRowSelectionInfo<TData>({
 }: Readonly<DataTablePaginationProps<TData>>) {
   return (
     <div className="text-muted-foreground flex-1 text-sm">
-      {table.getFilteredSelectedRowModel().rows.length} of {table.getFilteredRowModel().rows.length}{" "}
-      row(s) selected.
+      {table.getFilteredSelectedRowModel().rows.length} of{" "}
+      {table.getFilteredRowModel().rows.length} row(s) selected.
     </div>
   );
 }
@@ -78,7 +85,8 @@ export function DataTablePaginationControls<TData>({
   return (
     <div className="flex items-center space-x-6 lg:space-x-8">
       <div className="flex w-[100px] items-center justify-center text-sm font-medium">
-        Page {table.getState().pagination.pageIndex + 1} of {table.getPageCount()}
+        Page {table.getState().pagination.pageIndex + 1} of{" "}
+        {table.getPageCount()}
       </div>
       <div className="flex items-center space-x-2">
         <Button

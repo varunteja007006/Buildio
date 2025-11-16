@@ -1,7 +1,12 @@
 "use client";
 
 import React from "react";
-import { Control, ControllerRenderProps, FieldPath, FieldValues } from "react-hook-form";
+import {
+  Control,
+  ControllerRenderProps,
+  FieldPath,
+  FieldValues,
+} from "react-hook-form";
 import { Button } from "@workspace/ui/components/button";
 import {
   FormField,
@@ -11,7 +16,11 @@ import {
   FormMessage,
   FormDescription,
 } from "@workspace/ui/components/form";
-import { Popover, PopoverContent, PopoverTrigger } from "@workspace/ui/components/popover";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@workspace/ui/components/popover";
 import {
   Command,
   CommandEmpty,
@@ -21,8 +30,7 @@ import {
   CommandList,
 } from "@workspace/ui/components/command";
 import { Check, ChevronsUpDown } from "lucide-react";
-import { cn } from "@workspace/ui/lib/utils"
-
+import { cn } from "@workspace/ui/lib/utils";
 
 /**
  * A reusable searchable combobox component for forms.
@@ -80,7 +88,10 @@ interface SearchableComboboxProps<
   emptyMessage?: string;
 
   // Callbacks
-  onSelectionChange?: (value: string, option: ComboboxOption | undefined) => void;
+  onSelectionChange?: (
+    value: string,
+    option: ComboboxOption | undefined,
+  ) => void;
 
   // Styling
   className?: string;
@@ -116,7 +127,9 @@ export default function SearchableCombobox<
     selectedValue: string,
     field: ControllerRenderProps<TFieldValues, TName>,
   ) => {
-    const selectedOption = options.find((option) => option.value === selectedValue);
+    const selectedOption = options.find(
+      (option) => option.value === selectedValue,
+    );
     field.onChange(selectedValue);
     setOpen(false);
 
@@ -141,7 +154,10 @@ export default function SearchableCombobox<
                   variant="outline"
                   aria-expanded={open}
                   disabled={disabled}
-                  className={cn("w-full justify-between", !field.value && "text-muted-foreground")}
+                  className={cn(
+                    "w-full justify-between",
+                    !field.value && "text-muted-foreground",
+                  )}
                 >
                   {getDisplayValue(field.value)}
                   <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -168,7 +184,9 @@ export default function SearchableCombobox<
                         <Check
                           className={cn(
                             "mr-2 h-4 w-4",
-                            option.value === field.value ? "opacity-100" : "opacity-0",
+                            option.value === field.value
+                              ? "opacity-100"
+                              : "opacity-0",
                           )}
                         />
                         {option.label}
