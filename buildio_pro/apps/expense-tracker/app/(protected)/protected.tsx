@@ -5,19 +5,19 @@ import { useSession } from "@/lib/auth-client";
 import Unauthorized from "@/components/organisms/auth/unauthorized";
 
 export const Protected = ({
-	children,
+  children,
 }: Readonly<{
-	children: React.ReactNode;
+  children: React.ReactNode;
 }>) => {
-	const { data, isPending } = useSession();
+  const { data, isPending } = useSession();
 
-	if (isPending) {
-		return <>Loading....</>;
-	}
+  if (isPending) {
+    return <>Loading....</>;
+  }
 
-	if (data?.user) {
-		return <>{children}</>;
-	}
+  if (data?.user) {
+    return <>{children}</>;
+  }
 
-	return <Unauthorized />
+  return <Unauthorized />;
 };

@@ -8,19 +8,19 @@ import Link from "next/link";
 import { useSession } from "@/lib/auth-client";
 
 export function LoginBtn() {
-	const { data } = useSession();
+  const { data } = useSession();
 
-	if (data?.user) {
-		return (
-			<Link href={"/dashboard"}>
-				<Button size={"sm"}>Dashboard</Button>
-			</Link>
-		);
-	}
+  if (data?.user) {
+    return (
+      <Link href={"/dashboard"}>
+        <Button size={"sm"}>Dashboard</Button>
+      </Link>
+    );
+  }
 
-	return (
-		<Link href={"/login"}>
-			<Button size={"sm"}>Login</Button>
-		</Link>
-	);
+  return (
+    <Link href={"/login"}>
+      <Button size={"sm"}>Login</Button>
+    </Link>
+  );
 }

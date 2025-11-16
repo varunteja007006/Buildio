@@ -116,7 +116,7 @@ export const getUserRooms = query({
         room_name: v.string(),
         room_code: v.string(),
         created_at: v.number(),
-      })
+      }),
     ),
   }),
   handler: async (ctx, args) => {
@@ -228,7 +228,7 @@ export const listJoinedRooms = query({
         room_name: v.string(),
         room_code: v.string(),
         created_at: v.number(),
-      })
+      }),
     ),
   }),
   handler: async (ctx, args) => {
@@ -236,7 +236,11 @@ export const listJoinedRooms = query({
     const userResult = await getUserFromToken(ctx, args.userToken);
 
     if (!userResult.success || !userResult.id) {
-      return { success: false, message: userResult.message || "User not found", rooms: [] };
+      return {
+        success: false,
+        message: userResult.message || "User not found",
+        rooms: [],
+      };
     }
 
     const userId = userResult.id;
@@ -289,7 +293,7 @@ export const getRoomDetails = query({
         room_code: v.string(),
         created_at: v.number(),
         ownerId: v.id("users"),
-      })
+      }),
     ),
     owner: v.optional(
       v.object({
@@ -297,7 +301,7 @@ export const getRoomDetails = query({
         username: v.string(),
         created_at: v.number(),
         last_active: v.optional(v.number()),
-      })
+      }),
     ),
   }),
   handler: async (ctx, args) => {

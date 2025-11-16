@@ -14,7 +14,9 @@ export default defineSchema({
     room_code: v.string(),
     created_at: v.number(),
     ownerId: v.id("users"), // replaces inference from teams
-  }).index("by_room_code", ["room_code"]).index("by_owner", ["ownerId"]),
+  })
+    .index("by_room_code", ["room_code"])
+    .index("by_owner", ["ownerId"]),
 
   teams: defineTable({
     roomId: v.id("rooms"),

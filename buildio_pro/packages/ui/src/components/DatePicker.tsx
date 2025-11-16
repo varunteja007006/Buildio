@@ -1,7 +1,12 @@
 "use client";
 
 import React, { useState } from "react";
-import { Control, ControllerRenderProps, FieldPath, FieldValues } from "react-hook-form";
+import {
+  Control,
+  ControllerRenderProps,
+  FieldPath,
+  FieldValues,
+} from "react-hook-form";
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import { Button } from "@workspace/ui/components/button";
@@ -14,9 +19,12 @@ import {
   FormMessage,
   FormDescription,
 } from "@workspace/ui/components/form";
-import { Popover, PopoverContent, PopoverTrigger } from "@workspace/ui/components/popover";
-import { cn } from "@workspace/ui/lib/utils"
-
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@workspace/ui/components/popover";
+import { cn } from "@workspace/ui/lib/utils";
 
 /**
  * A reusable date picker component for forms using shadcn components.
@@ -72,7 +80,10 @@ type DatePickerProps<
   TFieldValues extends FieldValues = FieldValues,
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 > = DatePickerFormProps<TFieldValues, TName> &
-  Omit<React.ComponentProps<typeof Calendar>, "mode" | "selected" | "onSelect" | "disabled"> & {
+  Omit<
+    React.ComponentProps<typeof Calendar>,
+    "mode" | "selected" | "onSelect" | "disabled"
+  > & {
     // Separate calendar disabled from button disabled
     disabled?: boolean; // For the button
     calendarDisabled?: React.ComponentProps<typeof Calendar>["disabled"]; // For the calendar
@@ -144,7 +155,11 @@ export default function DatePicker<
                     )}
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
-                    {selectedDate ? format(selectedDate, "PPP") : <span>{placeholder}</span>}
+                    {selectedDate ? (
+                      format(selectedDate, "PPP")
+                    ) : (
+                      <span>{placeholder}</span>
+                    )}
                   </Button>
                 </FormControl>
               </PopoverTrigger>

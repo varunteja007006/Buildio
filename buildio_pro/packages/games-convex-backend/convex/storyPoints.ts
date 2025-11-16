@@ -38,7 +38,7 @@ export const captureStoryPoint = mutation({
     const existing = await ctx.db
       .query("storyPoints")
       .withIndex("by_story_and_user", (q) =>
-        q.eq("storyId", args.storyId).eq("userId", userId)
+        q.eq("storyId", args.storyId).eq("userId", userId),
       )
       .unique();
 
@@ -78,8 +78,8 @@ export const getStoryPoints = query({
           username: v.string(),
           story_point: v.optional(v.union(v.number(), v.string())),
           isCurrentUser: v.boolean(),
-        })
-      )
+        }),
+      ),
     ),
   }),
   handler: async (ctx, args) => {
@@ -144,8 +144,8 @@ export const getStoryPointsStats = query({
         v.object({
           name: v.string(),
           value: v.number(),
-        })
-      )
+        }),
+      ),
     ),
     avgPoints: v.optional(v.number()),
     totalVoters: v.optional(v.number()),
@@ -217,7 +217,7 @@ export const getStoryPointsStats = query({
       const lastStory = await ctx.db
         .query("stories")
         .withIndex("by_room_status", (q) =>
-          q.eq("roomId", room!._id).eq("status", "completed")
+          q.eq("roomId", room!._id).eq("status", "completed"),
         )
         .order("desc")
         .first();
@@ -267,7 +267,7 @@ export const getStoryPointsStats = query({
       ([name, value]) => ({
         name,
         value: value as number,
-      })
+      }),
     );
 
     // Sort by numeric value ascending

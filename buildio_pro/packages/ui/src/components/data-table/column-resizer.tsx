@@ -1,6 +1,10 @@
 import { Header } from "@tanstack/react-table";
 
-export const ColumnResizer = <TData,>({ header }: { header: Header<TData, unknown> }) => {
+export const ColumnResizer = <TData,>({
+  header,
+}: {
+  header: Header<TData, unknown>;
+}) => {
   if (header.column.getCanResize() === false) return <></>;
 
   return (

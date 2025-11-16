@@ -75,7 +75,7 @@ export const getUserByToken = query({
       success: v.boolean(),
       message: v.string(),
       isFound: v.boolean(),
-    })
+    }),
   ),
 
   handler: async (ctx, args) => {

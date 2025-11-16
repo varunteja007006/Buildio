@@ -42,7 +42,7 @@ export const list = query({
           ...p,
           name: user.username ?? "Unknown",
         };
-      })
+      }),
     );
 
     return peepsWithNames.filter((p) => p !== null);

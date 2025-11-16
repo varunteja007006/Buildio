@@ -10,7 +10,7 @@ export function CreatedRoomsList() {
   const { userToken } = useUserStore();
   const rooms = useQuery(
     api.rooms.getUserRooms,
-    userToken ? { userToken } : "skip"
+    userToken ? { userToken } : "skip",
   );
 
   if (!userToken || !rooms?.success) {

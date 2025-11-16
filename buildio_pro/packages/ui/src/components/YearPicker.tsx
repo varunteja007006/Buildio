@@ -30,8 +30,7 @@ import {
   CommandList,
 } from "@workspace/ui/components/command";
 import { CalendarIcon, Check } from "lucide-react";
-import { cn } from "@workspace/ui/lib/utils"
-
+import { cn } from "@workspace/ui/lib/utils";
 
 /**
  * A reusable year picker component for forms.
@@ -110,7 +109,7 @@ export default function YearPicker<
 
   const handleSelect = (
     year: number,
-    field: ControllerRenderProps<TFieldValues, TName>
+    field: ControllerRenderProps<TFieldValues, TName>,
   ) => {
     field.onChange(year);
     setOpen(false);
@@ -135,7 +134,7 @@ export default function YearPicker<
                   disabled={disabled}
                   className={cn(
                     "w-full justify-between",
-                    !field.value && "text-muted-foreground"
+                    !field.value && "text-muted-foreground",
                   )}
                 >
                   {field.value ? field.value : placeholder}
@@ -162,7 +161,7 @@ export default function YearPicker<
                         <Check
                           className={cn(
                             "mr-2 h-4 w-4",
-                            field.value === year ? "opacity-100" : "opacity-0"
+                            field.value === year ? "opacity-100" : "opacity-0",
                           )}
                         />
                         {year}

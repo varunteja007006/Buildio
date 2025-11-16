@@ -15,4 +15,4 @@ crons.interval(
   api.cleanup.clearStoriesAndPoints,
 );
 
-export default crons
+export default crons;

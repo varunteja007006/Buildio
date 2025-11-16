@@ -4,11 +4,15 @@ import * as React from "react";
 import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
 
-import { cn } from "@workspace/ui/lib/utils"
+import { cn } from "@workspace/ui/lib/utils";
 
 import { Button } from "@workspace/ui/components/button";
 import { Calendar } from "@workspace/ui/components/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@workspace/ui/components/popover";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@workspace/ui/components/popover";
 import {
   Dialog,
   DialogClose,
@@ -68,7 +72,9 @@ export default function DateTimePicker24h<
         const handleDateSelect = (selectedDate: Date | undefined) => {
           if (!selectedDate) return;
           // Preserve time from existing value if present
-          const newDate = selected ? new Date(selected) : new Date(selectedDate);
+          const newDate = selected
+            ? new Date(selected)
+            : new Date(selectedDate);
           newDate.setFullYear(
             selectedDate.getFullYear(),
             selectedDate.getMonth(),
@@ -99,13 +105,21 @@ export default function DateTimePicker24h<
                       !selected && "text-muted-foreground",
                     )}
                   >
-                    {selected ? format(selected, "MM/dd/yyyy HH:mm") : <span>{placeholder}</span>}
+                    {selected ? (
+                      format(selected, "MM/dd/yyyy HH:mm")
+                    ) : (
+                      <span>{placeholder}</span>
+                    )}
                     <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0">
                   <div className="sm:flex">
-                    <Calendar mode="single" selected={selected} onSelect={handleDateSelect} />
+                    <Calendar
+                      mode="single"
+                      selected={selected}
+                      onSelect={handleDateSelect}
+                    />
                     <div className="flex flex-col sm:flex-row sm:h-[300px] divide-y sm:divide-y-0 sm:divide-x">
                       <ScrollArea className="w-64 sm:w-auto">
                         <div className="flex sm:flex-col p-2">
@@ -114,7 +128,9 @@ export default function DateTimePicker24h<
                               key={hour}
                               size="icon"
                               variant={
-                                selected && selected.getHours() === hour ? "default" : "ghost"
+                                selected && selected.getHours() === hour
+                                  ? "default"
+                                  : "ghost"
                               }
                               className="sm:w-full shrink-0 aspect-square"
                               onClick={() => handleTimeChange("hour", hour)}
@@ -123,7 +139,10 @@ export default function DateTimePicker24h<
                             </Button>
                           ))}
                         </div>
-                        <ScrollBar orientation="horizontal" className="sm:hidden" />
+                        <ScrollBar
+                          orientation="horizontal"
+                          className="sm:hidden"
+                        />
                       </ScrollArea>
                       <ScrollArea className="w-64 sm:w-auto">
                         <div className="flex sm:flex-col p-2">
@@ -132,7 +151,9 @@ export default function DateTimePicker24h<
                               key={minute}
                               size="icon"
                               variant={
-                                selected && selected.getMinutes() === minute ? "default" : "ghost"
+                                selected && selected.getMinutes() === minute
+                                  ? "default"
+                                  : "ghost"
                               }
                               className="sm:w-full shrink-0 aspect-square"
                               onClick={() => handleTimeChange("minute", minute)}
@@ -141,7 +162,10 @@ export default function DateTimePicker24h<
                             </Button>
                           ))}
                         </div>
-                        <ScrollBar orientation="horizontal" className="sm:hidden" />
+                        <ScrollBar
+                          orientation="horizontal"
+                          className="sm:hidden"
+                        />
                       </ScrollArea>
                     </div>
                   </div>
@@ -211,7 +235,11 @@ export function DateTimePickerDialog({
           )}
         >
           <CalendarIcon className="mr-2 h-4 w-4" />
-          {value ? format(value, "MM/dd/yyyy hh:mm aa") : <span>MM/DD/YYYY hh:mm aa</span>}
+          {value ? (
+            format(value, "MM/dd/yyyy hh:mm aa")
+          ) : (
+            <span>MM/DD/YYYY hh:mm aa</span>
+          )}
         </Button>
       </DialogTrigger>
       <DialogContent className="w-auto">
@@ -219,7 +247,11 @@ export function DateTimePickerDialog({
           <DialogTitle>Choose a date and time</DialogTitle>
         </DialogHeader>
         <div className="sm:flex">
-          <Calendar mode="single" selected={value} onSelect={handleDateSelect} />
+          <Calendar
+            mode="single"
+            selected={value}
+            onSelect={handleDateSelect}
+          />
           <div className="flex flex-col sm:flex-row sm:h-[300px] divide-y sm:divide-y-0 sm:divide-x">
             <ScrollArea className="w-64 sm:w-auto">
               <div className="flex sm:flex-col p-2">
@@ -227,7 +259,11 @@ export function DateTimePickerDialog({
                   <Button
                     key={hour}
                     size="icon"
-                    variant={value && value.getHours() % 12 === hour % 12 ? "default" : "ghost"}
+                    variant={
+                      value && value.getHours() % 12 === hour % 12
+                        ? "default"
+                        : "ghost"
+                    }
                     className="sm:w-full shrink-0 aspect-square"
                     onClick={() => handleTimeChange("hour", hour.toString())}
                   >
@@ -243,9 +279,15 @@ export function DateTimePickerDialog({
                   <Button
                     key={minute}
                     size="icon"
-                    variant={value && value.getMinutes() === minute ? "default" : "ghost"}
+                    variant={
+                      value && value.getMinutes() === minute
+                        ? "default"
+                        : "ghost"
+                    }
                     className="sm:w-full shrink-0 aspect-square"
-                    onClick={() => handleTimeChange("minute", minute.toString())}
+                    onClick={() =>
+                      handleTimeChange("minute", minute.toString())
+                    }
                   >
                     {minute.toString().padStart(2, "0")}
                   </Button>

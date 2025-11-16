@@ -2,7 +2,11 @@
 
 import React from "react";
 import { Button } from "@workspace/ui/components/button";
-import { Popover, PopoverContent, PopoverTrigger } from "@workspace/ui/components/popover";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@workspace/ui/components/popover";
 import {
   Command,
   CommandEmpty,
@@ -12,8 +16,7 @@ import {
   CommandList,
 } from "@workspace/ui/components/command";
 import { Check, ChevronsUpDown } from "lucide-react";
-import { cn } from "@workspace/ui/lib/utils"
-
+import { cn } from "@workspace/ui/lib/utils";
 
 export interface ComboboxOption {
   value: string;
@@ -63,7 +66,11 @@ export default function SimpleSearchableCombobox({
           variant="outline"
           aria-expanded={open}
           disabled={disabled}
-          className={cn("w-full justify-between", !value && "text-muted-foreground", className)}
+          className={cn(
+            "w-full justify-between",
+            !value && "text-muted-foreground",
+            className,
+          )}
         >
           {getDisplayValue(value)}
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />

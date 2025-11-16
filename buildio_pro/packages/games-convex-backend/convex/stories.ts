@@ -40,7 +40,8 @@ export const createStory = mutation({
     // Generate random strings if empty
     const randomString = Math.random().toString(36).substring(7);
     const finalTitle = args.title || `Story ${randomString}`;
-    const finalDescription = args.description || `Description for ${finalTitle}`;
+    const finalDescription =
+      args.description || `Description for ${finalTitle}`;
 
     // Create story
     const storyId = await ctx.db.insert("stories", {
@@ -119,7 +120,7 @@ export const getStartedStory = query({
         roomId: v.id("rooms"),
         created_at: v.number(),
         created_by: v.id("users"),
-      })
+      }),
     ),
   }),
   handler: async (ctx, args) => {
@@ -147,7 +148,9 @@ export const getStartedStory = query({
     // Find started story in room
     const story = await ctx.db
       .query("stories")
-      .withIndex("by_room_status", (q) => q.eq("roomId", room._id).eq("status", "started"))
+      .withIndex("by_room_status", (q) =>
+        q.eq("roomId", room._id).eq("status", "started"),
+      )
       .unique();
     if (!story) {
       return {
