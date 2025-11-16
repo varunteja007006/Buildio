@@ -50,5 +50,4 @@ export const incomeRelations = relations(income, ({ one }) => ({
 		references: [paymentMethods.id],
 		relationName: "income_to_payment_methods",
 	}),
-
 }));

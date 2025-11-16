@@ -2,6 +2,7 @@ import { boolean, numeric, pgTable, text } from "drizzle-orm/pg-core";
 import { auditTimeFields } from "./common.schema";
 import { user } from "./auth-schema";
 import { relations } from "drizzle-orm";
+import { budget } from "./budget.schema";
 
 export const expense = pgTable("expense", {
 	id: text("id").primaryKey(),
@@ -15,6 +16,9 @@ export const expense = pgTable("expense", {
 	expenseAmount: numeric("income").notNull(),
 	isRecurring: boolean("is_recurring").default(false),
 	account: text("account"),
+	budget: text("budget").references(() => budget.id, {
+		onDelete: "set null",
+	}),
 	...auditTimeFields,
 });
 
@@ -43,5 +47,10 @@ export const expenseRelations = relations(expense, ({ one }) => ({
 		fields: [expense.categoryId],
 		references: [expenseCategory.id],
 		relationName: "expense_to_category",
+	}),
+	budget: one(budget, {
+		fields: [expense.budget],
+		references: [budget.id],
+		relationName: "expense_to_budget",
 	}),
 }));
