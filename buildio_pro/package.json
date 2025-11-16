@@ -14,9 +14,11 @@
     "build:web": "turbo build --filter=web",
     "build:poker-planner": "turbo build --filter=poker-planner",
     "build:housie-game": "turbo build --filter=housie-game",
+    "build:expense-tracker": "turbo build --filter=expense-tracker",
     "start:web": "pnpm --filter=web start",
     "start:poker-planner": "pnpm --filter=poker-planner start",
-    "start:housie-game": "pnpm --filter=housie-game start"
+    "start:housie-game": "pnpm --filter=housie-game start",
+    "start:expense-tracker": "pnpm --filter=expense-tracker start"
   },
   "devDependencies": {
     "@workspace/eslint-config": "workspace:*",
