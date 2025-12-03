@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { Providers } from "@/components/providers";
 import { Toaster } from "@workspace/ui/components/sonner";
 
-import "@workspace/ui/globals.css";
+import "./globals.css";
 
 export const metadata: Metadata = {
 	title: "Buildio.pro",

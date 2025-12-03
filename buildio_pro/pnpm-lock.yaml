@@ -309,12 +309,18 @@ importers:
 
   apps/scribble:
     dependencies:
+      '@convex-dev/presence':
+        specifier: ^0.2.1
+        version: 0.2.1(convex@1.27.5(react@19.1.1))(react-dom@19.1.1(react@19.1.1))(react@19.1.1)
       '@hookform/resolvers':
         specifier: ^5.2.2
         version: 5.2.2(react-hook-form@7.67.0(react@19.1.1))
       '@workspace/games-convex-backend':
         specifier: workspace:*
         version: link:../../packages/games-convex-backend
+      '@workspace/theme':
+        specifier: workspace:*
+        version: link:../../packages/theme
       '@workspace/ui':
         specifier: workspace:*
         version: link:../../packages/ui
@@ -361,6 +367,9 @@ importers:
       '@workspace/typescript-config':
         specifier: workspace:*
         version: link:../../packages/typescript-config
+      tailwindcss:
+        specifier: 'catalog:'
+        version: 4.1.11
       typescript:
         specifier: 'catalog:'
         version: 5.9.2

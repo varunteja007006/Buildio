@@ -12,8 +12,10 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@convex-dev/presence": "^0.2.1",
     "@hookform/resolvers": "^5.2.2",
     "@workspace/games-convex-backend": "workspace:*",
+    "@workspace/theme": "workspace:*",
     "@workspace/ui": "workspace:*",
     "convex": "catalog:",
     "lucide-react": "catalog:",
@@ -31,6 +33,7 @@
     "@types/react-dom": "catalog:react19",
     "@workspace/eslint-config": "workspace:^",
     "@workspace/typescript-config": "workspace:*",
+    "tailwindcss": "catalog:",
     "typescript": "catalog:"
   }
 }
