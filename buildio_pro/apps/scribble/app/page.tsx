@@ -1,8 +1,24 @@
+"use client";
+
 import { UserRegistration } from "@/components/user-registration";
 import { ModeToggle } from "@/components/mode-toggle";
 import { Pencil } from "lucide-react";
+import { useUserStore } from "@/lib/store/user.store";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+import { Button } from "@workspace/ui/components/button";
+import Link from "next/link";
 
 export default function Page() {
+	const { userToken } = useUserStore();
+	const router = useRouter();
+
+	useEffect(() => {
+		if (userToken) {
+			router.push("/rooms");
+		}
+	}, [userToken, router]);
+
 	return (
 		<div className="min-h-screen flex flex-col">
 			{/* Header */}
@@ -23,9 +39,18 @@ export default function Page() {
 				<div className="grid grid-cols-1 gap-5 lg:grid-cols-2 place-items-center h-[500px]">
 					<div className="p-5">
 						<h1 className="text-primary text-5xl">Welcome to Scribble</h1>
+						{userToken && (
+							<div className="mt-4">
+								<Button asChild>
+									<Link href="/rooms">Go to Rooms</Link>
+								</Button>
+							</div>
+						)}
 					</div>
 					<div className="p-5">
-						<UserRegistration />
+						{!userToken && (
+							<UserRegistration onSuccess={() => router.push("/rooms")} />
+						)}
 					</div>
 				</div>
 			</main>
