@@ -12,6 +12,7 @@ import type * as cleanup from "../cleanup.js";
 import type * as crons from "../crons.js";
 import type * as presence from "../presence.js";
 import type * as rooms from "../rooms.js";
+import type * as scribble from "../scribble.js";
 import type * as stories from "../stories.js";
 import type * as storyPoints from "../storyPoints.js";
 import type * as user from "../user.js";
@@ -36,6 +37,7 @@ declare const fullApi: ApiFromModules<{
   crons: typeof crons;
   presence: typeof presence;
   rooms: typeof rooms;
+  scribble: typeof scribble;
   stories: typeof stories;
   storyPoints: typeof storyPoints;
   user: typeof user;

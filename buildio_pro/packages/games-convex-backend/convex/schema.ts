@@ -48,4 +48,14 @@ export default defineSchema({
     .index("by_story", ["storyId"])
     .index("by_user", ["userId"])
     .index("by_story_and_user", ["storyId", "userId"]),
+
+  scribble_lines: defineTable({
+    roomId: v.id("rooms"),
+    playerId: v.id("users"),
+    tool: v.string(), // "pen" | "eraser"
+    points: v.array(v.number()), // [x1, y1, x2, y2, ...]
+    strokeWidth: v.number(),
+    strokeColor: v.string(),
+    isComplete: v.boolean(), // false while drawing, true when mouse up
+  }).index("by_room", ["roomId"]),
 });

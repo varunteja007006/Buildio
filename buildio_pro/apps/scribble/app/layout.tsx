@@ -1,40 +1,33 @@
 import type { Metadata } from "next";
 
-import { Geist, Geist_Mono } from "next/font/google";
 import { Providers } from "@/components/providers";
+import { Toaster } from "@workspace/ui/components/sonner";
+import { Navbar } from "@/components/navbar";
 
-import "@workspace/ui/globals.css";
-
-const fontSans = Geist({
-  subsets: ["latin"],
-  variable: "--font-sans",
-});
-
-const fontMono = Geist_Mono({
-  subsets: ["latin"],
-  variable: "--font-mono",
-});
+import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Buildio.pro",
-  description: "Build something epic. Buildio.pro",
+	title: "Scribble",
+	description: "Build something epic. Scribble",
 };
 
 export default function RootLayout({
-  children,
+	children,
 }: Readonly<{
-  children: React.ReactNode;
+	children: React.ReactNode;
 }>) {
-  return (
-    <html lang="en" suppressHydrationWarning>
-      <head>
-        <meta name="apple-mobile-web-app-title" content="buildio.pro" />
-      </head>
-      <body
-        className={`${fontSans.variable} ${fontMono.variable} font-sans antialiased `}
-      >
-        <Providers>{children}</Providers>
-      </body>
-    </html>
-  );
+	return (
+		<html lang="en" suppressHydrationWarning>
+			<head>
+				<meta name="apple-mobile-web-app-title" content="Scribble" />
+			</head>
+			<body className="font-sans antialiased">
+				<Providers>
+					<Navbar />
+					<main className="min-h-screen">{children}</main>
+					<Toaster />
+				</Providers>
+			</body>
+		</html>
+	);
 }

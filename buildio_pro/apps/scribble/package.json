@@ -12,14 +12,22 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@convex-dev/presence": "^0.2.1",
+    "@hookform/resolvers": "^5.2.2",
+    "@workspace/games-convex-backend": "workspace:*",
+    "@workspace/theme": "workspace:*",
     "@workspace/ui": "workspace:*",
-    "@workspace/games-convex-backend":"workspace:*",
     "convex": "catalog:",
+    "konva": "^10.0.12",
     "lucide-react": "catalog:",
     "next": "catalog:",
     "next-themes": "catalog:",
     "react": "catalog:react19",
-    "react-dom": "catalog:react19"
+    "react-dom": "catalog:react19",
+    "react-hook-form": "^7.67.0",
+    "react-konva": "^19.2.1",
+    "sonner": "catalog:",
+    "zod": "catalog:"
   },
   "devDependencies": {
     "@types/node": "catalog:",
@@ -27,6 +35,7 @@
     "@types/react-dom": "catalog:react19",
     "@workspace/eslint-config": "workspace:^",
     "@workspace/typescript-config": "workspace:*",
+    "tailwindcss": "catalog:",
     "typescript": "catalog:"
   }
 }
