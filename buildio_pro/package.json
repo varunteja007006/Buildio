@@ -11,13 +11,16 @@
     "dev:expense-tracker": "turbo dev --filter=expense-tracker",
     "dev:poker-planner": "turbo dev --filter=poker-planner",
     "dev:housie-game": "turbo dev --filter=housie-game",
+    "dev:scribble": "turbo dev --filter=scribble",
     "build:web": "turbo build --filter=web",
     "build:poker-planner": "turbo build --filter=poker-planner",
     "build:housie-game": "turbo build --filter=housie-game",
+    "build:scribble": "turbo build --filter=scribble",
     "build:expense-tracker": "turbo build --filter=expense-tracker",
     "start:web": "pnpm --filter=web start",
     "start:poker-planner": "pnpm --filter=poker-planner start",
     "start:housie-game": "pnpm --filter=housie-game start",
+    "start:scribble": "pnpm --filter=scribble start",
     "start:expense-tracker": "pnpm --filter=expense-tracker start"
   },
   "devDependencies": {
