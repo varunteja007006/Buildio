@@ -53,8 +53,8 @@ export default function RoomPage() {
 	}
 
 	return (
-		<div className="w-full flex flex-col gap-4 md:flex-row px-4 py-2 h-[calc(100vh-1rem)]">
-			<div className="flex flex-col flex-1 min-w-0 gap-4 h-full">
+		<div className="w-full flex flex-col gap-4 md:flex-row px-4 py-2 h-[calc(100vh-5rem)]">
+			<div className="flex flex-col min-w-0 gap-4 h-[75%] md:h-full md:flex-1">
 				<RoomHeader />
 
 				<div
@@ -71,7 +71,7 @@ export default function RoomPage() {
 				</div>
 			</div>
 
-			<div className="w-full md:w-80 h-full">
+			<div className="w-full md:w-80 flex-1 md:flex-none md:h-full min-h-0">
 				<Participants />
 			</div>
 		</div>
