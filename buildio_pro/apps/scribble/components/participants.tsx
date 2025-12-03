@@ -6,12 +6,18 @@ import usePresence from "@convex-dev/presence/react";
 import { useParams } from "next/navigation";
 import { ParticipantCard } from "@/components/participant-card";
 import { useUserStore } from "@/lib/store/user.store";
+import { useQuery } from "convex/react";
 
 export function Participants() {
   const params = useParams();
   const roomCode = params?.roomCode ?? "unknown-room";
 
-  const { user } = useUserStore();
+  const { user, userToken } = useUserStore();
+
+  const roomDetails = useQuery(api.rooms.getRoomDetails, {
+    userToken,
+    roomCode: roomCode as string,
+  });
 
   const presenceState = usePresence(
     api.presence,
@@ -32,6 +38,7 @@ export function Participants() {
           online={participant.online}
           lastDisconnected={participant.lastDisconnected}
           emojiId={participant.userId}
+          isOwner={roomDetails?.room?.ownerId === participant.userId}
         />
       ))}
       {presenceState.length === 0 && (

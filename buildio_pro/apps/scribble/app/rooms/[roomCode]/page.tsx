@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { useUserStore } from "@/lib/store/user.store";
 import { RoomHeader } from "@/components/room-header";
 import { Participants } from "@/components/participants";
+import { ChatBox } from "@/components/chat-box";
 import dynamic from "next/dynamic";
 
 const Canvas = dynamic(
@@ -71,8 +72,13 @@ export default function RoomPage() {
 				</div>
 			</div>
 
-			<div className="w-full md:w-80 flex-1 md:flex-none md:h-full min-h-0">
-				<Participants />
+			<div className="w-full md:w-80 flex-1 md:flex-none md:h-full min-h-0 flex flex-col gap-4">
+				<div className="flex-shrink-0 max-h-[40%] overflow-y-auto">
+					<Participants />
+				</div>
+				<div className="flex-1 min-h-0">
+					<ChatBox />
+				</div>
 			</div>
 		</div>
 	);

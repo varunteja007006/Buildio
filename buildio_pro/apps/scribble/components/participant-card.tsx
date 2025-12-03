@@ -1,24 +1,32 @@
 import { getEmojiForUserId } from "@/lib/utils";
+import { Crown } from "lucide-react";
 
 export function ParticipantCard({
   name,
   online,
   lastDisconnected,
   emojiId,
+  isOwner,
 }: Readonly<{
   name: string;
   online: boolean;
   lastDisconnected?: number;
   emojiId: string;
+  isOwner?: boolean;
 }>) {
   return (
     <div className="border-primary/25 flex w-full flex-row items-center justify-between gap-2 overflow-hidden rounded-md border bg-white p-2 pr-4 pl-2 shadow dark:bg-secondary">
       <div className="flex flex-row items-center gap-2">
         <div className="text-2xl">{getEmojiForUserId(emojiId)}</div>
         <div className="flex flex-col items-start">
-          <p className="truncate overflow-hidden text-sm text-ellipsis capitalize text-primary font-semibold">
-            {name}
-          </p>
+          <div className="flex items-center gap-1">
+            <p className="truncate overflow-hidden text-sm text-ellipsis capitalize text-primary font-semibold">
+              {name}
+            </p>
+            {isOwner && (
+              <Crown className="h-3 w-3 text-yellow-500 fill-yellow-500" />
+            )}
+          </div>
 
           {online ? (
             <p className="text-xs text-green-600 font-semibold">{`Online`}</p>
