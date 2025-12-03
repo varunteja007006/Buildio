@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useUserStore } from "@/lib/store/user.store";
 import { RoomHeader } from "@/components/room-header";
 import { Participants } from "@/components/participants";
@@ -20,24 +20,29 @@ const Canvas = dynamic(
 
 export default function RoomPage() {
 	const { user } = useUserStore();
-	const containerRef = useRef<HTMLDivElement>(null);
+	const [container, setContainer] = useState<HTMLDivElement | null>(null);
 	const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
 
 	useEffect(() => {
+		if (!container) return;
+
 		const updateDimensions = () => {
-			if (containerRef.current) {
-				setDimensions({
-					width: containerRef.current.offsetWidth,
-					height: containerRef.current.offsetHeight,
-				});
-			}
+			setDimensions({
+				width: container.offsetWidth,
+				height: container.offsetHeight,
+			});
 		};
 
 		updateDimensions();
-		window.addEventListener("resize", updateDimensions);
 
-		return () => window.removeEventListener("resize", updateDimensions);
-	}, []);
+		const resizeObserver = new ResizeObserver(() => {
+			updateDimensions();
+		});
+
+		resizeObserver.observe(container);
+
+		return () => resizeObserver.disconnect();
+	}, [container]);
 
 	if (!user?.id) {
 		return (
@@ -49,11 +54,11 @@ export default function RoomPage() {
 
 	return (
 		<div className="w-full flex flex-col gap-4 md:flex-row px-4 py-2 h-[calc(100vh-1rem)]">
-			<div className="flex flex-col w-full gap-4 h-full">
+			<div className="flex flex-col flex-1 min-w-0 gap-4 h-full">
 				<RoomHeader />
 
 				<div
-					ref={containerRef}
+					ref={setContainer}
 					className="flex-1 w-full bg-muted/20 rounded-md border overflow-hidden relative"
 				>
 					{dimensions.width > 0 && dimensions.height > 0 ? (
