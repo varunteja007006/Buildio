@@ -49,6 +49,14 @@ export default defineSchema({
     .index("by_user", ["userId"])
     .index("by_story_and_user", ["storyId", "userId"]),
 
+  chats: defineTable({
+    roomId: v.id("rooms"),
+    userId: v.id("users"),
+    message: v.string(),
+    isGuess: v.optional(v.boolean()),
+    created_at: v.number(),
+  }).index("by_room", ["roomId"]),
+
   scribble_lines: defineTable({
     roomId: v.id("rooms"),
     playerId: v.id("users"),
