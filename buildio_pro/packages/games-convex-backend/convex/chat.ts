@@ -49,10 +49,14 @@ export const sendMessage = mutation({
 
     if (!room) throw new Error("Room not found");
 
+    // TODO: Get current word and check if message matches
+    const isGuess = false;
+
     await ctx.db.insert("chats", {
       roomId: room._id,
       userId: user.id,
-      message: args.message,
+      message: isGuess ? "Guessed the word!✅" : args.message,
+      isGuess,
       created_at: Date.now(),
     });
   },

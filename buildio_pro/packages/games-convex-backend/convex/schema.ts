@@ -53,6 +53,7 @@ export default defineSchema({
     roomId: v.id("rooms"),
     userId: v.id("users"),
     message: v.string(),
+    isGuess: v.optional(v.boolean()),
     created_at: v.number(),
   }).index("by_room", ["roomId"]),
 

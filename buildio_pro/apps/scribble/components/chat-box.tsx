@@ -52,6 +52,8 @@ export function ChatBox({ roomCode }: ChatBoxProps) {
 					<div className="flex flex-col gap-2">
 						{messages?.map((msg) => {
 							const isMe = msg.userId === user?.id;
+							const isGuess = msg.isGuess;
+
 							return (
 								<div
 									key={msg._id}
@@ -63,12 +65,14 @@ export function ChatBox({ roomCode }: ChatBoxProps) {
 									<div
 										className={cn(
 											"px-3 py-1.5 rounded-lg text-sm",
-											isMe
+											isGuess
+												? "bg-green-500 text-white font-bold"
+												: isMe
 												? "bg-primary text-primary-foreground rounded-br-none"
 												: "bg-muted text-foreground rounded-bl-none"
 										)}
 									>
-										{!isMe && (
+										{!isMe && !isGuess && (
 											<span className="block text-[10px] font-bold opacity-70 mb-0.5">
 												{msg.sender}
 											</span>
