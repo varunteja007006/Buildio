@@ -1,7 +1,11 @@
 import { z } from "zod/v4";
+
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../init";
 
+import { budgetRouter } from "./budget.router";
+
 export const appRouter = createTRPCRouter({
+  budget: budgetRouter,
   hello: publicProcedure.query(async () => {
     return {
       message: "hello world",

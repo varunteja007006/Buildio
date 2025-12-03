@@ -1,5 +1,5 @@
 {
-  "name": "web",
+  "name": "scribble",
   "version": "0.0.1",
   "type": "module",
   "private": true,
@@ -13,6 +13,8 @@
   },
   "dependencies": {
     "@workspace/ui": "workspace:*",
+    "@workspace/games-convex-backend":"workspace:*",
+    "convex": "catalog:",
     "lucide-react": "catalog:",
     "next": "catalog:",
     "next-themes": "catalog:",
