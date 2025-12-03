@@ -2,12 +2,13 @@ import type { Metadata } from "next";
 
 import { Providers } from "@/components/providers";
 import { Toaster } from "@workspace/ui/components/sonner";
+import { Navbar } from "@/components/navbar";
 
 import "./globals.css";
 
 export const metadata: Metadata = {
-	title: "Buildio.pro",
-	description: "Build something epic. Buildio.pro",
+	title: "Scribble",
+	description: "Build something epic. Scribble",
 };
 
 export default function RootLayout({
@@ -18,11 +19,12 @@ export default function RootLayout({
 	return (
 		<html lang="en" suppressHydrationWarning>
 			<head>
-				<meta name="apple-mobile-web-app-title" content="buildio.pro" />
+				<meta name="apple-mobile-web-app-title" content="Scribble" />
 			</head>
 			<body className="font-sans antialiased">
 				<Providers>
-					{children}
+					<Navbar />
+					<main className="min-h-screen">{children}</main>
 					<Toaster />
 				</Providers>
 			</body>
