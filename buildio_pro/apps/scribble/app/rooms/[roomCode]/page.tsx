@@ -6,6 +6,7 @@ import { RoomHeader } from "@/components/room-header";
 import { Participants } from "@/components/participants";
 import { ChatBox } from "@/components/chat-box";
 import dynamic from "next/dynamic";
+import { useParams } from "next/navigation";
 
 const Canvas = dynamic(
 	() => import("@/components/canvas").then((mod) => mod.Canvas),
@@ -21,6 +22,8 @@ const Canvas = dynamic(
 
 export default function RoomPage() {
 	const { user } = useUserStore();
+	const params = useParams();
+	const roomCode = params.roomCode as string;
 	const [container, setContainer] = useState<HTMLDivElement | null>(null);
 	const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
 
@@ -55,7 +58,7 @@ export default function RoomPage() {
 
 	return (
 		<div className="w-full flex flex-col gap-4 md:flex-row px-4 py-2 h-[calc(100vh-5rem)]">
-			<div className="flex flex-col min-w-0 gap-4 h-[75%] md:h-full md:flex-1">
+			<div className="flex flex-col min-w-0 gap-4 h-[50%] md:h-full md:flex-1">
 				<RoomHeader />
 
 				<div
@@ -73,11 +76,11 @@ export default function RoomPage() {
 			</div>
 
 			<div className="w-full md:w-80 flex-1 md:flex-none md:h-full min-h-0 flex flex-col gap-4">
-				<div className="flex-shrink-0 max-h-[40%] overflow-y-auto">
+				<div className="flex-shrink-0 max-h-[30%] overflow-y-auto">
 					<Participants />
 				</div>
 				<div className="flex-1 min-h-0">
-					<ChatBox />
+					<ChatBox roomCode={roomCode} />
 				</div>
 			</div>
 		</div>

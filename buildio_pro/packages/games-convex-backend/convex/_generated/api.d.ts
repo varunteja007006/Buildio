@@ -8,6 +8,7 @@
  * @module
  */
 
+import type * as chat from "../chat.js";
 import type * as cleanup from "../cleanup.js";
 import type * as crons from "../crons.js";
 import type * as presence from "../presence.js";
@@ -33,6 +34,7 @@ import type {
  * ```
  */
 declare const fullApi: ApiFromModules<{
+  chat: typeof chat;
   cleanup: typeof cleanup;
   crons: typeof crons;
   presence: typeof presence;
