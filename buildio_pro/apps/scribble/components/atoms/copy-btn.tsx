@@ -2,9 +2,9 @@
 
 import { Button } from "@workspace/ui/components/button";
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
+	Tooltip,
+	TooltipContent,
+	TooltipTrigger,
 } from "@workspace/ui/components/tooltip";
 
 import { toast } from "sonner";
@@ -12,41 +12,42 @@ import { toast } from "sonner";
 import { Copy } from "lucide-react";
 
 type CopyBtnProps = {
-  text: string;
-  children?: React.ReactNode;
-  tooltipText?: string;
-} & React.ComponentProps<"button">;
+	text: string;
+	tooltipText?: string;
+} & React.ComponentProps<typeof Button>;
 
 export function CopyBtn({
-  text,
-  tooltipText,
-  children,
-  ...props
+	text,
+	tooltipText,
+	children,
+	variant,
+	...props
 }: Readonly<CopyBtnProps>) {
-  const handleCopyRoomCode = () => {
-    try {
-      navigator.clipboard.writeText(text);
-      toast.success("Copied to clipboard");
-    } catch (error) {
-      toast.error("Failed to copy");
-      console.error("Failed to copy: ", error);
-    }
-  };
+	const handleCopyRoomCode = () => {
+		try {
+			navigator.clipboard.writeText(text);
+			toast.success("Copied to clipboard");
+		} catch (error) {
+			toast.error("Failed to copy");
+			console.error("Failed to copy: ", error);
+		}
+	};
 
-  return (
-    <Tooltip>
-      <TooltipTrigger asChild>
-        <Button
-          onClick={handleCopyRoomCode}
-          className="cursor-pointer"
-          {...props}
-        >
-          {children ?? <Copy />}
-        </Button>
-      </TooltipTrigger>
-      <TooltipContent>
-        <p>{tooltipText ?? "Click to copy"}</p>
-      </TooltipContent>
-    </Tooltip>
-  );
+	return (
+		<Tooltip>
+			<TooltipTrigger asChild>
+				<Button
+					onClick={handleCopyRoomCode}
+					className="cursor-pointer"
+					variant={variant}
+					{...props}
+				>
+					{children ?? <Copy />}
+				</Button>
+			</TooltipTrigger>
+			<TooltipContent>
+				<p>{tooltipText ?? "Click to copy"}</p>
+			</TooltipContent>
+		</Tooltip>
+	);
 }
