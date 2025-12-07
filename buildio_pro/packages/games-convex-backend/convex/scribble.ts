@@ -113,3 +113,108 @@ export const clearCanvas = mutation({
     }
   },
 });
+
+// Get game settings for a room
+export const getGameSettings = query({
+  args: { roomCode: v.string() },
+  handler: async (ctx, args) => {
+    const settings = await ctx.db
+      .query("scribble_games")
+      .withIndex("by_room_code", (q) => q.eq("room_code", args.roomCode))
+      .unique();
+
+    return settings || null;
+  },
+});
+
+// Initialize default game settings for a room (called on room join by owner)
+export const initializeGameSettings = mutation({
+  args: {
+    roomCode: v.string(),
+    userToken: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const user = await getUserFromToken(ctx, args.userToken);
+    if (!user.success || !user.id) throw new Error("User not found");
+
+    const room = await ctx.db
+      .query("rooms")
+      .withIndex("by_room_code", (q) => q.eq("room_code", args.roomCode))
+      .unique();
+
+    if (!room) throw new Error("Room not found");
+
+    // Only owner can initialize settings
+    if (room.ownerId !== user.id) return null;
+
+    // Check if settings already exist
+    const existingSettings = await ctx.db
+      .query("scribble_games")
+      .withIndex("by_room_code", (q) => q.eq("room_code", args.roomCode))
+      .unique();
+
+    if (existingSettings) return existingSettings._id;
+
+    // Create default settings
+    const defaultWords = [
+      "cat", "dog", "house", "tree", "sun", "car", "book", "phone",
+      "computer", "flower", "bird", "fish", "mountain", "ocean", "star"
+    ];
+
+    const settingsId = await ctx.db.insert("scribble_games", {
+      room_code: args.roomCode,
+      rounds: 5,
+      timer: 60,
+      list_of_words: defaultWords,
+      word_filters: [],
+      score: {},
+      created_at: Date.now(),
+    });
+
+    return settingsId;
+  },
+});
+
+// Update game settings (only modifies existing settings)
+export const updateGameSettings = mutation({
+  args: {
+    roomCode: v.string(),
+    userToken: v.string(),
+    rounds: v.number(),
+    timer: v.number(),
+    list_of_words: v.array(v.string()),
+    word_filters: v.optional(v.array(v.string())),
+  },
+  handler: async (ctx, args) => {
+    const user = await getUserFromToken(ctx, args.userToken);
+    if (!user.success || !user.id) throw new Error("User not found");
+
+    const room = await ctx.db
+      .query("rooms")
+      .withIndex("by_room_code", (q) => q.eq("room_code", args.roomCode))
+      .unique();
+
+    if (!room) throw new Error("Room not found");
+
+    // Only owner can modify settings
+    if (room.ownerId !== user.id) {
+      throw new Error("Only room owner can modify game settings");
+    }
+
+    const existingSettings = await ctx.db
+      .query("scribble_games")
+      .withIndex("by_room_code", (q) => q.eq("room_code", args.roomCode))
+      .unique();
+
+    if (!existingSettings) throw new Error("Game settings not found");
+
+    await ctx.db.patch(existingSettings._id, {
+      rounds: args.rounds,
+      timer: args.timer,
+      list_of_words: args.list_of_words,
+      word_filters: args.word_filters,
+    });
+
+    return existingSettings._id;
+  },
+});

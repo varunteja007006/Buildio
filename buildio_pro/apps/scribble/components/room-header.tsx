@@ -13,6 +13,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@workspace/ui/components/tooltip";
+import { GameSettingsDialog } from "@/components/game-settings-dialog";
 
 export function RoomHeader() {
   const params = useParams();
@@ -41,11 +42,13 @@ export function RoomHeader() {
               Start Game
             </Button>
             <Tooltip>
-              <TooltipTrigger asChild>
-                <Button variant="outline" size="icon">
-                  <Settings className="h-4 w-4" />
-                </Button>
-              </TooltipTrigger>
+              <GameSettingsDialog roomCode={roomCode as string}>
+                <TooltipTrigger asChild>
+                  <Button variant="outline" size="icon">
+                    <Settings className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+              </GameSettingsDialog>
               <TooltipContent>
                 <p>Game Settings</p>
               </TooltipContent>

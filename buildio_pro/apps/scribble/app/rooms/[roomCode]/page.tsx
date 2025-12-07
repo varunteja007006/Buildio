@@ -7,6 +7,8 @@ import { Participants } from "@/components/participants";
 import { ChatBox } from "@/components/chat-box";
 import dynamic from "next/dynamic";
 import { useParams } from "next/navigation";
+import { useMutation, useQuery } from "convex/react";
+import { api } from "@workspace/games-convex-backend/convex/_generated/api";
 
 const Canvas = dynamic(
 	() => import("@/components/canvas").then((mod) => mod.Canvas),
@@ -21,11 +23,26 @@ const Canvas = dynamic(
 );
 
 export default function RoomPage() {
-	const { user } = useUserStore();
+	const { user, userToken } = useUserStore();
 	const params = useParams();
 	const roomCode = params.roomCode as string;
 	const [container, setContainer] = useState<HTMLDivElement | null>(null);
 	const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
+
+	const roomDetails = useQuery(api.rooms.getRoomDetails, {
+		userToken,
+		roomCode,
+	});
+	const initializeSettings = useMutation(api.scribble.initializeGameSettings);
+
+	const isOwner = roomDetails?.room?.ownerId === user?.id;
+
+	// Initialize default game settings when owner joins
+	useEffect(() => {
+		if (isOwner && userToken && roomCode) {
+			initializeSettings({ roomCode, userToken }).catch(console.error);
+		}
+	}, [isOwner, userToken, roomCode]);
 
 	useEffect(() => {
 		if (!container) return;

@@ -66,4 +66,14 @@ export default defineSchema({
     strokeColor: v.string(),
     isComplete: v.boolean(), // false while drawing, true when mouse up
   }).index("by_room", ["roomId"]),
+
+  scribble_games: defineTable({
+    room_code: v.string(),
+    rounds: v.number(),
+    timer: v.number(), // seconds per turn
+    list_of_words: v.array(v.string()),
+    word_filters: v.optional(v.array(v.string())),
+    score: v.record(v.string(), v.number()), // userId -> score
+    created_at: v.number(),
+  }).index("by_room_code", ["room_code"]),
 });
