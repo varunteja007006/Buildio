@@ -1,0 +1,7 @@
+[build]
+builder = "RAILPACK"
+buildCommand = "cd packages/games-convex-backend && npx convex deploy && cd ../../ && pnpm build:scribble"
+
+[deploy]
+startCommand = "pnpm start:scribble"
+restartPolicyType = "never"

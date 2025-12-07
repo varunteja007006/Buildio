@@ -154,21 +154,21 @@ export function Canvas({ width = 800, height = 600 }: CanvasProps) {
           <span className="size-5 bg-black"></span>
         </Button>
         <Button variant="outline" size={"sm"} onClick={() => setEraserWidth(8)}>
-          <span className="size-4 bg-white border border-slate-400"></span>
+          <span className="size-2 bg-white border border-slate-400"></span>
         </Button>
         <Button
           variant="outline"
           size={"sm"}
           onClick={() => setEraserWidth(14)}
         >
-          <span className="size-6 bg-white border border-slate-400"></span>
+          <span className="size-4 bg-white border border-slate-400"></span>
         </Button>
         <Button
           variant="outline"
           size={"sm"}
           onClick={() => setEraserWidth(20)}
         >
-          <span className="size-8 bg-white border border-slate-400"></span>
+          <span className="size-6 bg-white border border-slate-400"></span>
         </Button>
         {colors.map((color) => (
           <React.Fragment key={color.value}>
