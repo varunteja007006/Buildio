@@ -5,6 +5,11 @@ import { Stage, Layer, Line } from "react-konva";
 import { KonvaEventObject } from "konva/lib/Node";
 import { Button } from "@workspace/ui/components/button";
 import { ButtonGroup } from "@workspace/ui/components/button-group";
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipTrigger,
+} from "@workspace/ui/components/tooltip";
 
 interface CanvasProps {
 	width?: number;
@@ -108,24 +113,38 @@ export function Canvas({ width = 800, height = 600 }: CanvasProps) {
 				<Button variant="outline" size={"sm"} onClick={() => setEraserWidth(8)}>
 					<span className="size-4 bg-white border border-slate-400"></span>
 				</Button>
-				<Button variant="outline" size={"sm"} onClick={() => setEraserWidth(14)}>
+				<Button
+					variant="outline"
+					size={"sm"}
+					onClick={() => setEraserWidth(14)}
+				>
 					<span className="size-6 bg-white border border-slate-400"></span>
 				</Button>
-				<Button variant="outline" size={"sm"} onClick={() => setEraserWidth(20)}>
+				<Button
+					variant="outline"
+					size={"sm"}
+					onClick={() => setEraserWidth(20)}
+				>
 					<span className="size-8 bg-white border border-slate-400"></span>
 				</Button>
 				{colors.map((color) => (
-					<Button
-						key={color.value}
-						variant="outline"
-						size={"sm"}
-						onClick={() => setStrokeColor(color.value)}
-					>
-						<span
-							className="size-4 rounded-full border border-slate-300"
-							style={{ backgroundColor: color.value }}
-						></span>
-					</Button>
+					<React.Fragment key={color.value}>
+						<Tooltip>
+							<TooltipTrigger asChild>
+								<Button
+									variant="outline"
+									size={"sm"}
+									onClick={() => setStrokeColor(color.value)}
+								>
+									<span
+										className="size-4 rounded-full border border-slate-300"
+										style={{ backgroundColor: color.value }}
+									></span>
+								</Button>
+							</TooltipTrigger>
+							<TooltipContent>{color.label}</TooltipContent>
+						</Tooltip>
+					</React.Fragment>
 				))}
 			</ButtonGroup>
 			<Stage
