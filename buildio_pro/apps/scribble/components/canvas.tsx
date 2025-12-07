@@ -10,6 +10,10 @@ import {
 	TooltipContent,
 	TooltipTrigger,
 } from "@workspace/ui/components/tooltip";
+import { useMutation, useQuery } from "convex/react";
+import { api } from "@workspace/games-convex-backend/convex/_generated/api";
+import { useParams } from "next/navigation";
+import { useUserStore } from "@/lib/store/user.store";
 
 interface CanvasProps {
 	width?: number;
@@ -24,7 +28,28 @@ interface LineData {
 	strokeColor: string;
 }
 
+const colors = [
+	{ label: "Red", value: "#ef4444" },
+	{ label: "Orange", value: "#f97316" },
+	{ label: "Yellow", value: "#eab308" },
+	{ label: "Green", value: "#22c55e" },
+	{ label: "Blue", value: "#3b82f6" },
+	{ label: "Black", value: "#000000" },
+	{ label: "White", value: "#ffffff" },
+];
+
 export function Canvas({ width = 800, height = 600 }: CanvasProps) {
+	const params = useParams();
+	const roomCode = params.roomCode as string;
+	const linesFromQuery = useQuery(api.scribble.getLines, {
+		roomCode,
+	});
+
+	const { userToken, user } = useUserStore();
+
+	const isDrawer = linesFromQuery?.[0]?.playerId === user?.id;
+
+	const createLineStrokes = useMutation(api.scribble.createLineStrokes);
 	const [tool, setTool] = useState("pen");
 	const [lines, setLines] = useState<LineData[]>([]);
 	const isDrawing = useRef(false);
@@ -32,15 +57,24 @@ export function Canvas({ width = 800, height = 600 }: CanvasProps) {
 	const [eraserWidth, setEraserWidth] = useState(12);
 	const [strokeColor, setStrokeColor] = useState("#000000");
 
-	const colors = [
-		{ label: "Red", value: "#ef4444" },
-		{ label: "Orange", value: "#f97316" },
-		{ label: "Yellow", value: "#eab308" },
-		{ label: "Green", value: "#22c55e" },
-		{ label: "Blue", value: "#3b82f6" },
-		{ label: "Black", value: "#000000" },
-		{ label: "White", value: "#ffffff" },
-	];
+	const sendCreateLineStrokes = async ({
+		tool,
+		lines,
+		isComplete = false,
+	}: {
+		tool: string;
+		lines: LineData[];
+		isComplete?: boolean;
+	}) => {
+		const res = await createLineStrokes({
+			roomCode,
+			userToken,
+			tool,
+			lines,
+			isComplete,
+		});
+		console.log(res);
+	};
 
 	const handleMouseDown = (e: KonvaEventObject<any>) => {
 		isDrawing.current = true;
@@ -48,16 +82,22 @@ export function Canvas({ width = 800, height = 600 }: CanvasProps) {
 		if (!pos) return;
 
 		const widthForTool = tool === "eraser" ? eraserWidth : strokeWidth;
-		setLines([
-			...lines,
-			{
-				id: Date.now().toString(),
-				tool,
-				strokeWidth: widthForTool,
-				strokeColor,
-				points: [pos.x, pos.y],
-			},
-		]);
+
+		setLines((prev) => {
+			const newLines = [
+				...prev,
+				{
+					id: Date.now().toString(),
+					tool,
+					strokeWidth: widthForTool,
+					strokeColor,
+					points: [pos.x, pos.y],
+				},
+			];
+
+			sendCreateLineStrokes({ tool, lines: newLines, isComplete: false });
+			return newLines;
+		});
 	};
 
 	const handleMouseMove = (e: KonvaEventObject<any>) => {
@@ -78,6 +118,7 @@ export function Canvas({ width = 800, height = 600 }: CanvasProps) {
 
 		// replace last
 		const newLines = lines.slice(0, -1).concat(newLastLine);
+		sendCreateLineStrokes({ tool, lines: newLines, isComplete: false });
 		setLines(newLines);
 	};
 
@@ -157,22 +198,48 @@ export function Canvas({ width = 800, height = 600 }: CanvasProps) {
 				onTouchMove={handleMouseMove}
 				onTouchEnd={handleMouseUp}
 			>
-				<Layer>
-					{lines.map((line) => (
-						<Line
-							key={line.id}
-							points={line.points}
-							stroke={line.strokeColor}
-							strokeWidth={line.strokeWidth}
-							tension={0.5}
-							lineCap="round"
-							lineJoin="round"
-							globalCompositeOperation={
-								line.tool === "eraser" ? "destination-out" : "source-over"
-							}
-						/>
-					))}
-				</Layer>
+				{isDrawer ? (
+					<Layer>
+						{lines.map((line) => (
+							<Line
+								key={line.id}
+								points={line.points}
+								stroke={line.strokeColor}
+								strokeWidth={line.strokeWidth}
+								tension={0.5}
+								lineCap="round"
+								lineJoin="round"
+								globalCompositeOperation={
+									line.tool === "eraser" ? "destination-out" : "source-over"
+								}
+							/>
+						))}
+					</Layer>
+				) : (
+					<Layer>
+						{linesFromQuery?.[0]?.lines &&
+							linesFromQuery?.[0]?.lines.map((line) => {
+								console.log("Line", line);
+								return (
+									<React.Fragment key={line.id}>
+										<Line
+											points={line.points}
+											stroke={line.strokeColor}
+											strokeWidth={line.strokeWidth}
+											tension={0.5}
+											lineCap="round"
+											lineJoin="round"
+											globalCompositeOperation={
+												line.tool === "eraser"
+													? "destination-out"
+													: "source-over"
+											}
+										/>
+									</React.Fragment>
+								);
+							})}
+					</Layer>
+				)}
 			</Stage>
 		</div>
 	);
