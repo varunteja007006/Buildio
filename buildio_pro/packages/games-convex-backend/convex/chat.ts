@@ -25,7 +25,7 @@ export const getMessages = query({
           ...msg,
           sender: user?.username || "Unknown",
         };
-      })
+      }),
     );
 
     return messagesWithUser;
