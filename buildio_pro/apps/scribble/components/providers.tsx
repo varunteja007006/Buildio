@@ -6,17 +6,17 @@ import { ConvexClientProvider } from "./convex-provider";
 import { UserStoreProvider } from "@/lib/store/user.store";
 
 export function Providers({ children }: { children: React.ReactNode }) {
-	return (
-		<NextThemesProvider
-			attribute="class"
-			defaultTheme="system"
-			enableSystem
-			disableTransitionOnChange
-			enableColorScheme
-		>
-			<ConvexClientProvider>
-				<UserStoreProvider>{children}</UserStoreProvider>
-			</ConvexClientProvider>
-		</NextThemesProvider>
-	);
+  return (
+    <NextThemesProvider
+      attribute="class"
+      defaultTheme="system"
+      enableSystem
+      disableTransitionOnChange
+      enableColorScheme
+    >
+      <ConvexClientProvider>
+        <UserStoreProvider>{children}</UserStoreProvider>
+      </ConvexClientProvider>
+    </NextThemesProvider>
+  );
 }

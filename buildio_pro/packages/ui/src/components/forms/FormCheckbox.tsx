@@ -1,10 +1,13 @@
-import { useFieldContext } from "@workspace/ui/components/forms/hooks"
-import { FormBase, FormControlProps } from "@workspace/ui/components/forms/FormBase"
-import { Checkbox } from "@workspace/ui/components/checkbox"
+import { useFieldContext } from "@workspace/ui/components/forms/hooks";
+import {
+  FormBase,
+  FormControlProps,
+} from "@workspace/ui/components/forms/FormBase";
+import { Checkbox } from "@workspace/ui/components/checkbox";
 
 export function FormCheckbox(props: Readonly<FormControlProps>) {
-  const field = useFieldContext<boolean>()
-  const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid
+  const field = useFieldContext<boolean>();
+  const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid;
 
   return (
     <FormBase {...props} controlFirst horizontal>
@@ -13,9 +16,9 @@ export function FormCheckbox(props: Readonly<FormControlProps>) {
         name={field.name}
         checked={field.state.value}
         onBlur={field.handleBlur}
-        onCheckedChange={e => field.handleChange(e === true)}
+        onCheckedChange={(e) => field.handleChange(e === true)}
         aria-invalid={isInvalid}
       />
     </FormBase>
-  )
+  );
 }

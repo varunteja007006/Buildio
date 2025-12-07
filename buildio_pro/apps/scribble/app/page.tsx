@@ -8,42 +8,42 @@ import { Button } from "@workspace/ui/components/button";
 import Link from "next/link";
 
 export default function Page() {
-	const { userToken } = useUserStore();
-	const router = useRouter();
+  const { userToken } = useUserStore();
+  const router = useRouter();
 
-	useEffect(() => {
-		if (userToken) {
-			router.push("/rooms");
-		}
-	}, [userToken, router]);
+  useEffect(() => {
+    if (userToken) {
+      router.push("/rooms");
+    }
+  }, [userToken, router]);
 
-	return (
-		<div className="min-h-screen flex flex-col">
-			{/* Hero */}
-			<main className="flex-1 flex flex-col justify-center items-center text-center px-4">
-				<div className="grid grid-cols-1 gap-5 lg:grid-cols-2 place-items-center h-[500px]">
-					<div className="p-5">
-						<h1 className="text-primary text-5xl">Welcome to Scribble</h1>
-						{userToken && (
-							<div className="mt-4">
-								<Button asChild>
-									<Link href="/rooms">Go to Rooms</Link>
-								</Button>
-							</div>
-						)}
-					</div>
-					<div className="p-5">
-						{!userToken && (
-							<UserRegistration onSuccess={() => router.push("/rooms")} />
-						)}
-					</div>
-				</div>
-			</main>
+  return (
+    <div className="min-h-screen flex flex-col">
+      {/* Hero */}
+      <main className="flex-1 flex flex-col justify-center items-center text-center px-4">
+        <div className="grid grid-cols-1 gap-5 lg:grid-cols-2 place-items-center h-[500px]">
+          <div className="p-5">
+            <h1 className="text-primary text-5xl">Welcome to Scribble</h1>
+            {userToken && (
+              <div className="mt-4">
+                <Button asChild>
+                  <Link href="/rooms">Go to Rooms</Link>
+                </Button>
+              </div>
+            )}
+          </div>
+          <div className="p-5">
+            {!userToken && (
+              <UserRegistration onSuccess={() => router.push("/rooms")} />
+            )}
+          </div>
+        </div>
+      </main>
 
-			{/* Footer */}
-			<footer className="text-center mt-10 text-gray-500 p-4 text-sm border-t border-gray-800">
-				© {new Date().getFullYear()} Buildio.pro — Crafted with ❤️
-			</footer>
-		</div>
-	);
+      {/* Footer */}
+      <footer className="text-center mt-10 text-gray-500 p-4 text-sm border-t border-gray-800">
+        © {new Date().getFullYear()} Buildio.pro — Crafted with ❤️
+      </footer>
+    </div>
+  );
 }
