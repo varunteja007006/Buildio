@@ -1,6 +1,6 @@
 [build]
 builder = "RAILPACK"
-buildCommand = "cd packages/games-convex-backend && npx convex deploy && cd ../../ && pnpm build:housie-game"
+buildCommand = "pnpm build:housie-game"
 
 [deploy]
 startCommand = "pnpm start:housie-game"
