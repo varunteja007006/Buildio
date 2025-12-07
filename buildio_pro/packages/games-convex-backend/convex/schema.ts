@@ -76,4 +76,20 @@ export default defineSchema({
     score: v.record(v.string(), v.number()), // userId -> score
     created_at: v.number(),
   }).index("by_room_code", ["room_code"]),
+
+  scribble_game_state: defineTable({
+    room_code: v.string(),
+    status: v.union(
+      v.literal("waiting"),
+      v.literal("playing"),
+      v.literal("finished")
+    ),
+    currentTurn: v.number(), // 1 to totalTurns
+    totalTurns: v.number(), // rounds × number of users
+    currentWord: v.string(), // Current word to draw
+    turnStartTime: v.number(), // Timestamp when current turn started
+    turnDuration: v.number(), // Seconds per turn (from settings.timer)
+    created_at: v.number(),
+    updated_at: v.number(),
+  }).index("by_room_code", ["room_code"]),
 });
