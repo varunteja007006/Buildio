@@ -24,7 +24,7 @@ export default function RootLayout({
 			<body className="font-sans antialiased">
 				<Providers>
 					<Navbar />
-					<main className="min-h-screen">{children}</main>
+					<main className="min-h-[(calc(100vh-20rem))]">{children}</main>
 					<Toaster />
 				</Providers>
 			</body>
