@@ -22,7 +22,7 @@ export const getLines = query({
 	},
 });
 
-// Clear the canvas
+// Save the line strokes drawn by a player
 export const createLineStrokes = mutation({
 	args: {
 		roomCode: v.string(),

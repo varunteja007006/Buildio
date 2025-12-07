@@ -109,21 +109,23 @@ export function Canvas({ width = 800, height = 600 }: CanvasProps) {
 		const point = stage?.getPointerPosition();
 		if (!point) return;
 
-		const lastLine = lines.at(-1);
-		if (!lastLine) return;
+		setLines((lines) => {
+			const lastLine = lines.at(-1);
+			if (!lastLine) return lines;
 
-		// add point
-		const newPoints = lastLine.points.concat([point.x, point.y]);
-		const newLastLine = { ...lastLine, points: newPoints };
+			// add point
+			const newPoints = lastLine.points.concat([point.x, point.y]);
+			const newLastLine = { ...lastLine, points: newPoints };
 
-		// replace last
-		const newLines = lines.slice(0, -1).concat(newLastLine);
-		sendCreateLineStrokes({ tool, lines: newLines, isComplete: false });
-		setLines(newLines);
+			// replace last
+			const newLines = lines.slice(0, -1).concat(newLastLine);
+			return newLines;
+		});
 	};
 
 	const handleMouseUp = () => {
 		isDrawing.current = false;
+		sendCreateLineStrokes({ tool, lines, isComplete: false });
 	};
 
 	return (
@@ -192,8 +194,8 @@ export function Canvas({ width = 800, height = 600 }: CanvasProps) {
 				width={width}
 				height={height}
 				onMouseDown={handleMouseDown}
-				onMousemove={handleMouseMove}
-				onMouseup={handleMouseUp}
+				onMouseMove={handleMouseMove}
+				onMouseUp={handleMouseUp}
 				onTouchStart={handleMouseDown}
 				onTouchMove={handleMouseMove}
 				onTouchEnd={handleMouseUp}
@@ -219,7 +221,6 @@ export function Canvas({ width = 800, height = 600 }: CanvasProps) {
 					<Layer>
 						{linesFromQuery?.[0]?.lines &&
 							linesFromQuery?.[0]?.lines.map((line) => {
-								console.log("Line", line);
 								return (
 									<React.Fragment key={line.id}>
 										<Line
