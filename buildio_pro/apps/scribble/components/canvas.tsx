@@ -14,6 +14,7 @@ import { useMutation, useQuery } from "convex/react";
 import { api } from "@workspace/games-convex-backend/convex/_generated/api";
 import { useParams } from "next/navigation";
 import { useUserStore } from "@/lib/store/user.store";
+import { CircleX, Eraser, Pencil } from "lucide-react";
 
 interface CanvasProps {
   width?: number;
@@ -47,8 +48,6 @@ export function Canvas({ width = 800, height = 600 }: CanvasProps) {
 
   const { userToken, user } = useUserStore();
 
-  const isDrawer = linesFromQuery?.[0]?.playerId === user?.id;
-
   const createLineStrokes = useMutation(api.scribble.createLineStrokes);
   const [tool, setTool] = useState("pen");
   const [lines, setLines] = useState<LineData[]>([]);
@@ -73,7 +72,8 @@ export function Canvas({ width = 800, height = 600 }: CanvasProps) {
       lines,
       isComplete,
     });
-    console.log(res);
+
+    console.log("CreateLineStrokes response: ", res);
   };
 
   const handleMouseDown = (e: KonvaEventObject<any>) => {
@@ -128,54 +128,84 @@ export function Canvas({ width = 800, height = 600 }: CanvasProps) {
     sendCreateLineStrokes({ tool, lines, isComplete: false });
   };
 
+  const tools = [
+    {
+      label: "Pen",
+      action: () => setTool("pen"),
+      icon: Pencil,
+    },
+    {
+      label: "Eraser",
+      action: () => setTool("eraser"),
+      icon: Eraser,
+    },
+    {
+      label: "Clear",
+      action: () => setLines([]),
+      icon: CircleX,
+    },
+  ];
+
+  const strokeWidths = [
+    {
+      label: "Thin",
+      action: () => setStrokeWidth(1),
+      child: <span className="size-1 bg-gray-500"></span>,
+    },
+    {
+      label: "Medium",
+      action: () => setStrokeWidth(3),
+      child: <span className="size-3 bg-gray-500"></span>,
+    },
+    {
+      label: "Thick",
+      action: () => setStrokeWidth(5),
+      child: <span className="size-5 bg-gray-500"></span>,
+    },
+  ];
+
+  const eraserWidths = [
+    {
+      label: "Small Eraser",
+      action: () => setEraserWidth(8),
+      child: <span className="size-2 bg-white"></span>,
+    },
+    {
+      label: "Medium Eraser",
+      action: () => setEraserWidth(14),
+      child: <span className="size-4 bg-white"></span>,
+    },
+    {
+      label: "Large Eraser",
+      action: () => setEraserWidth(20),
+      child: <span className="size-6 bg-white"></span>,
+    },
+  ];
+
   return (
     <div className="relative border rounded-md overflow-hidden bg-white">
-      <ButtonGroup className="absolute top-2 left-2 z-10 ">
-        <Button variant="secondary" size={"sm"} onClick={() => setTool("pen")}>
-          Pen
-        </Button>
-        <Button
-          variant="secondary"
-          size={"sm"}
-          onClick={() => setTool("eraser")}
-        >
-          Eraser
-        </Button>
-        <Button variant="secondary" size={"sm"} onClick={() => setLines([])}>
-          Clear
-        </Button>
-        <Button variant="outline" size={"sm"} onClick={() => setStrokeWidth(1)}>
-          <span className="size-1 bg-black"></span>
-        </Button>
-        <Button variant="outline" size={"sm"} onClick={() => setStrokeWidth(3)}>
-          <span className="size-3 bg-black"></span>
-        </Button>
-        <Button variant="outline" size={"sm"} onClick={() => setStrokeWidth(5)}>
-          <span className="size-5 bg-black"></span>
-        </Button>
-        <Button variant="outline" size={"sm"} onClick={() => setEraserWidth(8)}>
-          <span className="size-2 bg-white border border-slate-400"></span>
-        </Button>
-        <Button
-          variant="outline"
-          size={"sm"}
-          onClick={() => setEraserWidth(14)}
-        >
-          <span className="size-4 bg-white border border-slate-400"></span>
-        </Button>
-        <Button
-          variant="outline"
-          size={"sm"}
-          onClick={() => setEraserWidth(20)}
-        >
-          <span className="size-6 bg-white border border-slate-400"></span>
-        </Button>
+      <ButtonGroup className="absolute top-2 left-2 z-10 flex-wrap">
+        {tools.map((tool) => (
+          <Tooltip key={tool.label}>
+            <TooltipTrigger asChild>
+              <Button
+                variant="secondary"
+                size={"icon-sm"}
+                onClick={tool.action}
+              >
+                {<tool.icon className="h-4 w-4" />}
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>{tool.label}</TooltipContent>
+          </Tooltip>
+        ))}
+
         {colors.map((color) => (
           <React.Fragment key={color.value}>
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
-                  variant="outline"
+                  variant="secondary"
                   size={"sm"}
                   onClick={() => setStrokeColor(color.value)}
                 >
@@ -189,7 +219,30 @@ export function Canvas({ width = 800, height = 600 }: CanvasProps) {
             </Tooltip>
           </React.Fragment>
         ))}
+
+        {strokeWidths.map((sw) => (
+          <Tooltip key={sw.label}>
+            <TooltipTrigger asChild>
+              <Button variant="secondary" size={"sm"} onClick={sw.action}>
+                {sw.child}
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>{sw.label}</TooltipContent>
+          </Tooltip>
+        ))}
+
+        {eraserWidths.map((ew) => (
+          <Tooltip key={ew.label}>
+            <TooltipTrigger asChild>
+              <Button variant="secondary" size={"sm"} onClick={ew.action}>
+                {ew.child}
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>{ew.label}</TooltipContent>
+          </Tooltip>
+        ))}
       </ButtonGroup>
+
       <Stage
         width={width}
         height={height}
@@ -200,47 +253,25 @@ export function Canvas({ width = 800, height = 600 }: CanvasProps) {
         onTouchMove={handleMouseMove}
         onTouchEnd={handleMouseUp}
       >
-        {isDrawer ? (
-          <Layer>
-            {lines.map((line) => (
-              <Line
-                key={line.id}
-                points={line.points}
-                stroke={line.strokeColor}
-                strokeWidth={line.strokeWidth}
-                tension={0.5}
-                lineCap="round"
-                lineJoin="round"
-                globalCompositeOperation={
-                  line.tool === "eraser" ? "destination-out" : "source-over"
-                }
-              />
-            ))}
-          </Layer>
-        ) : (
-          <Layer>
-            {linesFromQuery?.[0]?.lines &&
-              linesFromQuery?.[0]?.lines.map((line) => {
-                return (
-                  <React.Fragment key={line.id}>
-                    <Line
-                      points={line.points}
-                      stroke={line.strokeColor}
-                      strokeWidth={line.strokeWidth}
-                      tension={0.5}
-                      lineCap="round"
-                      lineJoin="round"
-                      globalCompositeOperation={
-                        line.tool === "eraser"
-                          ? "destination-out"
-                          : "source-over"
-                      }
-                    />
-                  </React.Fragment>
-                );
-              })}
-          </Layer>
-        )}
+        <Layer>
+          {linesFromQuery?.[0]?.lines &&
+            linesFromQuery?.[0]?.lines.map((line) => {
+              return (
+                <Line
+                  key={line.id}
+                  points={line.points}
+                  stroke={line.strokeColor}
+                  strokeWidth={line.strokeWidth}
+                  tension={0.5}
+                  lineCap="round"
+                  lineJoin="round"
+                  globalCompositeOperation={
+                    line.tool === "eraser" ? "destination-out" : "source-over"
+                  }
+                />
+              );
+            })}
+        </Layer>
       </Stage>
     </div>
   );
