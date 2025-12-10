@@ -27,7 +27,7 @@ export function JoinRoomForm() {
   };
 
   return (
-    <div className="w-sm lg:w-md space-y-2">
+    <div className="space-y-4 w-full max-w-md">
       <Label
         className="font-semibold text-primary"
         htmlFor="roomCode"
