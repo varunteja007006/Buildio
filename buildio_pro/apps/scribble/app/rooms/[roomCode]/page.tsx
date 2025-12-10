@@ -34,13 +34,16 @@ export default function RoomPage() {
     roomCode,
   });
   const initializeSettings = useMutation(api.scribble.initializeGameSettings);
-
+  const joinRoom = useMutation(api.rooms.joinRoom);
   const isOwner = roomDetails?.room?.ownerId === user?.id;
 
   // Initialize default game settings when owner joins
   useEffect(() => {
     if (isOwner && userToken && roomCode) {
       initializeSettings({ roomCode, userToken }).catch(console.error);
+    }
+    if (userToken && roomCode) {
+      joinRoom({ roomCode, userToken }).catch(console.error);
     }
   }, [isOwner, userToken, roomCode]);
 
@@ -67,16 +70,16 @@ export default function RoomPage() {
 
   if (!user?.id) {
     return (
-      <div className="flex h-screen items-center justify-center">
+      <div className="flex min-h-[calc(100vh-10rem)] items-center justify-center">
         <p>Loading user...</p>
       </div>
     );
   }
 
   return (
-    <div className="w-full flex flex-col gap-4 md:flex-row px-4 py-2 h-[calc(100vh-5rem)]">
+    <div className="w-full flex flex-col gap-4 md:flex-row md:px-2 md:py-4 h-[calc(100vh-10rem)]">
       <div className="flex flex-col min-w-0 gap-4 h-[50%] md:h-full md:flex-1">
-        <RoomHeader />
+        {/* <RoomHeader /> */}
 
         <div
           ref={setContainer}
@@ -92,11 +95,22 @@ export default function RoomPage() {
         </div>
       </div>
 
-      <div className="w-full md:w-80 flex-1 md:flex-none md:h-full min-h-0 flex flex-col gap-4">
+      {/* For medium and larger screens  */}
+      <div className="hidden md:flex w-full md:w-80 flex-1 md:flex-none md:h-full min-h-0 flex-col gap-1">
         <div className="flex-shrink-0 max-h-[30%] overflow-y-auto">
           <Participants />
         </div>
         <div className="flex-1 min-h-0">
+          <ChatBox roomCode={roomCode} />
+        </div>
+      </div>
+
+      {/* For small screens */}
+      <div className="flex md:hidden flex-row">
+        <div>
+          <Participants />
+        </div>
+        <div>
           <ChatBox roomCode={roomCode} />
         </div>
       </div>

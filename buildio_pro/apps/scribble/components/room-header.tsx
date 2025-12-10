@@ -55,11 +55,6 @@ export function RoomHeader() {
             </Tooltip>
           </>
         )}
-        <Link href={"/rooms"}>
-          <Button variant={"destructive"} className="cursor-pointer">
-            Leave Room
-          </Button>
-        </Link>
         <CopyBtn text={roomCode as string} variant="outline">
           <Copy className="mr-2 h-4 w-4" />
           Copy Room Code
