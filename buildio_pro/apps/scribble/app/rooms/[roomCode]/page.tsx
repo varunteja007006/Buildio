@@ -77,9 +77,9 @@ export default function RoomPage() {
   }
 
   return (
-    <div className="w-full flex flex-col gap-4 md:flex-row md:px-2 md:py-4 h-[calc(100vh-10rem)]">
-      <div className="flex flex-col min-w-0 gap-4 h-[50%] md:h-full md:flex-1">
-        {/* <RoomHeader /> */}
+    <div className="w-full flex flex-col gap-1 md:flex-row p-1 md:px-2 md:py-4 h-[calc(100vh-10rem)]">
+      <div className="flex flex-col min-w-0 gap-1 h-[50%] md:h-full md:flex-1">
+        <RoomHeader />
 
         <div
           ref={setContainer}
@@ -95,18 +95,7 @@ export default function RoomPage() {
         </div>
       </div>
 
-      {/* For medium and larger screens  */}
-      <div className="hidden md:flex w-full md:w-80 flex-1 md:flex-none md:h-full min-h-0 flex-col gap-1">
-        <div className="flex-shrink-0 max-h-[30%] overflow-y-auto">
-          <Participants />
-        </div>
-        <div className="flex-1 min-h-0">
-          <ChatBox roomCode={roomCode} />
-        </div>
-      </div>
-
-      {/* For small screens */}
-      <div className="flex md:hidden flex-row">
+      <div className="flex flex-row md:flex-col gap-1">
         <div>
           <Participants />
         </div>
