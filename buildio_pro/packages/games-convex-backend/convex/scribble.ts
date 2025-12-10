@@ -62,6 +62,7 @@ export const createLineStrokes = mutation({
         tool: args.tool,
         lines: args.lines,
         isComplete: args.isComplete,
+        updated_at: Date.now(),
       });
       return { success: true, message: "Line updated" };
     } else {
@@ -72,6 +73,8 @@ export const createLineStrokes = mutation({
         tool: args.tool,
         lines: args.lines,
         isComplete: args.isComplete,
+        created_at: Date.now(),
+        updated_at: Date.now(),
       });
       return { success: true, message: "Line created" };
     }

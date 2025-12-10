@@ -15,4 +15,16 @@ crons.interval(
   api.cleanup.clearStoriesAndPoints,
 );
 
+crons.interval(
+  "prune old chats",
+  { minutes: 60 }, // every hour
+  api.cleanup.deleteOldChats,
+);
+
+crons.interval(
+  "prune old scribble canvases",
+  { minutes: 60 }, // every hour
+  api.cleanup.deleteOldScribbleLines,
+);
+
 export default crons;
