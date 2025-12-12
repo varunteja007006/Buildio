@@ -39,7 +39,7 @@ export const deleteOldScribbleLines = mutation(async ({ db }) => {
 
   const lines = await db.query("scribble_lines").collect();
   for (const line of lines) {
-    const ts = (line.updated_at ?? line.created_at) ?? 0;
+    const ts = line.updated_at ?? line.created_at ?? 0;
     if (ts && ts < cutoff) {
       await db.delete(line._id);
     }

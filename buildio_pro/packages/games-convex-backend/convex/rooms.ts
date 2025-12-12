@@ -356,17 +356,17 @@ export const getRoomDetails = query({
     const owner: Doc<"users"> | null = await ctx.db.get(room.ownerId);
     if (!owner) {
       return {
-      success: true,
-      message: "Room details retrieved successfully, without owner info",
-      room: {
-        _id: room._id,
-        room_name: room.room_name,
-        room_code: room.room_code,
-        created_at: room.created_at,
-        ownerId: room.ownerId,
-      },
-      owner: undefined,
-    };
+        success: true,
+        message: "Room details retrieved successfully, without owner info",
+        room: {
+          _id: room._id,
+          room_name: room.room_name,
+          room_code: room.room_code,
+          created_at: room.created_at,
+          ownerId: room.ownerId,
+        },
+        owner: undefined,
+      };
     }
 
     return {
