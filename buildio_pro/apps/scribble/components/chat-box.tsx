@@ -4,7 +4,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { ScrollArea } from "@workspace/ui/components/scroll-area";
 import { Input } from "@workspace/ui/components/input";
 import { Button } from "@workspace/ui/components/button";
-import { Send } from "lucide-react";
+import { MessageCircleMore, Send } from "lucide-react";
 import { cn } from "@workspace/ui/lib/utils";
 import { useMutation, useQuery } from "convex/react";
 import { api } from "@workspace/games-convex-backend/convex/_generated/api";
@@ -44,45 +44,50 @@ export function ChatBox({ roomCode }: ChatBoxProps) {
 
   return (
     <div className="flex flex-col h-full border rounded-md bg-background overflow-hidden shadow-sm">
-      <div className="flex-1 min-h-0">
-        <ScrollArea className="h-full p-2">
-          <div className="flex flex-col gap-2">
-            {messages?.map((msg) => {
-              const isMe = msg.userId === user?.id;
-              const isGuess = msg.isGuess;
+      <p className="p-2 text-sm text-accent-foreground/60 flex flex-row items-center border-b">
+        <MessageCircleMore className="size-4 mr-2" /> Chat
+      </p>
+      {messages && messages.length > 0 && (
+        <div className="flex-1 min-h-0">
+          <ScrollArea className="h-full p-2">
+            <div className="flex flex-col gap-2">
+              {messages?.map((msg) => {
+                const isMe = msg.userId === user?.id;
+                const isGuess = msg.isGuess;
 
-              return (
-                <div
-                  key={msg._id}
-                  className={cn(
-                    "flex flex-col max-w-[95%]",
-                    isMe ? "self-end items-end" : "self-start items-start",
-                  )}
-                >
+                return (
                   <div
+                    key={msg._id}
                     className={cn(
-                      "px-1.5 py-1 rounded-lg text-xs break-all",
-                      isGuess
-                        ? "bg-green-500 text-white font-bold"
-                        : isMe
-                          ? "bg-primary text-primary-foreground rounded-br-none"
-                          : "bg-muted text-foreground rounded-bl-none",
+                      "flex flex-col max-w-[95%]",
+                      isMe ? "self-end items-end" : "self-start items-start",
                     )}
                   >
-                    {!isMe && !isGuess && (
-                      <span className="block text-[10px] font-bold opacity-70 mb-0.5">
-                        {msg.sender}
-                      </span>
-                    )}
-                    {msg.message}
+                    <div
+                      className={cn(
+                        "px-1.5 py-1 rounded-lg text-xs break-all",
+                        isGuess
+                          ? "bg-green-500 text-white font-bold"
+                          : isMe
+                            ? "bg-primary text-primary-foreground rounded-br-none"
+                            : "bg-muted text-foreground rounded-bl-none",
+                      )}
+                    >
+                      {!isMe && !isGuess && (
+                        <span className="block text-[10px] font-bold opacity-70 mb-0.5">
+                          {msg.sender}
+                        </span>
+                      )}
+                      {msg.message}
+                    </div>
                   </div>
-                </div>
-              );
-            })}
-            <div ref={scrollRef} />
-          </div>
-        </ScrollArea>
-      </div>
+                );
+              })}
+              <div ref={scrollRef} />
+            </div>
+          </ScrollArea>
+        </div>
+      )}
 
       <div className="p-1 border-t flex gap-1">
         <Input
