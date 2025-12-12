@@ -50,33 +50,36 @@ export const createLineStrokes = mutation({
 
     if (!room) throw new Error("Room not found");
 
+    // Get the shared canvas for the room
     const lines = await ctx.db
       .query("scribble_lines")
       .withIndex("by_room", (q) => q.eq("roomId", room._id))
       .collect();
-    const existingLine = lines.find((line) => line.playerId === user.id);
+    
+    // Find the shared canvas record (not per-player)
+    const sharedCanvas = lines[0];
 
-    if (existingLine) {
-      // Update existing line strokes
-      await ctx.db.patch(existingLine._id, {
+    if (sharedCanvas) {
+      // Update the shared canvas with new lines
+      await ctx.db.patch(sharedCanvas._id, {
         tool: args.tool,
         lines: args.lines,
         isComplete: args.isComplete,
         updated_at: Date.now(),
       });
-      return { success: true, message: "Line updated" };
+      return { success: true, message: "Canvas updated" };
     } else {
-      // Create new line strokes
+      // Create the shared canvas for the room
       await ctx.db.insert("scribble_lines", {
         roomId: room._id,
-        playerId: user.id!,
+        playerId: user.id!, // Just for reference, not used for filtering
         tool: args.tool,
         lines: args.lines,
         isComplete: args.isComplete,
         created_at: Date.now(),
         updated_at: Date.now(),
       });
-      return { success: true, message: "Line created" };
+      return { success: true, message: "Canvas created" };
     }
   },
 });
