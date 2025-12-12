@@ -15,21 +15,21 @@ export function ParticipantCard({
   isOwner?: boolean;
 }>) {
   return (
-    <div className="border-primary/25 flex w-full flex-row items-center justify-between gap-2 overflow-hidden rounded-md border bg-white p-2 pr-4 pl-2 shadow dark:bg-secondary">
+    <div className="border-primary/25 min-w-[180px] flex w-full flex-row items-center justify-between gap-2 overflow-hidden rounded-md border bg-white px-1.5 py-1 shadow dark:bg-secondary">
       <div className="flex flex-row items-center gap-2">
-        <div className="text-2xl">{getEmojiForUserId(emojiId)}</div>
+        <div className="text-base">{getEmojiForUserId(emojiId)}</div>
         <div className="flex flex-col items-start">
           <div className="flex items-center gap-1">
-            <p className="truncate overflow-hidden text-sm text-ellipsis capitalize text-primary font-semibold">
+            <p className="truncate overflow-hidden text-[0.75rem] text-ellipsis capitalize text-primary font-semibold">
               {name}
             </p>
             {isOwner && (
-              <Crown className="h-3 w-3 text-yellow-500 fill-yellow-500" />
+              <Crown className="size-3 text-yellow-500 fill-yellow-500" />
             )}
           </div>
 
           {online ? (
-            <p className="text-xs text-green-600 font-semibold">{`Online`}</p>
+            <p className="text-[0.6rem] text-green-600 font-semibold">{`Online`}</p>
           ) : (
             lastDisconnected && (
               <p className="text-xs">{getTimeAgo(lastDisconnected)}</p>

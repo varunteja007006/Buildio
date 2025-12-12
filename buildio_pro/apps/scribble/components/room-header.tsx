@@ -28,23 +28,23 @@ export function RoomHeader() {
   const isOwner = roomDetails?.room?.ownerId === user?.id;
 
   return (
-    <div className="w-full flex justify-between gap-2 items-center">
-      <div>
-        <p className="font-bold text-lg text-primary">
-          {roomDetails?.room?.room_name}
-        </p>
-      </div>
-      <div className="flex flex-row items-center gap-2 justify-end">
+    <div className="w-full flex justify-end md:justify-between gap-1 items-center">
+      <p className="font-bold text-sm text-primary hidden md:flex">
+        {roomDetails?.room?.room_name}
+      </p>
+
+      <div className="flex flex-row items-center gap-1 justify-end">
         {isOwner && (
           <>
             <Button className="cursor-pointer" size="sm">
-              <Play className="mr-2 h-4 w-4" />
-              Start Game
+              <Play className="md:mr-2 h-4 w-4" />
+              <span className="hidden md:flex">Start Game</span>
             </Button>
+
             <Tooltip>
               <GameSettingsDialog roomCode={roomCode as string}>
                 <TooltipTrigger asChild>
-                  <Button variant="outline" size="icon">
+                  <Button variant="outline" size="icon-sm">
                     <Settings className="h-4 w-4" />
                   </Button>
                 </TooltipTrigger>
@@ -55,15 +55,8 @@ export function RoomHeader() {
             </Tooltip>
           </>
         )}
-        <Link href={"/rooms"}>
-          <Button variant={"destructive"} className="cursor-pointer">
-            Leave Room
-          </Button>
-        </Link>
-        <CopyBtn text={roomCode as string} variant="outline">
-          <Copy className="mr-2 h-4 w-4" />
-          Copy Room Code
-        </CopyBtn>
+
+        <CopyBtn text={roomCode as string} size={"icon-sm"} variant="outline" />
       </div>
     </div>
   );

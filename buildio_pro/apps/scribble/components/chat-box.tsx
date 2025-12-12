@@ -22,7 +22,7 @@ export function ChatBox({ roomCode }: ChatBoxProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (scrollRef.current) {
+    if (scrollRef.current && messages && messages.length > 0) {
       scrollRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [messages]);
@@ -44,9 +44,6 @@ export function ChatBox({ roomCode }: ChatBoxProps) {
 
   return (
     <div className="flex flex-col h-full border rounded-md bg-background overflow-hidden shadow-sm">
-      <div className="p-2 border-b bg-muted/50">
-        <h3 className="font-semibold text-sm">Chat</h3>
-      </div>
       <div className="flex-1 min-h-0">
         <ScrollArea className="h-full p-2">
           <div className="flex flex-col gap-2">
@@ -58,13 +55,13 @@ export function ChatBox({ roomCode }: ChatBoxProps) {
                 <div
                   key={msg._id}
                   className={cn(
-                    "flex flex-col max-w-[85%]",
+                    "flex flex-col max-w-[95%]",
                     isMe ? "self-end items-end" : "self-start items-start",
                   )}
                 >
                   <div
                     className={cn(
-                      "px-3 py-1.5 rounded-lg text-sm",
+                      "px-1.5 py-1 rounded-lg text-xs break-all",
                       isGuess
                         ? "bg-green-500 text-white font-bold"
                         : isMe
@@ -79,12 +76,6 @@ export function ChatBox({ roomCode }: ChatBoxProps) {
                     )}
                     {msg.message}
                   </div>
-                  <span className="text-[10px] text-muted-foreground mt-0.5">
-                    {new Date(msg.created_at).toLocaleTimeString([], {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}
-                  </span>
                 </div>
               );
             })}
@@ -92,12 +83,13 @@ export function ChatBox({ roomCode }: ChatBoxProps) {
           </div>
         </ScrollArea>
       </div>
-      <div className="p-2 border-t flex gap-2">
+
+      <div className="p-1 border-t flex gap-1">
         <Input
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && handleSend()}
-          placeholder="Type a message..."
+          placeholder="Type your guess here..."
           className="h-8 text-sm"
         />
         <Button size="icon" className="h-8 w-8" onClick={handleSend}>

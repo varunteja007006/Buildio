@@ -73,6 +73,9 @@ export default defineSchema({
       ),
     ),
     isComplete: v.boolean(), // false while drawing, true when mouse up
+    // timestamps to allow cleanup of stale canvases
+    created_at: v.optional(v.number()),
+    updated_at: v.optional(v.number()),
   }).index("by_room", ["roomId"]),
 
   scribble_games: defineTable({

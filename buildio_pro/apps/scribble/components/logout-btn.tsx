@@ -42,7 +42,7 @@ export function LogoutBtn() {
       <AlertDialog>
         <AlertDialogTrigger asChild>
           <TooltipTrigger asChild>
-            <Button variant="outline" size="icon" className="cursor-pointer">
+            <Button variant="outline" size="icon-sm" className="cursor-pointer">
               <Power />
             </Button>
           </TooltipTrigger>

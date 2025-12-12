@@ -3,6 +3,9 @@
   "version": "0.0.0",
   "private": true,
   "license": "PROPRIETARY",
+  "scripts": {
+    "clean": "git clean -xdf .cache .turbo node_modules"
+  },
   "publishConfig": {
     "access": "public"
   }

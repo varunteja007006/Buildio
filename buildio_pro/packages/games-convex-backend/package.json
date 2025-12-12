@@ -4,7 +4,8 @@
     "description": "",
     "scripts": {
         "dev": "convex dev",
-        "setup": "convex dev --until-success"
+        "setup": "convex dev --until-success",
+        "clean": "git clean -xdf .cache .turbo node_modules"
     },
     "author": "",
     "license": "ISC",
