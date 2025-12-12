@@ -55,7 +55,7 @@ export const createLineStrokes = mutation({
       .query("scribble_lines")
       .withIndex("by_room", (q) => q.eq("roomId", room._id))
       .collect();
-    
+
     // Find the shared canvas record (not per-player)
     const sharedCanvas = lines[0];
 

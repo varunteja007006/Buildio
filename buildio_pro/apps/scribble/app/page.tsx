@@ -21,7 +21,9 @@ export default function Page() {
     <div className="flex flex-col items-center gap-5 justify-center min-h-[calc(100vh-10rem)]">
       {/* Hero */}
       <div>
-        <h1 className="text-primary text-center text-5xl">Welcome to Scribble</h1>
+        <h1 className="text-primary text-center text-5xl">
+          Welcome to Scribble
+        </h1>
         {userToken && (
           <div className="mt-4">
             <Button asChild>
