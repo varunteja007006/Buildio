@@ -14,10 +14,10 @@
   },
   "dependencies": {
     "@workspace/ui": "workspace:*",
-    "@workspace/games-convex-backend":"workspace:*",
+    "@workspace/games-convex-backend": "workspace:*",
     "convex": "catalog:",
     "lucide-react": "catalog:",
-    "next": "catalog:",
+    "next": "15.5.9",
     "next-themes": "catalog:",
     "react": "catalog:react19",
     "react-dom": "catalog:react19"
