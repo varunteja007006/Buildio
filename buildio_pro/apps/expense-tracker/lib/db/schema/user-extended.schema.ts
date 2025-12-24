@@ -115,7 +115,7 @@ export const userBankAccountRelations = relations(
       relationName: "user_bank_account_to_bank_account_types",
     }),
     bank: one(banks, {
-      fields: [userBankAccount.bankAccountTypeId],
+      fields: [userBankAccount.bankId],
       references: [banks.id],
       relationName: "user_bank_account_to_banks",
     }),
