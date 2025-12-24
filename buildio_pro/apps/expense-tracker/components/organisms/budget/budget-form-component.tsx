@@ -15,8 +15,6 @@ import {
 } from "@workspace/ui/components/card";
 import { Field, FieldGroup } from "@workspace/ui/components/field";
 import { useAppForm } from "@workspace/ui/components/forms/hooks";
-import { DatePicker } from "@workspace/ui/components/date-picker";
-import { Label } from "@workspace/ui/components/label";
 
 import { toast } from "sonner";
 import * as z from "zod";
@@ -173,41 +171,11 @@ export function BudgetFormComponent({
 
             <div className="grid gap-4 sm:grid-cols-2">
               <form.AppField name="startMonth">
-                {(field) => (
-                  <div className="space-y-2">
-                    <Label htmlFor={field.name}>Start Month</Label>
-                    <DatePicker
-                      value={field.state.value}
-                      onChange={field.handleChange}
-                      placeholder="Select start date"
-                      disabled={isSubmitting}
-                    />
-                    {field.state.meta.errors.length > 0 && (
-                      <p className="text-sm text-destructive">
-                        {field.state.meta.errors[0]}
-                      </p>
-                    )}
-                  </div>
-                )}
+                {(field) => <field.DatePicker label="Start Month" />}
               </form.AppField>
 
               <form.AppField name="endMonth">
-                {(field) => (
-                  <div className="space-y-2">
-                    <Label htmlFor={field.name}>End Month</Label>
-                    <DatePicker
-                      value={field.state.value}
-                      onChange={field.handleChange}
-                      placeholder="Select end date"
-                      disabled={isSubmitting}
-                    />
-                    {field.state.meta.errors.length > 0 && (
-                      <p className="text-sm text-destructive">
-                        {field.state.meta.errors[0]}
-                      </p>
-                    )}
-                  </div>
-                )}
+                {(field) => <field.DatePicker label="End Month" />}
               </form.AppField>
             </div>
           </FieldGroup>
