@@ -29,3 +29,11 @@ export const paymentMethods = pgTable("payment_methods", {
     .references(() => paymentProvider.id, { onDelete: "cascade" }),
   ...auditTimeFields,
 });
+
+export const paymentMethodsRelations = relations(paymentMethods, ({ one }) => ({
+  provider: one(paymentProvider, {
+    fields: [paymentMethods.paymentProviderId],
+    references: [paymentProvider.id],
+    relationName: "payment_methods_to_provider",
+  }),
+}));

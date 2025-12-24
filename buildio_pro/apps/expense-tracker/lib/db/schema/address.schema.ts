@@ -71,7 +71,7 @@ export const address = pgTable("address", {
   longitude: text("longitude"),
   cityId: text("city_id")
     .notNull()
-    .references(() => state.id, { onDelete: "cascade" }),
+    .references(() => city.id, { onDelete: "cascade" }),
   ...auditTimeFields,
 });
 

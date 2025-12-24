@@ -2,6 +2,25 @@ import { query, mutation } from "./_generated/server";
 import { v } from "convex/values";
 import { getUserFromToken } from "./utils";
 
+// Create default settings
+const defaultWords = [
+  "cat",
+  "dog",
+  "house",
+  "tree",
+  "sun",
+  "car",
+  "book",
+  "phone",
+  "computer",
+  "flower",
+  "bird",
+  "fish",
+  "mountain",
+  "ocean",
+  "star",
+];
+
 // Get all lines for a room to render the canvas
 export const getLines = query({
   args: { roomCode: v.string() },
@@ -153,29 +172,10 @@ export const initializeGameSettings = mutation({
 
     if (existingSettings) return existingSettings._id;
 
-    // Create default settings
-    const defaultWords = [
-      "cat",
-      "dog",
-      "house",
-      "tree",
-      "sun",
-      "car",
-      "book",
-      "phone",
-      "computer",
-      "flower",
-      "bird",
-      "fish",
-      "mountain",
-      "ocean",
-      "star",
-    ];
-
     const settingsId = await ctx.db.insert("scribble_games", {
       room_code: args.roomCode,
-      rounds: 5,
-      timer: 60,
+      rounds: 1,
+      timer: 120,
       list_of_words: defaultWords,
       word_filters: [],
       score: {},
@@ -229,190 +229,3 @@ export const updateGameSettings = mutation({
     return existingSettings._id;
   },
 });
-
-// // Get game state for a room
-// export const getGameState = query({
-//   args: { roomCode: v.string() },
-//   handler: async (ctx, args) => {
-//     const gameState = await ctx.db
-//       .query("scribble_game_state")
-//       .withIndex("by_room_code", (q) => q.eq("room_code", args.roomCode))
-//       .unique();
-
-//     return gameState || null;
-//   },
-// });
-
-// // Start the game
-// export const startGame = mutation({
-//   args: {
-//     roomCode: v.string(),
-//     userToken: v.string(),
-//   },
-//   handler: async (ctx, args) => {
-//     const user = await getUserFromToken(ctx, args.userToken);
-//     if (!user.success || !user.id) throw new Error("User not found");
-
-//     const room = await ctx.db
-//       .query("rooms")
-//       .withIndex("by_room_code", (q) => q.eq("room_code", args.roomCode))
-//       .unique();
-
-//     if (!room) throw new Error("Room not found");
-
-//     // Only owner can start game
-//     if (room.ownerId !== user.id) {
-//       throw new Error("Only room owner can start the game");
-//     }
-
-//     // Get game settings
-//     const settings = await ctx.db
-//       .query("scribble_games")
-//       .withIndex("by_room_code", (q) => q.eq("room_code", args.roomCode))
-//       .unique();
-
-//     if (!settings) throw new Error("Game settings not found");
-
-//     // Check if game already started
-//     const existingState = await ctx.db
-//       .query("scribble_game_state")
-//       .withIndex("by_room_code", (q) => q.eq("room_code", args.roomCode))
-//       .unique();
-
-//     if (existingState && existingState.status === "playing") {
-//       throw new Error("Game already in progress");
-//     }
-
-//     // Get all team members in the room
-//     const teamMembers = await ctx.db
-//       .query("teams")
-//       .withIndex("by_room", (q) => q.eq("roomId", room._id))
-//       .collect();
-
-//     if (teamMembers.length === 0) {
-//       throw new Error("No players in the room");
-//     }
-
-//     // Calculate total turns
-//     const totalTurns = settings.rounds * teamMembers.length;
-
-//     // Pick random word
-//     const randomWord = settings.list_of_words[
-//       Math.floor(Math.random() * settings.list_of_words.length)
-//     ];
-
-//     const now = Date.now();
-
-//     // Delete old game state if exists
-//     if (existingState) {
-//       await ctx.db.delete(existingState._id);
-//     }
-
-//     // Create new game state
-//     const gameStateId = await ctx.db.insert("scribble_game_state", {
-//       room_code: args.roomCode,
-//       status: "playing",
-//       currentTurn: 1,
-//       totalTurns,
-//       currentWord: randomWord,
-//       turnStartTime: now,
-//       turnDuration: settings.timer,
-//       created_at: now,
-//       updated_at: now,
-//     });
-
-//     return gameStateId;
-//   },
-// });
-
-// // Move to next turn
-// export const nextTurn = mutation({
-//   args: {
-//     roomCode: v.string(),
-//     userToken: v.string(),
-//   },
-//   handler: async (ctx, args) => {
-//     const user = await getUserFromToken(ctx, args.userToken);
-//     if (!user.success) throw new Error("Unauthorized");
-
-//     const gameState = await ctx.db
-//       .query("scribble_game_state")
-//       .withIndex("by_room_code", (q) => q.eq("room_code", args.roomCode))
-//       .unique();
-
-//     if (!gameState) throw new Error("Game not found");
-
-//     if (gameState.status !== "playing") {
-//       throw new Error("Game is not in progress");
-//     }
-
-//     // Get settings for word list
-//     const settings = await ctx.db
-//       .query("scribble_games")
-//       .withIndex("by_room_code", (q) => q.eq("room_code", args.roomCode))
-//       .unique();
-
-//     if (!settings) throw new Error("Game settings not found");
-
-//     const nextTurnNumber = gameState.currentTurn + 1;
-
-//     // Check if game is finished (already completed all turns)
-//     if (gameState.currentTurn === gameState.totalTurns) {
-//       await ctx.db.patch(gameState._id, {
-//         status: "finished",
-//         updated_at: Date.now(),
-//       });
-//       return { status: "finished" };
-//     }
-
-//     // Pick new random word
-//     const randomWord = settings.list_of_words[
-//       Math.floor(Math.random() * settings.list_of_words.length)
-//     ];
-
-//     // Update to next turn
-//     await ctx.db.patch(gameState._id, {
-//       currentTurn: nextTurnNumber,
-//       currentWord: randomWord,
-//       turnStartTime: Date.now(),
-//       updated_at: Date.now(),
-//     });
-
-//     return { status: "playing", currentTurn: nextTurnNumber };
-//   },
-// });
-
-// // Reset game (owner only)
-// export const resetGame = mutation({
-//   args: {
-//     roomCode: v.string(),
-//     userToken: v.string(),
-//   },
-//   handler: async (ctx, args) => {
-//     const user = await getUserFromToken(ctx, args.userToken);
-//     if (!user.success || !user.id) throw new Error("User not found");
-
-//     const room = await ctx.db
-//       .query("rooms")
-//       .withIndex("by_room_code", (q) => q.eq("room_code", args.roomCode))
-//       .unique();
-
-//     if (!room) throw new Error("Room not found");
-
-//     // Only owner can reset
-//     if (room.ownerId !== user.id) {
-//       throw new Error("Only room owner can reset the game");
-//     }
-
-//     const gameState = await ctx.db
-//       .query("scribble_game_state")
-//       .withIndex("by_room_code", (q) => q.eq("room_code", args.roomCode))
-//       .unique();
-
-//     if (gameState) {
-//       await ctx.db.delete(gameState._id);
-//     }
-
-//     return { success: true };
-//   },
-// });
