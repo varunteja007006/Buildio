@@ -5,11 +5,7 @@ import React from "react";
 import {
   BookOpen,
   Bot,
-  Frame,
   GalleryVerticalEnd,
-  Map,
-  PieChart,
-  Settings2,
   SquareTerminal,
 } from "lucide-react";
 
@@ -22,8 +18,8 @@ import {
 import { useSession, useSignOut } from "@/lib/auth-client";
 import { AppSidebar } from "@workspace/ui/components/side-bar/app-sidebar";
 import { NavMain } from "@/components/organisms/nav-main";
-import { NavProjects } from "@/components/organisms/nav-projects";
 import Link from "next/link";
+import { NavMisc } from "@/components/organisms/nav-misc";
 
 // This is sample data.
 const data = {
@@ -95,46 +91,6 @@ const data = {
         },
       ],
     },
-    {
-      title: "Settings",
-      url: "#",
-      icon: Settings2,
-      items: [
-        {
-          title: "General",
-          url: "#",
-        },
-        {
-          title: "Team",
-          url: "#",
-        },
-        {
-          title: "Billing",
-          url: "#",
-        },
-        {
-          title: "Limits",
-          url: "#",
-        },
-      ],
-    },
-  ],
-  projects: [
-    {
-      name: "Design Engineering",
-      url: "#",
-      icon: Frame,
-    },
-    {
-      name: "Sales & Marketing",
-      url: "#",
-      icon: PieChart,
-    },
-    {
-      name: "Travel",
-      url: "#",
-      icon: Map,
-    },
   ],
 };
 
@@ -160,7 +116,7 @@ export const AppSideBarClient = () => {
       middleContent={
         <>
           <NavMain items={data.navMain} />
-          <NavProjects projects={data.projects} />
+          <NavMisc />
         </>
       }
     />

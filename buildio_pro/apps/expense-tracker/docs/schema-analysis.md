@@ -42,30 +42,6 @@ PostgreSQL database with Drizzle ORM. **29 tables** organized into 12 schema fil
 | **UUID Keys** | All PK use `crypto.randomUUID()` |
 | **Relations** | 19/29 tables have Drizzle relations defined |
 
-## Naming Convention
-- **TypeScript properties**: snake_case (`user_id`, `created_at`)
-- **Database columns**: snake_case (`user_id`, `created_at`)
-- **Table names**: snake_case (`user_preferences`, `expense_category`)
-- **Consistency**: 100% ✅
-
-## Relation Quality
-
-### ✅ Fixed Issues (3)
-1. `userBankAccount.bank` - Was referencing wrong field, now uses `bankId`
-2. `address.cityId` - Was referencing `state.id`, now correctly uses `city.id`
-3. `paymentMethods` - Added missing reverse relation to `paymentProvider`
-
-### ✅ Valid Relations
-- ✅ All auth-to-user relations
-- ✅ All expense/income hierarchies
-- ✅ Address hierarchy (country → state → city → address)
-- ✅ Bank-address junction table
-- ✅ Currency exchange snapshots
-- ✅ Payment provider-method hierarchy
-
-### Coverage: 65.5% (19/29 tables with relations)
-Remaining 10 tables are lookup/reference tables (bankAccountTypes, investmentTypes, etc.)
-
 ## Notable Features
 
 | Feature | Tables | Details |
@@ -81,17 +57,6 @@ Remaining 10 tables are lookup/reference tables (bankAccountTypes, investmentTyp
 - **ORM**: Drizzle ORM v0.x
 - **Database**: PostgreSQL
 - **Migrations**: Timestamp-based, auto-generated
-- **Introspection**: `casing: "camel"` (converts DB snake_case to typed properties)
-
-## Data Integrity
-
-| Constraint | Count |
-|-----------|-------|
-| Primary Keys | 29 (all UUID) |
-| Foreign Keys | 40+ (with cascade/set null) |
-| Unique Constraints | 5 (code, email, etc.) |
-| Default Values | 15+ (timestamps, booleans) |
-| Not Null Fields | ~80 |
 
 ## Database Hygiene ✅
 - ✅ No circular references
@@ -101,5 +66,3 @@ Remaining 10 tables are lookup/reference tables (bankAccountTypes, investmentTyp
 - ✅ All relations bidirectional where needed
 - ✅ Index-friendly design
 
-## Summary
-Well-structured schema with clear separation of concerns. All relation issues fixed. Consistent naming throughout. Ready for production with proper constraints, audit trails, and flexible financial tracking capabilities.

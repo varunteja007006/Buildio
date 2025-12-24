@@ -1,4 +1,4 @@
-import { boolean, pgTable, text } from "drizzle-orm/pg-core";
+import { boolean, index, pgTable, text } from "drizzle-orm/pg-core";
 import { auditTimeFields } from "./common.schema";
 import { address } from "./address.schema";
 import { relations } from "drizzle-orm";
@@ -26,37 +26,55 @@ export const bankAccountTypes = pgTable("bank_account_types", {
   ...auditTimeFields,
 });
 
-export const banks = pgTable("banks", {
-  id: text("id")
-    .primaryKey()
-    .$defaultFn(() => crypto.randomUUID()),
-  name: text("name").notNull(),
-  code: text("code").notNull().unique(),
-  ifsc: text("ifsc"), // Indian Financial System Code
-  micr: text("micr"), // Magnetic Ink Character Recognition Code
-  iin: text("iin"), // Issuer Identification Number
-  // Service availability flags (Boolean type for true/false)
-  ach_credit: boolean("ach_credit").default(false).notNull(),
-  ach_debit: boolean("ach_debit").default(false).notNull(),
-  apbs: boolean("apbs").default(false).notNull(), // Aadhaar Payment Bridge System
-  nach_debit: boolean("nach_debit").default(false).notNull(), // National Automated Clearing House
-  // Type of bank (e.g., 'Foreign', 'Private', 'Public')
-  type: text("type").notNull(),
-  ...auditTimeFields,
-});
+export const banks = pgTable(
+  "banks",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    name: text("name").notNull(),
+    code: text("code").notNull().unique(),
+    ifsc: text("ifsc"), // Indian Financial System Code
+    micr: text("micr"), // Magnetic Ink Character Recognition Code
+    iin: text("iin"), // Issuer Identification Number
+    // Service availability flags (Boolean type for true/false)
+    ach_credit: boolean("ach_credit").default(false).notNull(),
+    ach_debit: boolean("ach_debit").default(false).notNull(),
+    apbs: boolean("apbs").default(false).notNull(), // Aadhaar Payment Bridge System
+    nach_debit: boolean("nach_debit").default(false).notNull(), // National Automated Clearing House
+    // Type of bank (e.g., 'Foreign', 'Private', 'Public')
+    type: text("type").notNull(),
+    ...auditTimeFields,
+  },
+  (table) => [
+    {
+      nameIdx: index("idx_banks_name").on(table.name),
+      typeIdx: index("idx_banks_type").on(table.type),
+    },
+  ],
+);
 
-export const bankAddress = pgTable("bank_address", {
-  id: text("id")
-    .primaryKey()
-    .$defaultFn(() => crypto.randomUUID()),
-  bankId: text("bank_id")
-    .notNull()
-    .references(() => banks.id, { onDelete: "cascade" }),
-  addressId: text("address_id")
-    .notNull()
-    .references(() => address.id, { onDelete: "cascade" }),
-  ...auditTimeFields,
-});
+export const bankAddress = pgTable(
+  "bank_address",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    bankId: text("bank_id")
+      .notNull()
+      .references(() => banks.id, { onDelete: "cascade" }),
+    addressId: text("address_id")
+      .notNull()
+      .references(() => address.id, { onDelete: "cascade" }),
+    ...auditTimeFields,
+  },
+  (table) => [
+    {
+      bankIdx: index("idx_bank_address_bank_id").on(table.bankId),
+      addressIdx: index("idx_bank_address_address_id").on(table.addressId),
+    },
+  ],
+);
 
 // One bank has many bankAddress records
 export const bankRelations = relations(banks, ({ many }) => ({
