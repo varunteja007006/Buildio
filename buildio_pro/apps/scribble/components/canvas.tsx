@@ -48,6 +48,8 @@ export function Canvas({ width = 800, height = 600 }: CanvasProps) {
 
   const { userToken, user } = useUserStore();
 
+  const isDrawer = linesFromQuery?.[0]?.playerId === user?.id;
+
   const createLineStrokes = useMutation(api.scribble.createLineStrokes);
   const [tool, setTool] = useState("pen");
   const isDrawing = useRef(false);
@@ -252,7 +254,7 @@ export function Canvas({ width = 800, height = 600 }: CanvasProps) {
         onTouchMove={handleMouseMove}
         onTouchEnd={handleMouseUp}
       >
-        {/* {isDrawer ? (
+        {isDrawer ? (
           <Layer>
             {lines.map((line) => (
               <Line
@@ -269,28 +271,30 @@ export function Canvas({ width = 800, height = 600 }: CanvasProps) {
               />
             ))}
           </Layer>
-        ) : ( */}
-        <Layer>
-          {linesFromQuery?.[0]?.lines &&
-            linesFromQuery?.[0]?.lines.map((line) => {
-              return (
-                <React.Fragment key={line.id}>
-                  <Line
-                    points={line.points}
-                    stroke={line.strokeColor}
-                    strokeWidth={line.strokeWidth}
-                    tension={0.5}
-                    lineCap="round"
-                    lineJoin="round"
-                    globalCompositeOperation={
-                      line.tool === "eraser" ? "destination-out" : "source-over"
-                    }
-                  />
-                </React.Fragment>
-              );
-            })}
-        </Layer>
-        {/* )} */}
+        ) : (
+          <Layer>
+            {linesFromQuery?.[0]?.lines &&
+              linesFromQuery?.[0]?.lines.map((line) => {
+                return (
+                  <React.Fragment key={line.id}>
+                    <Line
+                      points={line.points}
+                      stroke={line.strokeColor}
+                      strokeWidth={line.strokeWidth}
+                      tension={0.5}
+                      lineCap="round"
+                      lineJoin="round"
+                      globalCompositeOperation={
+                        line.tool === "eraser"
+                          ? "destination-out"
+                          : "source-over"
+                      }
+                    />
+                  </React.Fragment>
+                );
+              })}
+          </Layer>
+        )}
       </Stage>
     </div>
   );

@@ -13,13 +13,14 @@ import { PokerBoardHeader } from "./poker-board-header";
 import { PokerCards } from "./poker-card";
 import { PokerResults } from "./poker-results";
 import { Participants } from "./participants";
+import { useJoinRoom } from "@/hooks/useJoinRoom";
 
 export function PokerBoard() {
   const params = useParams();
-  const roomCode = params?.roomCode ?? "";
+  const roomCode = (params?.roomCode as string) ?? "";
 
   const { userToken, user } = useUserStore();
-
+  const { joinRoom } = useJoinRoom();
   const [storyId, setStoryId] = React.useState<Id<"stories"> | null>(null);
   const prevStartedStoryRef = React.useRef<any>(undefined);
 
@@ -55,6 +56,12 @@ export function PokerBoard() {
     }
     prevStartedStoryRef.current = startedStory;
   }, [startedStory]);
+
+  React.useEffect(() => {
+    if (roomCode) {
+      joinRoom(roomCode);
+    }
+  }, [roomCode]);
 
   const handleClick = async () => {
     if (!userToken || !roomCode || startedStory === undefined) return;
