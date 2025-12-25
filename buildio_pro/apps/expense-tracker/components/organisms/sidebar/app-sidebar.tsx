@@ -13,10 +13,10 @@ import {
   Send,
   Settings2,
   SquareTerminal,
+  Zap,
 } from "lucide-react";
 
 import { NavMain } from "./nav-main";
-import { NavProjects } from "./nav-projects";
 import { NavSecondary } from "./nav-secondary";
 import { NavUser } from "./nav-user";
 import {
@@ -37,89 +37,45 @@ const data = {
   },
   navMain: [
     {
-      title: "Playground",
-      url: "#",
+      title: "Dashboard",
+      url: "/dashboard",
+      icon: PieChart,
+    },
+    {
+      title: "Budgets",
+      url: "/budgets",
       icon: SquareTerminal,
-      isActive: true,
-      items: [
-        {
-          title: "History",
-          url: "#",
-        },
-        {
-          title: "Starred",
-          url: "#",
-        },
-        {
-          title: "Settings",
-          url: "#",
-        },
-      ],
     },
     {
-      title: "Models",
-      url: "#",
+      title: "Expenses",
+      url: "/expenses",
+      icon: Frame,
+    },
+    {
+      title: "Income",
+      url: "/income",
+      icon: HeartPlus,
+    },
+    {
+      title: "Categories",
+      url: "/expense-categories",
+      icon: Map,
+    },
+    {
+      title: "Income Sources",
+      url: "/income-sources",
       icon: Bot,
-      items: [
-        {
-          title: "Genesis",
-          url: "#",
-        },
-        {
-          title: "Explorer",
-          url: "#",
-        },
-        {
-          title: "Quantum",
-          url: "#",
-        },
-      ],
     },
     {
-      title: "Documentation",
-      url: "#",
-      icon: BookOpen,
-      items: [
-        {
-          title: "Introduction",
-          url: "#",
-        },
-        {
-          title: "Get Started",
-          url: "#",
-        },
-        {
-          title: "Tutorials",
-          url: "#",
-        },
-        {
-          title: "Changelog",
-          url: "#",
-        },
-      ],
+      title: "Events",
+      url: "/events",
+      icon: Zap,
+      isActive: false,
     },
     {
       title: "Settings",
-      url: "#",
+      url: "/settings",
       icon: Settings2,
-      items: [
-        {
-          title: "General",
-          url: "#",
-        },
-        {
-          title: "Team",
-          url: "#",
-        },
-        {
-          title: "Billing",
-          url: "#",
-        },
-        {
-          title: "Limits",
-          url: "#",
-        },
-      ],
     },
   ],
   navSecondary: [
@@ -180,7 +136,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
-        <NavProjects projects={data.projects} />
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>

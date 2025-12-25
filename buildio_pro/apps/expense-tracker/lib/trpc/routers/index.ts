@@ -10,6 +10,7 @@ import { incomeSourceRouter } from "./income-source.router";
 import { dashboardRouter } from "./dashboard.router";
 import { userPreferencesRouter } from "./user-preferences.router";
 import { userProfileRouter } from "./user-profile.router";
+import { eventRouter } from "./event.router";
 
 export const appRouter = createTRPCRouter({
   dashboard: dashboardRouter,
@@ -20,6 +21,7 @@ export const appRouter = createTRPCRouter({
   incomeSource: incomeSourceRouter,
   userPreferences: userPreferencesRouter,
   userProfile: userProfileRouter,
+  event: eventRouter,
 });
 
 // export type definition of API

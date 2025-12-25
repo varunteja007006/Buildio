@@ -8,6 +8,7 @@ import * as bankSchema from "./bank.zod.schema";
 import * as addressSchema from "./address.zod.schema";
 import * as investmentSchema from "./investment.zod.schema";
 import * as commonSchema from "./common.zod.schema";
+import * as eventSchema from "./event.zod.schema";
 
 export const zodSchema = {
   ...expensesSchema,
@@ -20,4 +21,5 @@ export const zodSchema = {
   ...addressSchema,
   ...investmentSchema,
   ...commonSchema,
+  ...eventSchema,
 };

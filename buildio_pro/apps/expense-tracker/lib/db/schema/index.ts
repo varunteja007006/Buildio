@@ -8,6 +8,12 @@ import { income, incomeSource } from "./income.schema";
 import { investmentPlatforms, investmentTypes } from "./investment.schema";
 import { paymentMethods, paymentProvider } from "./payment.schema";
 import {
+  event,
+  eventExpense,
+  eventRelations,
+  eventExpenseRelations,
+} from "./event.schema";
+import {
   userPreferences,
   userProfileRelations,
   userBankAccount,
@@ -39,6 +45,10 @@ export const dbSchema = {
   expenseCategory,
   income,
   incomeSource,
+  event,
+  eventExpense,
+  eventRelations,
+  eventExpenseRelations,
   address,
   city,
   country,

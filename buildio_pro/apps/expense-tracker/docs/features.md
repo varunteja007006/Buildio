@@ -19,6 +19,33 @@
 
 ---
 
+## 🎪 Event Management (NEW)
+
+### Core Features
+
+- [x] Create events/projects (e.g., "Buying a Property", "Home Renovation", "Wedding")
+- [x] View all events with status filtering (in-progress, completed, cancelled)
+- [x] Edit event details (name, description, date range, status)
+- [x] Delete events
+- [x] View event details with linked expenses
+- [x] Set estimated budget for events
+
+### Expense Linking
+
+- [x] Link multiple expenses to an event from different months/budgets
+- [x] View total spent and remaining budget on events
+- [x] Remove expenses from events
+- [x] Visual budget progress for events
+
+### Analytics
+
+- [x] Track total spending per event
+- [x] Compare actual spending vs estimated budget
+- [x] View spending breakdown across linked expenses
+- [ ] Historical event spending reports
+
+---
+
 ## 💰 Expense Management
 
 ### Core Features
@@ -29,12 +56,14 @@
 - [x] Delete expense records
 - [x] View single expense with full details
 - [x] Link expense to specific budget
+- [x] Mark expenses as recurring (DB field: isRecurring)
 
 ### Filtering & Organization
 
-- [ ] Filter expenses by category
+- [x] Filter expenses by category (listExpenses with categoryId parameter)
+- [x] Filter expenses by budget (listExpenses with budgetId parameter)
+- [x] Sort by date or amount (sortBy, sortOrder parameters)
 - [ ] Filter expenses by date range
-- [ ] View only recurring expenses
 - [ ] Search expenses by name
 
 ### Analytics
@@ -78,7 +107,8 @@
 
 ### Filtering & Organization
 
-- [ ] Filter income by source
+- [x] Filter income by source (listIncomes with sourceId parameter)
+- [x] Sort by date or amount (sortBy, sortOrder parameters)
 - [ ] Filter income by date range
 - [ ] Search income by name
 
@@ -114,11 +144,11 @@
 
 ### Overview Dashboard
 
-- [x] Display current month summary (income vs expenses)
-- [x] Show active budgets with progress bars
-- [x] Display recent transactions (last 5-10)
-- [x] Highlight over-budget categories
-- [x] Show total balance (all-time income - expenses)
+- [x] Display current month summary (income vs expenses) - overviewSummary endpoint
+- [x] Show active budgets with progress bars - activeBudgetsWithProgress endpoint
+- [x] Display recent transactions (last 5-10) - recentTransactions endpoint
+- [x] Highlight over-budget categories - topCategoriesThisMonth endpoint
+- [x] Show total balance (all-time income - expenses) - included in overviewSummary
 
 ### Financial Reports
 
@@ -142,7 +172,7 @@
 
 ### Expense Automation
 
-- [ ] Mark expenses as recurring
+- [x] Mark expenses as recurring (DB field: isRecurring in expense table)
 - [ ] Set recurrence frequency (weekly, monthly, yearly)
 - [ ] Auto-create recurring expenses
 - [ ] View all recurring expenses
@@ -185,7 +215,7 @@
 - [ ] Filter by multiple categories simultaneously
 - [ ] Custom date range selection
 - [ ] Filter by amount range (min-max)
-- [ ] Filter by recurring status
+- [x] Filter by recurring status (DB field exists: isRecurring)
 
 ### Saved Filters
 
@@ -254,43 +284,3 @@
 - [ ] Language localization
 
 ---
-
-### Recently Completed
-
-- ✅ Budget Management - All Core Features (Create, View, Edit, Delete, Details)
-- ✅ Budget Progress Tracking (Spent vs Allocated with visual indicators)
-- ✅ TRPC API Routes for Budget Management
-- ✅ Complete Budget UI with Pagination, Filtering, and Responsive Design
-- ✅ Expense Management - All Core Features (Create, View, Edit, Delete, Details)
-- ✅ Expense-Budget Linking
-- ✅ TRPC API Routes for Expense Management
-- ✅ Complete Expense UI with Pagination, Sorting, and Filtering
-- ✅ Expense Category Management - All Core Features (Create, View, Edit, Delete)
-- ✅ ExpenseCategoryFormComponent - Full form with useAppForm pattern
-- ✅ ExpenseCategoryDetailsComponent - View/Edit/Delete with mutations
-- ✅ Category Validation (Prevent deletion of categories in use)
-- ✅ TRPC API Routes for Expense Category Management
-- ✅ Dynamic Category Fetching in Expense Form
-- ✅ Income Management - All Core Features (Create, View, Edit, Delete, Details)
-- ✅ IncomeFormComponent - Full form with source selection and useAppForm pattern
-- ✅ IncomeDetailsComponent - View/Edit/Delete with mutations
-- ✅ Income-Payment Method Linking
-- ✅ TRPC API Routes for Income Management
-- ✅ Income Source Management - All Core Features (Create, View, Edit, Delete)
-- ✅ IncomeSourceFormComponent - Full form with useAppForm pattern
-- ✅ IncomeSourceDetailsComponent - View/Edit/Delete with mutations
-- ✅ Source Validation (Prevent deletion of sources in use)
-- ✅ TRPC API Routes for Income Source Management
-- ✅ Next.js 15+ Params Type Compatibility (Promise-based params handling)
-- ✅ All 6 Form & Details Components Fully Functional with Server-Side Data Fetching
-- ✅ Dashboard - Overview Dashboard (Monthly Summary, Active Budgets, Recent Transactions, Top Categories)
-- ✅ Dashboard TRPC Router with 4 endpoints (overviewSummary, activeBudgetsWithProgress, recentTransactions, topCategoriesThisMonth)
-- ✅ Dashboard UI with Summary Cards, Budget Progress Bars, Over-Budget Badges, and Quick Links
-- ✅ User Preferences Management - TRPC Router (get, update preferences)
-- ✅ User Profile Management - TRPC Router (get, update profile)
-- ✅ User Preferences Form Component with Currency & Timezone selection
-- ✅ User Profile Form Component with Name, Bio, and Image URL
-- ✅ User Preferences & Profile Hooks with React Query integration
-- ✅ Settings Page - Unified settings dashboard with Profile & Preferences sections
-
-_Last Updated: December 25, 2025_
