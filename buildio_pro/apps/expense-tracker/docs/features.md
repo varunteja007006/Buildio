@@ -161,9 +161,9 @@
 
 ### Profile Management
 
-- [ ] Update user profile (name, avatar, bio)
-- [ ] Set default currency preference
-- [ ] Configure timezone settings
+- [x] Update user profile (name, avatar, bio)
+- [x] Set default currency preference
+- [x] Configure timezone settings
 - [ ] Set budget notification thresholds
 - [ ] Manage account limits
 
@@ -255,23 +255,6 @@
 
 ---
 
-## Priority Labels
-
-**Phase 1 (MVP):** Budget, Expense, Income core CRUD + Basic dashboard  
-**Phase 2:** Categories, Sources, Filtering, Basic analytics  
-**Phase 3:** Advanced analytics, Reports, Visualizations  
-**Phase 4:** Recurring transactions, Notifications, Automation  
-**Phase 5:** Advanced features, Import/Export, Mobile optimization
-
----
-
-## Progress Tracking
-
-**Total Features:** 100+  
-**Completed:** 39 (Budget + Expense + Category + Income + Source Management + Overview Dashboard - Full CRUD with UI Components)  
-**In Progress:** 0  
-**Not Started:** 61+
-
 ### Recently Completed
 
 - ✅ Budget Management - All Core Features (Create, View, Edit, Delete, Details)
@@ -303,5 +286,11 @@
 - ✅ Dashboard - Overview Dashboard (Monthly Summary, Active Budgets, Recent Transactions, Top Categories)
 - ✅ Dashboard TRPC Router with 4 endpoints (overviewSummary, activeBudgetsWithProgress, recentTransactions, topCategoriesThisMonth)
 - ✅ Dashboard UI with Summary Cards, Budget Progress Bars, Over-Budget Badges, and Quick Links
+- ✅ User Preferences Management - TRPC Router (get, update preferences)
+- ✅ User Profile Management - TRPC Router (get, update profile)
+- ✅ User Preferences Form Component with Currency & Timezone selection
+- ✅ User Profile Form Component with Name, Bio, and Image URL
+- ✅ User Preferences & Profile Hooks with React Query integration
+- ✅ Settings Page - Unified settings dashboard with Profile & Preferences sections
 
 _Last Updated: December 25, 2025_

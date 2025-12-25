@@ -1,74 +1,57 @@
-# Expense Tracker - Complete Schema Analysis
+# User Schema and Related Schemas
 
-## Overview
+**PostgreSQL** with **Drizzle ORM** and **better-auth**.
 
-PostgreSQL database with Drizzle ORM. **29 tables** organized into 12 schema files using **snake_case** naming convention throughout.
+## Core Tables
 
-## Core Entities (4 domains)
+| Table | Columns | Purpose |
+|-------|---------|---------|
+| **user** | id, name, email (UNIQUE), emailVerified, image, createdAt, updatedAt | Core identity |
+| **session** | id, token (UNIQUE), userId (FK), expiresAt, ipAddress, userAgent | Token-based sessions |
+| **account** | id, userId (FK), providerId, password, accessToken, refreshToken | OAuth + Email/Password |
+| **verification** | id, identifier, value, expiresAt | Email verification & password reset |
+| **userProfile** (1:1) | id, user_id (UNIQUE FK), name, description, image_url | Extended profile |
+| **userPreferences** (1:1) | id, user_id (UNIQUE FK), currency (USD), timezone (UTC) | Locale settings |
+| **userSettings** (1:1) | id, user_id (UNIQUE FK), max_profiles | Account limits |
+| **userBankAccount** (1:M) | id, user_id (FK), bankId (FK), bankAccountTypeId (FK), name | Linked bank accounts |
 
-### 1️⃣ Authentication (4 tables)
+## Financial Records
 
-- `user` - Core user identity
-- `session` - Token-based sessions
-- `account` - OAuth providers
-- `verification` - Email verification
-
-### 2️⃣ User Extensions (4 tables)
-
-- `user_profile` - Extended user info (name, avatar, bio)
-- `user_preferences` - Currency & timezone settings
-- `user_settings` - Account limits (max_profiles)
-- `user_bank_account` - Linked bank accounts
-
-### 3️⃣ Financial Core (5 tables)
-
-- `expense` - Individual transactions
-- `expense_category` - Categories (Groceries, Rent, Travel)
-- `income` - Income records
-- `income_source` - Sources (Salary, Freelance)
-- `budget` - Time-bound budget limits with start/end months
-
-### 4️⃣ Supporting Data (16 tables)
-
-**Banking**: `banks`, `bank_account_types`, `bank_address`
-**Currency**: `currency`, `currency_exchange_snapshot`
-**Payments**: `payment_provider`, `payment_methods`
-**Investments**: `investment_types`, `investment_platforms`
-**Address**: `address`, `city`, `state`, `country`
-**Other**: `platform_type`
+| Table | Purpose |
+|-------|---------|
+| **expense** | User expenses (userId FK, categoryId FK, amount) |
+| **income** | User income (userId FK, sourceId FK, amount) |
+| **budget** | Time-bound budgets (userId FK, amount, startMonth, endMonth) |
 
 ## Key Design Patterns
 
-| Pattern             | Details                                                  |
-| ------------------- | -------------------------------------------------------- |
-| **Cascade Delete**  | User deletion removes all related data                   |
-| **Soft References** | Categories removed → expense.category_id = null          |
-| **Audit Trail**     | All tables have `created_at`, `updated_at`, `deleted_at` |
-| **UUID Keys**       | All PK use `crypto.randomUUID()`                         |
-| **Relations**       | 19/29 tables have Drizzle relations defined              |
+- **UUID Keys** - All PKs use `crypto.randomUUID()`
+- **Cascade Delete** - User deletion removes all related data
+- **One-to-One** - Profile/Preferences/Settings enforced via UNIQUE constraints on `user_id`
+- **Soft References** - Category/Budget deletion uses `onDelete: "set null"` (preserves expenses)
+- **Audit Trail** - All tables have `createdAt` and `updatedAt`
+- **Multiple Auth** - Supports OAuth, Email/Password, Email verification
 
-## Notable Features
+## Schema Relationships
 
-| Feature                   | Tables                             | Details                                                 |
-| ------------------------- | ---------------------------------- | ------------------------------------------------------- |
-| **Multi-Currency**        | currency, currencyExchangeSnapshot | Full exchange rate tracking with JSONB                  |
-| **Recurring Support**     | expense                            | `is_recurring` flag for repeat transactions             |
-| **Budget Tracking**       | expense, budget                    | Expenses linked to monthly budgets                      |
-| **Indian Banking**        | banks                              | IFSC, MICR, IIN codes + service flags (ACH, APBS, NACH) |
-| **Payment Flexibility**   | paymentMethods, paymentProvider    | Multiple payment methods per provider                   |
-| **Address Normalization** | address, city, state, country      | Hierarchical structure prevents duplication             |
+```
+user (hub)
+├── session (1:M) - Token-based sessions
+├── account (1:M) - OAuth/Email auth
+├── verification - Email verification tokens
+├── userProfile (1:1) - Extended profile
+├── userPreferences (1:1) - Currency/Timezone
+├── userSettings (1:1) - Account limits
+├── userBankAccount (1:M) → banks, bankAccountTypes
+├── expense (1:M) → expenseCategory
+├── income (1:M) → incomeSource
+└── budget (1:M)
+```
 
-## Tech Stack
+## Files
 
-- **ORM**: Drizzle ORM v0.x
-- **Database**: PostgreSQL
-- **Migrations**: Timestamp-based, auto-generated
-
-## Database Hygiene ✅
-
-- ✅ No circular references
-- ✅ Proper cascade handling
-- ✅ Audit timestamps on all tables
-- ✅ Soft delete support (`deleted_at`)
-- ✅ All relations bidirectional where needed
-- ✅ Index-friendly design
+- **Auth Schema:** [auth-schema.ts](lib/db/schema/auth-schema.ts)
+- **User Extensions:** [user-extended.schema.ts](lib/db/schema/user-extended.schema.ts)
+- **Financial:** [expenses.schema.ts](lib/db/schema/expenses.schema.ts), [income.schema.ts](lib/db/schema/income.schema.ts), [budget.schema.ts](lib/db/schema/budget.schema.ts)
+- **Auth Config:** [lib/auth.ts](lib/auth.ts)
+- **Drizzle Config:** [drizzle.config.ts](drizzle.config.ts)
