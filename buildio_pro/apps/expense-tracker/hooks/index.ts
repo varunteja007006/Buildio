@@ -47,3 +47,11 @@ export {
   useDashboardRecentTransactions,
   useDashboardTopCategories,
 } from "./use-dashboard-queries";
+
+// User hooks
+export {
+  useUserPreferencesQuery,
+  useUpdateUserPreferences,
+  useUserProfileQuery,
+  useUpdateUserProfile,
+} from "./use-user-queries";

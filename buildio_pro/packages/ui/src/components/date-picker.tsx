@@ -13,6 +13,10 @@ import {
   PopoverTrigger,
 } from "@workspace/ui/components/popover";
 
+/**
+ * Standalone date picker component.
+ * A simple, uncontrolled calendar-based date selection popover.
+ */
 interface DatePickerProps {
   value?: Date;
   onChange?: (date: Date | undefined) => void;
@@ -27,12 +31,12 @@ function DatePicker({
   placeholder = "Pick a date",
   disabled = false,
   className,
-}: DatePickerProps) {
+}: Readonly<DatePickerProps>) {
   return (
     <Popover>
       <PopoverTrigger asChild>
         <Button
-          variant={"outline"}
+          variant="outline"
           className={cn(
             "w-full justify-start text-left font-normal",
             !value && "text-muted-foreground",

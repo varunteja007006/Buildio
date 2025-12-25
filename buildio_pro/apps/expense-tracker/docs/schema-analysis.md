@@ -4,24 +4,24 @@
 
 ## Core Tables
 
-| Table | Columns | Purpose |
-|-------|---------|---------|
-| **user** | id, name, email (UNIQUE), emailVerified, image, createdAt, updatedAt | Core identity |
-| **session** | id, token (UNIQUE), userId (FK), expiresAt, ipAddress, userAgent | Token-based sessions |
-| **account** | id, userId (FK), providerId, password, accessToken, refreshToken | OAuth + Email/Password |
-| **verification** | id, identifier, value, expiresAt | Email verification & password reset |
-| **userProfile** (1:1) | id, user_id (UNIQUE FK), name, description, image_url | Extended profile |
-| **userPreferences** (1:1) | id, user_id (UNIQUE FK), currency (USD), timezone (UTC) | Locale settings |
-| **userSettings** (1:1) | id, user_id (UNIQUE FK), max_profiles | Account limits |
-| **userBankAccount** (1:M) | id, user_id (FK), bankId (FK), bankAccountTypeId (FK), name | Linked bank accounts |
+| Table                     | Columns                                                              | Purpose                             |
+| ------------------------- | -------------------------------------------------------------------- | ----------------------------------- |
+| **user**                  | id, name, email (UNIQUE), emailVerified, image, createdAt, updatedAt | Core identity                       |
+| **session**               | id, token (UNIQUE), userId (FK), expiresAt, ipAddress, userAgent     | Token-based sessions                |
+| **account**               | id, userId (FK), providerId, password, accessToken, refreshToken     | OAuth + Email/Password              |
+| **verification**          | id, identifier, value, expiresAt                                     | Email verification & password reset |
+| **userProfile** (1:1)     | id, user_id (UNIQUE FK), name, description, image_url                | Extended profile                    |
+| **userPreferences** (1:1) | id, user_id (UNIQUE FK), currency (USD), timezone (UTC)              | Locale settings                     |
+| **userSettings** (1:1)    | id, user_id (UNIQUE FK), max_profiles                                | Account limits                      |
+| **userBankAccount** (1:M) | id, user_id (FK), bankId (FK), bankAccountTypeId (FK), name          | Linked bank accounts                |
 
 ## Financial Records
 
-| Table | Purpose |
-|-------|---------|
-| **expense** | User expenses (userId FK, categoryId FK, amount) |
-| **income** | User income (userId FK, sourceId FK, amount) |
-| **budget** | Time-bound budgets (userId FK, amount, startMonth, endMonth) |
+| Table       | Purpose                                                      |
+| ----------- | ------------------------------------------------------------ |
+| **expense** | User expenses (userId FK, categoryId FK, amount)             |
+| **income**  | User income (userId FK, sourceId FK, amount)                 |
+| **budget**  | Time-bound budgets (userId FK, amount, startMonth, endMonth) |
 
 ## Key Design Patterns
 

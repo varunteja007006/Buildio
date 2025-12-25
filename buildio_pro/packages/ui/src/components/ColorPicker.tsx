@@ -79,6 +79,7 @@ interface ColorPickerProps<
   placeholder?: string;
   description?: string;
   required?: boolean;
+  variant?: "advanced" | "simple";
 
   // Callbacks
   onSelectionChange?: (color: string | undefined) => void;
@@ -122,6 +123,7 @@ export default function ColorPicker<
   placeholder = "Select color...",
   description,
   required = false,
+  variant = "advanced",
   onSelectionChange,
   className,
   disabled = false,
@@ -170,59 +172,82 @@ export default function ColorPicker<
             {label}
             {required && <span className="text-destructive"> *</span>}
           </FormLabel>
-          <Popover open={open} onOpenChange={setOpen}>
-            <PopoverTrigger asChild>
-              <FormControl>
-                <Button
-                  type="button"
-                  variant="outline"
+          {variant === "simple" ? (
+            <FormControl>
+              <div className="flex items-center gap-3">
+                <input
+                  type="color"
+                  value={field.value || "#ffffff"}
+                  onChange={(e) => {
+                    field.onChange(e.target.value);
+                    onSelectionChange?.(e.target.value);
+                  }}
                   disabled={disabled}
                   className={cn(
-                    "w-full justify-start gap-2",
-                    !field.value && "text-muted-foreground",
+                    "h-10 w-16 rounded-md border border-input bg-background cursor-pointer disabled:cursor-not-allowed disabled:opacity-50",
+                    "focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
                   )}
-                >
-                  <div
-                    className="h-5 w-5 rounded border border-gray-300 flex-shrink-0"
-                    style={{ backgroundColor: field.value || "#f3f4f6" }}
-                  />
-                  {field.value ? getColorName(field.value) : placeholder}
-                  <PaletteIcon className="ml-auto h-4 w-4 shrink-0 opacity-50" />
-                </Button>
-              </FormControl>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-3" align="start">
-              <div className="space-y-3">
-                <Compact
-                  color={field.value || "#ffffff"}
-                  colors={VEHICLE_COLORS}
-                  onChange={(color) => handleColorChange(color, field)}
-                  style={{
-                    boxShadow: "none",
-                    background: "transparent",
-                  }}
                 />
-
-                {field.value && (
-                  <div className="border-t pt-3">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={() => {
-                        field.onChange("");
-                        onSelectionChange?.("");
-                        setOpen(false);
-                      }}
-                      className="w-full"
-                    >
-                      Clear Color
-                    </Button>
-                  </div>
-                )}
+                <span className="text-sm text-muted-foreground">
+                  {field.value || "No color selected"}
+                </span>
               </div>
-            </PopoverContent>
-          </Popover>
+            </FormControl>
+          ) : (
+            <Popover open={open} onOpenChange={setOpen}>
+              <PopoverTrigger asChild>
+                <FormControl>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    disabled={disabled}
+                    className={cn(
+                      "w-full justify-start gap-2",
+                      !field.value && "text-muted-foreground",
+                    )}
+                  >
+                    <div
+                      className="h-5 w-5 rounded border border-gray-300 flex-shrink-0"
+                      style={{ backgroundColor: field.value || "#f3f4f6" }}
+                    />
+                    {field.value ? getColorName(field.value) : placeholder}
+                    <PaletteIcon className="ml-auto h-4 w-4 shrink-0 opacity-50" />
+                  </Button>
+                </FormControl>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-3" align="start">
+                <div className="space-y-3">
+                  <Compact
+                    color={field.value || "#ffffff"}
+                    colors={VEHICLE_COLORS}
+                    onChange={(color) => handleColorChange(color, field)}
+                    style={{
+                      boxShadow: "none",
+                      background: "transparent",
+                    }}
+                  />
+
+                  {field.value && (
+                    <div className="border-t pt-3">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          field.onChange("");
+                          onSelectionChange?.("");
+                          setOpen(false);
+                        }}
+                        className="w-full"
+                      >
+                        Clear Color
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              </PopoverContent>
+            </Popover>
+          )}
           {description && <FormDescription>{description}</FormDescription>}
           <FormMessage />
         </FormItem>

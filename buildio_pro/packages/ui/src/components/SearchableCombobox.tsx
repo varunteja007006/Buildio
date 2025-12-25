@@ -1,13 +1,7 @@
 "use client";
 
 import React from "react";
-import {
-  Control,
-  ControllerRenderProps,
-  FieldPath,
-  FieldValues,
-} from "react-hook-form";
-import { Button } from "@workspace/ui/components/button";
+import { Control, FieldPath, FieldValues } from "react-hook-form";
 import {
   FormField,
   FormItem,
@@ -16,37 +10,17 @@ import {
   FormMessage,
   FormDescription,
 } from "@workspace/ui/components/form";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@workspace/ui/components/popover";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@workspace/ui/components/command";
-import { Check, ChevronsUpDown } from "lucide-react";
-import { cn } from "@workspace/ui/lib/utils";
+import Combobox, { type ComboboxOption } from "./combobox";
 
 /**
- * A reusable searchable combobox component for forms.
+ * Form-integrated searchable combobox component for react-hook-form.
  *
- * Features:
- * - Full-text search functionality
- * - TypeScript support with generic form field types
- * - Customizable placeholder, description, and empty state
- * - Optional selection change callback for side effects
- * - Consistent width between trigger and dropdown
- * - Accessible keyboard navigation
+ * Wraps the generic Combobox with form field integration.
  *
  * @example
  * ```tsx
  * const options = [
- *   { value: "1", label: "Option 1", searchValue: "option one" },
+ *   { value: "1", label: "Option 1" },
  *   { value: "2", label: "Option 2" },
  * ];
  *
@@ -55,18 +29,9 @@ import { cn } from "@workspace/ui/lib/utils";
  *   name="fieldName"
  *   label="Select Option"
  *   options={options}
- *   onSelectionChange={(value, option) => {
- *     console.log("Selected:", value, option);
- *   }}
  * />
  * ```
  */
-
-export interface ComboboxOption {
-  value: string;
-  label: string;
-  searchValue?: string; // Optional custom search value
-}
 
 interface SearchableComboboxProps<
   TFieldValues extends FieldValues = FieldValues,
@@ -115,28 +80,6 @@ export default function SearchableCombobox<
   className,
   disabled = false,
 }: Readonly<SearchableComboboxProps<TFieldValues, TName>>) {
-  const [open, setOpen] = React.useState(false);
-
-  const getDisplayValue = (value: string): string => {
-    if (!value) return placeholder;
-    const selectedOption = options.find((option) => option.value === value);
-    return selectedOption?.label || placeholder;
-  };
-
-  const handleSelect = (
-    selectedValue: string,
-    field: ControllerRenderProps<TFieldValues, TName>,
-  ) => {
-    const selectedOption = options.find(
-      (option) => option.value === selectedValue,
-    );
-    field.onChange(selectedValue);
-    setOpen(false);
-
-    // Trigger callback if provided
-    onSelectionChange?.(selectedValue, selectedOption);
-  };
-
   return (
     <FormField
       control={control}
@@ -147,56 +90,23 @@ export default function SearchableCombobox<
             {label}
             {required && <span className="text-red-500 ml-1">*</span>}
           </FormLabel>
-          <Popover open={open} onOpenChange={setOpen}>
-            <PopoverTrigger asChild>
-              <FormControl>
-                <Button
-                  variant="outline"
-                  aria-expanded={open}
-                  disabled={disabled}
-                  className={cn(
-                    "w-full justify-between",
-                    !field.value && "text-muted-foreground",
-                  )}
-                >
-                  {getDisplayValue(field.value)}
-                  <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                </Button>
-              </FormControl>
-            </PopoverTrigger>
-            <PopoverContent
-              className="p-0"
-              align="start"
-              sideOffset={4}
-              style={{ width: "var(--radix-popover-trigger-width)" }}
-            >
-              <Command>
-                <CommandInput placeholder={searchPlaceholder} />
-                <CommandList>
-                  <CommandEmpty>{emptyMessage}</CommandEmpty>
-                  <CommandGroup>
-                    {options.map((option) => (
-                      <CommandItem
-                        key={option.value}
-                        value={option.searchValue || option.label}
-                        onSelect={() => handleSelect(option.value, field)}
-                      >
-                        <Check
-                          className={cn(
-                            "mr-2 h-4 w-4",
-                            option.value === field.value
-                              ? "opacity-100"
-                              : "opacity-0",
-                          )}
-                        />
-                        {option.label}
-                      </CommandItem>
-                    ))}
-                  </CommandGroup>
-                </CommandList>
-              </Command>
-            </PopoverContent>
-          </Popover>
+          <FormControl>
+            <Combobox
+              value={field.value || ""}
+              onValueChange={(value) => {
+                field.onChange(value);
+                const selectedOption = options.find(
+                  (opt) => opt.value === value,
+                );
+                onSelectionChange?.(value, selectedOption);
+              }}
+              options={options}
+              placeholder={placeholder}
+              searchPlaceholder={searchPlaceholder}
+              emptyMessage={emptyMessage}
+              disabled={disabled}
+            />
+          </FormControl>
           {description && <FormDescription>{description}</FormDescription>}
           <FormMessage />
         </FormItem>

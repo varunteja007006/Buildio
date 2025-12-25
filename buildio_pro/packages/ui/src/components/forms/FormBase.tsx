@@ -13,6 +13,7 @@ import {
 export type FormControlProps = {
   label: string;
   description?: string;
+  placeholder?: string;
 };
 
 type FormBaseProps = FormControlProps & {

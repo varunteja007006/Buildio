@@ -5,7 +5,6 @@ import { Toaster } from "@workspace/ui/components/sonner";
 import { Navbar } from "@/components/navbar";
 
 import "./globals.css";
-import { SimpleFooter } from "@workspace/ui/components/footer";
 
 export const metadata: Metadata = {
   title: "Scribble",
@@ -26,7 +25,6 @@ export default function RootLayout({
         <Providers>
           <Navbar />
           <main className="min-h-[(calc(100vh-20rem))]">{children}</main>
-          <SimpleFooter />
           <Toaster />
         </Providers>
       </body>

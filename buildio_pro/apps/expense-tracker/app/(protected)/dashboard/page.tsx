@@ -121,7 +121,9 @@ export default function DashboardPage() {
       <Card>
         <CardHeader>
           <CardTitle>Active Budgets</CardTitle>
-          <CardDescription>Progress of budgets currently active</CardDescription>
+          <CardDescription>
+            Progress of budgets currently active
+          </CardDescription>
         </CardHeader>
         <CardContent>
           {budgetsQuery.isLoading ? (
@@ -145,7 +147,9 @@ export default function DashboardPage() {
                     <span>
                       Remaining: {formatCurrency(Math.max(b.remaining, 0))}
                     </span>
-                    {b.overBudget && <Badge variant="destructive">Over budget</Badge>}
+                    {b.overBudget && (
+                      <Badge variant="destructive">Over budget</Badge>
+                    )}
                   </div>
                 </div>
               ))}
@@ -172,15 +176,26 @@ export default function DashboardPage() {
           ) : recentQuery.data?.length ? (
             <div className="divide-y">
               {recentQuery.data.map((t: any) => (
-                <div key={`${t.type}-${t.id}`} className="flex items-center justify-between py-2">
+                <div
+                  key={`${t.type}-${t.id}`}
+                  className="flex items-center justify-between py-2"
+                >
                   <div className="flex items-center gap-2">
-                    <Badge variant={t.type === "income" ? "default" : "secondary"}>
+                    <Badge
+                      variant={t.type === "income" ? "default" : "secondary"}
+                    >
                       {t.type}
                     </Badge>
                     <span className="font-medium">{t.name}</span>
-                    <span className="text-muted-foreground text-xs">{t.meta?.label}</span>
+                    <span className="text-muted-foreground text-xs">
+                      {t.meta?.label}
+                    </span>
                   </div>
-                  <div className={t.type === "income" ? "text-green-600" : "text-red-600"}>
+                  <div
+                    className={
+                      t.type === "income" ? "text-green-600" : "text-red-600"
+                    }
+                  >
                     {formatCurrency(t.amount)}
                   </div>
                 </div>
@@ -198,7 +213,9 @@ export default function DashboardPage() {
       <Card>
         <CardHeader>
           <CardTitle>Top Categories (Month)</CardTitle>
-          <CardDescription>Highest spending categories this month</CardDescription>
+          <CardDescription>
+            Highest spending categories this month
+          </CardDescription>
         </CardHeader>
         <CardContent>
           {topCategoriesQuery.isLoading ? (
@@ -211,7 +228,9 @@ export default function DashboardPage() {
                 <div key={c.id} className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <span className="font-medium">{c.name}</span>
-                    <span className="text-muted-foreground text-xs">{c.count} txns</span>
+                    <span className="text-muted-foreground text-xs">
+                      {c.count} txns
+                    </span>
                   </div>
                   <div>{formatCurrency(c.totalSpent)}</div>
                 </div>

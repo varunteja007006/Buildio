@@ -125,7 +125,8 @@ export const dashboardRouter = createTRPCRouter({
       const allocated = numericToNumber(b.budgetAmount);
       const spent = spendByBudget.get(b.id) || 0;
       const remaining = allocated - spent;
-      const percentSpent = allocated > 0 ? Math.round((spent / allocated) * 100) : 0;
+      const percentSpent =
+        allocated > 0 ? Math.round((spent / allocated) * 100) : 0;
       return {
         id: b.id,
         name: b.name,
@@ -193,7 +194,10 @@ export const dashboardRouter = createTRPCRouter({
       with: { category: true },
     });
 
-    const totals = new Map<string, { name: string; amount: number; count: number }>();
+    const totals = new Map<
+      string,
+      { name: string; amount: number; count: number }
+    >();
 
     for (const e of expenses) {
       const cat = (e as any).category;
@@ -206,7 +210,12 @@ export const dashboardRouter = createTRPCRouter({
     }
 
     const result = Array.from(totals.entries())
-      .map(([id, v]) => ({ id, name: v.name, totalSpent: v.amount, count: v.count }))
+      .map(([id, v]) => ({
+        id,
+        name: v.name,
+        totalSpent: v.amount,
+        count: v.count,
+      }))
       .sort((a, b) => b.totalSpent - a.totalSpent)
       .slice(0, 5);
 

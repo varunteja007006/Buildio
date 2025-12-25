@@ -1,6 +1,13 @@
 "use client";
 
-import { ChevronsUpDown, LogOut } from "lucide-react";
+import {
+  BadgeCheck,
+  Bell,
+  ChevronsUpDown,
+  CreditCard,
+  LogOut,
+  Sparkles,
+} from "lucide-react";
 
 import {
   Avatar,
@@ -23,36 +30,15 @@ import {
   useSidebar,
 } from "@workspace/ui/components/sidebar";
 
-import { NotificationModal } from "@workspace/ui/components/notifications/notification-modal";
-import { PricingModal } from "@workspace/ui/components/pricing/pricing-modal";
-import { BillingModal } from "@workspace/ui/components/billing/billing-modal";
-import { AccountModal } from "@workspace/ui/components/account/account-modal";
-
-export type NavUserProps = {
+export function NavUser({
+  user,
+}: {
   user: {
     name: string;
     email: string;
     avatar: string;
   };
-  signOut: () => void;
-  userNavConfig?: {
-    showPricingModal?: boolean;
-    showAccountModal?: boolean;
-    showBillingModal?: boolean;
-    showNotificationModal?: boolean;
-  };
-};
-
-export function NavUser({
-  user,
-  signOut,
-  userNavConfig = {
-    showPricingModal: true,
-    showAccountModal: true,
-    showBillingModal: true,
-    showNotificationModal: true,
-  },
-}: Readonly<NavUserProps>) {
+}) {
   const { isMobile } = useSidebar();
 
   return (
@@ -66,9 +52,7 @@ export function NavUser({
             >
               <Avatar className="h-8 w-8 rounded-lg">
                 <AvatarImage src={user.avatar} alt={user.name} />
-                <AvatarFallback className="rounded-lg">
-                  {user.name[0]?.toUpperCase()}
-                </AvatarFallback>
+                <AvatarFallback className="rounded-lg">CN</AvatarFallback>
               </Avatar>
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-medium">{user.name}</span>
@@ -87,9 +71,7 @@ export function NavUser({
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <Avatar className="h-8 w-8 rounded-lg">
                   <AvatarImage src={user.avatar} alt={user.name} />
-                  <AvatarFallback className="rounded-lg">
-                    {user.name[0]?.toUpperCase()}
-                  </AvatarFallback>
+                  <AvatarFallback className="rounded-lg">CN</AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-medium">{user.name}</span>
@@ -97,22 +79,30 @@ export function NavUser({
                 </div>
               </div>
             </DropdownMenuLabel>
-            {userNavConfig.showPricingModal && (
-              <>
-                <DropdownMenuSeparator />
-                <DropdownMenuGroup>
-                  <PricingModal />
-                </DropdownMenuGroup>
-                <DropdownMenuSeparator />
-              </>
-            )}
+            <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              {userNavConfig.showAccountModal && <AccountModal />}
-              {userNavConfig.showBillingModal && <BillingModal />}
-              {userNavConfig.showNotificationModal && <NotificationModal />}
+              <DropdownMenuItem>
+                <Sparkles />
+                Upgrade to Pro
+              </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={signOut}>
+            <DropdownMenuGroup>
+              <DropdownMenuItem>
+                <BadgeCheck />
+                Account
+              </DropdownMenuItem>
+              <DropdownMenuItem>
+                <CreditCard />
+                Billing
+              </DropdownMenuItem>
+              <DropdownMenuItem>
+                <Bell />
+                Notifications
+              </DropdownMenuItem>
+            </DropdownMenuGroup>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem>
               <LogOut />
               Log out
             </DropdownMenuItem>

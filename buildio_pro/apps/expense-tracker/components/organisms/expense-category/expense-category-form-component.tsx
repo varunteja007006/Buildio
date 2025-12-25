@@ -18,10 +18,7 @@ import { useAppForm } from "@workspace/ui/components/forms/hooks";
 
 import * as z from "zod";
 
-import {
-  useCreateExpenseCategory,
-  useUpdateExpenseCategory,
-} from "@/hooks";
+import { useCreateExpenseCategory, useUpdateExpenseCategory } from "@/hooks";
 
 const categoryFormSchema = z.object({
   name: z

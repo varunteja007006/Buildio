@@ -1,7 +1,7 @@
 import React from "react";
 
 import { ModeToggle } from "@/components/mode-toggle";
-import { LoginBtn } from "./auth/login-btn";
+import { LoginBtn } from "../auth/login-btn";
 
 export function Navbar() {
   return (

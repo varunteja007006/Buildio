@@ -5,6 +5,10 @@ import {
 import { useFieldContext } from "@workspace/ui/components/forms/hooks";
 import { DatePicker } from "@workspace/ui/components/date-picker";
 
+/**
+ * Form wrapper for the standalone DatePicker.
+ * Integrates with FormBase for consistent styling and validation.
+ */
 export function FormDatePicker(props: Readonly<FormControlProps>) {
   const field = useFieldContext<Date>();
 
@@ -17,7 +21,7 @@ export function FormDatePicker(props: Readonly<FormControlProps>) {
             field.handleChange(date);
           }
         }}
-        placeholder={props.label}
+        placeholder={props.placeholder || props.label}
         disabled={false}
       />
     </FormBase>

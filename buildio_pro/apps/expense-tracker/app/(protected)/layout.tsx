@@ -5,10 +5,9 @@ import {
   SidebarTrigger,
 } from "@workspace/ui/components/sidebar";
 
-import { AppSideBarClient } from "./dashboard/app-sidebar.client";
-import { BreadCrumbsClient } from "./dashboard/breadCrumbs.client";
 import { ModeToggle } from "@/components/mode-toggle";
 import { Protected } from "./protected";
+import { AppSidebar } from "@/components/organisms/sidebar/app-sidebar";
 
 export default async function Layout({
   children,
@@ -16,7 +15,7 @@ export default async function Layout({
   return (
     <Protected>
       <SidebarProvider>
-        <AppSideBarClient />
+        <AppSidebar />
         <SidebarInset>
           <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
             <div className="flex flex-1 items-center gap-2 px-4">
@@ -25,7 +24,6 @@ export default async function Layout({
                 orientation="vertical"
                 className="mr-2 data-[orientation=vertical]:h-4"
               />
-              <BreadCrumbsClient />
             </div>
             <div className="pr-2">
               <ModeToggle />
