@@ -22,26 +22,21 @@ import {
 } from "@workspace/ui/components/card";
 import { Badge } from "@workspace/ui/components/badge";
 
-import { useTRPC } from "@/lib/trpc-client";
+import { useBudgetList, useActiveBudgets } from "@/hooks";
 import { BudgetDeleteDialog } from "@/components/organisms/budget/budget-delete-dialog";
-import { toast } from "sonner";
-import { useQuery } from "@tanstack/react-query";
 
 export default function BudgetsPage() {
   const [page, setPage] = React.useState(0);
   const [onlyActive, setOnlyActive] = React.useState(false);
   const limit = 10;
-  const trpc = useTRPC();
 
-  const budgetListQuery = useQuery(
-    trpc.budget.budgetList.queryOptions({
-      limit,
-      offset: page * limit,
-      onlyActive,
-    }),
-  );
+  const budgetListQuery = useBudgetList({
+    limit,
+    offset: page * limit,
+    onlyActive,
+  });
 
-  const activeBudgetsQuery = useQuery(trpc.budget.activeBudgets.queryOptions());
+  const activeBudgetsQuery = useActiveBudgets();
 
   const totalPages = budgetListQuery.data?.meta
     ? Math.ceil(budgetListQuery.data.meta.totalItems / limit)
@@ -212,8 +207,7 @@ export default function BudgetsPage() {
                             budgetId={budget.id}
                             budgetName={budget.name}
                             onSuccess={() => {
-                              budgetListQuery.refetch();
-                              activeBudgetsQuery.refetch();
+                              // Queries will auto-invalidate via useDeleteBudget
                             }}
                           />
                         </div>

@@ -16,11 +16,12 @@ import {
 import { Field, FieldGroup } from "@workspace/ui/components/field";
 import { useAppForm } from "@workspace/ui/components/forms/hooks";
 
-import { toast } from "sonner";
 import * as z from "zod";
 
-import { useTRPC } from "@/lib/trpc-client";
-import { useMutation } from "@tanstack/react-query";
+import {
+  useCreateExpenseCategory,
+  useUpdateExpenseCategory,
+} from "@/hooks";
 
 const categoryFormSchema = z.object({
   name: z
@@ -48,31 +49,18 @@ export function ExpenseCategoryFormComponent({
   initialValues,
 }: ExpenseCategoryFormProps) {
   const router = useRouter();
-  const trpc = useTRPC();
 
-  const createMutation = useMutation(
-    trpc.expenseCategory.createCategory.mutationOptions({
-      onSuccess: () => {
-        toast.success("Expense category created successfully!");
-        router.push("/expense-categories");
-      },
-      onError: (error: any) => {
-        toast.error(error.message || "Failed to create expense category");
-      },
-    }),
-  );
+  const createMutation = useCreateExpenseCategory({
+    onSuccess: () => {
+      router.push("/expense-categories");
+    },
+  });
 
-  const updateMutation = useMutation(
-    trpc.expenseCategory.updateCategory.mutationOptions({
-      onSuccess: () => {
-        toast.success("Expense category updated successfully!");
-        router.push(`/expense-categories/${categoryId}`);
-      },
-      onError: (error: any) => {
-        toast.error(error.message || "Failed to update expense category");
-      },
-    }),
-  );
+  const updateMutation = useUpdateExpenseCategory({
+    onSuccess: () => {
+      router.push(`/expense-categories/${categoryId}`);
+    },
+  });
 
   const form = useAppForm({
     defaultValues: {

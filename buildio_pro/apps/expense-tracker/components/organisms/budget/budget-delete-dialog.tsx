@@ -3,7 +3,6 @@
 import * as React from "react";
 import { useState } from "react";
 import { Loader2, Trash2 } from "lucide-react";
-import { useMutation } from "@tanstack/react-query";
 
 import { Button } from "@workspace/ui/components/button";
 import {
@@ -18,8 +17,7 @@ import {
   AlertDialogTrigger,
 } from "@workspace/ui/components/alert-dialog";
 
-import { useTRPC } from "@/lib/trpc-client";
-import { toast } from "sonner";
+import { useDeleteBudget } from "@/hooks";
 
 interface BudgetDeleteDialogProps {
   budgetId: string;
@@ -33,20 +31,13 @@ export function BudgetDeleteDialog({
   onSuccess,
 }: BudgetDeleteDialogProps) {
   const [open, setOpen] = useState(false);
-  const trpc = useTRPC();
 
-  const deleteMutation = useMutation(
-    trpc.budget.deleteBudget.mutationOptions({
-      onSuccess: () => {
-        toast.success("Budget deleted successfully");
-        setOpen(false);
-        onSuccess?.();
-      },
-      onError: (error: any) => {
-        toast.error(error.message || "Failed to delete budget");
-      },
-    }),
-  );
+  const deleteMutation = useDeleteBudget({
+    onSuccess: () => {
+      setOpen(false);
+      onSuccess?.();
+    },
+  });
 
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>

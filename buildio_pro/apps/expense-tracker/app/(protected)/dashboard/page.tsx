@@ -3,7 +3,6 @@
 import React from "react";
 import Link from "next/link";
 import { Loader2, TrendingDown, TrendingUp, Wallet } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
 import { Button } from "@workspace/ui/components/button";
 import {
   Card,
@@ -15,19 +14,18 @@ import {
 import { Badge } from "@workspace/ui/components/badge";
 import { Progress } from "@workspace/ui/components/progress";
 import { formatCurrency } from "@workspace/ui/lib/currency.utils";
-import { useTRPC } from "@/lib/trpc-client";
+import {
+  useDashboardSummary,
+  useDashboardBudgets,
+  useDashboardRecentTransactions,
+  useDashboardTopCategories,
+} from "@/hooks";
 
 export default function DashboardPage() {
-  const trpc = useTRPC();
-
-  const summaryQuery = useQuery(trpc.dashboard.overviewSummary.queryOptions());
-  const budgetsQuery = useQuery(
-    trpc.dashboard.activeBudgetsWithProgress.queryOptions(),
-  );
-  const recentQuery = useQuery(trpc.dashboard.recentTransactions.queryOptions());
-  const topCategoriesQuery = useQuery(
-    trpc.dashboard.topCategoriesThisMonth.queryOptions(),
-  );
+  const summaryQuery = useDashboardSummary();
+  const budgetsQuery = useDashboardBudgets();
+  const recentQuery = useDashboardRecentTransactions();
+  const topCategoriesQuery = useDashboardTopCategories();
 
   const isLoading =
     summaryQuery.isLoading ||
