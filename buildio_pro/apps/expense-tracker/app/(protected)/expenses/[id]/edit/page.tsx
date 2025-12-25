@@ -9,9 +9,7 @@ interface EditExpensePageProps {
   }>;
 }
 
-export default function EditExpensePage({
-  params,
-}: EditExpensePageProps) {
+export default function EditExpensePage({ params }: EditExpensePageProps) {
   const { id } = use(params);
   return (
     <div className="space-y-6">
