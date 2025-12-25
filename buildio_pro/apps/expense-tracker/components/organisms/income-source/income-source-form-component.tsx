@@ -22,75 +22,54 @@ import * as z from "zod";
 import { useTRPC } from "@/lib/trpc-client";
 import { useMutation } from "@tanstack/react-query";
 
-const budgetFormSchema = z
-  .object({
-    name: z
-      .string()
-      .min(3, "Budget name must be at least 3 characters.")
-      .max(100, "Budget name must be at most 100 characters."),
-    description: z
-      .string()
-      .max(500, "Description must be at most 500 characters.")
-      .default(""),
-    budgetAmount: z
-      .string()
-      .min(1, "Budget amount is required")
-      .refine((val) => !isNaN(Number(val)) && Number(val) > 0, {
-        message: "Budget amount must be a positive number",
-      }),
-    startMonth: z.date({ message: "Start month is required" }),
-    endMonth: z.date({ message: "End month is required" }),
-  })
-  .refine(
-    (data) => {
-      return data.endMonth > data.startMonth;
-    },
-    {
-      message: "End month must be after start month",
-      path: ["endMonth"],
-    },
-  );
+const sourceFormSchema = z.object({
+  name: z
+    .string()
+    .min(1, "Income source name is required")
+    .max(255, "Income source name must be at most 255 characters"),
+  description: z
+    .string()
+    .max(500, "Description must be at most 500 characters")
+    .default(""),
+});
 
-interface BudgetFormProps {
+interface IncomeSourceFormProps {
   mode: "create" | "edit";
-  budgetId?: string;
+  sourceId?: string;
   initialValues?: {
     name?: string;
     description?: string;
-    budgetAmount?: string;
-    startMonth?: Date;
-    endMonth?: Date;
   };
 }
 
-export function BudgetFormComponent({
+export function IncomeSourceFormComponent({
   mode,
-  budgetId,
+  sourceId,
   initialValues,
-}: BudgetFormProps) {
+}: IncomeSourceFormProps) {
   const router = useRouter();
   const trpc = useTRPC();
 
   const createMutation = useMutation(
-    trpc.budget.createBudget.mutationOptions({
+    trpc.incomeSource.createSource.mutationOptions({
       onSuccess: () => {
-        toast.success("Budget created successfully!");
-        router.push("/budgets");
+        toast.success("Income source created successfully!");
+        router.push("/income-sources");
       },
       onError: (error: any) => {
-        toast.error(error.message || "Failed to create budget");
+        toast.error(error.message || "Failed to create income source");
       },
     }),
   );
 
   const updateMutation = useMutation(
-    trpc.budget.updateBudget.mutationOptions({
+    trpc.incomeSource.updateSource.mutationOptions({
       onSuccess: () => {
-        toast.success("Budget updated successfully!");
-        router.push(`/budgets/${budgetId}`);
+        toast.success("Income source updated successfully!");
+        router.push(`/income-sources/${sourceId}`);
       },
       onError: (error: any) => {
-        toast.error(error.message || "Failed to update budget");
+        toast.error(error.message || "Failed to update income source");
       },
     }),
   );
@@ -99,13 +78,10 @@ export function BudgetFormComponent({
     defaultValues: {
       name: initialValues?.name || "",
       description: initialValues?.description || "",
-      budgetAmount: initialValues?.budgetAmount || "",
-      startMonth: initialValues?.startMonth || undefined,
-      endMonth: initialValues?.endMonth || undefined,
     },
     validators: {
       onSubmit: ({ value }) => {
-        const result = budgetFormSchema.safeParse(value);
+        const result = sourceFormSchema.safeParse(value);
         if (!result.success) {
           return result.error.format();
         }
@@ -117,18 +93,12 @@ export function BudgetFormComponent({
         createMutation.mutate({
           name: value.name,
           description: value.description,
-          budgetAmount: value.budgetAmount,
-          startMonth: value.startMonth!,
-          endMonth: value.endMonth!,
         });
-      } else if (mode === "edit" && budgetId) {
+      } else if (mode === "edit" && sourceId) {
         updateMutation.mutate({
-          budgetId,
+          sourceId,
           name: value.name,
           description: value.description,
-          budgetAmount: value.budgetAmount,
-          startMonth: value.startMonth!,
-          endMonth: value.endMonth!,
         });
       }
     },
@@ -140,17 +110,17 @@ export function BudgetFormComponent({
     <Card className="w-full max-w-2xl mx-auto">
       <CardHeader>
         <CardTitle>
-          {mode === "create" ? "Create Budget" : "Edit Budget"}
+          {mode === "create" ? "Create Income Source" : "Edit Income Source"}
         </CardTitle>
         <CardDescription>
           {mode === "create"
-            ? "Set up a new budget to track your spending"
-            : "Update your budget details"}
+            ? "Add a new source to categorize your income"
+            : "Update source information"}
         </CardDescription>
       </CardHeader>
       <CardContent>
         <form
-          id="budget-form"
+          id="source-form"
           onSubmit={(e) => {
             e.preventDefault();
             form.handleSubmit();
@@ -158,26 +128,12 @@ export function BudgetFormComponent({
         >
           <FieldGroup>
             <form.AppField name="name">
-              {(field) => <field.Input label="Budget Name" />}
+              {(field) => <field.Input label="Source Name" />}
             </form.AppField>
 
             <form.AppField name="description">
               {(field) => <field.Textarea label="Description (Optional)" />}
             </form.AppField>
-
-            <form.AppField name="budgetAmount">
-              {(field) => <field.Input label="Budget Amount" />}
-            </form.AppField>
-
-            <div className="grid gap-4 sm:grid-cols-2">
-              <form.AppField name="startMonth">
-                {(field) => <field.DatePicker label="Start Month" />}
-              </form.AppField>
-
-              <form.AppField name="endMonth">
-                {(field) => <field.DatePicker label="End Month" />}
-              </form.AppField>
-            </div>
           </FieldGroup>
         </form>
       </CardContent>
@@ -191,16 +147,16 @@ export function BudgetFormComponent({
           >
             Cancel
           </Button>
-          <Button type="submit" form="budget-form" disabled={isSubmitting}>
+          <Button type="submit" form="source-form" disabled={isSubmitting}>
             {isSubmitting ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 {mode === "create" ? "Creating..." : "Updating..."}
               </>
             ) : mode === "create" ? (
-              "Create Budget"
+              "Create Source"
             ) : (
-              "Update Budget"
+              "Update Source"
             )}
           </Button>
         </Field>

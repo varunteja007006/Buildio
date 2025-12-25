@@ -2,7 +2,15 @@
 
 import * as React from "react";
 import { useParams, useRouter } from "next/navigation";
-import { Loader2, ArrowLeft, Pencil, Calendar, DollarSign, TrendingUp, TrendingDown } from "lucide-react";
+import {
+  Loader2,
+  ArrowLeft,
+  Pencil,
+  Calendar,
+  DollarSign,
+  TrendingUp,
+  TrendingDown,
+} from "lucide-react";
 import Link from "next/link";
 
 import { Button } from "@workspace/ui/components/button";
@@ -26,7 +34,7 @@ export default function BudgetDetailPage() {
   const trpc = useTRPC();
 
   const budgetQuery = useQuery(
-    trpc.budget.budgetDetails.queryOptions({ budgetId })
+    trpc.budget.budgetDetails.queryOptions({ budgetId }),
   );
 
   if (budgetQuery.isLoading) {
@@ -60,9 +68,8 @@ export default function BudgetDetailPage() {
   const isActive =
     new Date() >= new Date(budget.startMonth) &&
     new Date() <= new Date(budget.endMonth);
-  const percentageUsed = totals.allocated > 0
-    ? (totals.spent / totals.allocated) * 100
-    : 0;
+  const percentageUsed =
+    totals.allocated > 0 ? (totals.spent / totals.allocated) * 100 : 0;
 
   const getProgressColor = () => {
     if (percentageUsed >= 100) return "text-red-500";
@@ -176,8 +183,8 @@ export default function BudgetDetailPage() {
                   percentageUsed >= 100
                     ? "bg-red-500"
                     : percentageUsed >= 80
-                    ? "bg-orange-500"
-                    : "bg-green-500"
+                      ? "bg-orange-500"
+                      : "bg-green-500"
                 }`}
                 style={{ width: `${Math.min(percentageUsed, 100)}%` }}
               />

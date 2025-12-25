@@ -2,7 +2,15 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { Loader2, Plus, Calendar, DollarSign, Trash2, Pencil, Eye } from "lucide-react";
+import {
+  Loader2,
+  Plus,
+  Calendar,
+  DollarSign,
+  Trash2,
+  Pencil,
+  Eye,
+} from "lucide-react";
 
 import { Button } from "@workspace/ui/components/button";
 import {
@@ -30,12 +38,10 @@ export default function BudgetsPage() {
       limit,
       offset: page * limit,
       onlyActive,
-    })
+    }),
   );
 
-  const activeBudgetsQuery = useQuery(
-    trpc.budget.activeBudgets.queryOptions()
-  );
+  const activeBudgetsQuery = useQuery(trpc.budget.activeBudgets.queryOptions());
 
   const totalPages = budgetListQuery.data?.meta
     ? Math.ceil(budgetListQuery.data.meta.totalItems / limit)
@@ -176,7 +182,10 @@ export default function BudgetsPage() {
                             <div className="flex items-center gap-1">
                               <Calendar className="h-4 w-4" />
                               <span>
-                                {new Date(budget.startMonth).toLocaleDateString()} -{" "}
+                                {new Date(
+                                  budget.startMonth,
+                                ).toLocaleDateString()}{" "}
+                                -{" "}
                                 {new Date(budget.endMonth).toLocaleDateString()}
                               </span>
                             </div>

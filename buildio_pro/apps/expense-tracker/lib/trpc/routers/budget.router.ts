@@ -8,7 +8,9 @@ import { zodSchema } from "@/lib/db/zod-schema";
 
 const budgetAmountSchema = z
   .union([z.string(), z.number()])
-  .transform((value) => (typeof value === "number" ? value.toString() : value.trim()))
+  .transform((value) =>
+    typeof value === "number" ? value.toString() : value.trim(),
+  )
   .refine((value) => Number(value) > 0, {
     message: "Budget amount must be greater than zero",
   });
@@ -160,7 +162,10 @@ export const budgetRouter = createTRPCRouter({
       const { budgetId, ...updates } = input;
 
       const existingBudget = await db.query.budget.findFirst({
-        where: and(eq(dbSchema.budget.id, budgetId), eq(dbSchema.budget.userId, user.id)),
+        where: and(
+          eq(dbSchema.budget.id, budgetId),
+          eq(dbSchema.budget.userId, user.id),
+        ),
       });
 
       if (!existingBudget) {
@@ -169,17 +174,30 @@ export const budgetRouter = createTRPCRouter({
 
       const payload = {
         ...(updates.name !== undefined ? { name: updates.name } : {}),
-        ...(updates.description !== undefined ? { description: updates.description } : {}),
-        ...(updates.budgetAmount !== undefined ? { budgetAmount: updates.budgetAmount } : {}),
-        ...(updates.startMonth !== undefined ? { startMonth: updates.startMonth } : {}),
-        ...(updates.endMonth !== undefined ? { endMonth: updates.endMonth } : {}),
+        ...(updates.description !== undefined
+          ? { description: updates.description }
+          : {}),
+        ...(updates.budgetAmount !== undefined
+          ? { budgetAmount: updates.budgetAmount }
+          : {}),
+        ...(updates.startMonth !== undefined
+          ? { startMonth: updates.startMonth }
+          : {}),
+        ...(updates.endMonth !== undefined
+          ? { endMonth: updates.endMonth }
+          : {}),
         updatedAt: new Date(),
       };
 
       const [updatedBudget] = await db
         .update(dbSchema.budget)
         .set(payload)
-        .where(and(eq(dbSchema.budget.id, budgetId), eq(dbSchema.budget.userId, user.id)))
+        .where(
+          and(
+            eq(dbSchema.budget.id, budgetId),
+            eq(dbSchema.budget.userId, user.id),
+          ),
+        )
         .returning();
 
       return updatedBudget;
@@ -192,7 +210,10 @@ export const budgetRouter = createTRPCRouter({
       const { budgetId } = input;
 
       const budgetExists = await db.query.budget.findFirst({
-        where: and(eq(dbSchema.budget.id, budgetId), eq(dbSchema.budget.userId, user.id)),
+        where: and(
+          eq(dbSchema.budget.id, budgetId),
+          eq(dbSchema.budget.userId, user.id),
+        ),
       });
 
       if (!budgetExists) {
@@ -218,7 +239,12 @@ export const budgetRouter = createTRPCRouter({
 
       await db
         .delete(dbSchema.budget)
-        .where(and(eq(dbSchema.budget.id, budgetId), eq(dbSchema.budget.userId, user.id)));
+        .where(
+          and(
+            eq(dbSchema.budget.id, budgetId),
+            eq(dbSchema.budget.userId, user.id),
+          ),
+        );
 
       return { success: true };
     }),
@@ -230,7 +256,10 @@ export const budgetRouter = createTRPCRouter({
       const { budgetId } = input;
 
       const budget = await db.query.budget.findFirst({
-        where: and(eq(dbSchema.budget.id, budgetId), eq(dbSchema.budget.userId, user.id)),
+        where: and(
+          eq(dbSchema.budget.id, budgetId),
+          eq(dbSchema.budget.userId, user.id),
+        ),
       });
 
       if (!budget) {

@@ -3,9 +3,17 @@ import { z } from "zod/v4";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../init";
 
 import { budgetRouter } from "./budget.router";
+import { expenseRouter } from "./expense.router";
+import { expenseCategoryRouter } from "./expense-category.router";
+import { incomeRouter } from "./income.router";
+import { incomeSourceRouter } from "./income-source.router";
 
 export const appRouter = createTRPCRouter({
   budget: budgetRouter,
+  expense: expenseRouter,
+  expenseCategory: expenseCategoryRouter,
+  income: incomeRouter,
+  incomeSource: incomeSourceRouter,
   hello: publicProcedure.query(async () => {
     return {
       message: "hello world",

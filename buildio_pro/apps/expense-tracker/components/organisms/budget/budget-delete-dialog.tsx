@@ -45,7 +45,7 @@ export function BudgetDeleteDialog({
       onError: (error: any) => {
         toast.error(error.message || "Failed to delete budget");
       },
-    })
+    }),
   );
 
   return (

@@ -11,7 +11,9 @@ import {
   userBankAccount,
 } from "../schema/user-extended.schema";
 
-export const createUserPreferencesSchema = createInsertSchema(userPreferences).omit({
+export const createUserPreferencesSchema = createInsertSchema(
+  userPreferences,
+).omit({
   user_id: true,
 });
 
@@ -43,11 +45,15 @@ export const updateUserSettingsSchema = createUpdateSchema(userSettings).omit({
 
 export const selectUserSettingsSchema = createSelectSchema(userSettings);
 
-export const createUserBankAccountSchema = createInsertSchema(userBankAccount).omit({
+export const createUserBankAccountSchema = createInsertSchema(
+  userBankAccount,
+).omit({
   user_id: true,
 });
 
-export const updateUserBankAccountSchema = createUpdateSchema(userBankAccount).omit({
+export const updateUserBankAccountSchema = createUpdateSchema(
+  userBankAccount,
+).omit({
   user_id: true,
 });
 

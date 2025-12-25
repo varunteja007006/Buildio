@@ -10,11 +10,15 @@ export const createPaymentProviderSchema = createInsertSchema(paymentProvider);
 export const updatePaymentProviderSchema = createUpdateSchema(paymentProvider);
 export const selectPaymentProviderSchema = createSelectSchema(paymentProvider);
 
-export const createPaymentMethodSchema = createInsertSchema(paymentMethods).omit({
+export const createPaymentMethodSchema = createInsertSchema(
+  paymentMethods,
+).omit({
   paymentProviderId: true,
 });
 
-export const updatePaymentMethodSchema = createUpdateSchema(paymentMethods).omit({
+export const updatePaymentMethodSchema = createUpdateSchema(
+  paymentMethods,
+).omit({
   paymentProviderId: true,
 });
 

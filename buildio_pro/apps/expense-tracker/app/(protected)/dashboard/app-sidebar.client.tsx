@@ -7,6 +7,10 @@ import {
   Bot,
   GalleryVerticalEnd,
   SquareTerminal,
+  Wallet,
+  Receipt,
+  TrendingUp,
+  Tag,
 } from "lucide-react";
 
 import {
@@ -30,10 +34,44 @@ const data = {
   },
   navMain: [
     {
+      title: "Financial Management",
+      url: "#",
+      icon: Wallet,
+      isActive: true,
+      items: [
+        {
+          title: "Budgets",
+          url: "/budgets",
+        },
+        {
+          title: "Expenses",
+          url: "/expenses",
+        },
+        {
+          title: "Income",
+          url: "/income",
+        },
+      ],
+    },
+    {
+      title: "Categories & Sources",
+      url: "#",
+      icon: Tag,
+      items: [
+        {
+          title: "Expense Categories",
+          url: "/expense-categories",
+        },
+        {
+          title: "Income Sources",
+          url: "/income-sources",
+        },
+      ],
+    },
+    {
       title: "Playground",
       url: "#",
       icon: SquareTerminal,
-      isActive: true,
       items: [
         {
           title: "History",

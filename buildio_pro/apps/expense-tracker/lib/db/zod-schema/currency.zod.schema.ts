@@ -4,10 +4,7 @@ import {
   createInsertSchema,
   createUpdateSchema,
 } from "drizzle-zod";
-import {
-  currency,
-  currencyExchangeSnapshot,
-} from "../schema/currency.schema";
+import { currency, currencyExchangeSnapshot } from "../schema/currency.schema";
 
 export const createCurrencySchema = createInsertSchema(currency);
 export const updateCurrencySchema = createUpdateSchema(currency);
@@ -25,5 +22,6 @@ export const updateCurrencyExchangeSnapshotSchema = createUpdateSchema(
   currencyId: true,
 });
 
-export const selectCurrencyExchangeSnapshotSchema =
-  createSelectSchema(currencyExchangeSnapshot);
+export const selectCurrencyExchangeSnapshotSchema = createSelectSchema(
+  currencyExchangeSnapshot,
+);

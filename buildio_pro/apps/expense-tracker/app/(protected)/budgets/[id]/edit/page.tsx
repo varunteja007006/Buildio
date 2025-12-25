@@ -16,7 +16,7 @@ export default function EditBudgetPage() {
   const trpc = useTRPC();
 
   const budgetQuery = useQuery(
-    trpc.budget.budgetDetails.queryOptions({ budgetId })
+    trpc.budget.budgetDetails.queryOptions({ budgetId }),
   );
 
   if (budgetQuery.isLoading) {
