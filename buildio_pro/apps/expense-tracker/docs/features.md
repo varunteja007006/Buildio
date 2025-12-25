@@ -114,11 +114,11 @@
 
 ### Overview Dashboard
 
-- [ ] Display current month summary (income vs expenses)
-- [ ] Show active budgets with progress bars
-- [ ] Display recent transactions (last 5-10)
-- [ ] Highlight over-budget categories
-- [ ] Show total balance (all-time income - expenses)
+- [x] Display current month summary (income vs expenses)
+- [x] Show active budgets with progress bars
+- [x] Display recent transactions (last 5-10)
+- [x] Highlight over-budget categories
+- [x] Show total balance (all-time income - expenses)
 
 ### Financial Reports
 
@@ -268,9 +268,9 @@
 ## Progress Tracking
 
 **Total Features:** 100+  
-**Completed:** 34 (Budget + Expense + Category + Income + Source Management - Full CRUD with UI Components)  
+**Completed:** 39 (Budget + Expense + Category + Income + Source Management + Overview Dashboard - Full CRUD with UI Components)  
 **In Progress:** 0  
-**Not Started:** 66+
+**Not Started:** 61+
 
 ### Recently Completed
 
@@ -300,5 +300,8 @@
 - ✅ TRPC API Routes for Income Source Management
 - ✅ Next.js 15+ Params Type Compatibility (Promise-based params handling)
 - ✅ All 6 Form & Details Components Fully Functional with Server-Side Data Fetching
+- ✅ Dashboard - Overview Dashboard (Monthly Summary, Active Budgets, Recent Transactions, Top Categories)
+- ✅ Dashboard TRPC Router with 4 endpoints (overviewSummary, activeBudgetsWithProgress, recentTransactions, topCategoriesThisMonth)
+- ✅ Dashboard UI with Summary Cards, Budget Progress Bars, Over-Budget Badges, and Quick Links
 
 _Last Updated: December 25, 2025_

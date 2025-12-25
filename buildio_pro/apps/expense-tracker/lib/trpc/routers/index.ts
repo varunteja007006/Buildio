@@ -7,8 +7,10 @@ import { expenseRouter } from "./expense.router";
 import { expenseCategoryRouter } from "./expense-category.router";
 import { incomeRouter } from "./income.router";
 import { incomeSourceRouter } from "./income-source.router";
+import { dashboardRouter } from "./dashboard.router";
 
 export const appRouter = createTRPCRouter({
+  dashboard: dashboardRouter,
   budget: budgetRouter,
   expense: expenseRouter,
   expenseCategory: expenseCategoryRouter,
