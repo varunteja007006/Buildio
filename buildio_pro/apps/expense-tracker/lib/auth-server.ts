@@ -8,7 +8,7 @@ import { auth } from "./auth";
 
 export const getAuthSession = cache(async () => {
   const session = await auth.api.getSession({
-     headers: await headers(),
+    headers: await headers(),
   });
   return session;
 });

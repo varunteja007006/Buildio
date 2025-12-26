@@ -13,7 +13,7 @@ export const Protected = ({
   const { data, isPending } = useSession();
 
   if (isPending) {
-    return <GoofyLoader />
+    return <GoofyLoader />;
   }
 
   if (data?.user) {

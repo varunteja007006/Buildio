@@ -11,7 +11,6 @@ export default async function Page() {
     redirect("/dashboard");
   }
 
-
   return (
     <div className="flex flex-col items-center justify-center h-screen">
       <GoogleLoginBtn size={"lg"}>Continue with Google</GoogleLoginBtn>

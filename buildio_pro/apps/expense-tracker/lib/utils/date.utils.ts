@@ -4,4 +4,4 @@ export const localDateFormat = (date: Date) => {
     month: "long",
     day: "numeric",
   });
-}
+};

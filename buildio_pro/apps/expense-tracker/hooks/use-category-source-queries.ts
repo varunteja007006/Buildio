@@ -120,5 +120,3 @@ export function useIncomeSourceList(params: { limit: number; offset: number }) {
   const trpc = useTRPC();
   return useQuery(trpc.incomeSource.listSources.queryOptions(params));
 }
-
-

@@ -164,7 +164,7 @@ export const incomeSourceRouter = createTRPCRouter({
           message: "Income source not found",
         });
       }
-      
+
       const [updatedSource] = await db
         .update(dbSchema.incomeSource)
         .set({

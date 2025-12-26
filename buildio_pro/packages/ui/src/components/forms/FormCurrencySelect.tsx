@@ -5,9 +5,7 @@ import {
   FormControlProps,
 } from "@workspace/ui/components/forms/FormBase";
 import { useFieldContext } from "@workspace/ui/components/forms/hooks";
-import {
-  CurrencyPicker,
-} from "@workspace/ui/components/currency-picker";
+import { CurrencyPicker } from "@workspace/ui/components/currency-picker";
 
 interface FormCurrencySelectProps extends FormControlProps {
   showCurrency?: boolean;
@@ -29,7 +27,6 @@ export function FormCurrencySelect({
   className,
   ...props
 }: FormCurrencySelectProps) {
-
   const field = useFieldContext<string>();
   const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid;
   const currencySelectRef = React.useRef<HTMLDivElement>(null);
