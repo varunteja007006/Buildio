@@ -22,7 +22,7 @@ export function IncomeSourceDeleteDialog({ sourceId }: { sourceId: string }) {
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <DeleteBtn />
+        <DeleteBtn iconOnly />
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>

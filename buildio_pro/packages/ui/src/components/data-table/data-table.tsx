@@ -27,10 +27,9 @@ import {
 
 import { DataTablePagination } from "@workspace/ui/components/data-table/data-table-pagination";
 import { DataTableViewOptions } from "@workspace/ui/components/data-table/data-table-column-toggle";
-import { ColumnResizer } from "@workspace/ui/components/data-table/column-resizer";
 
 import { cn } from "@workspace/ui/lib/utils";
-import DebouncedInput from "@workspace/ui/components/debounced-input.js";
+import DebouncedInput from "@workspace/ui/components/debounced-input";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -81,7 +80,7 @@ export function DataTable<TData, TValue>({
   });
 
   return (
-    <div className="w-full border p-2 rounded space-y-4 bg-card">
+    <div className={cn("border p-2 rounded space-y-4 bg-card w-full")}>
       <div className="flex items-center justify-between mb-2">
         <DebouncedInput
           placeholder="Search all..."
@@ -94,7 +93,7 @@ export function DataTable<TData, TValue>({
           <DataTableViewOptions table={table} />
         </div>
       </div>
-      <Table style={{ width: table.getTotalSize(), minWidth: "100%" }}>
+      <Table>
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow key={headerGroup.id}>
@@ -107,7 +106,6 @@ export function DataTable<TData, TValue>({
                           header.column.columnDef.header,
                           header.getContext(),
                         )}
-                    <ColumnResizer header={header} />
                   </TableHead>
                 );
               })}

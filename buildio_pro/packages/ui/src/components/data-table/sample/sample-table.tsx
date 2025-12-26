@@ -1,5 +1,8 @@
-import { DataTable } from "../data-table.js";
-import { columns, payments } from "./data.js";
+import { DataTable } from "@workspace/ui/components/data-table/data-table";
+import {
+  columns,
+  payments,
+} from "@workspace/ui/components/data-table/sample/data";
 
 export default function SampleTable() {
   return (

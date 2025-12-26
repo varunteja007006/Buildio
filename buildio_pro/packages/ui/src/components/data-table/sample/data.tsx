@@ -34,7 +34,7 @@ type Payment = {
   mileage?: number;
 };
 
-export const payments: Payment[] = generatePayments(50);
+export const payments: Payment[] = generatePayments(500);
 
 function generatePayments(count: number): Payment[] {
   const statuses = ["pending", "processing", "success", "failed"] as const;
