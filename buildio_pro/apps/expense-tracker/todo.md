@@ -1,3 +1,0 @@
-# Todo
-
-[ ] - Update Footer details
