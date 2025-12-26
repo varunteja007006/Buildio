@@ -4,18 +4,6 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTRPC } from "@/lib/trpc-client";
 import { toast } from "sonner";
 
-// Query keys for user preferences
-const userPreferencesKeys = {
-  all: ["userPreferences"] as const,
-  preferences: () => [...userPreferencesKeys.all, "preferences"] as const,
-};
-
-// Query keys for user profile
-const userProfileKeys = {
-  all: ["userProfile"] as const,
-  profile: () => [...userProfileKeys.all, "profile"] as const,
-};
-
 // Get user preferences
 export function useUserPreferencesQuery() {
   const trpc = useTRPC();
@@ -31,11 +19,11 @@ export function useUpdateUserPreferences(options?: {
   const queryClient = useQueryClient();
 
   return useMutation(
-    trpc.userPreferences.updatePreferences.mutationOptions({
+    trpc.userPreferences.upsertPreferences.mutationOptions({
       onSuccess: () => {
         toast.success("Preferences updated successfully!");
         queryClient.invalidateQueries({
-          queryKey: userPreferencesKeys.all,
+          queryKey: trpc.userPreferences.getPreferences.queryKey(),
         });
         options?.onSuccess?.();
       },
@@ -66,7 +54,7 @@ export function useUpdateUserProfile(options?: {
       onSuccess: () => {
         toast.success("Profile updated successfully!");
         queryClient.invalidateQueries({
-          queryKey: userProfileKeys.all,
+          queryKey: trpc.userProfile.getProfile.queryKey(),
         });
         options?.onSuccess?.();
       },

@@ -48,11 +48,7 @@ export const userProfileRouter = createTRPCRouter({
       const [updated] = await db
         .update(dbSchema.userProfile)
         .set({
-          ...(input.name && { name: input.name }),
-          ...(input.description !== undefined && {
-            description: input.description,
-          }),
-          ...(input.image_url && { image_url: input.image_url }),
+          ...input,
           updatedAt: new Date(),
         })
         .where(eq(dbSchema.userProfile.user_id, user.id))

@@ -6,6 +6,7 @@ import { FormSelect } from "@workspace/ui/components/forms/FormSelect";
 import { FormCheckbox } from "@workspace/ui/components/forms/FormCheckbox";
 import { FormDatePicker } from "@workspace/ui/components/forms/FormDatePicker";
 import { FormCurrencyInput } from "@workspace/ui/components/forms/FormCurrencyInput";
+import { FormCurrencySelect } from "@workspace/ui/components/forms/FormCurrencySelect";
 
 const { fieldContext, formContext, useFieldContext, useFormContext } =
   createFormHookContexts();
@@ -18,6 +19,7 @@ const { useAppForm } = createFormHook({
     Checkbox: FormCheckbox,
     DatePicker: FormDatePicker,
     CurrencyInput: FormCurrencyInput,
+    CurrencySelect: FormCurrencySelect,
   },
   formComponents: {},
   fieldContext,

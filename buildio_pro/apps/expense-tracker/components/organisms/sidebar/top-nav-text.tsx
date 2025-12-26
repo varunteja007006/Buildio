@@ -38,6 +38,18 @@ const pageHeader = {
     title: "Dashboard",
     description: "Overview of your financial activities",
   },
+  support: {
+    title: "Support",
+    description: "Get help and support for using the Expense Tracker app",
+  },
+  feedback: {
+    title: "Feedback",
+    description: "Provide feedback to help us improve the Expense Tracker app",
+  },
+  donate: {
+    title: "Donate",
+    description: "Support the development of the Expense Tracker app",
+  },
   default: {
     title: "",
     description: "",

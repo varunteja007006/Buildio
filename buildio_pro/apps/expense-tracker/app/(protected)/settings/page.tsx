@@ -1,12 +1,16 @@
-import { Metadata } from "next";
-import { Separator } from "@workspace/ui/components/separator";
-
 import {
-  UserPreferencesFormComponent,
-  UserProfileFormComponent,
-} from "@/components/organisms/user";
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@workspace/ui/components/tabs";
+
+import { Metadata } from "next";
 
 import { appConfig } from "@/app/appConfig";
+
+import ProfileSection from "@/components/settings/profile-section";
+import RegionalSettings from "@/components/settings/regional-section";
 
 export const metadata: Metadata = {
   title: `Settings | ${appConfig.name}`,
@@ -15,30 +19,17 @@ export const metadata: Metadata = {
 
 export default function SettingsPage() {
   return (
-    <div className="space-y-6">
-      <div className="space-y-8">
-        {/* Profile Section */}
-        <div className="space-y-4">
-          <div>
-            <h2 className="text-lg font-semibold">Account Profile</h2>
-            <p className="text-sm text-muted-foreground">
-              Update your profile information and avatar
-            </p>
-          </div>
-          <UserProfileFormComponent />
-        </div>
-
-        {/* Preferences Section */}
-        <div className="space-y-4">
-          <div>
-            <h2 className="text-lg font-semibold">Regional Settings</h2>
-            <p className="text-sm text-muted-foreground">
-              Manage your currency and timezone preferences
-            </p>
-          </div>
-          <UserPreferencesFormComponent />
-        </div>
-      </div>
-    </div>
+    <Tabs defaultValue="profile" className="w-full">
+      <TabsList>
+        <TabsTrigger value="profile">Profile</TabsTrigger>
+        <TabsTrigger value="regional">Regional</TabsTrigger>
+      </TabsList>
+      <TabsContent value="profile">
+        <ProfileSection />
+      </TabsContent>
+      <TabsContent value="regional">
+        <RegionalSettings />
+      </TabsContent>
+    </Tabs>
   );
 }

@@ -28,7 +28,7 @@ export const userPreferencesRouter = createTRPCRouter({
     return preferences;
   }),
 
-  updatePreferences: protectedProcedure
+  upsertPreferences: protectedProcedure
     .input(updatePreferencesInput)
     .mutation(async ({ input, ctx }) => {
       const { db, dbSchema, user } = ctx;
@@ -38,17 +38,24 @@ export const userPreferencesRouter = createTRPCRouter({
       });
 
       if (!preferences) {
-        throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "User preferences not found",
-        });
+        const [created] = await db
+          .insert(dbSchema.userPreferences)
+          .values({
+            user_id: user.id,
+            currency: input.currency,
+            timezone: input.timezone || "UTC",
+            createdAt: new Date(),
+            updatedAt: new Date(),
+          })
+          .returning();
+
+        return created;
       }
 
       const [updated] = await db
         .update(dbSchema.userPreferences)
         .set({
-          ...(input.currency && { currency: input.currency }),
-          ...(input.timezone && { timezone: input.timezone }),
+          ...input,
           updatedAt: new Date(),
         })
         .where(eq(dbSchema.userPreferences.user_id, user.id))

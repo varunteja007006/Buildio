@@ -17,27 +17,7 @@ import { useAppForm } from "@workspace/ui/components/forms/hooks";
 
 import * as z from "zod";
 import { useUserPreferencesQuery, useUpdateUserPreferences } from "@/hooks";
-
-const TIMEZONES = [
-  "UTC",
-  "America/New_York",
-  "America/Los_Angeles",
-  "America/Chicago",
-  "America/Denver",
-  "Europe/London",
-  "Europe/Paris",
-  "Europe/Berlin",
-  "Asia/Tokyo",
-  "Asia/Shanghai",
-  "Asia/Hong_Kong",
-  "Asia/Singapore",
-  "Australia/Sydney",
-  "Australia/Melbourne",
-  "India/Kolkata",
-  "Asia/Dubai",
-];
-
-const CURRENCIES = ["USD", "EUR", "GBP", "JPY", "INR", "CAD", "AUD", "CHF"];
+import { SubmitBtn } from "@/components/atoms/submit-btn";
 
 const preferencesFormSchema = z.object({
   currency: z.string().length(3, "Invalid currency code"),
@@ -46,6 +26,7 @@ const preferencesFormSchema = z.object({
 
 export function UserPreferencesFormComponent() {
   const { data: preferences, isLoading } = useUserPreferencesQuery();
+
   const updateMutation = useUpdateUserPreferences();
 
   const form = useAppForm({
@@ -54,13 +35,7 @@ export function UserPreferencesFormComponent() {
       timezone: preferences?.timezone || "UTC",
     },
     validators: {
-      onSubmit: ({ value }) => {
-        const result = preferencesFormSchema.safeParse(value);
-        if (!result.success) {
-          return result.error.format();
-        }
-        return undefined;
-      },
+      onSubmit: preferencesFormSchema,
     },
     onSubmit: async ({ value }) => {
       updateMutation.mutate({
@@ -69,6 +44,8 @@ export function UserPreferencesFormComponent() {
       });
     },
   });
+
+  const isSubmitting = updateMutation.isPending;
 
   React.useEffect(() => {
     if (preferences) {
@@ -93,8 +70,6 @@ export function UserPreferencesFormComponent() {
     );
   }
 
-  const isSubmitting = updateMutation.isPending;
-
   return (
     <Card className="w-full max-w-2xl">
       <CardHeader>
@@ -111,44 +86,17 @@ export function UserPreferencesFormComponent() {
         >
           <FieldGroup>
             <form.AppField name="currency">
-              {(field) => (
-                <field.Select label="Currency">
-                  {CURRENCIES.map((currency) => (
-                    <option key={currency} value={currency}>
-                      {currency}
-                    </option>
-                  ))}
-                </field.Select>
-              )}
-            </form.AppField>
-
-            <form.AppField name="timezone">
-              {(field) => (
-                <field.Select label="Timezone">
-                  {TIMEZONES.map((tz) => (
-                    <option key={tz} value={tz}>
-                      {tz}
-                    </option>
-                  ))}
-                </field.Select>
-              )}
+              {(field) => <field.CurrencySelect label="Currency" />}
             </form.AppField>
           </FieldGroup>
         </form>
       </CardContent>
       <CardFooter>
-        <Field orientation="horizontal">
-          <Button type="submit" form="preferences-form" disabled={isSubmitting}>
-            {isSubmitting ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                Saving...
-              </>
-            ) : (
-              "Save Changes"
-            )}
-          </Button>
-        </Field>
+        <SubmitBtn
+          formId="preferences-form"
+          disabled={isSubmitting}
+          loading={isSubmitting}
+        />
       </CardFooter>
     </Card>
   );

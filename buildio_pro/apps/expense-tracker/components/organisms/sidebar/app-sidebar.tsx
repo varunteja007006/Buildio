@@ -2,17 +2,18 @@
 
 import * as React from "react";
 import {
-  Bot,
-  Frame,
-  HeartPlus,
+  CalendarDays,
+  HandHeart,
+  Landmark,
   LifeBuoy,
-  Map,
-  PieChart,
-  Send,
+  LayoutDashboard,
+  MessageSquareText,
+  PiggyBank,
+  Receipt,
   Settings2,
-  SquareTerminal,
   Wallet,
-  Zap,
+  Tags,
+  TrendingUp,
 } from "lucide-react";
 
 import { NavMain } from "./nav-main";
@@ -32,47 +33,42 @@ import { useSession } from "@/lib/auth-client";
 import { appConfig } from "@/app/appConfig";
 
 const data = {
-  user: {
-    name: "shadcn",
-    email: "m@example.com",
-    avatar: "/avatars/shadcn.jpg",
-  },
   navMain: [
-    {
-      title: "Dashboard",
-      url: "/dashboard",
-      icon: PieChart,
-    },
     {
       title: "Budgets",
       url: "/budgets",
-      icon: SquareTerminal,
-    },
-    {
-      title: "Expenses",
-      url: "/expenses",
-      icon: Frame,
-    },
-    {
-      title: "Income",
-      url: "/income",
-      icon: HeartPlus,
+      icon: PiggyBank,
     },
     {
       title: "Categories",
       url: "/expense-categories",
-      icon: Map,
+      icon: Tags,
     },
     {
-      title: "Income Sources",
-      url: "/income-sources",
-      icon: Bot,
+      title: "Dashboard",
+      url: "/dashboard",
+      icon: LayoutDashboard,
     },
     {
       title: "Events",
       url: "/events",
-      icon: Zap,
+      icon: CalendarDays,
       isActive: false,
+    },
+    {
+      title: "Expenses",
+      url: "/expenses",
+      icon: Receipt,
+    },
+    {
+      title: "Income",
+      url: "/income",
+      icon: TrendingUp,
+    },
+    {
+      title: "Income Sources",
+      url: "/income-sources",
+      icon: Landmark,
     },
     {
       title: "Settings",
@@ -82,19 +78,19 @@ const data = {
   ],
   navSecondary: [
     {
-      title: "Support",
-      url: "/support",
-      icon: LifeBuoy,
+      url: "/donate",
+      title: "Donate",
+      icon: HandHeart,
     },
     {
       title: "Feedback",
       url: "/feedback",
-      icon: Send,
+      icon: MessageSquareText,
     },
     {
-      url: "/donate",
-      title: "Donate",
-      icon: HeartPlus,
+      title: "Support",
+      url: "/support",
+      icon: LifeBuoy,
     },
   ],
 };

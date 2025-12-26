@@ -56,6 +56,8 @@ interface CurrencyPickerProps {
   options?: Currency[];
   ref?: React.Ref<HTMLDivElement>;
   name?: string;
+  id?: string;
+  onBlur?: React.FocusEventHandler<HTMLButtonElement>;
 }
 
 /**
@@ -74,6 +76,9 @@ export function CurrencyPicker({
   showSymbol = true,
   className,
   options,
+  id,
+  name,
+  onBlur,
 }: Readonly<CurrencyPickerProps>) {
   const [open, setOpen] = useState(false);
   const [selectedCurrency, setSelectedCurrency] = useState<
@@ -143,7 +148,7 @@ export function CurrencyPicker({
     return (
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger className={triggerClasses} disabled={disabled} asChild>
-          <button type="button">
+          <button type="button" id={id} name={name} aria-haspopup="listbox">
             {selectedCurrency ? (
               <div className="flex items-center flex-grow w-0 gap-2 overflow-hidden">
                 {showSymbol && (
@@ -235,7 +240,7 @@ export function CurrencyPicker({
       }}
       disabled={disabled}
     >
-      <SelectTrigger className={cn("w-full", className)}>
+      <SelectTrigger className={cn("w-full", className)} onBlur={onBlur}>
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>
       <SelectContent>
