@@ -1,57 +1,64 @@
-# User Schema and Related Schemas
+# Schema, Router & Validation Analysis
 
-**PostgreSQL** with **Drizzle ORM** and **better-auth**.
+**Stack:** PostgreSQL (Drizzle ORM), tRPC (Routers), Zod (Validation).
 
-## Core Tables
+## 1. Database Schema (Drizzle)
 
-| Table                     | Columns                                                              | Purpose                             |
-| ------------------------- | -------------------------------------------------------------------- | ----------------------------------- |
-| **user**                  | id, name, email (UNIQUE), emailVerified, image, createdAt, updatedAt | Core identity                       |
-| **session**               | id, token (UNIQUE), userId (FK), expiresAt, ipAddress, userAgent     | Token-based sessions                |
-| **account**               | id, userId (FK), providerId, password, accessToken, refreshToken     | OAuth + Email/Password              |
-| **verification**          | id, identifier, value, expiresAt                                     | Email verification & password reset |
-| **userProfile** (1:1)     | id, user_id (UNIQUE FK), name, description, image_url                | Extended profile                    |
-| **userPreferences** (1:1) | id, user_id (UNIQUE FK), currency (USD), timezone (UTC)              | Locale settings                     |
-| **userSettings** (1:1)    | id, user_id (UNIQUE FK), max_profiles                                | Account limits                      |
-| **userBankAccount** (1:M) | id, user_id (FK), bankId (FK), bankAccountTypeId (FK), name          | Linked bank accounts                |
+### Core Identity & Auth
+| Table | Key Columns | Description |
+| :--- | :--- | :--- |
+| **user** | `id`, `email`, `name` | Central identity. |
+| **session** | `token`, `userId`, `expiresAt` | Auth sessions. |
+| **account** | `providerId`, `accessToken` | OAuth accounts. |
+| **verification** | `identifier`, `value` | Email/Password verification. |
+| **userProfile** | `userId`, `name`, `image_url` | Extended profile info (1:1). |
+| **userPreferences** | `userId`, `currency`, `timezone` | User settings (1:1). |
+| **userSettings** | `userId`, `max_profiles` | System limits (1:1). |
 
-## Financial Records
+### Financial Domain
+| Table | Key Columns | Description |
+| :--- | :--- | :--- |
+| **expense** | `userId`, `amount`, `categoryId`, `budget`, `isRecurring` | Individual expense records. |
+| **expenseCategory** | `name`, `description` | Categories for expenses. |
+| **income** | `userId`, `amount`, `sourceId`, `paymentMethodId` | Income records. |
+| **incomeSource** | `name`, `description` | Sources of income (e.g. Salary). |
+| **budget** | `userId`, `amount`, `startMonth`, `endMonth` | Time-bound financial goals. |
 
-| Table       | Purpose                                                      |
-| ----------- | ------------------------------------------------------------ |
-| **expense** | User expenses (userId FK, categoryId FK, amount)             |
-| **income**  | User income (userId FK, sourceId FK, amount)                 |
-| **budget**  | Time-bound budgets (userId FK, amount, startMonth, endMonth) |
+### Relationships
+- **Cascade Delete:** Deleting a `user` removes all related data.
+- **Set Null:** Deleting a `category` or `budget` keeps the expense but unlinks it.
+- **Audit:** All tables track `createdAt` and `updatedAt`.
 
-## Key Design Patterns
+## 2. API Routers (tRPC)
 
-- **UUID Keys** - All PKs use `crypto.randomUUID()`
-- **Cascade Delete** - User deletion removes all related data
-- **One-to-One** - Profile/Preferences/Settings enforced via UNIQUE constraints on `user_id`
-- **Soft References** - Category/Budget deletion uses `onDelete: "set null"` (preserves expenses)
-- **Audit Trail** - All tables have `createdAt` and `updatedAt`
-- **Multiple Auth** - Supports OAuth, Email/Password, Email verification
+Located in `lib/trpc/routers`. All procedures are **protected** (require auth).
 
-## Schema Relationships
+| Router | Key Procedures | Logic Notes |
+| :--- | :--- | :--- |
+| **expense** | `list`, `create`, `update`, `delete` | Validates amount > 0. Filters by category/budget. |
+| **budget** | `list`, `create`, `update` | Validates `endMonth > startMonth`. Active budget filtering. |
+| **income** | `list`, `create`, `update` | Similar to expense. Links to payment methods. |
+| **dashboard** | `overviewSummary` | Aggregates monthly income/expense totals. |
+| **userProfile** | `get`, `update` | Manages extended user details. |
+| **userPreferences** | `get`, `update` | Handles currency/timezone settings. |
 
-```
-user (hub)
-├── session (1:M) - Token-based sessions
-├── account (1:M) - OAuth/Email auth
-├── verification - Email verification tokens
-├── userProfile (1:1) - Extended profile
-├── userPreferences (1:1) - Currency/Timezone
-├── userSettings (1:1) - Account limits
-├── userBankAccount (1:M) → banks, bankAccountTypes
-├── expense (1:M) → expenseCategory
-├── income (1:M) → incomeSource
-└── budget (1:M)
-```
+## 3. Validation (Zod)
 
-## Files
+### Base Schemas (`lib/db/zod-schema`)
+- Generated from Drizzle schemas using `drizzle-zod`.
+- Exports `createInsertSchema`, `createSelectSchema`, `createUpdateSchema`.
+- **Pattern:** `createExpenseSchema` omits `userId` (inferred from session).
 
-- **Auth Schema:** [auth-schema.ts](lib/db/schema/auth-schema.ts)
-- **User Extensions:** [user-extended.schema.ts](lib/db/schema/user-extended.schema.ts)
-- **Financial:** [expenses.schema.ts](lib/db/schema/expenses.schema.ts), [income.schema.ts](lib/db/schema/income.schema.ts), [budget.schema.ts](lib/db/schema/budget.schema.ts)
-- **Auth Config:** [lib/auth.ts](lib/auth.ts)
-- **Drizzle Config:** [drizzle.config.ts](drizzle.config.ts)
+### Input Schemas (in Routers)
+- **Refinement:** Routers extend base schemas with custom logic.
+- **Custom Types:**
+  - `expenseAmountSchema`: Handles string/number input, ensures > 0.
+  - Date validation: Ensures logical ranges (Start < End).
+  - `uuid`: Enforces UUID format for IDs.
+
+## File Structure Map
+
+- **Schema Definitions:** `lib/db/schema/*.schema.ts`
+- **Zod Generators:** `lib/db/zod-schema/*.zod.schema.ts`
+- **API Routers:** `lib/trpc/routers/*.router.ts`
+- **tRPC Context:** `lib/trpc/init.ts`
