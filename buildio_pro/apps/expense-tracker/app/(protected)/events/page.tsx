@@ -2,7 +2,7 @@ import { EventListComponent } from "@/components/organisms/event/event-list-comp
 
 export default function EventsPage() {
   return (
-    <div className="container mx-auto py-8">
+    <div className="container mx-auto">
       <EventListComponent />
     </div>
   );

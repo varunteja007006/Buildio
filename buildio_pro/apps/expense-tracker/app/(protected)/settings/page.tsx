@@ -21,8 +21,6 @@ export default function SettingsPage() {
         </p>
       </div>
 
-      <Separator />
-
       <div className="space-y-8">
         {/* Profile Section */}
         <div className="space-y-4">
@@ -35,7 +33,6 @@ export default function SettingsPage() {
           <UserProfileFormComponent />
         </div>
 
-        <Separator />
 
         {/* Preferences Section */}
         <div className="space-y-4">
