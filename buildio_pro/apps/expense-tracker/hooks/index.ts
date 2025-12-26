@@ -33,11 +33,6 @@ export {
   useCreateExpenseCategory,
   useUpdateExpenseCategory,
   useDeleteExpenseCategory,
-  useIncomeSourceList,
-  useIncomeSourceDetails,
-  useCreateIncomeSource,
-  useUpdateIncomeSource,
-  useDeleteIncomeSource,
 } from "./use-category-source-queries";
 
 // Dashboard hooks
@@ -59,3 +54,12 @@ export {
   useUserProfileQuery,
   useUpdateUserProfile,
 } from "./use-user-queries";
+
+export {
+  useDeleteIncomeSource,
+  useIncomeSourceAnalytics,
+  useIncomeSourceList,
+  useCreateIncomeSource,
+  useUpdateIncomeSource,
+  useIncomeSourceDetails,
+} from "./use-income-sources";

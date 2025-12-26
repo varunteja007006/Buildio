@@ -1,10 +1,8 @@
 import { TRPCError } from "@trpc/server";
-import { and, count, eq } from "drizzle-orm";
+import { count, eq } from "drizzle-orm";
 import z from "zod";
 
 import { createTRPCRouter, protectedProcedure } from "../init";
-
-import { zodSchema } from "@/lib/db/zod-schema";
 
 const createIncomeSourceInput = z.object({
   name: z.string().min(1, "Income source name is required").max(255),
@@ -141,8 +139,9 @@ export const incomeSourceRouter = createTRPCRouter({
       const [source] = await db
         .insert(dbSchema.incomeSource)
         .values({
-          name: input.name,
-          description: input.description || null,
+          ...input,
+          createdAt: new Date(),
+          updatedAt: new Date(),
         })
         .returning();
 
@@ -165,18 +164,13 @@ export const incomeSourceRouter = createTRPCRouter({
           message: "Income source not found",
         });
       }
-
-      const payload = {
-        ...(updates.name !== undefined ? { name: updates.name } : {}),
-        ...(updates.description !== undefined
-          ? { description: updates.description }
-          : {}),
-        updatedAt: new Date(),
-      };
-
+      
       const [updatedSource] = await db
         .update(dbSchema.incomeSource)
-        .set(payload)
+        .set({
+          ...input,
+          updatedAt: new Date(),
+        })
         .where(eq(dbSchema.incomeSource.id, sourceId))
         .returning();
 

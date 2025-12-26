@@ -35,45 +35,23 @@ import {
 } from "@workspace/ui/components/chart";
 import { formatCurrency } from "@workspace/ui/lib/currency.utils";
 
-import { toast } from "sonner";
-import { useTRPC } from "@/lib/trpc-client";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useIncomeSourceAnalytics, useIncomeSourceList } from "@/hooks";
+import { IncomeSourceDetailsComponent } from "./income-source-details-dialog";
+import { IncomeSourceFormComponent } from "./income-source-form-dialog";
+import { IncomeSourceDeleteDialog } from "./income-source-delete-dialog";
 
 export function IncomeSourceListComponent() {
   const router = useRouter();
-  const trpc = useTRPC();
 
   const [limit, setLimit] = React.useState(10);
   const [offset, setOffset] = React.useState(0);
 
-  const { data, isLoading, refetch } = useQuery(
-    trpc.incomeSource.listSources.queryOptions({
-      limit,
-      offset,
-    }),
-  );
+  const { data, isLoading } = useIncomeSourceList({
+    limit,
+    offset,
+  });
 
-  const { data: analyticsData } = useQuery(
-    trpc.incomeSource.getAnalytics.queryOptions({}),
-  );
-
-  const deleteMutation = useMutation(
-    trpc.incomeSource.deleteSource.mutationOptions({
-      onSuccess: () => {
-        toast.success("Income source deleted successfully!");
-        refetch();
-      },
-      onError: (error: any) => {
-        toast.error(error.message || "Failed to delete income source");
-      },
-    }),
-  );
-
-  const handleDelete = (sourceId: string) => {
-    if (window.confirm("Are you sure you want to delete this income source?")) {
-      deleteMutation.mutate({ sourceId });
-    }
-  };
+  const { data: analyticsData } = useIncomeSourceAnalytics();
 
   const sources = data?.data || [];
   const meta = data?.meta;
@@ -81,18 +59,18 @@ export function IncomeSourceListComponent() {
   const currentPage = meta ? Math.floor(meta.offset / meta.limit) + 1 : 1;
 
   const totalSources = analyticsData?.length || 0;
-  const topSource = analyticsData?.reduce(
-    (prev, current) =>
-      prev.totalAmount > current.totalAmount ? prev : current,
-    analyticsData[0] || { sourceName: "N/A", totalAmount: 0 },
-  );
-  const totalEarned =
-    analyticsData?.reduce((sum, item) => sum + item.totalAmount, 0) || 0;
+  // const topSource = analyticsData?.reduce(
+  //   (prev, current) =>
+  //     prev.totalAmount > current.totalAmount ? prev : current,
+  //   analyticsData[0] || { sourceName: "N/A", totalAmount: 0 },
+  // );
+  // const totalEarned =
+  //   analyticsData?.reduce((sum, item) => sum + item.totalAmount, 0) || 0;
 
   return (
     <div className="space-y-6">
       {/* Analytics Section */}
-      {analyticsData && analyticsData.length > 0 && (
+      {/* {analyticsData && analyticsData.length > 0 && (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
           <Card className="col-span-4">
             <CardHeader>
@@ -170,7 +148,7 @@ export function IncomeSourceListComponent() {
             </Card>
           </div>
         </div>
-      )}
+      )} */}
 
       <Card className="w-full">
         <CardHeader>
@@ -201,9 +179,7 @@ export function IncomeSourceListComponent() {
                 </SelectContent>
               </Select>
 
-              <Button onClick={() => router.push("/income-sources/create")}>
-                + Add Income Source
-              </Button>
+              <IncomeSourceFormComponent mode="create" />
             </div>
 
             {/* Table */}
@@ -248,32 +224,20 @@ export function IncomeSourceListComponent() {
                         </TableCell>
                         <TableCell className="text-right">
                           <div className="flex justify-end gap-2">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() =>
-                                router.push(`/income-sources/${source.id}`)
-                              }
-                            >
-                              <Eye className="h-4 w-4" />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() =>
-                                router.push(`/income-sources/${source.id}/edit`)
-                              }
-                            >
-                              <Edit2 className="h-4 w-4" />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => handleDelete(source.id)}
-                              disabled={deleteMutation.isPending}
-                            >
-                              <Trash2 className="h-4 w-4 text-destructive" />
-                            </Button>
+                            <IncomeSourceDetailsComponent
+                              sourceId={source.id}
+                            />
+
+                            <IncomeSourceFormComponent
+                              mode="edit"
+                              sourceId={source.id}
+                              initialValues={{
+                                name: source.name,
+                                description: source.description || "",
+                              }}
+                            />
+
+                            <IncomeSourceDeleteDialog sourceId={source.id} />
                           </div>
                         </TableCell>
                       </TableRow>
