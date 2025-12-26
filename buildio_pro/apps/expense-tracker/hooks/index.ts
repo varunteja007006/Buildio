@@ -46,6 +46,10 @@ export {
   useDashboardBudgets,
   useDashboardRecentTransactions,
   useDashboardTopCategories,
+  useDashboardOverBudgetAnalysis,
+  useDashboardBudgetVsActualHistory,
+  useDashboardMonthlyTrends,
+  useDashboardRecurringExpenses,
 } from "./use-dashboard-queries";
 
 // User hooks

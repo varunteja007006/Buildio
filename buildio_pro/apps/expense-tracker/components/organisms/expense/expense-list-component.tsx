@@ -2,7 +2,16 @@
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
-import { Trash2, Edit2, Eye } from "lucide-react";
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  XAxis,
+  YAxis,
+  Pie,
+  PieChart,
+  Cell,
+} from "recharts";
 
 import { Button } from "@workspace/ui/components/button";
 import {
@@ -13,24 +22,20 @@ import {
   CardTitle,
 } from "@workspace/ui/components/card";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@workspace/ui/components/table";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@workspace/ui/components/select";
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+  ChartLegend,
+  ChartLegendContent,
+} from "@workspace/ui/components/chart";
+import { formatCurrency } from "@workspace/ui/lib/currency.utils";
 
 import { toast } from "sonner";
 import { useTRPC } from "@/lib/trpc-client";
 import { useQuery, useMutation } from "@tanstack/react-query";
+import { TransactionTable, Transaction } from "@/components/transactions/transaction-table";
+import { FilterBar } from "@/components/transactions/filter-bar";
+import { useExpenseCategoryList, useBudgetList } from "@/hooks";
 
 interface ExpenseListComponentProps {
   categoryId?: string;
@@ -38,8 +43,8 @@ interface ExpenseListComponentProps {
 }
 
 export function ExpenseListComponent({
-  categoryId,
-  budgetId,
+  categoryId: initialCategoryId,
+  budgetId: initialBudgetId,
 }: ExpenseListComponentProps) {
   const router = useRouter();
   const trpc = useTRPC();
@@ -48,16 +53,30 @@ export function ExpenseListComponent({
   const [offset, setOffset] = React.useState(0);
   const [sortBy, setSortBy] = React.useState<"date" | "amount">("date");
   const [sortOrder, setSortOrder] = React.useState<"asc" | "desc">("desc");
+  
+  // Filter states
+  const [search, setSearch] = React.useState("");
+  const [selectedCategory, setSelectedCategory] = React.useState<string | undefined>(initialCategoryId);
+  const [selectedBudget, setSelectedBudget] = React.useState<string | undefined>(initialBudgetId);
+
+  // Fetch filters data
+  const { data: categories } = useExpenseCategoryList();
+  const { data: budgets } = useBudgetList();
 
   const { data, isLoading, refetch } = useQuery(
     trpc.expense.listExpenses.queryOptions({
       limit,
       offset,
-      categoryId,
-      budgetId,
+      categoryId: selectedCategory === "all" ? undefined : selectedCategory,
+      budgetId: selectedBudget === "all" ? undefined : selectedBudget,
       sortBy,
       sortOrder,
+      // search, // Assuming the API supports search, if not we might need to filter client side or add it to API
     }),
+  );
+
+  const { data: analyticsData } = useQuery(
+    trpc.expense.getAnalytics.queryOptions({})
   );
 
   const deleteMutation = useMutation(
@@ -83,183 +102,219 @@ export function ExpenseListComponent({
   const totalPages = meta ? Math.ceil(meta.totalItems / meta.limit) : 0;
   const currentPage = meta ? Math.floor(meta.offset / meta.limit) + 1 : 1;
 
+  const COLORS = [
+    "#0088FE",
+    "#00C49F",
+    "#FFBB28",
+    "#FF8042",
+    "#8884d8",
+    "#82ca9d",
+  ];
+
+  // Map expenses to Transaction interface
+  const transactions: Transaction[] = expenses.map((expense: any) => ({
+    id: expense.id,
+    amount: Number(expense.expenseAmount),
+    date: expense.date,
+    description: expense.description,
+    category: expense.category,
+    budget: expense.budget,
+    name: expense.name,
+    type: "expense",
+  }));
+
+  // Filter options
+  const categoryOptions = categories?.map((c) => ({ label: c.name, value: c.id })) || [];
+  const budgetOptions = budgets?.map((b) => ({ label: b.name, value: b.id })) || [];
+
   return (
-    <Card className="w-full">
-      <CardHeader>
-        <CardTitle>Expenses</CardTitle>
-        <CardDescription>Manage and track your expenses</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-4">
-          {/* Controls */}
-          <div className="flex flex-wrap gap-4 items-center justify-between">
-            <div className="flex gap-2">
-              <Select
-                value={String(limit)}
-                onValueChange={(val) => {
-                  setLimit(Number(val));
-                  setOffset(0);
+    <div className="space-y-6">
+      {/* Analytics Section */}
+      {analyticsData && (
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+          {/* Summary Cards */}
+          <div className="col-span-7 grid gap-4 md:grid-cols-3">
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">
+                  Total Spending
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">
+                  {formatCurrency(analyticsData.totalSpending)}
+                </div>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">
+                  Recurring Expenses
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">
+                  {formatCurrency(analyticsData.totalRecurring)}
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Total recurring costs
+                </p>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">
+                  Top Category
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">
+                  {analyticsData.categoryBreakdown[0]?.name || "N/A"}
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  {formatCurrency(
+                    analyticsData.categoryBreakdown[0]?.amount || 0
+                  )}
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Monthly Breakdown Chart */}
+          <Card className="col-span-4">
+            <CardHeader>
+              <CardTitle>Monthly Spending</CardTitle>
+              <CardDescription>Expense breakdown by month</CardDescription>
+            </CardHeader>
+            <CardContent className="pl-2">
+              <ChartContainer
+                config={{
+                  amount: {
+                    label: "Spending",
+                    color: "hsl(var(--chart-1))",
+                  },
                 }}
+                className="h-[300px]"
               >
-                <SelectTrigger className="w-32">
-                  <SelectValue placeholder="Items per page" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="5">5 per page</SelectItem>
-                  <SelectItem value="10">10 per page</SelectItem>
-                  <SelectItem value="25">25 per page</SelectItem>
-                  <SelectItem value="50">50 per page</SelectItem>
-                </SelectContent>
-              </Select>
+                <BarChart data={analyticsData.monthlyBreakdown}>
+                  <CartesianGrid vertical={false} />
+                  <XAxis
+                    dataKey="month"
+                    tickLine={false}
+                    tickMargin={10}
+                    axisLine={false}
+                  />
+                  <YAxis
+                    tickLine={false}
+                    axisLine={false}
+                    tickFormatter={(value) => `$${value}`}
+                  />
+                  <ChartTooltip content={<ChartTooltipContent />} />
+                  <Bar
+                    dataKey="amount"
+                    fill="var(--color-amount)"
+                    radius={[4, 4, 0, 0]}
+                  />
+                </BarChart>
+              </ChartContainer>
+            </CardContent>
+          </Card>
 
-              <Select
-                value={sortBy}
-                onValueChange={(val: any) => setSortBy(val)}
-              >
-                <SelectTrigger className="w-32">
-                  <SelectValue placeholder="Sort by" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="date">By Date</SelectItem>
-                  <SelectItem value="amount">By Amount</SelectItem>
-                </SelectContent>
-              </Select>
-
-              <Select
-                value={sortOrder}
-                onValueChange={(val: any) => setSortOrder(val)}
-              >
-                <SelectTrigger className="w-32">
-                  <SelectValue placeholder="Order" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="asc">Ascending</SelectItem>
-                  <SelectItem value="desc">Descending</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <Button onClick={() => router.push("/expenses/create")}>
-              + Add Expense
-            </Button>
-          </div>
-
-          {/* Table */}
-          <div className="border rounded-lg overflow-hidden">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Name</TableHead>
-                  <TableHead className="text-right">Amount</TableHead>
-                  <TableHead>Category</TableHead>
-                  <TableHead>Account</TableHead>
-                  <TableHead>Recurring</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {isLoading ? (
-                  <TableRow>
-                    <TableCell
-                      colSpan={6}
-                      className="text-center py-8 text-muted-foreground"
-                    >
-                      Loading expenses...
-                    </TableCell>
-                  </TableRow>
-                ) : expenses.length === 0 ? (
-                  <TableRow>
-                    <TableCell
-                      colSpan={6}
-                      className="text-center py-8 text-muted-foreground"
-                    >
-                      No expenses found
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  expenses.map((expense: any) => (
-                    <TableRow key={expense.id}>
-                      <TableCell className="font-medium">
-                        {expense.name}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        ${Number(expense.expenseAmount).toFixed(2)}
-                      </TableCell>
-                      <TableCell>{expense.category?.name || "-"}</TableCell>
-                      <TableCell>{expense.account || "-"}</TableCell>
-                      <TableCell>
-                        {expense.isRecurring ? "Yes" : "No"}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <div className="flex justify-end gap-2">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() =>
-                              router.push(`/expenses/${expense.id}`)
-                            }
-                          >
-                            <Eye className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() =>
-                              router.push(`/expenses/${expense.id}/edit`)
-                            }
-                          >
-                            <Edit2 className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleDelete(expense.id)}
-                            disabled={deleteMutation.isPending}
-                          >
-                            <Trash2 className="h-4 w-4 text-destructive" />
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))
+          {/* Category Breakdown Chart */}
+          <Card className="col-span-3">
+            <CardHeader>
+              <CardTitle>Spending by Category</CardTitle>
+              <CardDescription>Distribution of expenses</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ChartContainer
+                config={Object.fromEntries(
+                  analyticsData.categoryBreakdown
+                    .slice(0, 6)
+                    .map((item, index) => [
+                      item.name,
+                      { label: item.name, color: COLORS[index % COLORS.length] },
+                    ])
                 )}
-              </TableBody>
-            </Table>
-          </div>
-
-          {/* Pagination */}
-          {meta && totalPages > 1 && (
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-muted-foreground">
-                Showing {offset + 1} to{" "}
-                {Math.min(offset + limit, meta.totalItems)} of {meta.totalItems}{" "}
-                expenses
-              </span>
-              <div className="flex gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setOffset(Math.max(0, offset - limit))}
-                  disabled={offset === 0}
-                >
-                  Previous
-                </Button>
-                <span className="text-sm px-4 py-2">
-                  Page {currentPage} of {totalPages}
-                </span>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setOffset(offset + limit)}
-                  disabled={!meta.hasMore}
-                >
-                  Next
-                </Button>
-              </div>
-            </div>
-          )}
+                className="h-[300px]"
+              >
+                <PieChart>
+                  <ChartTooltip content={<ChartTooltipContent hideLabel />} />
+                  <Pie
+                    data={analyticsData.categoryBreakdown}
+                    dataKey="amount"
+                    nameKey="name"
+                    innerRadius={60}
+                    strokeWidth={5}
+                  >
+                    {analyticsData.categoryBreakdown.map((entry, index) => (
+                      <Cell
+                        key={`cell-${index}`}
+                        fill={COLORS[index % COLORS.length]}
+                      />
+                    ))}
+                  </Pie>
+                  <ChartLegend content={<ChartLegendContent />} />
+                </PieChart>
+              </ChartContainer>
+            </CardContent>
+          </Card>
         </div>
-      </CardContent>
-    </Card>
+      )}
+
+      <Card className="w-full">
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+          <div className="space-y-1">
+            <CardTitle>Expenses</CardTitle>
+            <CardDescription>Manage and track your expenses</CardDescription>
+          </div>
+          <Button onClick={() => router.push("/expenses/create")}>
+            + Add Expense
+          </Button>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <FilterBar
+            searchValue={search}
+            onSearchChange={setSearch}
+            categories={categoryOptions}
+            selectedCategory={selectedCategory}
+            onCategoryChange={(val) => {
+                setSelectedCategory(val);
+                setOffset(0);
+            }}
+            budgets={budgetOptions}
+            selectedBudget={selectedBudget}
+            onBudgetChange={(val) => {
+                setSelectedBudget(val);
+                setOffset(0);
+            }}
+            onClearFilters={() => {
+                setSearch("");
+                setSelectedCategory(undefined);
+                setSelectedBudget(undefined);
+                setOffset(0);
+            }}
+          />
+
+          <TransactionTable
+            data={transactions}
+            isLoading={isLoading}
+            pageCount={totalPages}
+            currentPage={currentPage}
+            onPageChange={(page) => setOffset((page - 1) * limit)}
+            onSortChange={(field, order) => {
+                setSortBy(field as any);
+                setSortOrder(order);
+            }}
+            sortField={sortBy}
+            sortOrder={sortOrder}
+            onDelete={handleDelete}
+            onEdit={(id) => router.push(`/expenses/${id}/edit`)}
+            onView={(id) => router.push(`/expenses/${id}`)}
+            type="expense"
+          />
+        </CardContent>
+      </Card>
+    </div>
   );
 }

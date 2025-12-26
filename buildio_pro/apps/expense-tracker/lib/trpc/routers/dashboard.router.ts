@@ -221,4 +221,172 @@ export const dashboardRouter = createTRPCRouter({
 
     return result;
   }),
+
+  overBudgetAnalysis: protectedProcedure.query(async ({ ctx }) => {
+    const { db, dbSchema, user } = ctx;
+    const now = new Date();
+
+    // Get active budgets
+    const budgets = await db.query.budget.findMany({
+      where: and(
+        eq(dbSchema.budget.userId, user.id),
+        lte(dbSchema.budget.startMonth, now),
+        gte(dbSchema.budget.endMonth, now),
+      ),
+    });
+
+    if (budgets.length === 0) return [];
+
+    // Get expenses for these budgets
+    const expenses = await db.query.expense.findMany({
+      where: eq(dbSchema.expense.userId, user.id),
+      with: { category: true },
+    });
+
+    const result = [];
+
+    for (const b of budgets) {
+      const budgetExpenses = expenses.filter((e) => e.budget === b.id);
+      const spent = budgetExpenses.reduce(
+        (acc, e) => acc + numericToNumber(e.expenseAmount),
+        0,
+      );
+      const allocated = numericToNumber(b.budgetAmount);
+
+      if (spent > allocated) {
+        // Analyze categories
+        const catTotals = new Map<string, number>();
+        for (const e of budgetExpenses) {
+          const catName = (e as any).category?.name ?? "Uncategorized";
+          catTotals.set(
+            catName,
+            (catTotals.get(catName) || 0) + numericToNumber(e.expenseAmount),
+          );
+        }
+
+        const topCategories = Array.from(catTotals.entries())
+          .map(([name, amount]) => ({ name, amount }))
+          .sort((a, b) => b.amount - a.amount)
+          .slice(0, 3);
+
+        result.push({
+          budgetId: b.id,
+          budgetName: b.name,
+          allocated,
+          spent,
+          topCategories,
+        });
+      }
+    }
+
+    return result;
+  }),
+
+  budgetVsActualHistory: protectedProcedure.query(async ({ ctx }) => {
+    const { db, dbSchema, user } = ctx;
+    const now = new Date();
+    const sixMonthsAgo = new Date();
+    sixMonthsAgo.setMonth(now.getMonth() - 6);
+
+    // Get budgets ending in the last 6 months
+    const budgets = await db.query.budget.findMany({
+      where: and(
+        eq(dbSchema.budget.userId, user.id),
+        gte(dbSchema.budget.endMonth, sixMonthsAgo),
+        lte(dbSchema.budget.endMonth, now),
+      ),
+      orderBy: (budget, { asc }) => asc(budget.endMonth),
+    });
+
+    // Get expenses
+    const expenses = await db.query.expense.findMany({
+      where: eq(dbSchema.expense.userId, user.id),
+    });
+
+    return budgets.map((b) => {
+      const budgetExpenses = expenses.filter((e) => e.budget === b.id);
+      const spent = budgetExpenses.reduce(
+        (acc, e) => acc + numericToNumber(e.expenseAmount),
+        0,
+      );
+      return {
+        month: b.endMonth.toLocaleString("default", { month: "short" }),
+        budget: numericToNumber(b.budgetAmount),
+        actual: spent,
+      };
+    });
+  }),
+
+  monthlyTrends: protectedProcedure.query(async ({ ctx }) => {
+    const { db, dbSchema, user } = ctx;
+    const now = new Date();
+    const sixMonthsAgo = new Date();
+    sixMonthsAgo.setMonth(now.getMonth() - 5);
+    sixMonthsAgo.setDate(1);
+
+    const expenses = await db.query.expense.findMany({
+      where: and(
+        eq(dbSchema.expense.userId, user.id),
+        gte(dbSchema.expense.createdAt, sixMonthsAgo),
+      ),
+    });
+
+    const incomes = await db.query.income.findMany({
+      where: and(
+        eq(dbSchema.income.userId, user.id),
+        gte(dbSchema.income.createdAt, sixMonthsAgo),
+      ),
+    });
+
+    const data = new Map<string, { income: number; expense: number }>();
+
+    for (let i = 0; i < 6; i++) {
+      const d = new Date(sixMonthsAgo);
+      d.setMonth(d.getMonth() + i);
+      const key = d.toLocaleString("default", {
+        month: "short",
+        year: "numeric",
+      });
+      data.set(key, { income: 0, expense: 0 });
+    }
+
+    expenses.forEach((e) => {
+      const key = e.createdAt.toLocaleString("default", {
+        month: "short",
+        year: "numeric",
+      });
+      if (data.has(key)) {
+        const curr = data.get(key)!;
+        curr.expense += numericToNumber(e.expenseAmount);
+      }
+    });
+
+    incomes.forEach((i) => {
+      const key = i.createdAt.toLocaleString("default", {
+        month: "short",
+        year: "numeric",
+      });
+      if (data.has(key)) {
+        const curr = data.get(key)!;
+        curr.income += numericToNumber(i.incomeAmount);
+      }
+    });
+
+    return Array.from(data.entries()).map(([month, values]) => ({
+      month,
+      ...values,
+    }));
+  }),
+
+  recurringExpenses: protectedProcedure.query(async ({ ctx }) => {
+    const { db, dbSchema, user } = ctx;
+    return await db.query.expense.findMany({
+      where: and(
+        eq(dbSchema.expense.userId, user.id),
+        eq(dbSchema.expense.isRecurring, true),
+      ),
+      with: { category: true },
+      orderBy: (expense, { desc }) => desc(expense.createdAt),
+    });
+  }),
 });

@@ -35,3 +35,27 @@ export function useDashboardTopCategories() {
   const trpc = useTRPC();
   return useQuery(trpc.dashboard.topCategoriesThisMonth.queryOptions());
 }
+
+// Over budget analysis
+export function useDashboardOverBudgetAnalysis() {
+  const trpc = useTRPC();
+  return useQuery(trpc.dashboard.overBudgetAnalysis.queryOptions());
+}
+
+// Budget vs Actual History
+export function useDashboardBudgetVsActualHistory() {
+  const trpc = useTRPC();
+  return useQuery(trpc.dashboard.budgetVsActualHistory.queryOptions());
+}
+
+// Monthly Trends
+export function useDashboardMonthlyTrends() {
+  const trpc = useTRPC();
+  return useQuery(trpc.dashboard.monthlyTrends.queryOptions());
+}
+
+// Recurring Expenses
+export function useDashboardRecurringExpenses() {
+  const trpc = useTRPC();
+  return useQuery(trpc.dashboard.recurringExpenses.queryOptions());
+}

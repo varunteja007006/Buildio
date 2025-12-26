@@ -39,7 +39,50 @@ const sourceIdInput = z.object({
   sourceId: z.string().uuid(),
 });
 
+function numericToNumber(value: string | number | null | undefined): number {
+  const parsed = Number(value ?? 0);
+  return Number.isNaN(parsed) ? 0 : parsed;
+}
+
 export const incomeSourceRouter = createTRPCRouter({
+  getAnalytics: protectedProcedure.query(async ({ ctx }) => {
+    const { db, dbSchema, user } = ctx;
+
+    // Get all income sources
+    const sources = await db.query.incomeSource.findMany();
+
+    // Get all incomes for the user
+    const incomes = await db.query.income.findMany({
+      where: eq(dbSchema.income.userId, user.id),
+    });
+
+    // Aggregate data
+    const stats = new Map<string, { count: number; total: number }>();
+
+    for (const inc of incomes) {
+      if (!inc.sourceId) continue;
+      const current = stats.get(inc.sourceId) || { count: 0, total: 0 };
+      current.count += 1;
+      current.total += numericToNumber(inc.incomeAmount);
+      stats.set(inc.sourceId, current);
+    }
+
+    // Combine source info with stats
+    const result = sources
+      .map((source) => {
+        const stat = stats.get(source.id) || { count: 0, total: 0 };
+        return {
+          id: source.id,
+          name: source.name,
+          count: stat.count,
+          totalEarned: stat.total,
+        };
+      })
+      .sort((a, b) => b.totalEarned - a.totalEarned); // Sort by total earned (Primary sources first)
+
+    return result;
+  }),
+
   listSources: protectedProcedure
     .input(listIncomeSourcesInput)
     .query(async ({ input, ctx }) => {

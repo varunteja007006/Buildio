@@ -120,6 +120,84 @@ export const expenseRouter = createTRPCRouter({
       };
     }),
 
+  getAnalytics: protectedProcedure.query(async ({ ctx }) => {
+    const { db, dbSchema, user } = ctx;
+
+    // Fetch all expenses
+    const allExpenses = await db.query.expense.findMany({
+      where: eq(dbSchema.expense.userId, user.id),
+      with: {
+        category: true,
+      },
+      orderBy: (expense, { asc }) => asc(expense.createdAt),
+    });
+
+    const totalSpending = allExpenses.reduce(
+      (sum, item) => sum + numericToNumber(item.expenseAmount),
+      0,
+    );
+
+    const recurringExpenses = allExpenses.filter((item) => item.isRecurring);
+    const totalRecurring = recurringExpenses.reduce(
+      (sum, item) => sum + numericToNumber(item.expenseAmount),
+      0,
+    );
+
+    // Monthly Breakdown
+    const monthlyData: Record<string, number> = {};
+    allExpenses.forEach((item) => {
+      const d = new Date(item.createdAt);
+      const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+      monthlyData[key] =
+        (monthlyData[key] || 0) + numericToNumber(item.expenseAmount);
+    });
+
+    const monthlyBreakdown = Object.entries(monthlyData)
+      .sort((a, b) => a[0].localeCompare(b[0]))
+      .map(([key, amount]) => {
+        const [year, month] = key.split("-");
+        const date = new Date(parseInt(year), parseInt(month) - 1);
+        return {
+          month: date.toLocaleString("default", {
+            month: "short",
+            year: "numeric",
+          }),
+          amount,
+          rawDate: key,
+        };
+      });
+
+    // Category Breakdown
+    const categoryMap = new Map<
+      string,
+      { amount: number; count: number; name: string }
+    >();
+    allExpenses.forEach((item) => {
+      const categoryName = item.category?.name || "Uncategorized";
+      const current = categoryMap.get(categoryName) || {
+        amount: 0,
+        count: 0,
+        name: categoryName,
+      };
+      categoryMap.set(categoryName, {
+        amount: current.amount + numericToNumber(item.expenseAmount),
+        count: current.count + 1,
+        name: categoryName,
+      });
+    });
+
+    const categoryBreakdown = Array.from(categoryMap.values()).sort(
+      (a, b) => b.amount - a.amount,
+    );
+
+    return {
+      totalSpending,
+      totalRecurring,
+      monthlyBreakdown,
+      categoryBreakdown,
+    };
+  }),
+
   getExpenseById: protectedProcedure
     .input(expenseIdInput)
     .query(async ({ input, ctx }) => {

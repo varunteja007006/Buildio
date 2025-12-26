@@ -3,12 +3,11 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { format } from "date-fns";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { Pencil, Plus, Trash2, Zap } from "lucide-react";
+import { Plus, Zap, Loader2 } from "lucide-react";
 
 import { Button } from "@workspace/ui/components/button";
-import { Card, CardContent, CardHeader } from "@workspace/ui/components/card";
+import { Card, CardContent } from "@workspace/ui/components/card";
 import {
   Select,
   SelectContent,
@@ -16,8 +15,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@workspace/ui/components/select";
-import { Badge } from "@workspace/ui/components/badge";
-import { Progress } from "@workspace/ui/components/progress";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -27,23 +24,24 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@workspace/ui/components/alert-dialog";
 
 import { useTRPC } from "@/lib/trpc-client";
 import { toast } from "sonner";
+import { EventCard } from "@/components/events/event-card";
 
 export function EventListComponent() {
   const router = useRouter();
   const trpc = useTRPC();
   const [page, setPage] = useState(0);
   const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [eventToDelete, setEventToDelete] = useState<string | null>(null);
 
   const { data: statusOptions } = useQuery(
     trpc.event.listStatuses.queryOptions(),
   );
 
-  const { data: eventsData } = useQuery(
+  const { data: eventsData, isLoading } = useQuery(
     trpc.event.listEvents.queryOptions({
       limit: 10,
       offset: page * 10,
@@ -55,6 +53,7 @@ export function EventListComponent() {
     trpc.event.deleteEvent.mutationOptions({
       onSuccess: () => {
         toast.success("Event deleted successfully");
+        setEventToDelete(null);
         router.refresh();
       },
       onError: (error: any) => {
@@ -68,11 +67,11 @@ export function EventListComponent() {
   const totalPages = Math.ceil(total / 10);
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
+    <div className="space-y-8">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold">Events</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-3xl font-bold tracking-tight">Events</h1>
+          <p className="text-muted-foreground mt-1">
             Track expenses across multiple months or budgets
           </p>
         </div>
@@ -106,146 +105,42 @@ export function EventListComponent() {
         </Select>
       </div>
 
-      {events.length === 0 ? (
-        <Card>
-          <CardContent className="flex flex-col items-center justify-center py-12">
-            <Zap className="mb-4 h-12 w-12 text-muted-foreground" />
+      {isLoading ? (
+        <div className="flex items-center justify-center py-12">
+          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+        </div>
+      ) : events.length === 0 ? (
+        <Card className="border-dashed">
+          <CardContent className="flex flex-col items-center justify-center py-12 text-center">
+            <div className="h-12 w-12 rounded-full bg-muted flex items-center justify-center mb-4">
+                <Zap className="h-6 w-6 text-muted-foreground" />
+            </div>
             <h3 className="mb-2 text-lg font-semibold">No events found</h3>
-            <p className="mb-4 text-sm text-muted-foreground">
-              Create your first event to start tracking expenses
+            <p className="mb-4 text-sm text-muted-foreground max-w-sm">
+              Events help you track expenses for specific occasions like trips, weddings, or renovation projects.
             </p>
             <Link href="/events/create">
-              <Button>Create Event</Button>
+              <Button>Create your first Event</Button>
             </Link>
           </CardContent>
         </Card>
       ) : (
         <>
-          <div className="grid gap-4 md:grid-cols-2">
-            {events.map((event) => {
-              const progress =
-                event.estimatedBudget > 0
-                  ? (event.totalSpent / event.estimatedBudget) * 100
-                  : 0;
-
-              return (
-                <Card key={event.id}>
-                  <CardHeader>
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <Link
-                          href={`/events/${event.id}`}
-                          className="text-lg font-semibold hover:underline"
-                        >
-                          {event.name}
-                        </Link>
-                        {event.description && (
-                          <p className="mt-1 text-sm text-muted-foreground line-clamp-2">
-                            {event.description}
-                          </p>
-                        )}
-                      </div>
-                      <Badge variant="outline">
-                        {event.status?.label || "No Status"}
-                      </Badge>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="space-y-2">
-                      <div className="flex justify-between text-sm">
-                        <span className="text-muted-foreground">Spent:</span>
-                        <span className="font-medium">
-                          ${event.totalSpent.toFixed(2)}
-                        </span>
-                      </div>
-                      {event.estimatedBudget > 0 && (
-                        <>
-                          <div className="flex justify-between text-sm">
-                            <span className="text-muted-foreground">
-                              Budget:
-                            </span>
-                            <span className="font-medium">
-                              ${event.estimatedBudget.toFixed(2)}
-                            </span>
-                          </div>
-                          <div className="flex justify-between text-sm">
-                            <span className="text-muted-foreground">
-                              Remaining:
-                            </span>
-                            <span
-                              className={`font-medium ${event.remaining < 0 ? "text-destructive" : "text-green-600"}`}
-                            >
-                              ${event.remaining.toFixed(2)}
-                            </span>
-                          </div>
-                          <Progress value={Math.min(progress, 100)} />
-                        </>
-                      )}
-                    </div>
-
-                    <div className="flex justify-between text-sm text-muted-foreground">
-                      <span>
-                        {event.startDate
-                          ? format(new Date(event.startDate), "MMM dd, yyyy")
-                          : "No start date"}
-                      </span>
-                      {event.endDate && (
-                        <span>
-                          to {format(new Date(event.endDate), "MMM dd, yyyy")}
-                        </span>
-                      )}
-                    </div>
-
-                    <div className="flex gap-2">
-                      <Link href={`/events/${event.id}`} className="flex-1">
-                        <Button variant="outline" className="w-full">
-                          View Details
-                        </Button>
-                      </Link>
-                      <Link href={`/events/${event.id}/edit`}>
-                        <Button variant="outline" size="icon">
-                          <Pencil className="h-4 w-4" />
-                        </Button>
-                      </Link>
-                      <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                          <Button variant="outline" size="icon">
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent>
-                          <AlertDialogHeader>
-                            <AlertDialogTitle>Delete Event</AlertDialogTitle>
-                            <AlertDialogDescription>
-                              Are you sure you want to delete this event? This
-                              action cannot be undone.
-                            </AlertDialogDescription>
-                          </AlertDialogHeader>
-                          <AlertDialogFooter>
-                            <AlertDialogCancel>Cancel</AlertDialogCancel>
-                            <AlertDialogAction
-                              onClick={() =>
-                                deleteEventMutation.mutate({
-                                  eventId: event.id,
-                                })
-                              }
-                            >
-                              Delete
-                            </AlertDialogAction>
-                          </AlertDialogFooter>
-                        </AlertDialogContent>
-                      </AlertDialog>
-                    </div>
-                  </CardContent>
-                </Card>
-              );
-            })}
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {events.map((event) => (
+              <EventCard 
+                key={event.id} 
+                event={event} 
+                onDelete={(id) => setEventToDelete(id)} 
+              />
+            ))}
           </div>
 
           {totalPages > 1 && (
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-center space-x-2 py-4">
               <Button
                 variant="outline"
+                size="sm"
                 onClick={() => setPage((p) => Math.max(0, p - 1))}
                 disabled={page === 0}
               >
@@ -256,6 +151,7 @@ export function EventListComponent() {
               </span>
               <Button
                 variant="outline"
+                size="sm"
                 onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
                 disabled={page === totalPages - 1}
               >
@@ -265,6 +161,31 @@ export function EventListComponent() {
           )}
         </>
       )}
+
+      <AlertDialog open={!!eventToDelete} onOpenChange={(open) => !open && setEventToDelete(null)}>
+        <AlertDialogContent>
+            <AlertDialogHeader>
+            <AlertDialogTitle>Delete Event</AlertDialogTitle>
+            <AlertDialogDescription>
+                Are you sure you want to delete this event? This
+                action cannot be undone.
+            </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                onClick={() => {
+                    if (eventToDelete) {
+                        deleteEventMutation.mutate({ eventId: eventToDelete });
+                    }
+                }}
+            >
+                Delete
+            </AlertDialogAction>
+            </AlertDialogFooter>
+        </AlertDialogContent>
+        </AlertDialog>
     </div>
   );
 }

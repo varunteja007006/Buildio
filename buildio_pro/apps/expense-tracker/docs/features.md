@@ -13,9 +13,9 @@
 ### Analytics
 
 - [x] Track budget progress (spent vs allocated)
-- [ ] Alert when approaching budget limit (80%, 90%, 100%)
-- [ ] Identify over-budget categories
-- [ ] Compare budget vs actual spending month-over-month
+- [x] Alert when approaching budget limit (80%, 90%, 100%)
+- [x] Identify over-budget categories
+- [x] Compare budget vs actual spending month-over-month
 
 ---
 
@@ -42,7 +42,7 @@
 - [x] Track total spending per event
 - [x] Compare actual spending vs estimated budget
 - [x] View spending breakdown across linked expenses
-- [ ] Historical event spending reports
+- [x] Historical event spending reports
 
 ---
 
@@ -68,11 +68,11 @@
 
 ### Analytics
 
-- [ ] Calculate total spending for period
-- [ ] View monthly spending breakdown
-- [ ] Compare spending across months
-- [ ] Identify top spending categories
-- [ ] Track recurring expense totals
+- [x] Calculate total spending for period
+- [x] View monthly spending breakdown
+- [x] Compare spending across months
+- [x] Identify top spending categories
+- [x] Track recurring expense totals
 
 ---
 
@@ -88,9 +88,9 @@
 
 ### Analytics
 
-- [ ] View expense count per category
-- [ ] Identify most-used categories
-- [ ] Calculate total spent per category
+- [x] View expense count per category
+- [x] Identify most-used categories (Dashboard: topCategoriesThisMonth)
+- [x] Calculate total spent per category (Dashboard: topCategoriesThisMonth)
 
 ---
 
@@ -114,11 +114,11 @@
 
 ### Analytics
 
-- [ ] Calculate total income for period
-- [ ] View monthly income breakdown
-- [ ] Compare income across months
-- [ ] Track income by source
-- [ ] Calculate net income (income - expenses)
+- [x] Calculate total income for period
+- [x] View monthly income breakdown
+- [x] Compare income across months
+- [x] Track income by source
+- [x] Calculate net income (income - expenses)
 
 ---
 
@@ -134,9 +134,9 @@
 
 ### Analytics
 
-- [ ] View income count per source
-- [ ] Identify primary income sources
-- [ ] Calculate total earned per source
+- [x] View income count per source
+- [x] Identify primary income sources
+- [x] Calculate total earned per source
 
 ---
 
@@ -160,11 +160,11 @@
 
 ### Visualizations
 
-- [ ] Pie chart for expense distribution by category
-- [ ] Line chart for monthly spending trends
-- [ ] Bar chart for income vs expenses comparison
-- [ ] Budget progress bars
-- [ ] Recurring expense timeline
+- [x] Pie chart for expense distribution by category
+- [x] Line chart for monthly spending trends
+- [x] Bar chart for income vs expenses comparison
+- [x] Budget progress bars
+- [x] Recurring expense timeline
 
 ---
 
@@ -242,18 +242,6 @@
 
 ---
 
-## 📱 Mobile & Responsive
-
-### UI/UX
-
-- [ ] Responsive design for mobile/tablet
-- [ ] Quick add expense button
-- [ ] Swipe to delete transactions
-- [ ] Pull to refresh transaction list
-- [ ] Offline mode support
-
----
-
 ## 🔐 Security & Privacy
 
 ### Authentication
@@ -282,5 +270,3 @@
 - [ ] Currency formatting options
 - [ ] Date format preferences
 - [ ] Language localization
-
----

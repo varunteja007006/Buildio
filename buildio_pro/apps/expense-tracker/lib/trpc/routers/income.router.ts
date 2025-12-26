@@ -110,6 +110,83 @@ export const incomeRouter = createTRPCRouter({
       };
     }),
 
+  getAnalytics: protectedProcedure.query(async ({ ctx }) => {
+    const { db, dbSchema, user } = ctx;
+
+    // Fetch all income
+    const allIncomes = await db.query.income.findMany({
+      where: eq(dbSchema.income.userId, user.id),
+      with: {
+        source: true,
+      },
+      orderBy: (income, { asc }) => asc(income.createdAt),
+    });
+
+    // Fetch all expenses for Net Income calculation
+    const allExpenses = await db
+      .select({ amount: dbSchema.expense.expenseAmount })
+      .from(dbSchema.expense)
+      .where(eq(dbSchema.expense.userId, user.id));
+
+    const totalIncome = allIncomes.reduce(
+      (sum, item) => sum + numericToNumber(item.incomeAmount),
+      0,
+    );
+
+    const totalExpenses = allExpenses.reduce(
+      (sum, item) => sum + numericToNumber(item.amount),
+      0,
+    );
+
+    const netIncome = totalIncome - totalExpenses;
+
+    // Monthly Breakdown
+    const monthlyData: Record<string, number> = {};
+    allIncomes.forEach((item) => {
+      const d = new Date(item.createdAt);
+      const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+      monthlyData[key] =
+        (monthlyData[key] || 0) + numericToNumber(item.incomeAmount);
+    });
+
+    const monthlyBreakdown = Object.entries(monthlyData)
+      .sort((a, b) => a[0].localeCompare(b[0]))
+      .map(([key, amount]) => {
+        const [year, month] = key.split("-");
+        const date = new Date(parseInt(year || "0"), parseInt(month || "0") - 1);
+        return {
+          month: date.toLocaleString("default", {
+            month: "short",
+            year: "numeric",
+          }),
+          amount,
+          rawDate: key,
+        };
+      });
+
+    // Source Breakdown
+    const sourceMap = new Map<string, number>();
+    allIncomes.forEach((item) => {
+      const sourceName = item.source?.name || "Unspecified";
+      const current = sourceMap.get(sourceName) || 0;
+      sourceMap.set(sourceName, current + numericToNumber(item.incomeAmount));
+    });
+
+    const sourceBreakdown = Array.from(sourceMap.entries())
+      .map(([source, amount]) => ({
+        source,
+        amount,
+      }))
+      .sort((a, b) => b.amount - a.amount);
+
+    return {
+      totalIncome,
+      netIncome,
+      monthlyBreakdown,
+      sourceBreakdown,
+    };
+  }),
+
   getIncomeById: protectedProcedure
     .input(incomeIdInput)
     .query(async ({ input, ctx }) => {

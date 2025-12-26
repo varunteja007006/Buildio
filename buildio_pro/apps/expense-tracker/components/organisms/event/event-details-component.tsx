@@ -6,11 +6,17 @@ import { useState } from "react";
 import { format } from "date-fns";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { ArrowLeft, Edit, Plus, Trash2, X } from "lucide-react";
+import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
 
 import { Button } from "@workspace/ui/components/button";
-import { Card, CardContent, CardHeader } from "@workspace/ui/components/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@workspace/ui/components/card";
 import { Badge } from "@workspace/ui/components/badge";
 import { Progress } from "@workspace/ui/components/progress";
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "@workspace/ui/components/chart";
 import {
   Dialog,
   DialogContent,
@@ -48,6 +54,10 @@ export function EventDetailsComponent({ eventId }: EventDetailsComponentProps) {
 
   const { data: event } = useQuery(
     trpc.event.getEventById.queryOptions({ eventId }),
+  );
+
+  const { data: history } = useQuery(
+    trpc.event.getEventSpendingHistory.queryOptions({ eventId }),
   );
 
   const { data: unlinkedExpenses } = useQuery(
@@ -226,6 +236,37 @@ export function EventDetailsComponent({ eventId }: EventDetailsComponentProps) {
           )}
         </CardContent>
       </Card>
+
+      {history && history.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Spending History</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ChartContainer
+              config={{
+                amount: {
+                  label: "Amount",
+                  color: "hsl(var(--primary))",
+                },
+              }}
+              className="h-[300px] w-full"
+            >
+              <BarChart data={history}>
+                <CartesianGrid vertical={false} />
+                <XAxis
+                  dataKey="label"
+                  tickLine={false}
+                  tickMargin={10}
+                  axisLine={false}
+                />
+                <ChartTooltip content={<ChartTooltipContent />} />
+                <Bar dataKey="amount" fill="var(--color-amount)" radius={4} />
+              </BarChart>
+            </ChartContainer>
+          </CardContent>
+        </Card>
+      )}
 
       <Card>
         <CardHeader>

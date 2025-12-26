@@ -2,7 +2,14 @@
 
 import React from "react";
 import Link from "next/link";
-import { Loader2, TrendingDown, TrendingUp, Wallet } from "lucide-react";
+import {
+  AlertTriangle,
+  AlertCircle,
+  TrendingUp,
+  TrendingDown,
+  Wallet,
+  CalendarClock,
+} from "lucide-react";
 import { Button } from "@workspace/ui/components/button";
 import {
   Card,
@@ -11,6 +18,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@workspace/ui/components/card";
+import { Alert, AlertDescription, AlertTitle } from "@workspace/ui/components/alert";
 import { Badge } from "@workspace/ui/components/badge";
 import { Progress } from "@workspace/ui/components/progress";
 import { formatCurrency } from "@workspace/ui/lib/currency.utils";
@@ -19,267 +27,293 @@ import {
   useDashboardBudgets,
   useDashboardRecentTransactions,
   useDashboardTopCategories,
+  useDashboardOverBudgetAnalysis,
+  useDashboardBudgetVsActualHistory,
+  useDashboardMonthlyTrends,
+  useDashboardRecurringExpenses,
 } from "@/hooks";
+import { SummaryCard } from "@/components/dashboard/summary-card";
+import { RecentTransactions } from "@/components/dashboard/recent-transactions";
+import { TopCategories } from "@/components/dashboard/top-categories";
+import { MonthlyTrends } from "@/components/dashboard/monthly-trends";
+import { Loader2 } from "lucide-react";
 
 export default function DashboardPage() {
   const summaryQuery = useDashboardSummary();
   const budgetsQuery = useDashboardBudgets();
   const recentQuery = useDashboardRecentTransactions();
   const topCategoriesQuery = useDashboardTopCategories();
+  const overBudgetQuery = useDashboardOverBudgetAnalysis();
+  const historyQuery = useDashboardBudgetVsActualHistory();
+  const monthlyTrendsQuery = useDashboardMonthlyTrends();
+  const recurringExpensesQuery = useDashboardRecurringExpenses();
 
-  const isLoading =
-    summaryQuery.isLoading ||
-    budgetsQuery.isLoading ||
-    recentQuery.isLoading ||
-    topCategoriesQuery.isLoading;
+  const alerts = React.useMemo(() => {
+    if (!budgetsQuery.data) return [];
+    const activeAlerts = [];
+    for (const b of budgetsQuery.data) {
+      if (b.percentSpent >= 100) {
+        activeAlerts.push({
+          id: b.id,
+          variant: "destructive" as const,
+          title: "Budget Exceeded",
+          message: `You have exceeded your budget "${b.name}" by ${formatCurrency(b.spent - b.allocated)}.`,
+          icon: AlertCircle,
+        });
+      } else if (b.percentSpent >= 90) {
+        activeAlerts.push({
+          id: b.id,
+          variant: "destructive" as const,
+          title: "Critical Budget Alert",
+          message: `You have used ${b.percentSpent}% of your budget "${b.name}".`,
+          icon: AlertTriangle,
+        });
+      } else if (b.percentSpent >= 80) {
+        activeAlerts.push({
+          id: b.id,
+          variant: "default" as const,
+          title: "Budget Warning",
+          message: `You have used ${b.percentSpent}% of your budget "${b.name}".`,
+          icon: AlertTriangle,
+          className: "border-yellow-500 text-yellow-600 [&>svg]:text-yellow-600",
+        });
+      }
+    }
+    return activeAlerts;
+  }, [budgetsQuery.data]);
+
+  // Calculate trends
+  const trends = monthlyTrendsQuery.data || [];
+  const lastMonth = trends[trends.length - 1];
+  const prevMonth = trends[trends.length - 2];
+
+  const incomeTrend =
+    prevMonth && lastMonth && prevMonth.income > 0
+      ? ((lastMonth.income - prevMonth.income) / prevMonth.income) * 100
+      : undefined;
+  const expenseTrend =
+    prevMonth && lastMonth && prevMonth.expense > 0
+      ? ((lastMonth.expense - prevMonth.expense) / prevMonth.expense) * 100
+      : undefined;
 
   return (
-    <div className="container mx-auto space-y-6 py-6">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-        <p className="text-muted-foreground mt-1">
-          Overview of your finances this month
-        </p>
+    <div className="container mx-auto space-y-8 py-8">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
+          <p className="text-muted-foreground mt-1">
+            Overview of your finances this month
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+            <Link href="/expenses/add">
+                <Button>Add Expense</Button>
+            </Link>
+        </div>
       </div>
+
+      {/* Alerts */}
+      {alerts.length > 0 && (
+        <div className="space-y-4">
+          {alerts.map((alert) => (
+            <Alert
+              key={alert.id}
+              variant={alert.variant}
+              className={alert.className}
+            >
+              <alert.icon className="h-4 w-4" />
+              <AlertTitle>{alert.title}</AlertTitle>
+              <AlertDescription>{alert.message}</AlertDescription>
+            </Alert>
+          ))}
+        </div>
+      )}
 
       {/* Summary Cards */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium flex items-center gap-2">
-              <TrendingUp className="h-4 w-4" /> Income (Month)
-            </CardTitle>
-            <CardDescription>Money earned this month</CardDescription>
-          </CardHeader>
-          <CardContent>
-            {summaryQuery.isLoading ? (
-              <Loader2 className="h-5 w-5 animate-spin" />
-            ) : (
-              <div className="text-2xl font-bold">
-                {formatCurrency(summaryQuery.data?.month.income || 0)}
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium flex items-center gap-2">
-              <TrendingDown className="h-4 w-4" /> Expenses (Month)
-            </CardTitle>
-            <CardDescription>Money spent this month</CardDescription>
-          </CardHeader>
-          <CardContent>
-            {summaryQuery.isLoading ? (
-              <Loader2 className="h-5 w-5 animate-spin" />
-            ) : (
-              <div className="text-2xl font-bold">
-                {formatCurrency(summaryQuery.data?.month.expenses || 0)}
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium flex items-center gap-2">
-              <Wallet className="h-4 w-4" /> Net (Month)
-            </CardTitle>
-            <CardDescription>Income minus expenses</CardDescription>
-          </CardHeader>
-          <CardContent>
-            {summaryQuery.isLoading ? (
-              <Loader2 className="h-5 w-5 animate-spin" />
-            ) : (
-              <div className="text-2xl font-bold">
-                {formatCurrency(summaryQuery.data?.month.net || 0)}
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium flex items-center gap-2">
-              <Wallet className="h-4 w-4" /> Balance (All-time)
-            </CardTitle>
-            <CardDescription>Total income minus expenses</CardDescription>
-          </CardHeader>
-          <CardContent>
-            {summaryQuery.isLoading ? (
-              <Loader2 className="h-5 w-5 animate-spin" />
-            ) : (
-              <div className="text-2xl font-bold">
-                {formatCurrency(summaryQuery.data?.allTime.balance || 0)}
-              </div>
-            )}
-          </CardContent>
-        </Card>
+        <SummaryCard
+          title="Income (Month)"
+          value={formatCurrency(summaryQuery.data?.month.income || 0)}
+          icon={TrendingUp}
+          trend={incomeTrend}
+          loading={summaryQuery.isLoading}
+          className="bg-gradient-to-br from-green-50 to-transparent dark:from-green-950/20"
+        />
+        <SummaryCard
+          title="Expenses (Month)"
+          value={formatCurrency(summaryQuery.data?.month.expenses || 0)}
+          icon={TrendingDown}
+          trend={expenseTrend}
+          loading={summaryQuery.isLoading}
+          className="bg-gradient-to-br from-red-50 to-transparent dark:from-red-950/20"
+        />
+        <SummaryCard
+          title="Net (Month)"
+          value={formatCurrency(summaryQuery.data?.month.net || 0)}
+          icon={Wallet}
+          description="Income minus expenses"
+          loading={summaryQuery.isLoading}
+        />
+        <SummaryCard
+          title="Balance (All-time)"
+          value={formatCurrency(summaryQuery.data?.allTime.balance || 0)}
+          icon={Wallet}
+          description="Total accumulated"
+          loading={summaryQuery.isLoading}
+        />
       </div>
 
-      {/* Active Budgets */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Active Budgets</CardTitle>
-          <CardDescription>
-            Progress of budgets currently active
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {budgetsQuery.isLoading ? (
-            <div className="flex items-center justify-center py-8">
-              <Loader2 className="h-6 w-6 animate-spin" />
-            </div>
-          ) : budgetsQuery.data?.length ? (
-            <div className="space-y-4">
-              {budgetsQuery.data.map((b: any) => (
-                <div key={b.id} className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <div className="font-medium">
-                      <Link href={`/budgets/${b.id}`}>{b.name}</Link>
+      {/* Main Grid Layout (Bento Box) */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {/* Left Column (Charts) */}
+        <div className="md:col-span-2 space-y-6">
+          <MonthlyTrends
+            data={monthlyTrendsQuery.data || []}
+            isLoading={monthlyTrendsQuery.isLoading}
+          />
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+             {/* Active Budgets */}
+            <Card className="col-span-1">
+                <CardHeader>
+                <CardTitle>Active Budgets</CardTitle>
+                <CardDescription>
+                    Progress of budgets currently active
+                </CardDescription>
+                </CardHeader>
+                <CardContent>
+                {budgetsQuery.isLoading ? (
+                    <div className="flex items-center justify-center py-8">
+                    <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
                     </div>
-                    <div className="text-sm text-muted-foreground">
-                      {formatCurrency(b.spent)} / {formatCurrency(b.allocated)}
-                    </div>
-                  </div>
-                  <Progress value={Math.min(b.percentSpent, 100)} />
-                  <div className="flex items-center justify-between text-xs text-muted-foreground">
-                    <span>
-                      Remaining: {formatCurrency(Math.max(b.remaining, 0))}
-                    </span>
-                    {b.overBudget && (
-                      <Badge variant="destructive">Over budget</Badge>
+                ) : budgetsQuery.data?.length ? (
+                    <div className="space-y-6">
+                    {budgetsQuery.data.slice(0, 4).map((b: any) => (
+                        <div key={b.id} className="space-y-2">
+                        <div className="flex items-center justify-between">
+                            <div className="font-medium truncate max-w-[150px]">
+                            <Link href={`/budgets/${b.id}`} className="hover:underline">{b.name}</Link>
+                            </div>
+                            <div className="text-sm text-muted-foreground">
+                            {Math.round(b.percentSpent)}%
+                            </div>
+                        </div>
+                        <Progress value={Math.min(b.percentSpent, 100)} className="h-2" />
+                        <div className="flex items-center justify-between text-xs text-muted-foreground">
+                            <span>
+                            {formatCurrency(b.spent)} of {formatCurrency(b.allocated)}
+                            </span>
+                            {b.overBudget && (
+                            <Badge variant="destructive" className="h-5 px-1.5 text-[10px]">Over</Badge>
+                            )}
+                        </div>
+                        </div>
+                    ))}
+                    {budgetsQuery.data.length > 4 && (
+                        <div className="pt-2 text-center">
+                            <Link href="/budgets" className="text-sm text-primary hover:underline">View all budgets</Link>
+                        </div>
                     )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <p className="text-muted-foreground text-center py-8">
-              No active budgets found
-            </p>
-          )}
-        </CardContent>
-      </Card>
+                    </div>
+                ) : (
+                    <p className="text-muted-foreground text-center py-8 text-sm">
+                    No active budgets found
+                    </p>
+                )}
+                </CardContent>
+            </Card>
 
-      {/* Recent Transactions */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Recent Transactions</CardTitle>
-          <CardDescription>Last 10 income and expenses</CardDescription>
-        </CardHeader>
-        <CardContent>
-          {recentQuery.isLoading ? (
-            <div className="flex items-center justify-center py-8">
-              <Loader2 className="h-6 w-6 animate-spin" />
-            </div>
-          ) : recentQuery.data?.length ? (
-            <div className="divide-y">
-              {recentQuery.data.map((t: any) => (
-                <div
-                  key={`${t.type}-${t.id}`}
-                  className="flex items-center justify-between py-2"
-                >
-                  <div className="flex items-center gap-2">
-                    <Badge
-                      variant={t.type === "income" ? "default" : "secondary"}
-                    >
-                      {t.type}
-                    </Badge>
-                    <span className="font-medium">{t.name}</span>
-                    <span className="text-muted-foreground text-xs">
-                      {t.meta?.label}
-                    </span>
-                  </div>
-                  <div
-                    className={
-                      t.type === "income" ? "text-green-600" : "text-red-600"
-                    }
-                  >
-                    {formatCurrency(t.amount)}
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <p className="text-muted-foreground text-center py-8">
-              No recent transactions found
-            </p>
-          )}
-        </CardContent>
-      </Card>
+            {/* Recurring Expenses */}
+            <Card className="col-span-1">
+                <CardHeader>
+                    <CardTitle>Recurring</CardTitle>
+                    <CardDescription>Upcoming payments</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    {recurringExpensesQuery.isLoading ? (
+                    <div className="flex items-center justify-center py-8">
+                        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+                    </div>
+                    ) : recurringExpensesQuery.data?.length ? (
+                    <div className="space-y-4">
+                        {recurringExpensesQuery.data.slice(0, 4).map((expense: any) => (
+                        <div key={expense.id} className="flex items-center justify-between border-b pb-3 last:border-0 last:pb-0">
+                            <div className="flex items-center gap-3">
+                            <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center text-primary shrink-0">
+                                <CalendarClock className="h-4 w-4" />
+                            </div>
+                            <div className="overflow-hidden">
+                                <p className="font-medium truncate text-sm">{expense.name}</p>
+                                <p className="text-xs text-muted-foreground truncate">{expense.category?.name || 'Uncategorized'}</p>
+                            </div>
+                            </div>
+                            <div className="font-bold text-sm">
+                            {formatCurrency(expense.expenseAmount)}
+                            </div>
+                        </div>
+                        ))}
+                    </div>
+                    ) : (
+                    <div className="text-center py-8 text-muted-foreground text-sm">
+                        No recurring expenses
+                    </div>
+                    )}
+                </CardContent>
+            </Card>
+          </div>
+        </div>
 
-      {/* Top Categories */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Top Categories (Month)</CardTitle>
-          <CardDescription>
-            Highest spending categories this month
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {topCategoriesQuery.isLoading ? (
-            <div className="flex items-center justify-center py-8">
-              <Loader2 className="h-6 w-6 animate-spin" />
-            </div>
-          ) : topCategoriesQuery.data?.length ? (
-            <div className="space-y-2">
-              {topCategoriesQuery.data.map((c: any) => (
-                <div key={c.id} className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <span className="font-medium">{c.name}</span>
-                    <span className="text-muted-foreground text-xs">
-                      {c.count} txns
-                    </span>
-                  </div>
-                  <div>{formatCurrency(c.totalSpent)}</div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <p className="text-muted-foreground text-center py-8">
-              No category data for this month
-            </p>
-          )}
-        </CardContent>
-      </Card>
-
-      {/* Quick Links */}
-      <div className="grid gap-4 md:grid-cols-3">
-        <Card>
-          <CardHeader>
-            <CardTitle>Budgets</CardTitle>
-            <CardDescription>Track and manage budgets</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Link href="/budgets">
-              <Button className="w-full">View Budgets</Button>
-            </Link>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle>Expenses</CardTitle>
-            <CardDescription>Add and review expenses</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Link href="/expenses">
-              <Button className="w-full">View Expenses</Button>
-            </Link>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle>Income</CardTitle>
-            <CardDescription>Record incoming payments</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Link href="/income">
-              <Button className="w-full">View Income</Button>
-            </Link>
-          </CardContent>
-        </Card>
+        {/* Right Column */}
+        <div className="space-y-6">
+          <TopCategories
+            data={topCategoriesQuery.data || []}
+            isLoading={topCategoriesQuery.isLoading}
+          />
+          
+          <RecentTransactions
+            transactions={recentQuery.data || []}
+            isLoading={recentQuery.isLoading}
+          />
+        </div>
       </div>
+      
+      {/* Over Budget Analysis (Full Width if exists) */}
+      {overBudgetQuery.data && overBudgetQuery.data.length > 0 && (
+        <Card className="border-destructive/50 bg-destructive/5">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-destructive">
+              <AlertCircle className="h-5 w-5" /> Over Budget Analysis
+            </CardTitle>
+            <CardDescription>
+              Top contributing categories for over-spent budgets
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                {overBudgetQuery.data.map((item: any) => (
+                <div key={item.budgetId} className="space-y-3 bg-background p-4 rounded-lg border">
+                    <div className="flex items-center justify-between font-medium">
+                    <span>{item.budgetName}</span>
+                    <span className="text-destructive text-sm">
+                        {formatCurrency(item.spent)} / {formatCurrency(item.allocated)}
+                    </span>
+                    </div>
+                    <div className="space-y-2">
+                    {item.topCategories.map((cat: any) => (
+                        <div key={cat.name} className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">{cat.name}</span>
+                        <span className="font-medium">
+                            {formatCurrency(cat.amount)}
+                        </span>
+                        </div>
+                    ))}
+                    </div>
+                </div>
+                ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }

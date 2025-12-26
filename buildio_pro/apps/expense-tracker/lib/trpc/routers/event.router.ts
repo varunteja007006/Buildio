@@ -445,4 +445,59 @@ export const eventRouter = createTRPCRouter({
 
       return { success: true };
     }),
+
+  getEventSpendingHistory: protectedProcedure
+    .input(eventIdInput)
+    .query(async ({ input, ctx }) => {
+      const { db, dbSchema, user } = ctx;
+      const { eventId } = input;
+
+      // Verify event exists and belongs to user
+      const evt = await db.query.event.findFirst({
+        where: and(
+          eq(dbSchema.event.id, eventId),
+          eq(dbSchema.event.userId, user.id),
+        ),
+      });
+
+      if (!evt) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Event not found",
+        });
+      }
+
+      // Get all expenses linked to this event
+      const linkedExpenses = await db.query.eventExpense.findMany({
+        where: eq(dbSchema.eventExpense.eventId, eventId),
+        with: {
+          expense: true,
+        },
+      });
+
+      // Group by month
+      const historyMap = new Map<string, number>();
+
+      for (const item of linkedExpenses) {
+        const expense = item.expense;
+        if (!expense.createdAt) continue;
+
+        const date = new Date(expense.createdAt);
+        const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
+        
+        // Fix: Map set key/value order was swapped in my thought process, correcting it now
+        historyMap.set(key, (historyMap.get(key) || 0) + numericToNumber(expense.expenseAmount));
+      }
+
+      // Convert to array and sort
+      const history = Array.from(historyMap.entries())
+        .map(([date, amount]) => ({
+          date,
+          amount,
+          label: new Date(date + "-01").toLocaleString("default", { month: "short", year: "numeric" }),
+        }))
+        .sort((a, b) => a.date.localeCompare(b.date));
+
+      return history;
+    }),
 });
