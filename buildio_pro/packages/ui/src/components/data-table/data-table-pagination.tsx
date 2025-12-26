@@ -44,6 +44,9 @@ export function DataTablePagination<TData>({
 export function DataTableRowSelectionInfo<TData>({
   table,
 }: Readonly<DataTablePaginationProps<TData>>) {
+  if (!table.getFilteredSelectedRowModel().rows.length) {
+    return <div className="text-muted-foreground flex-1 text-sm"></div>;
+  }
   return (
     <div className="text-muted-foreground flex-1 text-sm">
       {table.getFilteredSelectedRowModel().rows.length} of{" "}

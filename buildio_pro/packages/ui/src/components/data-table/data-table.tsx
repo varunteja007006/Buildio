@@ -35,14 +35,12 @@ interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   onRowClick?: (row: TData) => void;
-  filterComponent?: React.ReactNode;
 }
 
-export function DataTable<TData, TValue>({
+export function SimpleDataTable<TData, TValue>({
   columns,
   data,
   onRowClick,
-  filterComponent,
 }: Readonly<DataTableProps<TData, TValue>>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
@@ -89,7 +87,6 @@ export function DataTable<TData, TValue>({
           className="max-w-sm"
         />
         <div className="flex items-center gap-2">
-          {filterComponent}
           <DataTableViewOptions table={table} />
         </div>
       </div>

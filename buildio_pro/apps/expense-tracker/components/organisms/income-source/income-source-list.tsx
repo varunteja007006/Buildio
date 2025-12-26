@@ -22,7 +22,7 @@ import { IncomeSourceDetailsComponent } from "./income-source-details-dialog";
 import { IncomeSourceFormComponent } from "./income-source-form-dialog";
 import { IncomeSourceDeleteDialog } from "./income-source-delete-dialog";
 
-import { DataTable } from "@workspace/ui/components/data-table/data-table";
+import { SimpleDataTable } from "@workspace/ui/components/data-table/data-table";
 import { ColumnDef } from "@tanstack/react-table";
 
 const columns: ColumnDef<{
@@ -192,7 +192,7 @@ export function IncomeSourceListComponent() {
         </div>
       )}
 
-      <DataTable columns={columns} data={sources} />
+      <SimpleDataTable columns={columns} data={sources} />
     </div>
   );
 }

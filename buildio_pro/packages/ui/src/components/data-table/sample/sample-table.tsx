@@ -1,4 +1,4 @@
-import { DataTable } from "@workspace/ui/components/data-table/data-table";
+import { SimpleDataTable } from "@workspace/ui/components/data-table/data-table";
 import {
   columns,
   payments,
@@ -7,7 +7,7 @@ import {
 export default function SampleTable() {
   return (
     <div>
-      <DataTable columns={columns} data={payments} />
+      <SimpleDataTable columns={columns} data={payments} />
     </div>
   );
 }
