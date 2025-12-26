@@ -12,6 +12,7 @@ import {
   eventExpense,
   eventRelations,
   eventExpenseRelations,
+  eventStatus,
 } from "./event.schema";
 import {
   userPreferences,
@@ -46,6 +47,7 @@ export const dbSchema = {
   income,
   incomeSource,
   event,
+  eventStatus,
   eventExpense,
   eventRelations,
   eventExpenseRelations,

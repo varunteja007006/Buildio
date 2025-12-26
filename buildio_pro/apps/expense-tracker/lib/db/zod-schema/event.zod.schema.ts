@@ -6,9 +6,13 @@ import {
 } from "drizzle-zod";
 import { event } from "../schema/event.schema";
 
-export const createEventSchema = createInsertSchema(event).omit({
-  userId: true,
-});
+export const createEventSchema = createInsertSchema(event)
+  .omit({
+    userId: true,
+  })
+  .extend({
+    statusId: z.string().uuid().optional(),
+  });
 
 export const updateEventSchema = createUpdateSchema(event).omit({
   userId: true,
@@ -23,7 +27,7 @@ export const eventIdInput = z.object({
 export const listEventsInput = z.object({
   limit: z.number().int().min(1).max(100).default(10),
   offset: z.number().int().min(0).default(0),
-  status: z.enum(["in-progress", "completed", "cancelled"]).optional(),
+  statusId: z.string().uuid().optional(),
 });
 
 export const addExpenseToEventInput = z.object({
@@ -42,4 +46,6 @@ export type SelectEventInput = z.infer<typeof selectEventSchema>;
 export type EventIdInput = z.infer<typeof eventIdInput>;
 export type ListEventsInput = z.infer<typeof listEventsInput>;
 export type AddExpenseToEventInput = z.infer<typeof addExpenseToEventInput>;
-export type RemoveExpenseFromEventInput = z.infer<typeof removeExpenseFromEventInput>;
+export type RemoveExpenseFromEventInput = z.infer<
+  typeof removeExpenseFromEventInput
+>;

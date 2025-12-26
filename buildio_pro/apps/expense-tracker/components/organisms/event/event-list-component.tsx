@@ -33,19 +33,21 @@ import {
 import { useTRPC } from "@/lib/trpc-client";
 import { toast } from "sonner";
 
-type EventStatus = "in-progress" | "completed" | "cancelled";
-
 export function EventListComponent() {
   const router = useRouter();
   const trpc = useTRPC();
   const [page, setPage] = useState(0);
-  const [statusFilter, setStatusFilter] = useState<EventStatus | "all">("all");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
+
+  const { data: statusOptions } = useQuery(
+    trpc.event.listStatuses.queryOptions(),
+  );
 
   const { data: eventsData } = useQuery(
     trpc.event.listEvents.queryOptions({
       limit: 10,
       offset: page * 10,
-      status: statusFilter === "all" ? undefined : statusFilter,
+      statusId: statusFilter === "all" ? undefined : statusFilter,
     }),
   );
 
@@ -86,7 +88,7 @@ export function EventListComponent() {
         <Select
           value={statusFilter}
           onValueChange={(value) => {
-            setStatusFilter(value as EventStatus | "all");
+            setStatusFilter(value);
             setPage(0);
           }}
         >
@@ -95,9 +97,11 @@ export function EventListComponent() {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All Statuses</SelectItem>
-            <SelectItem value="in-progress">In Progress</SelectItem>
-            <SelectItem value="completed">Completed</SelectItem>
-            <SelectItem value="cancelled">Cancelled</SelectItem>
+            {statusOptions?.map((status) => (
+              <SelectItem key={status.id} value={status.id}>
+                {status.label}
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
       </div>
@@ -123,11 +127,6 @@ export function EventListComponent() {
                 event.estimatedBudget > 0
                   ? (event.totalSpent / event.estimatedBudget) * 100
                   : 0;
-              const statusColors = {
-                "in-progress": "default",
-                completed: "secondary",
-                cancelled: "destructive",
-              } as const;
 
               return (
                 <Card key={event.id}>
@@ -146,8 +145,8 @@ export function EventListComponent() {
                           </p>
                         )}
                       </div>
-                      <Badge variant={statusColors[event.status as EventStatus]}>
-                        {event.status}
+                      <Badge variant="outline">
+                        {event.status?.label || "No Status"}
                       </Badge>
                     </div>
                   </CardHeader>

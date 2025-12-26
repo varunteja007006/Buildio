@@ -1,4 +1,11 @@
-import { pgTable, text, numeric, timestamp } from "drizzle-orm/pg-core";
+import {
+  pgTable,
+  text,
+  numeric,
+  timestamp,
+  integer,
+  boolean,
+} from "drizzle-orm/pg-core";
 import { auditTimeFields } from "./common.schema";
 import { user } from "./auth-schema";
 import { relations } from "drizzle-orm";
@@ -8,6 +15,17 @@ import { expense } from "./expenses.schema";
  * Event schema for tracking major expenses/projects over time
  * Examples: Buying a property, Home renovation, Wedding, Car purchase, etc.
  */
+export const eventStatus = pgTable("event_status", {
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  label: text("label").notNull().unique(),
+  description: text("description"),
+  sortOrder: integer("sort_order").default(0),
+  isDefault: boolean("is_default").default(false).notNull(),
+  ...auditTimeFields,
+});
+
 export const event = pgTable("event", {
   id: text("id")
     .primaryKey()
@@ -20,7 +38,9 @@ export const event = pgTable("event", {
   estimatedBudget: numeric("estimated_budget"), // Optional: user's initial estimate
   startDate: timestamp("start_date"), // When the event started
   endDate: timestamp("end_date"), // When the event is expected to end (optional)
-  status: text("status").default("in-progress"), // in-progress, completed, cancelled
+  statusId: text("status_id")
+    // .notNull()
+    .references(() => eventStatus.id, { onDelete: "restrict" }),
   ...auditTimeFields,
 });
 
@@ -29,6 +49,11 @@ export const eventRelations = relations(event, ({ one, many }) => ({
     fields: [event.userId],
     references: [user.id],
     relationName: "event_to_user",
+  }),
+  status: one(eventStatus, {
+    fields: [event.statusId],
+    references: [eventStatus.id],
+    relationName: "event_to_status",
   }),
   expenses: many(eventExpense),
 }));
@@ -51,18 +76,15 @@ export const eventExpense = pgTable("event_expense", {
   ...auditTimeFields,
 });
 
-export const eventExpenseRelations = relations(
-  eventExpense,
-  ({ one }) => ({
-    event: one(event, {
-      fields: [eventExpense.eventId],
-      references: [event.id],
-      relationName: "event_expense_to_event",
-    }),
-    expense: one(expense, {
-      fields: [eventExpense.expenseId],
-      references: [expense.id],
-      relationName: "event_expense_to_expense",
-    }),
+export const eventExpenseRelations = relations(eventExpense, ({ one }) => ({
+  event: one(event, {
+    fields: [eventExpense.eventId],
+    references: [event.id],
+    relationName: "event_expense_to_event",
   }),
-);
+  expense: one(expense, {
+    fields: [eventExpense.expenseId],
+    references: [expense.id],
+    relationName: "event_expense_to_expense",
+  }),
+}));

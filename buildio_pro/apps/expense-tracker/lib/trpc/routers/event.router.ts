@@ -1,4 +1,4 @@
-import { and, count, eq, desc, gte, lte } from "drizzle-orm";
+import { and, count, eq, desc, asc } from "drizzle-orm";
 import { createTRPCRouter, protectedProcedure } from "../init";
 import { TRPCError } from "@trpc/server";
 import z from "zod";
@@ -21,7 +21,7 @@ const createEventInput = z
     estimatedBudget: estimatedBudgetSchema,
     startDate: z.coerce.date(),
     endDate: z.coerce.date().optional(),
-    status: zodSchema.createEventSchema.shape.status,
+    statusId: zodSchema.createEventSchema.shape.statusId,
   })
   .superRefine((data, ctx) => {
     if (data.endDate && data.endDate <= data.startDate) {
@@ -41,7 +41,7 @@ const updateEventInput = z
     estimatedBudget: estimatedBudgetSchema,
     startDate: z.coerce.date().optional(),
     endDate: z.coerce.date().optional(),
-    status: zodSchema.updateEventSchema.shape.status,
+    statusId: zodSchema.createEventSchema.shape.statusId,
   })
   .superRefine((data, ctx) => {
     if (data.startDate && data.endDate && data.endDate <= data.startDate) {
@@ -58,7 +58,7 @@ const updateEventInput = z
       data.estimatedBudget !== undefined ||
       data.startDate !== undefined ||
       data.endDate !== undefined ||
-      data.status !== undefined;
+      data.statusId !== undefined;
 
     if (!hasUpdatableField) {
       ctx.addIssue({
@@ -72,7 +72,7 @@ const updateEventInput = z
 const listEventsInput = z.object({
   limit: z.number().int().min(1).max(100).default(10),
   offset: z.number().int().min(0).default(0),
-  status: z.enum(["in-progress", "completed", "cancelled"]).optional(),
+  statusId: z.string().uuid().optional(),
 });
 
 const eventIdInput = z.object({
@@ -89,22 +89,28 @@ const removeExpenseFromEventInput = z.object({
   expenseId: z.string().uuid(),
 });
 
-function numericToNumber(value: string | number | null | undefined) {
+function numericToNumber(value: string | number | null | undefined): number {
   const parsed = Number(value ?? 0);
   return Number.isNaN(parsed) ? 0 : parsed;
 }
 
 export const eventRouter = createTRPCRouter({
+  listStatuses: protectedProcedure.query(async ({ ctx }) => {
+    return ctx.db.query.eventStatus.findMany({
+      orderBy: (status: any) => asc(status.sortOrder),
+    });
+  }),
+
   listEvents: protectedProcedure
     .input(listEventsInput)
     .query(async ({ input, ctx }) => {
       const { db, dbSchema, user } = ctx;
-      const { limit, offset, status } = input;
+      const { limit, offset, statusId } = input;
 
       const filters = [eq(dbSchema.event.userId, user.id)];
 
-      if (status) {
-        filters.push(eq(dbSchema.event.status, status));
+      if (statusId) {
+        filters.push(eq(dbSchema.event.statusId, statusId));
       }
 
       const whereClause = filters.length === 1 ? filters[0] : and(...filters);
@@ -119,18 +125,20 @@ export const eventRouter = createTRPCRouter({
         offset,
         where: whereClause,
         with: {
+          status: true,
           expenses: {
             with: {
               expense: true,
             },
           },
         },
-        orderBy: (event, { desc }) => desc(event.createdAt),
+        orderBy: (event: any) => desc(event.createdAt),
       });
 
-      const eventsWithTotals = events.map((evt) => {
+      const eventsWithTotals = events.map((evt: any) => {
         const totalSpent = evt.expenses.reduce(
-          (sum, ee) => sum + numericToNumber(ee.expense.expenseAmount),
+          (sum: number, ee: any) =>
+            sum + numericToNumber(ee.expense.expenseAmount),
           0,
         );
         return {
@@ -164,6 +172,7 @@ export const eventRouter = createTRPCRouter({
           eq(dbSchema.event.userId, user.id),
         ),
         with: {
+          status: true,
           expenses: {
             with: {
               expense: {
@@ -184,7 +193,8 @@ export const eventRouter = createTRPCRouter({
       }
 
       const totalSpent = evt.expenses.reduce(
-        (sum, ee) => sum + numericToNumber(ee.expense.expenseAmount),
+        (sum: number, ee: any) =>
+          sum + numericToNumber(ee.expense.expenseAmount),
         0,
       );
 
@@ -196,6 +206,34 @@ export const eventRouter = createTRPCRouter({
       };
     }),
 
+  getUnlinkedExpenses: protectedProcedure
+    .input(eventIdInput)
+    .query(async ({ input, ctx }) => {
+      const { db, dbSchema, user } = ctx;
+      const { eventId } = input;
+
+      // Get all linked expense IDs for this event
+      const linkedExpenses = await db.query.eventExpense.findMany({
+        where: eq(dbSchema.eventExpense.eventId, eventId),
+      });
+
+      const linkedExpenseIds = linkedExpenses.map((ee: any) => ee.expenseId);
+
+      // Get all expenses for user
+      const allExpenses = await db.query.expense.findMany({
+        where: eq(dbSchema.expense.userId, user.id),
+        with: {
+          category: true,
+        },
+        limit: 100,
+      });
+
+      // Filter out linked expenses
+      return allExpenses.filter(
+        (exp: any) => !linkedExpenseIds.includes(exp.id),
+      );
+    }),
+
   createEvent: protectedProcedure
     .input(createEventInput)
     .mutation(async ({ input, ctx }) => {
@@ -205,6 +243,7 @@ export const eventRouter = createTRPCRouter({
         .insert(dbSchema.event)
         .values({
           ...input,
+          statusId: input.statusId,
           estimatedBudget: input.estimatedBudget || null,
           endDate: input.endDate || null,
           userId: user.id,
@@ -246,7 +285,9 @@ export const eventRouter = createTRPCRouter({
           ? { startDate: updates.startDate }
           : {}),
         ...(updates.endDate !== undefined ? { endDate: updates.endDate } : {}),
-        ...(updates.status !== undefined ? { status: updates.status } : {}),
+        ...(updates.statusId !== undefined
+          ? { statusId: updates.statusId }
+          : {}),
         updatedAt: new Date(),
       };
 
@@ -403,36 +444,5 @@ export const eventRouter = createTRPCRouter({
         );
 
       return { success: true };
-    }),
-
-  getUnlinkedExpenses: protectedProcedure
-    .input(eventIdInput)
-    .query(async ({ input, ctx }) => {
-      const { db, dbSchema, user } = ctx;
-      const { eventId } = input;
-
-      // Get all linked expense IDs for this event
-      const linkedExpenses = await db.query.eventExpense.findMany({
-        where: eq(dbSchema.eventExpense.eventId, eventId),
-      });
-
-      const linkedExpenseIds = linkedExpenses.map((ee) => ee.expenseId);
-
-      // Get all expenses for user that are not linked to this event
-      let query = db.query.expense.findMany({
-        where: eq(dbSchema.expense.userId, user.id),
-        with: {
-          category: true,
-        },
-        limit: 100,
-      });
-
-      // Filter out linked expenses manually if there are any
-      if (linkedExpenseIds.length > 0) {
-        const allExpenses = await query;
-        return allExpenses.filter((exp) => !linkedExpenseIds.includes(exp.id));
-      }
-
-      return await query;
     }),
 });

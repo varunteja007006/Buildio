@@ -105,17 +105,14 @@ export function EventDetailsComponent({ eventId }: EventDetailsComponentProps) {
       ? (event.totalSpent / event.estimatedBudget) * 100
       : 0;
 
-  const statusColors = {
-    "in-progress": "default",
-    completed: "secondary",
-    cancelled: "destructive",
-  } as const;
-
   const handleAddExpenses = () => {
     selectedExpenses.forEach((expenseId) => {
       addExpenseMutation.mutate({ eventId, expenseId });
     });
   };
+
+  const badgeVariant = "outline";
+  const badgeLabel = event.status?.label || "Status";
 
   return (
     <div className="space-y-6">
@@ -134,7 +131,7 @@ export function EventDetailsComponent({ eventId }: EventDetailsComponentProps) {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <Badge variant={statusColors[event.status as keyof typeof statusColors]}>{event.status}</Badge>
+          <Badge variant={badgeVariant}>{badgeLabel}</Badge>
           <Link href={`/events/${eventId}/edit`}>
             <Button variant="outline">
               <Edit className="mr-2 h-4 w-4" />
@@ -320,7 +317,9 @@ export function EventDetailsComponent({ eventId }: EventDetailsComponentProps) {
           </div>
         </CardHeader>
         <CardContent>
-          {!event.expenses || (Array.isArray(event.expenses) && (event.expenses as any[]).length === 0) ? (
+          {!event.expenses ||
+          (Array.isArray(event.expenses) &&
+            (event.expenses as any[]).length === 0) ? (
             <div className="flex flex-col items-center justify-center py-8">
               <p className="mb-2 text-sm text-muted-foreground">
                 No expenses linked to this event yet

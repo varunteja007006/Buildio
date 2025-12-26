@@ -21,7 +21,7 @@ export default function CreateEventPage() {
         </p>
       </div>
 
-      <EventFormComponent mode="create"/>
+      <EventFormComponent mode="create" />
     </div>
   );
 }

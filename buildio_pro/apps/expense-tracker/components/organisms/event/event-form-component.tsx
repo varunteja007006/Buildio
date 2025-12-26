@@ -20,7 +20,7 @@ import { toast } from "sonner";
 import * as z from "zod";
 
 import { useTRPC } from "@/lib/trpc-client";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { SelectItem } from "@workspace/ui/components/select";
 
 const eventFormSchema = z
@@ -36,7 +36,8 @@ const eventFormSchema = z
     estimatedBudget: z
       .string()
       .refine(
-        (val) => !val || val === "" || (!isNaN(Number(val)) && Number(val) >= 0),
+        (val) =>
+          !val || val === "" || (!isNaN(Number(val)) && Number(val) >= 0),
         {
           message: "Estimated budget must be a positive number",
         },
@@ -44,9 +45,7 @@ const eventFormSchema = z
       .optional(),
     startDate: z.date({ message: "Start date is required" }),
     endDate: z.date().optional(),
-    status: z
-      .enum(["in-progress", "completed", "cancelled"])
-      .default("in-progress"),
+    statusId: z.string().uuid({ message: "Status is required" }),
   })
   .refine(
     (data) => {
@@ -70,7 +69,7 @@ interface EventFormProps {
     estimatedBudget?: string;
     startDate?: Date;
     endDate?: Date;
-    status?: "in-progress" | "completed" | "cancelled";
+    statusId?: string;
   };
 }
 
@@ -81,6 +80,10 @@ export function EventFormComponent({
 }: EventFormProps) {
   const router = useRouter();
   const trpc = useTRPC();
+
+  const { data: statusOptions, isLoading: isLoadingStatuses } = useQuery(
+    trpc.event.listStatuses.queryOptions(),
+  );
 
   const createMutation = useMutation(
     trpc.event.createEvent.mutationOptions({
@@ -113,7 +116,7 @@ export function EventFormComponent({
       estimatedBudget: initialValues?.estimatedBudget,
       startDate: initialValues?.startDate || undefined,
       endDate: initialValues?.endDate || undefined,
-      status: initialValues?.status || "in-progress",
+      statusId: initialValues?.statusId || undefined,
     },
     validators: {
       onSubmit: ({ value }) => {
@@ -128,35 +131,55 @@ export function EventFormComponent({
       if (mode === "create") {
         createMutation.mutate({
           name: value.name,
-          description: value.description && value.description.trim() !== "" 
-            ? value.description 
-            : undefined,
-          estimatedBudget: value.estimatedBudget && value.estimatedBudget.trim() !== "" 
-            ? value.estimatedBudget 
-            : undefined,
+          description:
+            value.description && value.description.trim() !== ""
+              ? value.description
+              : undefined,
+          estimatedBudget:
+            value.estimatedBudget && value.estimatedBudget.trim() !== ""
+              ? value.estimatedBudget
+              : undefined,
           startDate: value.startDate!,
           endDate: value.endDate,
-          status: value.status,
+          statusId: value.statusId,
         });
       } else if (mode === "edit" && eventId) {
         updateMutation.mutate({
           eventId,
           name: value.name,
-          description: value.description && value.description.trim() !== "" 
-            ? value.description 
-            : undefined,
-          estimatedBudget: value.estimatedBudget && value.estimatedBudget.trim() !== "" 
-            ? value.estimatedBudget 
-            : undefined,
+          description:
+            value.description && value.description.trim() !== ""
+              ? value.description
+              : undefined,
+          estimatedBudget:
+            value.estimatedBudget && value.estimatedBudget.trim() !== ""
+              ? value.estimatedBudget
+              : undefined,
           startDate: value.startDate!,
           endDate: value.endDate,
-          status: value.status,
+          statusId: value.statusId,
         });
       }
     },
   });
 
+  React.useEffect(() => {
+    if (!statusOptions || statusOptions.length === 0) return;
+
+    const preferredStatusId =
+      initialValues?.statusId ||
+      statusOptions.find((status) => status.isDefault)?.id ||
+      statusOptions?.[0]?.id;
+
+    const currentStatusId = form.state.values.statusId as string | undefined;
+    if (!currentStatusId && preferredStatusId) {
+      form.setFieldValue("statusId", preferredStatusId);
+    }
+  }, [statusOptions, initialValues?.statusId, form]);
+
   const isSubmitting = createMutation.isPending || updateMutation.isPending;
+  const isSubmitDisabled =
+    isSubmitting || isLoadingStatuses || !statusOptions?.length;
 
   return (
     <Card className="w-full max-w-2xl mx-auto">
@@ -216,12 +239,25 @@ export function EventFormComponent({
               </form.AppField>
             </div>
 
-            <form.AppField name="status">
+            <form.AppField name="statusId">
               {(field) => (
-                <field.Select label="Status">
-                  <SelectItem value="in-progress">In Progress</SelectItem>
-                  <SelectItem value="completed">Completed</SelectItem>
-                  <SelectItem value="cancelled">Cancelled</SelectItem>
+                <field.Select
+                  label="Status"
+                  // disabled={isLoadingStatuses || !statusOptions?.length}
+                >
+                  {statusOptions?.length ? (
+                    statusOptions.map((status) => (
+                      <SelectItem key={status.id} value={status.id}>
+                        {status.label}
+                      </SelectItem>
+                    ))
+                  ) : (
+                    <SelectItem value="" disabled>
+                      {isLoadingStatuses
+                        ? "Loading statuses..."
+                        : "No statuses configured"}
+                    </SelectItem>
+                  )}
                 </field.Select>
               )}
             </form.AppField>
@@ -238,7 +274,7 @@ export function EventFormComponent({
           >
             Cancel
           </Button>
-          <Button type="submit" form="event-form" disabled={isSubmitting}>
+          <Button type="submit" form="event-form" disabled={isSubmitDisabled}>
             {isSubmitting ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
