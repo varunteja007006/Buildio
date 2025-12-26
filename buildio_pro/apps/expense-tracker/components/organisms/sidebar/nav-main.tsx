@@ -21,6 +21,7 @@ import {
 } from "@workspace/ui/components/sidebar";
 import Link from "next/link";
 import { cn } from "@workspace/ui/lib/utils";
+import { LinkStatus } from "@/components/atoms/link-status";
 
 export function NavMain({
   items,
@@ -59,7 +60,8 @@ export function NavMain({
                 >
                   <Link href={item.url}>
                     <item.icon className={cn(isActive && "text-primary")} />
-                    <span>{item.title}</span>
+                    <span className="flex-1">{item.title}</span>
+                    <LinkStatus />
                   </Link>
                 </SidebarMenuButton>
                 {item.items?.length ? (

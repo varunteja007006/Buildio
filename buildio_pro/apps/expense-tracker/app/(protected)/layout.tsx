@@ -8,6 +8,7 @@ import {
 import { ModeToggle } from "@/components/mode-toggle";
 import { Protected } from "./protected";
 import { AppSidebar } from "@/components/organisms/sidebar/app-sidebar";
+import TopNavText from "@/components/organisms/sidebar/top-nav-text";
 
 export default async function Layout({
   children,
@@ -24,6 +25,7 @@ export default async function Layout({
                 orientation="vertical"
                 className="mr-2 data-[orientation=vertical]:h-4"
               />
+              <TopNavText />
             </div>
             <div className="pr-2">
               <ModeToggle />

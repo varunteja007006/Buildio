@@ -8,6 +8,8 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@workspace/ui/components/sidebar";
+import Link from "next/link";
+import { LinkStatus } from "@/components/atoms/link-status";
 
 export function NavSecondary({
   items,
@@ -26,10 +28,11 @@ export function NavSecondary({
           {items.map((item) => (
             <SidebarMenuItem key={item.title}>
               <SidebarMenuButton asChild size="sm">
-                <a href={item.url}>
+                <Link href={item.url} prefetch={false}>
                   <item.icon />
-                  <span>{item.title}</span>
-                </a>
+                  <span className="flex-1">{item.title}</span>
+                  <LinkStatus />
+                </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
           ))}

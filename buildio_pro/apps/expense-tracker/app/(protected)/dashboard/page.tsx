@@ -104,12 +104,6 @@ export default function DashboardPage() {
   return (
     <div className="container mx-auto space-y-6">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-          <p className="text-muted-foreground mt-1">
-            Overview of your finances this month
-          </p>
-        </div>
         <div className="flex items-center gap-2">
           <Link href="/expenses/add">
             <Button>Add Expense</Button>
