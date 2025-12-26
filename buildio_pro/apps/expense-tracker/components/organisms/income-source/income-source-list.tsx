@@ -41,8 +41,6 @@ import { IncomeSourceFormComponent } from "./income-source-form-dialog";
 import { IncomeSourceDeleteDialog } from "./income-source-delete-dialog";
 
 export function IncomeSourceListComponent() {
-  const router = useRouter();
-
   const [limit, setLimit] = React.useState(10);
   const [offset, setOffset] = React.useState(0);
 
@@ -149,138 +147,124 @@ export function IncomeSourceListComponent() {
           </div>
         </div>
       )} */}
+      
+      <div className="space-y-4">
+        {/* Controls */}
+        <div className="flex flex-wrap gap-4 items-center justify-between">
+          <Select
+            value={String(limit)}
+            onValueChange={(val) => {
+              setLimit(Number(val));
+              setOffset(0);
+            }}
+          >
+            <SelectTrigger className="w-32">
+              <SelectValue placeholder="Items per page" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="5">5 per page</SelectItem>
+              <SelectItem value="10">10 per page</SelectItem>
+              <SelectItem value="25">25 per page</SelectItem>
+              <SelectItem value="50">50 per page</SelectItem>
+            </SelectContent>
+          </Select>
 
-      <Card className="w-full">
-        <CardHeader>
-          <CardTitle>Income Sources</CardTitle>
-          <CardDescription>
-            Manage your income source categories
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            {/* Controls */}
-            <div className="flex flex-wrap gap-4 items-center justify-between">
-              <Select
-                value={String(limit)}
-                onValueChange={(val) => {
-                  setLimit(Number(val));
-                  setOffset(0);
-                }}
-              >
-                <SelectTrigger className="w-32">
-                  <SelectValue placeholder="Items per page" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="5">5 per page</SelectItem>
-                  <SelectItem value="10">10 per page</SelectItem>
-                  <SelectItem value="25">25 per page</SelectItem>
-                  <SelectItem value="50">50 per page</SelectItem>
-                </SelectContent>
-              </Select>
+          <IncomeSourceFormComponent mode="create" />
+        </div>
 
-              <IncomeSourceFormComponent mode="create" />
-            </div>
+        {/* Table */}
+        <div className="border rounded-lg overflow-hidden">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Name</TableHead>
+                <TableHead>Description</TableHead>
+                <TableHead>Created</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {isLoading ? (
+                <TableRow>
+                  <TableCell
+                    colSpan={4}
+                    className="text-center py-8 text-muted-foreground"
+                  >
+                    Loading income sources...
+                  </TableCell>
+                </TableRow>
+              ) : sources.length === 0 ? (
+                <TableRow>
+                  <TableCell
+                    colSpan={4}
+                    className="text-center py-8 text-muted-foreground"
+                  >
+                    No income sources found
+                  </TableCell>
+                </TableRow>
+              ) : (
+                sources.map((source: any) => (
+                  <TableRow key={source.id}>
+                    <TableCell className="font-medium">{source.name}</TableCell>
+                    <TableCell>{source.description || "-"}</TableCell>
+                    <TableCell>
+                      {new Date(source.createdAt).toLocaleDateString()}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex justify-end gap-2">
+                        <IncomeSourceDetailsComponent sourceId={source.id} />
 
-            {/* Table */}
-            <div className="border rounded-lg overflow-hidden">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Description</TableHead>
-                    <TableHead>Created</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
+                        <IncomeSourceFormComponent
+                          mode="edit"
+                          sourceId={source.id}
+                          initialValues={{
+                            name: source.name,
+                            description: source.description || "",
+                          }}
+                        />
+
+                        <IncomeSourceDeleteDialog sourceId={source.id} />
+                      </div>
+                    </TableCell>
                   </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {isLoading ? (
-                    <TableRow>
-                      <TableCell
-                        colSpan={4}
-                        className="text-center py-8 text-muted-foreground"
-                      >
-                        Loading income sources...
-                      </TableCell>
-                    </TableRow>
-                  ) : sources.length === 0 ? (
-                    <TableRow>
-                      <TableCell
-                        colSpan={4}
-                        className="text-center py-8 text-muted-foreground"
-                      >
-                        No income sources found
-                      </TableCell>
-                    </TableRow>
-                  ) : (
-                    sources.map((source: any) => (
-                      <TableRow key={source.id}>
-                        <TableCell className="font-medium">
-                          {source.name}
-                        </TableCell>
-                        <TableCell>{source.description || "-"}</TableCell>
-                        <TableCell>
-                          {new Date(source.createdAt).toLocaleDateString()}
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <div className="flex justify-end gap-2">
-                            <IncomeSourceDetailsComponent
-                              sourceId={source.id}
-                            />
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </div>
 
-                            <IncomeSourceFormComponent
-                              mode="edit"
-                              sourceId={source.id}
-                              initialValues={{
-                                name: source.name,
-                                description: source.description || "",
-                              }}
-                            />
-
-                            <IncomeSourceDeleteDialog sourceId={source.id} />
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    ))
-                  )}
-                </TableBody>
-              </Table>
+        {/* Pagination */}
+        {meta && totalPages > 1 && (
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-muted-foreground">
+              Showing {offset + 1} to{" "}
+              {Math.min(offset + limit, meta.totalItems)} of {meta.totalItems}{" "}
+              sources
+            </span>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setOffset(Math.max(0, offset - limit))}
+                disabled={offset === 0}
+              >
+                Previous
+              </Button>
+              <span className="text-sm px-4 py-2">
+                Page {currentPage} of {totalPages}
+              </span>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setOffset(offset + limit)}
+                disabled={!meta.hasMore}
+              >
+                Next
+              </Button>
             </div>
-
-            {/* Pagination */}
-            {meta && totalPages > 1 && (
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">
-                  Showing {offset + 1} to{" "}
-                  {Math.min(offset + limit, meta.totalItems)} of{" "}
-                  {meta.totalItems} sources
-                </span>
-                <div className="flex gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setOffset(Math.max(0, offset - limit))}
-                    disabled={offset === 0}
-                  >
-                    Previous
-                  </Button>
-                  <span className="text-sm px-4 py-2">
-                    Page {currentPage} of {totalPages}
-                  </span>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setOffset(offset + limit)}
-                    disabled={!meta.hasMore}
-                  >
-                    Next
-                  </Button>
-                </div>
-              </div>
-            )}
           </div>
-        </CardContent>
-      </Card>
+        )}
+      </div>
     </div>
   );
 }
