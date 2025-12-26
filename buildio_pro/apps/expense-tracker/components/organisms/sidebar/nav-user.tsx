@@ -31,6 +31,7 @@ import {
   useSidebar,
 } from "@workspace/ui/components/sidebar";
 import { Badge } from "@workspace/ui/components/badge";
+import { useSignOut } from "@/lib/auth-client";
 
 export function NavUser({
   user,
@@ -42,6 +43,7 @@ export function NavUser({
   };
 }) {
   const { isMobile } = useSidebar();
+  const signOut = useSignOut();
 
   return (
     <SidebarMenu>
@@ -52,14 +54,10 @@ export function NavUser({
               size="lg"
               className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
             >
-              <Avatar className="h-8 w-8 rounded-lg">
-                <AvatarImage src={user.avatar} alt={user.name} />
-                <AvatarFallback className="rounded-lg">CN</AvatarFallback>
-              </Avatar>
+              <UserAvatar avatar={user.avatar} name={user.name} />
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <div className="flex items-center gap-2">
-                    <span className="truncate font-semibold">{user.name}</span>
-                    <Badge variant="secondary" className="h-4 px-1 text-[10px] bg-gradient-to-r from-amber-200 to-yellow-400 text-amber-900 border-0">PRO</Badge>
+                  <span className="truncate font-semibold">{user.name}</span>
                 </div>
                 <span className="truncate text-xs">{user.email}</span>
               </div>
@@ -74,10 +72,7 @@ export function NavUser({
           >
             <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-                <Avatar className="h-8 w-8 rounded-lg">
-                  <AvatarImage src={user.avatar} alt={user.name} />
-                  <AvatarFallback className="rounded-lg">CN</AvatarFallback>
-                </Avatar>
+                <UserAvatar avatar={user.avatar} name={user.name} />
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-semibold">{user.name}</span>
                   <span className="truncate text-xs">{user.email}</span>
@@ -86,28 +81,28 @@ export function NavUser({
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem>
+              <DropdownMenuItem disabled>
                 <Sparkles className="mr-2 h-4 w-4 text-amber-500" />
                 Upgrade to Pro
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem>
+              <DropdownMenuItem disabled>
                 <BadgeCheck className="mr-2 h-4 w-4" />
                 Account
               </DropdownMenuItem>
-              <DropdownMenuItem>
+              <DropdownMenuItem disabled>
                 <CreditCard className="mr-2 h-4 w-4" />
                 Billing
               </DropdownMenuItem>
-              <DropdownMenuItem>
+              <DropdownMenuItem disabled>
                 <Bell className="mr-2 h-4 w-4" />
                 Notifications
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={() => signOut()}>
               <LogOut className="mr-2 h-4 w-4" />
               Log out
             </DropdownMenuItem>
@@ -117,3 +112,29 @@ export function NavUser({
     </SidebarMenu>
   );
 }
+
+export const UserAvatar = ({
+  avatar,
+  name,
+}: {
+  avatar: string;
+  name: string;
+}) => {
+  return (
+    <Avatar className="h-8 w-8 rounded-lg">
+      <AvatarImage src={avatar} alt={name} />
+      <AvatarFallback className="rounded-lg">{name.charAt(0)}</AvatarFallback>
+    </Avatar>
+  );
+};
+
+export const UserSubscriptionBadge = () => {
+  return (
+    <Badge
+      variant="secondary"
+      className="h-4 px-1 text-[10px] bg-gradient-to-r from-amber-200 to-yellow-400 text-amber-900 border-0"
+    >
+      PRO
+    </Badge>
+  );
+};

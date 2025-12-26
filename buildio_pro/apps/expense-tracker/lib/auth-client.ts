@@ -16,7 +16,8 @@ export const useSignOut = (redirectURL = "/") => {
   return async () =>
     await authClient.signOut({
       fetchOptions: {
-        onSuccess: () => {
+        onSuccess: async () => {
+          await new Promise((resolve) => setTimeout(resolve, 500));
           router.push(redirectURL);
           toast.success("Logged out successfully");
         },

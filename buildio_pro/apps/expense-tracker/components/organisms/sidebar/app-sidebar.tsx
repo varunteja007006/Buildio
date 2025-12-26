@@ -2,9 +2,7 @@
 
 import * as React from "react";
 import {
-  BookOpen,
   Bot,
-  Command,
   Frame,
   HeartPlus,
   LifeBuoy,
@@ -13,6 +11,7 @@ import {
   Send,
   Settings2,
   SquareTerminal,
+  Wallet,
   Zap,
 } from "lucide-react";
 
@@ -28,6 +27,9 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@workspace/ui/components/sidebar";
+import Link from "next/link";
+import { useSession } from "@/lib/auth-client";
+import { appConfig } from "@/app/appConfig";
 
 const data = {
   user: {
@@ -81,12 +83,12 @@ const data = {
   navSecondary: [
     {
       title: "Support",
-      url: "#",
+      url: "/support",
       icon: LifeBuoy,
     },
     {
       title: "Feedback",
-      url: "#",
+      url: "/feedback",
       icon: Send,
     },
     {
@@ -95,41 +97,42 @@ const data = {
       icon: HeartPlus,
     },
   ],
-  projects: [
-    {
-      name: "Design Engineering",
-      url: "#",
-      icon: Frame,
-    },
-    {
-      name: "Sales & Marketing",
-      url: "#",
-      icon: PieChart,
-    },
-    {
-      name: "Travel",
-      url: "#",
-      icon: Map,
-    },
-  ],
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const session = useSession();
+
+  if (!session || !session.data) {
+    return null;
+  }
+
+  const user = session.data.user;
+  const href = user ? "/dashboard" : "/";
+
+  const userName = user?.name?.split(" ")[0] || "User";
+
+  const userData = {
+    name: userName,
+    email: user.email || "",
+    avatar: user.image || "",
+  };
+
+  console.log(user.image);
+
   return (
     <Sidebar variant="inset" {...props}>
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
-              <a href="#">
+              <Link href={href}>
                 <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
-                  <Command className="size-4" />
+                  <Wallet className="size-4" />
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium">Acme Inc</span>
-                  <span className="truncate text-xs">Enterprise</span>
+                  <span className="truncate font-medium">{appConfig.name}</span>
                 </div>
-              </a>
+              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
@@ -139,7 +142,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>
-        <NavUser user={data.user} />
+        <NavUser user={userData} />
       </SidebarFooter>
     </Sidebar>
   );
