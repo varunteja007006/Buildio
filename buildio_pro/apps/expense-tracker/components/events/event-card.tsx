@@ -1,7 +1,14 @@
 import React from "react";
 import Link from "next/link";
 import { format, differenceInDays, isPast } from "date-fns";
-import { Calendar, Clock, MoreVertical, Pencil, Trash2, Eye } from "lucide-react";
+import {
+  Calendar,
+  Clock,
+  MoreVertical,
+  Pencil,
+  Trash2,
+  Eye,
+} from "lucide-react";
 import {
   Card,
   CardContent,
@@ -99,16 +106,27 @@ export function EventCard({ event, onDelete }: EventCardProps) {
               <span className="text-muted-foreground">Progress</span>
               <span className="font-medium">{Math.round(progress)}%</span>
             </div>
-            <Progress 
-                value={Math.min(progress, 100)} 
-                className={cn("h-2", progress > 100 ? "bg-destructive/20 [&>div]:bg-destructive" : "")}
+            <Progress
+              value={Math.min(progress, 100)}
+              className={cn(
+                "h-2",
+                progress > 100
+                  ? "bg-destructive/20 [&>div]:bg-destructive"
+                  : "",
+              )}
             />
             <div className="flex justify-between text-xs">
               <span className="text-muted-foreground">
-                Spent: <span className="font-medium text-foreground">{formatCurrency(event.totalSpent)}</span>
+                Spent:{" "}
+                <span className="font-medium text-foreground">
+                  {formatCurrency(event.totalSpent)}
+                </span>
               </span>
               <span className="text-muted-foreground">
-                Budget: <span className="font-medium text-foreground">{formatCurrency(event.estimatedBudget)}</span>
+                Budget:{" "}
+                <span className="font-medium text-foreground">
+                  {formatCurrency(event.estimatedBudget)}
+                </span>
               </span>
             </div>
           </div>
@@ -121,7 +139,8 @@ export function EventCard({ event, onDelete }: EventCardProps) {
                 {event.startDate
                   ? format(new Date(event.startDate), "MMM d")
                   : "TBD"}
-                {event.endDate && ` - ${format(new Date(event.endDate), "MMM d")}`}
+                {event.endDate &&
+                  ` - ${format(new Date(event.endDate), "MMM d")}`}
               </span>
             </div>
             {event.status && (
@@ -134,20 +153,32 @@ export function EventCard({ event, onDelete }: EventCardProps) {
       </CardContent>
       <CardFooter className="pt-0 border-t bg-muted/20 p-4 mt-auto">
         <div className="flex items-center justify-between w-full">
-            <div className="flex items-center gap-2 text-sm">
-                <Clock className="h-4 w-4 text-muted-foreground" />
-                {daysLeft !== null ? (
-                    <span className={cn("font-medium", isOverdue ? "text-destructive" : "")}>
-                        {isOverdue ? `${Math.abs(daysLeft)} days overdue` : `${daysLeft} days left`}
-                    </span>
-                ) : (
-                    <span className="text-muted-foreground">No deadline</span>
+          <div className="flex items-center gap-2 text-sm">
+            <Clock className="h-4 w-4 text-muted-foreground" />
+            {daysLeft !== null ? (
+              <span
+                className={cn(
+                  "font-medium",
+                  isOverdue ? "text-destructive" : "",
                 )}
-            </div>
-            <div className={cn("text-sm font-medium", event.remaining < 0 ? "text-destructive" : "text-green-600")}>
-                {event.remaining < 0 ? "Over: " : "Left: "}
-                {formatCurrency(Math.abs(event.remaining))}
-            </div>
+              >
+                {isOverdue
+                  ? `${Math.abs(daysLeft)} days overdue`
+                  : `${daysLeft} days left`}
+              </span>
+            ) : (
+              <span className="text-muted-foreground">No deadline</span>
+            )}
+          </div>
+          <div
+            className={cn(
+              "text-sm font-medium",
+              event.remaining < 0 ? "text-destructive" : "text-green-600",
+            )}
+          >
+            {event.remaining < 0 ? "Over: " : "Left: "}
+            {formatCurrency(Math.abs(event.remaining))}
+          </div>
         </div>
       </CardFooter>
     </Card>

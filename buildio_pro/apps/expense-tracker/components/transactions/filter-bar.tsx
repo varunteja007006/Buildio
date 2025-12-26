@@ -46,7 +46,9 @@ export function FilterBar({
   const hasActiveFilters = selectedCategory || selectedBudget || searchValue;
 
   return (
-    <div className={`flex flex-col sm:flex-row gap-4 items-center ${className}`}>
+    <div
+      className={`flex flex-col sm:flex-row gap-4 items-center ${className}`}
+    >
       <div className="relative w-full sm:w-[300px]">
         <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
         <Input
@@ -57,7 +59,7 @@ export function FilterBar({
           onChange={(e) => onSearchChange?.(e.target.value)}
         />
       </div>
-      
+
       <div className="flex items-center gap-2 w-full sm:w-auto overflow-x-auto pb-2 sm:pb-0">
         {categories && (
           <Select value={selectedCategory} onValueChange={onCategoryChange}>
@@ -66,7 +68,8 @@ export function FilterBar({
                 <Filter className="h-3.5 w-3.5" />
                 <span className="truncate">
                   {selectedCategory
-                    ? categories.find((c) => c.value === selectedCategory)?.label
+                    ? categories.find((c) => c.value === selectedCategory)
+                        ?.label
                     : "Category"}
                 </span>
               </div>

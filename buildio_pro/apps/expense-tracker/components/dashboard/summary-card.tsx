@@ -1,5 +1,10 @@
 import React from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@workspace/ui/components/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@workspace/ui/components/card";
 import { cn } from "@workspace/ui/lib/utils";
 import { LucideIcon, TrendingDown, TrendingUp } from "lucide-react";
 
@@ -42,7 +47,11 @@ export function SummaryCard({
                   <span
                     className={cn(
                       "flex items-center font-medium mr-2",
-                      trend > 0 ? "text-green-600" : trend < 0 ? "text-red-600" : ""
+                      trend > 0
+                        ? "text-green-600"
+                        : trend < 0
+                          ? "text-red-600"
+                          : "",
                     )}
                   >
                     {trend > 0 ? (

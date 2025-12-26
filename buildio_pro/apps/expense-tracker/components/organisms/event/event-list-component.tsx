@@ -113,11 +113,12 @@ export function EventListComponent() {
         <Card className="border-dashed">
           <CardContent className="flex flex-col items-center justify-center py-12 text-center">
             <div className="h-12 w-12 rounded-full bg-muted flex items-center justify-center mb-4">
-                <Zap className="h-6 w-6 text-muted-foreground" />
+              <Zap className="h-6 w-6 text-muted-foreground" />
             </div>
             <h3 className="mb-2 text-lg font-semibold">No events found</h3>
             <p className="mb-4 text-sm text-muted-foreground max-w-sm">
-              Events help you track expenses for specific occasions like trips, weddings, or renovation projects.
+              Events help you track expenses for specific occasions like trips,
+              weddings, or renovation projects.
             </p>
             <Link href="/events/create">
               <Button>Create your first Event</Button>
@@ -128,10 +129,10 @@ export function EventListComponent() {
         <>
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {events.map((event) => (
-              <EventCard 
-                key={event.id} 
-                event={event} 
-                onDelete={(id) => setEventToDelete(id)} 
+              <EventCard
+                key={event.id}
+                event={event}
+                onDelete={(id) => setEventToDelete(id)}
               />
             ))}
           </div>
@@ -162,30 +163,33 @@ export function EventListComponent() {
         </>
       )}
 
-      <AlertDialog open={!!eventToDelete} onOpenChange={(open) => !open && setEventToDelete(null)}>
+      <AlertDialog
+        open={!!eventToDelete}
+        onOpenChange={(open) => !open && setEventToDelete(null)}
+      >
         <AlertDialogContent>
-            <AlertDialogHeader>
+          <AlertDialogHeader>
             <AlertDialogTitle>Delete Event</AlertDialogTitle>
             <AlertDialogDescription>
-                Are you sure you want to delete this event? This
-                action cannot be undone.
+              Are you sure you want to delete this event? This action cannot be
+              undone.
             </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction
-                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                onClick={() => {
-                    if (eventToDelete) {
-                        deleteEventMutation.mutate({ eventId: eventToDelete });
-                    }
-                }}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={() => {
+                if (eventToDelete) {
+                  deleteEventMutation.mutate({ eventId: eventToDelete });
+                }
+              }}
             >
-                Delete
+              Delete
             </AlertDialogAction>
-            </AlertDialogFooter>
+          </AlertDialogFooter>
         </AlertDialogContent>
-        </AlertDialog>
+      </AlertDialog>
     </div>
   );
 }

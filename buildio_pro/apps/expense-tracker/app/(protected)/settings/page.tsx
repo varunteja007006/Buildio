@@ -33,7 +33,6 @@ export default function SettingsPage() {
           <UserProfileFormComponent />
         </div>
 
-
         {/* Preferences Section */}
         <div className="space-y-4">
           <div>

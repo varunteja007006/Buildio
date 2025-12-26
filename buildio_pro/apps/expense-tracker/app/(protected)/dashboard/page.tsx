@@ -18,7 +18,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@workspace/ui/components/card";
-import { Alert, AlertDescription, AlertTitle } from "@workspace/ui/components/alert";
+import {
+  Alert,
+  AlertDescription,
+  AlertTitle,
+} from "@workspace/ui/components/alert";
 import { Badge } from "@workspace/ui/components/badge";
 import { Progress } from "@workspace/ui/components/progress";
 import { formatCurrency } from "@workspace/ui/lib/currency.utils";
@@ -75,7 +79,8 @@ export default function DashboardPage() {
           title: "Budget Warning",
           message: `You have used ${b.percentSpent}% of your budget "${b.name}".`,
           icon: AlertTriangle,
-          className: "border-yellow-500 text-yellow-600 [&>svg]:text-yellow-600",
+          className:
+            "border-yellow-500 text-yellow-600 [&>svg]:text-yellow-600",
         });
       }
     }
@@ -106,9 +111,9 @@ export default function DashboardPage() {
           </p>
         </div>
         <div className="flex items-center gap-2">
-            <Link href="/expenses/add">
-                <Button>Add Expense</Button>
-            </Link>
+          <Link href="/expenses/add">
+            <Button>Add Expense</Button>
+          </Link>
         </div>
       </div>
 
@@ -171,94 +176,122 @@ export default function DashboardPage() {
             data={monthlyTrendsQuery.data || []}
             isLoading={monthlyTrendsQuery.isLoading}
           />
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-             {/* Active Budgets */}
+            {/* Active Budgets */}
             <Card className="col-span-1">
-                <CardHeader>
+              <CardHeader>
                 <CardTitle>Active Budgets</CardTitle>
                 <CardDescription>
-                    Progress of budgets currently active
+                  Progress of budgets currently active
                 </CardDescription>
-                </CardHeader>
-                <CardContent>
+              </CardHeader>
+              <CardContent>
                 {budgetsQuery.isLoading ? (
-                    <div className="flex items-center justify-center py-8">
+                  <div className="flex items-center justify-center py-8">
                     <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-                    </div>
+                  </div>
                 ) : budgetsQuery.data?.length ? (
-                    <div className="space-y-6">
+                  <div className="space-y-6">
                     {budgetsQuery.data.slice(0, 4).map((b: any) => (
-                        <div key={b.id} className="space-y-2">
+                      <div key={b.id} className="space-y-2">
                         <div className="flex items-center justify-between">
-                            <div className="font-medium truncate max-w-[150px]">
-                            <Link href={`/budgets/${b.id}`} className="hover:underline">{b.name}</Link>
-                            </div>
-                            <div className="text-sm text-muted-foreground">
+                          <div className="font-medium truncate max-w-[150px]">
+                            <Link
+                              href={`/budgets/${b.id}`}
+                              className="hover:underline"
+                            >
+                              {b.name}
+                            </Link>
+                          </div>
+                          <div className="text-sm text-muted-foreground">
                             {Math.round(b.percentSpent)}%
-                            </div>
+                          </div>
                         </div>
-                        <Progress value={Math.min(b.percentSpent, 100)} className="h-2" />
+                        <Progress
+                          value={Math.min(b.percentSpent, 100)}
+                          className="h-2"
+                        />
                         <div className="flex items-center justify-between text-xs text-muted-foreground">
-                            <span>
-                            {formatCurrency(b.spent)} of {formatCurrency(b.allocated)}
-                            </span>
-                            {b.overBudget && (
-                            <Badge variant="destructive" className="h-5 px-1.5 text-[10px]">Over</Badge>
-                            )}
+                          <span>
+                            {formatCurrency(b.spent)} of{" "}
+                            {formatCurrency(b.allocated)}
+                          </span>
+                          {b.overBudget && (
+                            <Badge
+                              variant="destructive"
+                              className="h-5 px-1.5 text-[10px]"
+                            >
+                              Over
+                            </Badge>
+                          )}
                         </div>
-                        </div>
+                      </div>
                     ))}
                     {budgetsQuery.data.length > 4 && (
-                        <div className="pt-2 text-center">
-                            <Link href="/budgets" className="text-sm text-primary hover:underline">View all budgets</Link>
-                        </div>
+                      <div className="pt-2 text-center">
+                        <Link
+                          href="/budgets"
+                          className="text-sm text-primary hover:underline"
+                        >
+                          View all budgets
+                        </Link>
+                      </div>
                     )}
-                    </div>
+                  </div>
                 ) : (
-                    <p className="text-muted-foreground text-center py-8 text-sm">
+                  <p className="text-muted-foreground text-center py-8 text-sm">
                     No active budgets found
-                    </p>
+                  </p>
                 )}
-                </CardContent>
+              </CardContent>
             </Card>
 
             {/* Recurring Expenses */}
             <Card className="col-span-1">
-                <CardHeader>
-                    <CardTitle>Recurring</CardTitle>
-                    <CardDescription>Upcoming payments</CardDescription>
-                </CardHeader>
-                <CardContent>
-                    {recurringExpensesQuery.isLoading ? (
-                    <div className="flex items-center justify-center py-8">
-                        <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-                    </div>
-                    ) : recurringExpensesQuery.data?.length ? (
-                    <div className="space-y-4">
-                        {recurringExpensesQuery.data.slice(0, 4).map((expense: any) => (
-                        <div key={expense.id} className="flex items-center justify-between border-b pb-3 last:border-0 last:pb-0">
-                            <div className="flex items-center gap-3">
+              <CardHeader>
+                <CardTitle>Recurring</CardTitle>
+                <CardDescription>Upcoming payments</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {recurringExpensesQuery.isLoading ? (
+                  <div className="flex items-center justify-center py-8">
+                    <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+                  </div>
+                ) : recurringExpensesQuery.data?.length ? (
+                  <div className="space-y-4">
+                    {recurringExpensesQuery.data
+                      .slice(0, 4)
+                      .map((expense: any) => (
+                        <div
+                          key={expense.id}
+                          className="flex items-center justify-between border-b pb-3 last:border-0 last:pb-0"
+                        >
+                          <div className="flex items-center gap-3">
                             <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center text-primary shrink-0">
-                                <CalendarClock className="h-4 w-4" />
+                              <CalendarClock className="h-4 w-4" />
                             </div>
                             <div className="overflow-hidden">
-                                <p className="font-medium truncate text-sm">{expense.name}</p>
-                                <p className="text-xs text-muted-foreground truncate">{expense.category?.name || 'Uncategorized'}</p>
+                              <p className="font-medium truncate text-sm">
+                                {expense.name}
+                              </p>
+                              <p className="text-xs text-muted-foreground truncate">
+                                {expense.category?.name || "Uncategorized"}
+                              </p>
                             </div>
-                            </div>
-                            <div className="font-bold text-sm">
+                          </div>
+                          <div className="font-bold text-sm">
                             {formatCurrency(expense.expenseAmount)}
-                            </div>
+                          </div>
                         </div>
-                        ))}
-                    </div>
-                    ) : (
-                    <div className="text-center py-8 text-muted-foreground text-sm">
-                        No recurring expenses
-                    </div>
-                    )}
-                </CardContent>
+                      ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-8 text-muted-foreground text-sm">
+                    No recurring expenses
+                  </div>
+                )}
+              </CardContent>
             </Card>
           </div>
         </div>
@@ -269,14 +302,14 @@ export default function DashboardPage() {
             data={topCategoriesQuery.data || []}
             isLoading={topCategoriesQuery.isLoading}
           />
-          
+
           <RecentTransactions
             transactions={recentQuery.data || []}
             isLoading={recentQuery.isLoading}
           />
         </div>
       </div>
-      
+
       {/* Over Budget Analysis (Full Width if exists) */}
       {overBudgetQuery.data && overBudgetQuery.data.length > 0 && (
         <Card className="border-destructive/50 bg-destructive/5">
@@ -289,27 +322,36 @@ export default function DashboardPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                {overBudgetQuery.data.map((item: any) => (
-                <div key={item.budgetId} className="space-y-3 bg-background p-4 rounded-lg border">
-                    <div className="flex items-center justify-between font-medium">
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {overBudgetQuery.data.map((item: any) => (
+                <div
+                  key={item.budgetId}
+                  className="space-y-3 bg-background p-4 rounded-lg border"
+                >
+                  <div className="flex items-center justify-between font-medium">
                     <span>{item.budgetName}</span>
                     <span className="text-destructive text-sm">
-                        {formatCurrency(item.spent)} / {formatCurrency(item.allocated)}
+                      {formatCurrency(item.spent)} /{" "}
+                      {formatCurrency(item.allocated)}
                     </span>
-                    </div>
-                    <div className="space-y-2">
+                  </div>
+                  <div className="space-y-2">
                     {item.topCategories.map((cat: any) => (
-                        <div key={cat.name} className="flex justify-between text-sm">
-                        <span className="text-muted-foreground">{cat.name}</span>
-                        <span className="font-medium">
-                            {formatCurrency(cat.amount)}
+                      <div
+                        key={cat.name}
+                        className="flex justify-between text-sm"
+                      >
+                        <span className="text-muted-foreground">
+                          {cat.name}
                         </span>
-                        </div>
+                        <span className="font-medium">
+                          {formatCurrency(cat.amount)}
+                        </span>
+                      </div>
                     ))}
-                    </div>
+                  </div>
                 </div>
-                ))}
+              ))}
             </div>
           </CardContent>
         </Card>

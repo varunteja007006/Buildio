@@ -43,16 +43,18 @@ export function NavMain({
       <SidebarGroupLabel>Platform</SidebarGroupLabel>
       <SidebarMenu>
         {items.map((item) => {
-          const isActive = pathname === item.url || pathname.startsWith(`${item.url}/`);
-          
+          const isActive =
+            pathname === item.url || pathname.startsWith(`${item.url}/`);
+
           return (
             <Collapsible key={item.title} asChild defaultOpen={item.isActive}>
               <SidebarMenuItem>
-                <SidebarMenuButton 
-                  asChild 
+                <SidebarMenuButton
+                  asChild
                   tooltip={item.title}
                   className={cn(
-                    isActive && "bg-sidebar-accent text-sidebar-accent-foreground font-medium shadow-sm"
+                    isActive &&
+                      "bg-sidebar-accent text-sidebar-accent-foreground font-medium shadow-sm",
                   )}
                 >
                   <Link href={item.url}>

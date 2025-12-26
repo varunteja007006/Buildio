@@ -43,7 +43,11 @@ const COLORS = [
   "#8dd1e1",
 ];
 
-export function TopCategories({ data, isLoading, className }: TopCategoriesProps) {
+export function TopCategories({
+  data,
+  isLoading,
+  className,
+}: TopCategoriesProps) {
   // Filter out categories with 0 spent to avoid empty segments
   const activeData = data.filter((d) => d.totalSpent > 0);
 
@@ -64,7 +68,7 @@ export function TopCategories({ data, isLoading, className }: TopCategoriesProps
           </div>
         ) : (
           <div className="h-[250px] w-full relative">
-             <ResponsiveContainer width="100%" height="100%">
+            <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
                   data={activeData}
@@ -97,24 +101,29 @@ export function TopCategories({ data, isLoading, className }: TopCategoriesProps
             </ResponsiveContainer>
             {/* Center Text */}
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                <div className="text-center">
-                    <div className="text-2xl font-bold">{activeData.length}</div>
-                    <div className="text-xs text-muted-foreground">Categories</div>
-                </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold">{activeData.length}</div>
+                <div className="text-xs text-muted-foreground">Categories</div>
+              </div>
             </div>
           </div>
         )}
       </CardContent>
       <div className="p-6 pt-0">
-          <div className="grid grid-cols-2 gap-2 mt-4">
-              {activeData.slice(0, 4).map((item, index) => (
-                  <div key={item.name} className="flex items-center gap-2 text-sm">
-                      <div className="h-3 w-3 rounded-full" style={{ backgroundColor: COLORS[index % COLORS.length] }} />
-                      <span className="truncate flex-1">{item.name}</span>
-                      <span className="font-medium">{formatCurrency(item.totalSpent)}</span>
-                  </div>
-              ))}
-          </div>
+        <div className="grid grid-cols-2 gap-2 mt-4">
+          {activeData.slice(0, 4).map((item, index) => (
+            <div key={item.name} className="flex items-center gap-2 text-sm">
+              <div
+                className="h-3 w-3 rounded-full"
+                style={{ backgroundColor: COLORS[index % COLORS.length] }}
+              />
+              <span className="truncate flex-1">{item.name}</span>
+              <span className="font-medium">
+                {formatCurrency(item.totalSpent)}
+              </span>
+            </div>
+          ))}
+        </div>
       </div>
     </Card>
   );

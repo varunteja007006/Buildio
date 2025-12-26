@@ -484,9 +484,12 @@ export const eventRouter = createTRPCRouter({
 
         const date = new Date(expense.createdAt);
         const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
-        
+
         // Fix: Map set key/value order was swapped in my thought process, correcting it now
-        historyMap.set(key, (historyMap.get(key) || 0) + numericToNumber(expense.expenseAmount));
+        historyMap.set(
+          key,
+          (historyMap.get(key) || 0) + numericToNumber(expense.expenseAmount),
+        );
       }
 
       // Convert to array and sort
@@ -494,7 +497,10 @@ export const eventRouter = createTRPCRouter({
         .map(([date, amount]) => ({
           date,
           amount,
-          label: new Date(date + "-01").toLocaleString("default", { month: "short", year: "numeric" }),
+          label: new Date(date + "-01").toLocaleString("default", {
+            month: "short",
+            year: "numeric",
+          }),
         }))
         .sort((a, b) => a.date.localeCompare(b.date));
 

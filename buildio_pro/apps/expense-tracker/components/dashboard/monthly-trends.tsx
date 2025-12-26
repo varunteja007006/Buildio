@@ -33,7 +33,11 @@ interface MonthlyTrendsProps {
   className?: string;
 }
 
-export function MonthlyTrends({ data, isLoading, className }: MonthlyTrendsProps) {
+export function MonthlyTrends({
+  data,
+  isLoading,
+  className,
+}: MonthlyTrendsProps) {
   return (
     <Card className={cn("col-span-2", className)}>
       <CardHeader>
@@ -73,7 +77,11 @@ export function MonthlyTrends({ data, isLoading, className }: MonthlyTrendsProps
                     <stop offset="95%" stopColor="#ef4444" stopOpacity={0} />
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="hsl(var(--border))" />
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  vertical={false}
+                  stroke="hsl(var(--border))"
+                />
                 <XAxis
                   dataKey="month"
                   tickLine={false}

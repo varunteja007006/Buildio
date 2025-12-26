@@ -33,7 +33,10 @@ import { formatCurrency } from "@workspace/ui/lib/currency.utils";
 import { toast } from "sonner";
 import { useTRPC } from "@/lib/trpc-client";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { TransactionTable, Transaction } from "@/components/transactions/transaction-table";
+import {
+  TransactionTable,
+  Transaction,
+} from "@/components/transactions/transaction-table";
 import { FilterBar } from "@/components/transactions/filter-bar";
 import { useExpenseCategoryList, useBudgetList } from "@/hooks";
 
@@ -53,11 +56,15 @@ export function ExpenseListComponent({
   const [offset, setOffset] = React.useState(0);
   const [sortBy, setSortBy] = React.useState<"date" | "amount">("date");
   const [sortOrder, setSortOrder] = React.useState<"asc" | "desc">("desc");
-  
+
   // Filter states
   const [search, setSearch] = React.useState("");
-  const [selectedCategory, setSelectedCategory] = React.useState<string | undefined>(initialCategoryId);
-  const [selectedBudget, setSelectedBudget] = React.useState<string | undefined>(initialBudgetId);
+  const [selectedCategory, setSelectedCategory] = React.useState<
+    string | undefined
+  >(initialCategoryId);
+  const [selectedBudget, setSelectedBudget] = React.useState<
+    string | undefined
+  >(initialBudgetId);
 
   // Fetch filters data
   const { data: categories } = useExpenseCategoryList();
@@ -76,7 +83,7 @@ export function ExpenseListComponent({
   );
 
   const { data: analyticsData } = useQuery(
-    trpc.expense.getAnalytics.queryOptions({})
+    trpc.expense.getAnalytics.queryOptions({}),
   );
 
   const deleteMutation = useMutation(
@@ -124,8 +131,10 @@ export function ExpenseListComponent({
   }));
 
   // Filter options
-  const categoryOptions = categories?.map((c) => ({ label: c.name, value: c.id })) || [];
-  const budgetOptions = budgets?.map((b) => ({ label: b.name, value: b.id })) || [];
+  const categoryOptions =
+    categories?.map((c) => ({ label: c.name, value: c.id })) || [];
+  const budgetOptions =
+    budgets?.map((b) => ({ label: b.name, value: b.id })) || [];
 
   return (
     <div className="space-y-6">
@@ -173,7 +182,7 @@ export function ExpenseListComponent({
                 </div>
                 <p className="text-xs text-muted-foreground">
                   {formatCurrency(
-                    analyticsData.categoryBreakdown[0]?.amount || 0
+                    analyticsData.categoryBreakdown[0]?.amount || 0,
                   )}
                 </p>
               </CardContent>
@@ -233,8 +242,11 @@ export function ExpenseListComponent({
                     .slice(0, 6)
                     .map((item, index) => [
                       item.name,
-                      { label: item.name, color: COLORS[index % COLORS.length] },
-                    ])
+                      {
+                        label: item.name,
+                        color: COLORS[index % COLORS.length],
+                      },
+                    ]),
                 )}
                 className="h-[300px]"
               >
@@ -279,20 +291,20 @@ export function ExpenseListComponent({
             categories={categoryOptions}
             selectedCategory={selectedCategory}
             onCategoryChange={(val) => {
-                setSelectedCategory(val);
-                setOffset(0);
+              setSelectedCategory(val);
+              setOffset(0);
             }}
             budgets={budgetOptions}
             selectedBudget={selectedBudget}
             onBudgetChange={(val) => {
-                setSelectedBudget(val);
-                setOffset(0);
+              setSelectedBudget(val);
+              setOffset(0);
             }}
             onClearFilters={() => {
-                setSearch("");
-                setSelectedCategory(undefined);
-                setSelectedBudget(undefined);
-                setOffset(0);
+              setSearch("");
+              setSelectedCategory(undefined);
+              setSelectedBudget(undefined);
+              setOffset(0);
             }}
           />
 
@@ -303,8 +315,8 @@ export function ExpenseListComponent({
             currentPage={currentPage}
             onPageChange={(page) => setOffset((page - 1) * limit)}
             onSortChange={(field, order) => {
-                setSortBy(field as any);
-                setSortOrder(order);
+              setSortBy(field as any);
+              setSortOrder(order);
             }}
             sortField={sortBy}
             sortOrder={sortOrder}

@@ -6,7 +6,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@workspace/ui/components/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@workspace/ui/components/avatar";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@workspace/ui/components/avatar";
 import { Badge } from "@workspace/ui/components/badge";
 import { formatCurrency } from "@workspace/ui/lib/currency.utils";
 import { getCategoryIcon, getCategoryColor } from "@/lib/category-icons";
@@ -55,13 +59,22 @@ export function RecentTransactions({
         ) : (
           <div className="space-y-8">
             {transactions.map((transaction) => {
-              const Icon = getCategoryIcon(transaction.category?.name || transaction.meta?.label);
-              const colorClass = getCategoryColor(transaction.category?.name || transaction.meta?.label);
+              const Icon = getCategoryIcon(
+                transaction.category?.name || transaction.meta?.label,
+              );
+              const colorClass = getCategoryColor(
+                transaction.category?.name || transaction.meta?.label,
+              );
               const isIncome = transaction.type === "income";
 
               return (
                 <div key={transaction.id} className="flex items-center">
-                  <div className={cn("h-9 w-9 rounded-full flex items-center justify-center mr-4", colorClass)}>
+                  <div
+                    className={cn(
+                      "h-9 w-9 rounded-full flex items-center justify-center mr-4",
+                      colorClass,
+                    )}
+                  >
                     <Icon className="h-5 w-5" />
                   </div>
                   <div className="space-y-1">
@@ -69,11 +82,19 @@ export function RecentTransactions({
                       {transaction.name}
                     </p>
                     <p className="text-xs text-muted-foreground">
-                      {transaction.category?.name || transaction.meta?.label || "Uncategorized"}
+                      {transaction.category?.name ||
+                        transaction.meta?.label ||
+                        "Uncategorized"}
                     </p>
                   </div>
-                  <div className={cn("ml-auto font-medium", isIncome ? "text-green-600" : "text-red-600")}>
-                    {isIncome ? "+" : "-"}{formatCurrency(transaction.amount)}
+                  <div
+                    className={cn(
+                      "ml-auto font-medium",
+                      isIncome ? "text-green-600" : "text-red-600",
+                    )}
+                  >
+                    {isIncome ? "+" : "-"}
+                    {formatCurrency(transaction.amount)}
                   </div>
                 </div>
               );
