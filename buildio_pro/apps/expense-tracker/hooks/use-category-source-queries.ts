@@ -116,7 +116,7 @@ const incomeSourceKeys = {
 };
 
 // List income sources
-export function useIncomeSourceList(params: { limit: number; offset: number }) {
+export function useIncomeSourceList(params: { limit: number; page: number }) {
   const trpc = useTRPC();
   return useQuery(trpc.incomeSource.listSources.queryOptions(params));
 }

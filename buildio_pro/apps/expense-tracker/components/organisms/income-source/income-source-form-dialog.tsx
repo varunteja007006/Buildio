@@ -92,7 +92,11 @@ export function IncomeSourceFormComponent({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        {mode === "create" ? <Button>+ Add Income Source</Button> : <EditBtn iconOnly />}
+        {mode === "create" ? (
+          <Button>+ Add Income Source</Button>
+        ) : (
+          <EditBtn iconOnly />
+        )}
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>

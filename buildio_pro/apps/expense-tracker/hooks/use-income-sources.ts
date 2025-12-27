@@ -5,14 +5,14 @@ import { toast } from "sonner";
 // Income source list
 export const useIncomeSourceList = (params: {
   limit: number;
-  offset: number;
+  page: number;
 }) => {
   const trpc = useTRPC();
 
   return useQuery(
     trpc.incomeSource.listSources.queryOptions({
       limit: params.limit,
-      offset: params.offset,
+      page: params.page,
     }),
   );
 };

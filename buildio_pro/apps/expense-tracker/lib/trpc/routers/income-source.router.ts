@@ -30,7 +30,7 @@ const updateIncomeSourceInput = z
 
 const listIncomeSourcesInput = z.object({
   limit: z.number().int().min(1).max(100).default(10),
-  offset: z.number().int().min(0).default(0),
+  page: z.number().int().min(1).default(1), // 1-based page number
 });
 
 const sourceIdInput = z.object({
@@ -85,25 +85,53 @@ export const incomeSourceRouter = createTRPCRouter({
     .input(listIncomeSourcesInput)
     .query(async ({ input, ctx }) => {
       const { db, dbSchema } = ctx;
-      const { limit, offset } = input;
+      const { limit, page } = input;
 
+      // ─────────────────────────────────────────────────────────────
+      // 1. Get total count of items
+      // ─────────────────────────────────────────────────────────────
       const [total] = await db
         .select({ count: count() })
         .from(dbSchema.incomeSource);
 
+      const totalItems = Number(total?.count ?? 0);
+
+      // ─────────────────────────────────────────────────────────────
+      // 2. Server-side pagination calculations
+      //    - offset: How many items to skip (0-based for DB query)
+      //    - totalPages: Total number of pages available
+      // ─────────────────────────────────────────────────────────────
+      const offset = (page - 1) * limit; // page=1 → offset=0, page=2 → offset=limit
+      const totalPages = Math.ceil(totalItems / limit);
+
+      // ─────────────────────────────────────────────────────────────
+      // 3. Fetch paginated data from database
+      // ─────────────────────────────────────────────────────────────
       const sources = await db.query.incomeSource.findMany({
         limit,
         offset,
         orderBy: (source, { asc }) => asc(source.name),
       });
 
+      // ─────────────────────────────────────────────────────────────
+      // 4. Return data with comprehensive meta information
+      //    - Frontend doesn't need to calculate anything
+      // ─────────────────────────────────────────────────────────────
       return {
         data: sources,
         meta: {
+          // Pagination params (echoed back)
           limit,
-          offset,
-          totalItems: Number(total?.count ?? 0),
-          hasMore: offset + limit < Number(total?.count ?? 0),
+          currentPage: page,
+
+          // Server-calculated values
+          offset, // Useful for debugging
+          totalItems,
+          totalPages,
+
+          // Boolean helpers for UI (prev/next buttons)
+          hasNextPage: page < totalPages,
+          hasPrevPage: page > 1,
         },
       };
     }),

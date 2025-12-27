@@ -1,7 +1,7 @@
-"use client";
+import { flexRender, type Table as TanstackTable } from "@tanstack/react-table";
+import type * as React from "react";
 
-import React from "react";
-
+import { DataTablePagination } from "@workspace/ui/components/data-table/data-table-pagination";
 import {
   Table,
   TableBody,
@@ -10,93 +10,40 @@ import {
   TableHeader,
   TableRow,
 } from "@workspace/ui/components/table";
-
-import {
-  ColumnDef,
-  flexRender,
-  getCoreRowModel,
-  useReactTable,
-  getPaginationRowModel,
-  SortingState,
-  getSortedRowModel,
-  ColumnFiltersState,
-  getFilteredRowModel,
-  VisibilityState,
-  ColumnSizingState,
-} from "@tanstack/react-table";
-
-import { DataTablePagination } from "@workspace/ui/components/data-table/data-table-pagination";
-import { DataTableViewOptions } from "@workspace/ui/components/data-table/data-table-column-toggle";
-
+import { getCommonPinningStyles } from "@workspace/ui/lib/data-table";
 import { cn } from "@workspace/ui/lib/utils";
-import DebouncedInput from "@workspace/ui/components/debounced-input";
 
-interface DataTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[];
-  data: TData[];
-  onRowClick?: (row: TData) => void;
+interface DataTableProps<TData> extends React.ComponentProps<"div"> {
+  table: TanstackTable<TData>;
+  actionBar?: React.ReactNode;
 }
 
-export function SimpleDataTable<TData, TValue>({
-  columns,
-  data,
-  onRowClick,
-}: Readonly<DataTableProps<TData, TValue>>) {
-  const [sorting, setSorting] = React.useState<SortingState>([]);
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    [],
-  );
-  const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({});
-  const [rowSelection, setRowSelection] = React.useState({});
-  const [colSizing, setColSizing] = React.useState<ColumnSizingState>({});
-  const [globalFilter, setGlobalFilter] = React.useState("");
-
-  const table = useReactTable({
-    data,
-    columns,
-    getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-    onSortingChange: setSorting,
-    getSortedRowModel: getSortedRowModel(),
-    onColumnFiltersChange: setColumnFilters,
-    getFilteredRowModel: getFilteredRowModel(),
-    onColumnVisibilityChange: setColumnVisibility,
-    onRowSelectionChange: setRowSelection,
-    onGlobalFilterChange: setGlobalFilter,
-    onColumnSizingChange: setColSizing,
-    enableColumnResizing: false,
-    columnResizeMode: "onChange",
-    state: {
-      sorting,
-      columnFilters,
-      columnVisibility,
-      rowSelection,
-      columnSizing: colSizing,
-      globalFilter,
-    },
-  });
-
+export function DataTable<TData>({
+  table,
+  actionBar,
+  children,
+  className,
+  ...props
+}: DataTableProps<TData>) {
   return (
-    <div className={cn("border p-2 rounded space-y-4 bg-card w-full")}>
-      <div className="flex items-center justify-between mb-2">
-        <DebouncedInput
-          placeholder="Search all..."
-          value={globalFilter ?? ""}
-          onChange={(str: string) => setGlobalFilter(str)}
-          className="max-w-sm"
-        />
-        <div className="flex items-center gap-2">
-          <DataTableViewOptions table={table} />
-        </div>
-      </div>
-      <Table>
-        <TableHeader>
-          {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow key={headerGroup.id}>
-              {headerGroup.headers.map((header) => {
-                return (
-                  <TableHead key={header.id}>
+    <div
+      className={cn("flex w-full flex-col gap-2.5 overflow-auto", className)}
+      {...props}
+    >
+      {children}
+      <div className="overflow-hidden rounded-md border">
+        <Table>
+          <TableHeader>
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id}>
+                {headerGroup.headers.map((header) => (
+                  <TableHead
+                    key={header.id}
+                    colSpan={header.colSpan}
+                    style={{
+                      ...getCommonPinningStyles({ column: header.column }),
+                    }}
+                  >
                     {header.isPlaceholder
                       ? null
                       : flexRender(
@@ -104,37 +51,51 @@ export function SimpleDataTable<TData, TValue>({
                           header.getContext(),
                         )}
                   </TableHead>
-                );
-              })}
-            </TableRow>
-          ))}
-        </TableHeader>
-        <TableBody>
-          {table.getRowModel().rows?.length ? (
-            table.getRowModel().rows.map((row) => (
-              <TableRow
-                key={row.id}
-                data-state={row.getIsSelected() && "selected"}
-                onClick={() => onRowClick?.(row.original)}
-                className={cn(onRowClick && "cursor-pointer hover:bg-muted/50")}
-              >
-                {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </TableCell>
                 ))}
               </TableRow>
-            ))
-          ) : (
-            <TableRow>
-              <TableCell colSpan={columns.length} className="h-24 text-center">
-                No results.
-              </TableCell>
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
-      <DataTablePagination table={table} />
+            ))}
+          </TableHeader>
+          <TableBody>
+            {table.getRowModel().rows?.length ? (
+              table.getRowModel().rows.map((row) => (
+                <TableRow
+                  key={row.id}
+                  data-state={row.getIsSelected() && "selected"}
+                >
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell
+                      key={cell.id}
+                      style={{
+                        ...getCommonPinningStyles({ column: cell.column }),
+                      }}
+                    >
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext(),
+                      )}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell
+                  colSpan={table.getAllColumns().length}
+                  className="h-24 text-center"
+                >
+                  No results.
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </div>
+      <div className="flex flex-col gap-2.5">
+        <DataTablePagination table={table} />
+        {actionBar &&
+          table.getFilteredSelectedRowModel().rows.length > 0 &&
+          actionBar}
+      </div>
     </div>
   );
 }

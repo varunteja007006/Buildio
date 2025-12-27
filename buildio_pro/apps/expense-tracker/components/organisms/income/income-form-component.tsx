@@ -61,7 +61,7 @@ export function IncomeFormComponent({
   const { data: sourcesData } = useQuery(
     trpc.incomeSource.listSources.queryOptions({
       limit: 100,
-      offset: 0,
+      page: 1,
     }),
   );
 
