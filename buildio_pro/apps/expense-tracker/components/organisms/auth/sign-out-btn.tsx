@@ -8,8 +8,8 @@ export default function SignOutBtn() {
   const signOut = useSignOut();
 
   return (
-    <Button onClick={signOut} className="cursor-pointer">
-      Sign Out
+    <Button onClick={signOut} className="cursor-pointer" size={"sm"}>
+      Log out
     </Button>
   );
 }

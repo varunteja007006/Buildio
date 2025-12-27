@@ -1,7 +1,7 @@
 import React from "react";
 
-import { Footer2 } from "@workspace/ui/components/footer2";
-import { Navbar } from "@/components/organisms/navbar";
+import { Navbar } from "@/components/navbar";
+import { Footer } from "@/components/footer";
 
 export default function RootLayout({
   children,
@@ -9,8 +9,8 @@ export default function RootLayout({
   return (
     <>
       <Navbar />
-      {children}
-      <Footer2 />
+      <main className="min-h-screen px-8 py-4">{children}</main>
+      <Footer />
     </>
   );
 }

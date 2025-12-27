@@ -1,26 +1,42 @@
-import { integer, pgTable, text } from "drizzle-orm/pg-core";
+import {
+  index,
+  integer,
+  pgTable,
+  text,
+  uniqueIndex,
+} from "drizzle-orm/pg-core";
 import { auditTimeFields } from "./common.schema";
 import { user } from "./auth-schema";
 import { relations } from "drizzle-orm";
 import { bankAccountTypes, banks } from "./bank.schema";
 
-export const userPreferences = pgTable("user_preferences", {
-  id: text("id")
-    .primaryKey()
-    .$defaultFn(() => crypto.randomUUID()),
-  // One-to-one relationship with a 'users' table,
-  // where 'user_id' is the foreign key.
-  user_id: text("user_id")
-    .notNull()
-    .references(() => user.id, {
-      onDelete: "cascade",
-    }),
-  // Currency (e.g., 'USD', 'EUR', 'JPY')
-  currency: text("currency").default("USD").notNull(),
-  // Timezone (e.g., 'America/Los_Angeles', 'Europe/London')
-  timezone: text("timezone").default("UTC").notNull(),
-  ...auditTimeFields,
-});
+export const userPreferences = pgTable(
+  "user_preferences",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    // One-to-one relationship with a 'users' table,
+    // where 'user_id' is the foreign key.
+    user_id: text("user_id")
+      .notNull()
+      .references(() => user.id, {
+        onDelete: "cascade",
+      }),
+    // Currency (e.g., 'USD', 'EUR', 'JPY')
+    currency: text("currency").default("USD").notNull(),
+    // Timezone (e.g., 'America/Los_Angeles', 'Europe/London')
+    timezone: text("timezone").default("UTC").notNull(),
+    ...auditTimeFields,
+  },
+  (table) => [
+    {
+      userUnique: uniqueIndex("user_preferences_user_id_unique").on(
+        table.user_id,
+      ),
+    },
+  ],
+);
 
 export const userPreferencesRelations = relations(
   userPreferences,
@@ -33,20 +49,28 @@ export const userPreferencesRelations = relations(
   }),
 );
 
-export const userProfile = pgTable("user_profile", {
-  id: text("id")
-    .primaryKey()
-    .$defaultFn(() => crypto.randomUUID()),
-  user_id: text("user_id")
-    .notNull()
-    .references(() => user.id, {
-      onDelete: "cascade",
-    }),
-  name: text("name").notNull(),
-  description: text("description"),
-  image_url: text("image_url"),
-  ...auditTimeFields,
-});
+export const userProfile = pgTable(
+  "user_profile",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    user_id: text("user_id")
+      .notNull()
+      .references(() => user.id, {
+        onDelete: "cascade",
+      }),
+    name: text("name").notNull(),
+    description: text("description"),
+    image_url: text("image_url"),
+    ...auditTimeFields,
+  },
+  (table) => [
+    {
+      userUnique: uniqueIndex("user_profile_user_id_unique").on(table.user_id),
+    },
+  ],
+);
 
 export const userProfileRelations = relations(userProfile, ({ one }) => ({
   user: one(user, {
@@ -56,18 +80,26 @@ export const userProfileRelations = relations(userProfile, ({ one }) => ({
   }),
 }));
 
-export const userSettings = pgTable("user_settings", {
-  id: text("id")
-    .primaryKey()
-    .$defaultFn(() => crypto.randomUUID()),
-  user_id: text("user_id")
-    .notNull()
-    .references(() => user.id, {
-      onDelete: "cascade",
-    }),
-  max_profiles: integer("max_profiles").default(1).notNull(),
-  ...auditTimeFields,
-});
+export const userSettings = pgTable(
+  "user_settings",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    user_id: text("user_id")
+      .notNull()
+      .references(() => user.id, {
+        onDelete: "cascade",
+      }),
+    max_profiles: integer("max_profiles").default(1).notNull(),
+    ...auditTimeFields,
+  },
+  (table) => [
+    {
+      userUnique: uniqueIndex("user_settings_user_id_unique").on(table.user_id),
+    },
+  ],
+);
 
 export const userSettingsRelations = relations(userSettings, ({ one }) => ({
   user: one(user, {
@@ -77,29 +109,41 @@ export const userSettingsRelations = relations(userSettings, ({ one }) => ({
   }),
 }));
 
-export const userBankAccount = pgTable("user_bank_account", {
-  id: text("id")
-    .primaryKey()
-    .$defaultFn(() => crypto.randomUUID()),
-  user_id: text("user_id")
-    .notNull()
-    .references(() => user.id, {
-      onDelete: "cascade",
-    }),
-  name: text("name").notNull(),
-  description: text("description"),
-  bankAccountTypeId: text("bank_account_type")
-    .notNull()
-    .references(() => bankAccountTypes.id, {
-      onDelete: "cascade",
-    }),
-  bankId: text("bank")
-    .notNull()
-    .references(() => banks.id, {
-      onDelete: "cascade",
-    }),
-  ...auditTimeFields,
-});
+export const userBankAccount = pgTable(
+  "user_bank_account",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    user_id: text("user_id")
+      .notNull()
+      .references(() => user.id, {
+        onDelete: "cascade",
+      }),
+    name: text("name").notNull(),
+    description: text("description"),
+    bankAccountTypeId: text("bank_account_type")
+      .notNull()
+      .references(() => bankAccountTypes.id, {
+        onDelete: "cascade",
+      }),
+    bankId: text("bank")
+      .notNull()
+      .references(() => banks.id, {
+        onDelete: "cascade",
+      }),
+    ...auditTimeFields,
+  },
+  (table) => [
+    {
+      userIdx: index("idx_user_bank_account_user_id").on(table.user_id),
+      bankIdx: index("idx_user_bank_account_bank").on(table.bankId),
+      bankAccountTypeIdx: index("idx_user_bank_account_bank_account_type").on(
+        table.bankAccountTypeId,
+      ),
+    },
+  ],
+);
 
 export const userBankAccountRelations = relations(
   userBankAccount,

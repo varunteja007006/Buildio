@@ -3,19 +3,28 @@ packages:
   - packages/*
 
 catalog:
-  '@types/node': ^20.19.9
-  convex: ^1.27.5
-  lucide-react: ^0.539.0
-  next: '15.5.9'
+  '@types/node': ^20.19.27
+  convex: ^1.31.2
+  lucide-react: 0.539.0
+  next: 15.5.9
   next-themes: ^0.4.6
   sonner: 2.0.7
-  tailwindcss: ^4.1.11
-  typescript: ^5.9.2
+  tailwindcss: ^4.1.18
+  typescript: ^5.9.3
   zod: 3.25.76
 
 catalogs:
   react19:
-    '@types/react': ^19.1.9
-    '@types/react-dom': ^19.1.7
+    '@types/react': ^19.2.7
+    '@types/react-dom': ^19.2.3
     react: ^19.2.3
     react-dom: ^19.2.3
+
+overrides:
+  '@trpc/server@>=11.0.0 <11.8.0': '>=11.8.0'
+  better-auth@<1.4.2: '>=1.4.2'
+  better-auth@<1.4.5: '>=1.4.5'
+  esbuild@<=0.24.2: '>=0.25.0'
+  glob@>=11.0.0 <11.1.0: '>=11.1.0'
+  js-yaml@>=4.0.0 <4.1.1: '>=4.1.1'
+  tmp@<=0.2.3: '>=0.2.4'

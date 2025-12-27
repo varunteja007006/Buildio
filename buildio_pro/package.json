@@ -29,11 +29,11 @@
   "devDependencies": {
     "@workspace/eslint-config": "workspace:*",
     "@workspace/typescript-config": "workspace:*",
-    "prettier": "^3.6.2",
-    "turbo": "^2.6.1",
-    "typescript": "^5.9.2"
+    "prettier": "^3.7.4",
+    "turbo": "^2.7.2",
+    "typescript": "^5.9.3"
   },
-  "packageManager": "pnpm@10.22.0",
+  "packageManager": "pnpm@10.26.2",
   "engines": {
     "node": ">=20"
   }

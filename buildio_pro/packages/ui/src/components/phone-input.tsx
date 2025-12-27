@@ -28,8 +28,10 @@ export type CountryData = {
   status: string;
 };
 
-interface PhoneInputProps
-  extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "onChange"> {
+interface PhoneInputProps extends Omit<
+  React.InputHTMLAttributes<HTMLInputElement>,
+  "onChange"
+> {
   onCountryChange?: (data: CountryData | undefined) => void;
   value?: string;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;

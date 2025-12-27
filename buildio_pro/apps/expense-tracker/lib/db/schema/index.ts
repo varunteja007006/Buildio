@@ -1,12 +1,34 @@
 import { address, city, country, state } from "./address.schema";
 import { user, session, account, verification } from "./auth-schema";
 import { bankAccountTypes, banks, bankAddress } from "./bank.schema";
-import { budget } from "./budget.schema";
+import { budget, budgetRelations } from "./budget.schema";
 import { currency, currencyExchangeSnapshot } from "./currency.schema";
-import { expense, expenseCategory } from "./expenses.schema";
-import { income, incomeSource } from "./income.schema";
+import {
+  expense,
+  expenseCategory,
+  expenseRelations,
+  expenseCategoryRelations,
+} from "./expenses.schema";
+import {
+  income,
+  incomeSource,
+  incomeRelations,
+  incomeSourceRelations,
+} from "./income.schema";
 import { investmentPlatforms, investmentTypes } from "./investment.schema";
-import { paymentMethods, paymentProvider } from "./payment.schema";
+import {
+  paymentMethods,
+  paymentProvider,
+  paymentProviderRelations,
+  paymentMethodsRelations,
+} from "./payment.schema";
+import {
+  event,
+  eventExpense,
+  eventRelations,
+  eventExpenseRelations,
+  eventStatus,
+} from "./event.schema";
 import {
   userPreferences,
   userProfileRelations,
@@ -18,10 +40,13 @@ import {
 export const dbSchema = {
   paymentMethods,
   paymentProvider,
+  paymentProviderRelations,
+  paymentMethodsRelations,
   investmentPlatforms,
   investmentTypes,
   bankAddress,
   budget,
+  budgetRelations,
   currency,
   currencyExchangeSnapshot,
   user,
@@ -37,8 +62,17 @@ export const dbSchema = {
   banks,
   expense,
   expenseCategory,
+  expenseRelations,
+  expenseCategoryRelations,
   income,
   incomeSource,
+  incomeRelations,
+  incomeSourceRelations,
+  event,
+  eventStatus,
+  eventExpense,
+  eventRelations,
+  eventExpenseRelations,
   address,
   city,
   country,

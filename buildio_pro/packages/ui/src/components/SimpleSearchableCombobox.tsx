@@ -1,28 +1,13 @@
 "use client";
 
 import React from "react";
-import { Button } from "@workspace/ui/components/button";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@workspace/ui/components/popover";
-import {
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-} from "@workspace/ui/components/command";
-import { Check, ChevronsUpDown } from "lucide-react";
-import { cn } from "@workspace/ui/lib/utils";
+import Combobox, { type ComboboxOption } from "./combobox";
 
-export interface ComboboxOption {
-  value: string;
-  label: string;
-  searchValue?: string; // Optional custom search value
-}
+/**
+ * Simple standalone searchable combobox wrapper.
+ *
+ * Backward-compatible wrapper around the generic Combobox component.
+ */
 
 interface SimpleSearchableComboboxProps {
   options: ComboboxOption[];
@@ -45,67 +30,26 @@ export default function SimpleSearchableCombobox({
   className,
   disabled = false,
 }: Readonly<SimpleSearchableComboboxProps>) {
-  const [open, setOpen] = React.useState(false);
-
-  const getDisplayValue = (currentValue: string) => {
-    if (!currentValue) return placeholder;
-    const option = options.find((opt) => opt.value === currentValue);
-    return option ? option.label : placeholder;
-  };
-
   const handleSelect = (selectedValue: string) => {
-    const newValue = selectedValue === value ? "" : selectedValue;
-    onSelect(newValue);
-    setOpen(false);
+    // Toggle behavior: deselect if clicking the same item
+    if (selectedValue === value) {
+      onSelect("");
+    } else {
+      onSelect(selectedValue);
+    }
   };
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <Button
-          variant="outline"
-          aria-expanded={open}
-          disabled={disabled}
-          className={cn(
-            "w-full justify-between",
-            !value && "text-muted-foreground",
-            className,
-          )}
-        >
-          {getDisplayValue(value)}
-          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent
-        className="p-0"
-        align="start"
-        sideOffset={4}
-        style={{ width: "var(--radix-popover-trigger-width)" }}
-      >
-        <Command>
-          <CommandInput placeholder={searchPlaceholder} />
-          <CommandList>
-            <CommandEmpty>{emptyMessage}</CommandEmpty>
-            <CommandGroup>
-              {options.map((option) => (
-                <CommandItem
-                  key={option.value}
-                  value={option.searchValue || option.label}
-                  onSelect={() => handleSelect(option.value)}
-                >
-                  <Check
-                    className={cn(
-                      "mr-2 h-4 w-4",
-                      option.value === value ? "opacity-100" : "opacity-0",
-                    )}
-                  />
-                  {option.label}
-                </CommandItem>
-              ))}
-            </CommandGroup>
-          </CommandList>
-        </Command>
-      </PopoverContent>
-    </Popover>
+    <Combobox
+      value={value}
+      onValueChange={handleSelect}
+      options={options}
+      placeholder={placeholder}
+      searchPlaceholder={searchPlaceholder}
+      emptyMessage={emptyMessage}
+      disabled={disabled}
+      clearable
+      className={className}
+    />
   );
 }

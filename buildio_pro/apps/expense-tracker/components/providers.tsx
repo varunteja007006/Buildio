@@ -3,6 +3,7 @@
 import * as React from "react";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
 import { TRPCAppProvider } from "@/lib/trpc-client";
+import { NuqsAdapter } from "nuqs/adapters/next/app";
 
 export function Providers({
   children,
@@ -15,7 +16,9 @@ export function Providers({
       disableTransitionOnChange
       enableColorScheme
     >
-      <TRPCAppProvider>{children}</TRPCAppProvider>
+      <NuqsAdapter>
+        <TRPCAppProvider>{children}</TRPCAppProvider>
+      </NuqsAdapter>
     </NextThemesProvider>
   );
 }

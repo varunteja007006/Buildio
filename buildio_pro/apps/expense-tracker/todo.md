@@ -1,3 +1,8 @@
 # Todo
 
-[ ] - Update Footer details
+---
+
+- [ ] Audit user columns
+
+- [ ] Authorization checks
+  - [ ] Income sources
