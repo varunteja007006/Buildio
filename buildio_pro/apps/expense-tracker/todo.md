@@ -4,5 +4,5 @@
 
 - [ ] Audit user columns
 
-- [ ] Authorization checks 
+- [ ] Authorization checks
   - [ ] Income sources
