@@ -40,7 +40,7 @@ const columns: ColumnDef<{
     cell: ({ row }) => {
       const sourceId = row.original.id;
       return (
-        <div className="flex justify-end gap-2">
+        <div className="flex justify-start gap-2">
           <IncomeSourceDetailsComponent sourceId={sourceId} />
 
           <IncomeSourceFormComponent

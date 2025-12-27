@@ -3,6 +3,11 @@ import { count, eq } from "drizzle-orm";
 import z from "zod";
 
 import { createTRPCRouter, protectedProcedure } from "../init";
+import {
+  paginationInputSchema,
+  calculatePagination,
+  createPaginationMeta,
+} from "../schemas/pagination.schema";
 
 const createIncomeSourceInput = z.object({
   name: z.string().min(1, "Income source name is required").max(255),
@@ -27,11 +32,6 @@ const updateIncomeSourceInput = z
       });
     }
   });
-
-const listIncomeSourcesInput = z.object({
-  limit: z.number().int().min(1).max(100).default(10),
-  page: z.number().int().min(1).default(1), // 1-based page number
-});
 
 const sourceIdInput = z.object({
   sourceId: z.string().uuid(),
@@ -82,57 +82,31 @@ export const incomeSourceRouter = createTRPCRouter({
   }),
 
   listSources: protectedProcedure
-    .input(listIncomeSourcesInput)
+    .input(paginationInputSchema)
     .query(async ({ input, ctx }) => {
       const { db, dbSchema } = ctx;
-      const { limit, page } = input;
 
-      // ─────────────────────────────────────────────────────────────
-      // 1. Get total count of items
-      // ─────────────────────────────────────────────────────────────
+      // 1. Get total count
       const [total] = await db
         .select({ count: count() })
         .from(dbSchema.incomeSource);
 
       const totalItems = Number(total?.count ?? 0);
 
-      // ─────────────────────────────────────────────────────────────
-      // 2. Server-side pagination calculations
-      //    - offset: How many items to skip (0-based for DB query)
-      //    - totalPages: Total number of pages available
-      // ─────────────────────────────────────────────────────────────
-      const offset = (page - 1) * limit; // page=1 → offset=0, page=2 → offset=limit
-      const totalPages = Math.ceil(totalItems / limit);
+      // 2. Calculate pagination (server-side)
+      const { offset } = calculatePagination(input, totalItems);
 
-      // ─────────────────────────────────────────────────────────────
-      // 3. Fetch paginated data from database
-      // ─────────────────────────────────────────────────────────────
+      // 3. Fetch paginated data
       const sources = await db.query.incomeSource.findMany({
-        limit,
+        limit: input.limit,
         offset,
         orderBy: (source, { asc }) => asc(source.name),
       });
 
-      // ─────────────────────────────────────────────────────────────
-      // 4. Return data with comprehensive meta information
-      //    - Frontend doesn't need to calculate anything
-      // ─────────────────────────────────────────────────────────────
+      // 4. Return with standardized meta
       return {
         data: sources,
-        meta: {
-          // Pagination params (echoed back)
-          limit,
-          currentPage: page,
-
-          // Server-calculated values
-          offset, // Useful for debugging
-          totalItems,
-          totalPages,
-
-          // Boolean helpers for UI (prev/next buttons)
-          hasNextPage: page < totalPages,
-          hasPrevPage: page > 1,
-        },
+        meta: createPaginationMeta(input, totalItems),
       };
     }),
 
