@@ -54,12 +54,14 @@ export function IncomeSourceFormComponent({
   const createMutation = useCreateIncomeSource({
     onSuccess: () => {
       setOpen(false);
+      form.reset();
     },
   });
 
   const updateMutation = useUpdateIncomeSource({
     onSuccess: () => {
       setOpen(false);
+      form.reset();
     },
   });
 

@@ -100,7 +100,7 @@ export const incomeSourceRouter = createTRPCRouter({
       const sources = await db.query.incomeSource.findMany({
         limit: input.limit,
         offset,
-        orderBy: (source, { asc }) => asc(source.name),
+        orderBy: (source, { desc }) => desc(source.createdAt),
       });
 
       // 4. Return with standardized meta

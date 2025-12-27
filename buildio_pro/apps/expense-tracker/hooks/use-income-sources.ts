@@ -44,6 +44,9 @@ export const useDeleteIncomeSource = (options?: {
         queryClient.invalidateQueries({
           queryKey: trpc.incomeSource.listSources.queryKey(),
         });
+        queryClient.invalidateQueries({
+          queryKey: trpc.incomeSource.getAnalytics.queryKey(),
+        });
         options?.onSuccess?.();
       },
       onError: (error: any) => {
@@ -68,6 +71,9 @@ export function useCreateIncomeSource(options?: {
         toast.success("Income source created successfully!");
         queryClient.invalidateQueries({
           queryKey: trpc.incomeSource.listSources.queryKey(),
+        });
+        queryClient.invalidateQueries({
+          queryKey: trpc.incomeSource.getAnalytics.queryKey(),
         });
         options?.onSuccess?.();
       },
@@ -98,6 +104,9 @@ export function useUpdateIncomeSource(options?: {
           queryKey: trpc.incomeSource.getSourceById.queryKey({
             sourceId: variables.sourceId,
           }),
+        });
+        queryClient.invalidateQueries({
+          queryKey: trpc.incomeSource.getAnalytics.queryKey(),
         });
         options?.onSuccess?.();
       },
