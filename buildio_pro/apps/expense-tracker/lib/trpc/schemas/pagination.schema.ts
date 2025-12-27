@@ -15,7 +15,10 @@ export type PaginationInput = z.infer<typeof paginationInputSchema>;
 /**
  * Helper to calculate pagination values on the server
  */
-export function calculatePagination(input: PaginationInput, totalItems: number) {
+export function calculatePagination(
+  input: PaginationInput,
+  totalItems: number,
+) {
   const { page, limit } = input;
   const offset = (page - 1) * limit;
   const totalPages = Math.ceil(totalItems / limit) || 1;
@@ -36,8 +39,10 @@ export function createPaginationMeta(
   totalItems: number,
 ) {
   const { page, limit } = input;
-  const { offset, totalPages, hasNextPage, hasPrevPage } =
-    calculatePagination(input, totalItems);
+  const { offset, totalPages, hasNextPage, hasPrevPage } = calculatePagination(
+    input,
+    totalItems,
+  );
 
   return {
     limit,

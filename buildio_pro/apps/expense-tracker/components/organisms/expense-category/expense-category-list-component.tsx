@@ -190,8 +190,8 @@ export function ExpenseCategoryListComponent() {
             <div className="flex items-center justify-between">
               <span className="text-sm text-muted-foreground">
                 Showing {(currentPage - 1) * limit + 1} to{" "}
-                {Math.min(currentPage * limit, meta.totalItems)} of {meta.totalItems}{" "}
-                categories
+                {Math.min(currentPage * limit, meta.totalItems)} of{" "}
+                {meta.totalItems} categories
               </span>
               <div className="flex gap-2">
                 <Button

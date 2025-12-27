@@ -415,8 +415,10 @@ function ActionBarGroup(props: DivProps) {
   );
 }
 
-interface ActionBarItemProps
-  extends Omit<React.ComponentProps<typeof Button>, "onSelect"> {
+interface ActionBarItemProps extends Omit<
+  React.ComponentProps<typeof Button>,
+  "onSelect"
+> {
   onSelect?: (event: Event) => void;
 }
 

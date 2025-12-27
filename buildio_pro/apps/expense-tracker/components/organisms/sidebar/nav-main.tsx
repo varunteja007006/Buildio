@@ -59,7 +59,9 @@ export function NavMain({
                   )}
                 >
                   <Link href={item.url}>
-                    <item.icon className={cn("font-semibold",isActive && "")} />
+                    <item.icon
+                      className={cn("font-semibold", isActive && "")}
+                    />
                     <span className="flex-1">{item.title}</span>
                     <LinkStatus />
                   </Link>

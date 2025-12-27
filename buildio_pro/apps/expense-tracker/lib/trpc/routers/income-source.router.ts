@@ -255,14 +255,14 @@ export const incomeSourceRouter = createTRPCRouter({
       const sourcesWithIncomes = new Set(
         linkedIncomes
           .filter((li) => Number(li.count) > 0)
-          .map((li) => li.sourceId)
+          .map((li) => li.sourceId),
       );
 
       const deletableIds = [...existingIds].filter(
-        (id) => !sourcesWithIncomes.has(id)
+        (id) => !sourcesWithIncomes.has(id),
       );
       const skippedIds = [...existingIds].filter((id) =>
-        sourcesWithIncomes.has(id)
+        sourcesWithIncomes.has(id),
       );
 
       // Delete the sources that can be deleted
