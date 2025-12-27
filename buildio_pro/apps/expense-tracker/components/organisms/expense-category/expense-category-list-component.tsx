@@ -37,12 +37,12 @@ export function ExpenseCategoryListComponent() {
   const trpc = useTRPC();
 
   const [limit, setLimit] = React.useState(10);
-  const [offset, setOffset] = React.useState(0);
+  const [page, setPage] = React.useState(1);
 
   const { data, isLoading, refetch } = useQuery(
     trpc.expenseCategory.listCategories.queryOptions({
       limit,
-      offset,
+      page,
     }),
   );
 
@@ -68,8 +68,8 @@ export function ExpenseCategoryListComponent() {
 
   const categories = data?.data || [];
   const meta = data?.meta;
-  const totalPages = meta ? Math.ceil(meta.totalItems / meta.limit) : 0;
-  const currentPage = meta ? Math.floor(meta.offset / meta.limit) + 1 : 1;
+  const totalPages = meta?.totalPages ?? 0;
+  const currentPage = meta?.currentPage ?? 1;
 
   return (
     <Card className="w-full">
@@ -87,7 +87,7 @@ export function ExpenseCategoryListComponent() {
               value={String(limit)}
               onValueChange={(val) => {
                 setLimit(Number(val));
-                setOffset(0);
+                setPage(1);
               }}
             >
               <SelectTrigger className="w-32">
@@ -189,16 +189,16 @@ export function ExpenseCategoryListComponent() {
           {meta && totalPages > 1 && (
             <div className="flex items-center justify-between">
               <span className="text-sm text-muted-foreground">
-                Showing {offset + 1} to{" "}
-                {Math.min(offset + limit, meta.totalItems)} of {meta.totalItems}{" "}
+                Showing {(currentPage - 1) * limit + 1} to{" "}
+                {Math.min(currentPage * limit, meta.totalItems)} of {meta.totalItems}{" "}
                 categories
               </span>
               <div className="flex gap-2">
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => setOffset(Math.max(0, offset - limit))}
-                  disabled={offset === 0}
+                  onClick={() => setPage((p) => Math.max(1, p - 1))}
+                  disabled={!meta.hasPrevPage}
                 >
                   Previous
                 </Button>
@@ -208,8 +208,8 @@ export function ExpenseCategoryListComponent() {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => setOffset(offset + limit)}
-                  disabled={!meta.hasMore}
+                  onClick={() => setPage((p) => p + 1)}
+                  disabled={!meta.hasNextPage}
                 >
                   Next
                 </Button>

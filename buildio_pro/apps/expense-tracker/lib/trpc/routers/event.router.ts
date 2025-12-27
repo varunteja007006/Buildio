@@ -3,6 +3,11 @@ import { createTRPCRouter, protectedProcedure } from "../init";
 import { TRPCError } from "@trpc/server";
 import z from "zod";
 import { zodSchema } from "@/lib/db/zod-schema";
+import {
+  paginationInputSchema,
+  calculatePagination,
+  createPaginationMeta,
+} from "../schemas/pagination.schema";
 
 const estimatedBudgetSchema = z
   .union([z.string(), z.number()])
@@ -69,9 +74,7 @@ const updateEventInput = z
     }
   });
 
-const listEventsInput = z.object({
-  limit: z.number().int().min(1).max(100).default(10),
-  offset: z.number().int().min(0).default(0),
+const listEventsInput = paginationInputSchema.extend({
   statusId: z.string().uuid().optional(),
 });
 
@@ -105,7 +108,7 @@ export const eventRouter = createTRPCRouter({
     .input(listEventsInput)
     .query(async ({ input, ctx }) => {
       const { db, dbSchema, user } = ctx;
-      const { limit, offset, statusId } = input;
+      const { statusId } = input;
 
       const filters = [eq(dbSchema.event.userId, user.id)];
 
@@ -120,8 +123,11 @@ export const eventRouter = createTRPCRouter({
         .from(dbSchema.event)
         .where(whereClause);
 
+      const totalItems = Number(total?.count ?? 0);
+      const { offset } = calculatePagination(input, totalItems);
+
       const events = await db.query.event.findMany({
-        limit,
+        limit: input.limit,
         offset,
         where: whereClause,
         with: {
@@ -151,12 +157,7 @@ export const eventRouter = createTRPCRouter({
 
       return {
         data: eventsWithTotals,
-        meta: {
-          limit,
-          offset,
-          totalItems: Number(total?.count ?? 0),
-          hasMore: offset + limit < Number(total?.count ?? 0),
-        },
+        meta: createPaginationMeta(input, totalItems),
       };
     }),
 

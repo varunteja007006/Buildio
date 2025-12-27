@@ -17,7 +17,7 @@ const budgetKeys = {
 // List budgets
 export function useBudgetList(params: {
   limit: number;
-  offset: number;
+  page: number;
   onlyActive?: boolean;
 }) {
   const trpc = useTRPC();

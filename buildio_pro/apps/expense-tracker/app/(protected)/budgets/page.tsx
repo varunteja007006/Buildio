@@ -26,21 +26,19 @@ import { useBudgetList, useActiveBudgets } from "@/hooks";
 import { BudgetDeleteDialog } from "@/components/organisms/budget/budget-delete-dialog";
 
 export default function BudgetsPage() {
-  const [page, setPage] = React.useState(0);
+  const [page, setPage] = React.useState(1);
   const [onlyActive, setOnlyActive] = React.useState(false);
   const limit = 10;
 
   const budgetListQuery = useBudgetList({
     limit,
-    offset: page * limit,
+    page,
     onlyActive,
   });
 
   const activeBudgetsQuery = useActiveBudgets();
 
-  const totalPages = budgetListQuery.data?.meta
-    ? Math.ceil(budgetListQuery.data.meta.totalItems / limit)
-    : 0;
+  const totalPages = budgetListQuery.data?.meta?.totalPages ?? 0;
 
   const isLoading = budgetListQuery.isLoading || budgetListQuery.isFetching;
 
@@ -108,7 +106,7 @@ export default function BudgetsPage() {
           variant={onlyActive ? "default" : "outline"}
           onClick={() => {
             setOnlyActive(!onlyActive);
-            setPage(0);
+            setPage(1);
           }}
         >
           {onlyActive ? "Showing Active" : "Show Active Only"}
@@ -218,18 +216,18 @@ export default function BudgetsPage() {
             <div className="flex items-center justify-between mt-6">
               <Button
                 variant="outline"
-                onClick={() => setPage((p) => Math.max(0, p - 1))}
-                disabled={page === 0 || isLoading}
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
+                disabled={page === 1 || isLoading}
               >
                 Previous
               </Button>
               <span className="text-sm text-muted-foreground">
-                Page {page + 1} of {totalPages}
+                Page {page} of {totalPages}
               </span>
               <Button
                 variant="outline"
                 onClick={() => setPage((p) => p + 1)}
-                disabled={page >= totalPages - 1 || isLoading}
+                disabled={page >= totalPages || isLoading}
               >
                 Next
               </Button>

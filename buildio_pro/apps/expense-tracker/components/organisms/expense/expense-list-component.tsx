@@ -53,7 +53,7 @@ export function ExpenseListComponent({
   const trpc = useTRPC();
 
   const [limit, setLimit] = React.useState(10);
-  const [offset, setOffset] = React.useState(0);
+  const [page, setPage] = React.useState(1);
   const [sortBy, setSortBy] = React.useState<"date" | "amount">("date");
   const [sortOrder, setSortOrder] = React.useState<"asc" | "desc">("desc");
 
@@ -67,13 +67,13 @@ export function ExpenseListComponent({
   >(initialBudgetId);
 
   // Fetch filters data
-  const { data: categories } = useExpenseCategoryList();
-  const { data: budgets } = useBudgetList();
+  const { data: categories } = useExpenseCategoryList({ limit: 100, page: 1 });
+  const { data: budgets } = useBudgetList({ limit: 100, page: 1 });
 
   const { data, isLoading, refetch } = useQuery(
     trpc.expense.listExpenses.queryOptions({
       limit,
-      offset,
+      page,
       categoryId: selectedCategory === "all" ? undefined : selectedCategory,
       budgetId: selectedBudget === "all" ? undefined : selectedBudget,
       sortBy,
@@ -106,8 +106,8 @@ export function ExpenseListComponent({
 
   const expenses = data?.data || [];
   const meta = data?.meta;
-  const totalPages = meta ? Math.ceil(meta.totalItems / meta.limit) : 0;
-  const currentPage = meta ? Math.floor(meta.offset / meta.limit) + 1 : 1;
+  const totalPages = meta?.totalPages ?? 0;
+  const currentPage = meta?.currentPage ?? 1;
 
   const COLORS = [
     "#0088FE",
@@ -292,19 +292,19 @@ export function ExpenseListComponent({
             selectedCategory={selectedCategory}
             onCategoryChange={(val) => {
               setSelectedCategory(val);
-              setOffset(0);
+              setPage(1);
             }}
             budgets={budgetOptions}
             selectedBudget={selectedBudget}
             onBudgetChange={(val) => {
               setSelectedBudget(val);
-              setOffset(0);
+              setPage(1);
             }}
             onClearFilters={() => {
               setSearch("");
               setSelectedCategory(undefined);
               setSelectedBudget(undefined);
-              setOffset(0);
+              setPage(1);
             }}
           />
 
@@ -313,7 +313,7 @@ export function ExpenseListComponent({
             isLoading={isLoading}
             pageCount={totalPages}
             currentPage={currentPage}
-            onPageChange={(page) => setOffset((page - 1) * limit)}
+            onPageChange={(newPage) => setPage(newPage)}
             onSortChange={(field, order) => {
               setSortBy(field as any);
               setSortOrder(order);

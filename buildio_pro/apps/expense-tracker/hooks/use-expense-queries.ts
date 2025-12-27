@@ -16,7 +16,7 @@ const expenseKeys = {
 // List expenses
 export function useExpenseList(params: {
   limit: number;
-  offset: number;
+  page: number;
   categoryId?: string;
   budgetId?: string;
   sortBy?: "date" | "amount";

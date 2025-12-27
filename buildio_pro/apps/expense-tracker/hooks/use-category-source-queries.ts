@@ -16,7 +16,7 @@ const expenseCategoryKeys = {
 // List expense categories
 export function useExpenseCategoryList(params: {
   limit: number;
-  offset: number;
+  page: number;
 }) {
   const trpc = useTRPC();
   return useQuery(trpc.expenseCategory.listCategories.queryOptions(params));

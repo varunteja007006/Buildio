@@ -10,12 +10,12 @@ export function EditBtn({
   iconOnly?: boolean;
 }) {
   return (
-    <Button size={"sm"} {...props}>
+    <Button size={"sm"} variant={"ghost"} {...props}>
       {iconOnly ? (
-        <Edit2 className="h-4 w-4" />
+        <Edit2 className="h-4 w-4 text-primary" />
       ) : (
         <>
-          <Edit2 className="h-4 w-4" />
+          <Edit2 className="h-4 w-4 text-primary" />
           Edit
         </>
       )}

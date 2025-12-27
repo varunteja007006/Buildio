@@ -1,8 +1,13 @@
 import { TRPCError } from "@trpc/server";
-import { and, count, eq } from "drizzle-orm";
+import { count, eq } from "drizzle-orm";
 import z from "zod";
 
 import { createTRPCRouter, protectedProcedure } from "../init";
+import {
+  paginationInputSchema,
+  calculatePagination,
+  createPaginationMeta,
+} from "../schemas/pagination.schema";
 
 import { zodSchema } from "@/lib/db/zod-schema";
 
@@ -30,40 +35,32 @@ const updateCategoryInput = z
     }
   });
 
-const listCategoriesInput = z.object({
-  limit: z.number().int().min(1).max(100).default(10),
-  offset: z.number().int().min(0).default(0),
-});
-
 const categoryIdInput = z.object({
   categoryId: z.string().uuid(),
 });
 
 export const expenseCategoryRouter = createTRPCRouter({
   listCategories: protectedProcedure
-    .input(listCategoriesInput)
+    .input(paginationInputSchema)
     .query(async ({ input, ctx }) => {
       const { db, dbSchema } = ctx;
-      const { limit, offset } = input;
 
       const [total] = await db
         .select({ count: count() })
         .from(dbSchema.expenseCategory);
 
+      const totalItems = Number(total?.count ?? 0);
+      const { offset } = calculatePagination(input, totalItems);
+
       const categories = await db.query.expenseCategory.findMany({
-        limit,
+        limit: input.limit,
         offset,
         orderBy: (category, { asc }) => asc(category.name),
       });
 
       return {
         data: categories,
-        meta: {
-          limit,
-          offset,
-          totalItems: Number(total?.count ?? 0),
-          hasMore: offset + limit < Number(total?.count ?? 0),
-        },
+        meta: createPaginationMeta(input, totalItems),
       };
     }),
 

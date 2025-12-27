@@ -3,6 +3,11 @@ import { and, count, eq, gte, lte } from "drizzle-orm";
 import z from "zod";
 
 import { createTRPCRouter, protectedProcedure } from "../init";
+import {
+  paginationInputSchema,
+  calculatePagination,
+  createPaginationMeta,
+} from "../schemas/pagination.schema";
 
 import { zodSchema } from "@/lib/db/zod-schema";
 
@@ -67,9 +72,7 @@ const updateBudgetInput = z
     }
   });
 
-const listBudgetInput = z.object({
-  limit: z.number().int().min(1).max(100).default(10),
-  offset: z.number().int().min(0).default(0),
+const listBudgetInput = paginationInputSchema.extend({
   onlyActive: z.boolean().default(false),
 });
 
@@ -87,7 +90,7 @@ export const budgetRouter = createTRPCRouter({
     .input(listBudgetInput)
     .query(async ({ input, ctx }) => {
       const { db, dbSchema, user } = ctx;
-      const { limit, offset, onlyActive } = input;
+      const { onlyActive } = input;
 
       const filters = [eq(dbSchema.budget.userId, user.id)];
       const now = new Date();
@@ -104,8 +107,11 @@ export const budgetRouter = createTRPCRouter({
         .from(dbSchema.budget)
         .where(whereClause);
 
+      const totalItems = Number(total?.count ?? 0);
+      const { offset } = calculatePagination(input, totalItems);
+
       const budgets = await db.query.budget.findMany({
-        limit,
+        limit: input.limit,
         offset,
         where: whereClause,
         orderBy: (budget, { desc }) => desc(budget.startMonth),
@@ -114,9 +120,7 @@ export const budgetRouter = createTRPCRouter({
       return {
         data: budgets,
         meta: {
-          limit,
-          offset,
-          totalItems: Number(total?.count ?? 0),
+          ...createPaginationMeta(input, totalItems),
           isActiveFilterApplied: onlyActive,
         },
       };

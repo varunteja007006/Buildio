@@ -3,6 +3,11 @@ import { and, count, eq } from "drizzle-orm";
 import z from "zod";
 
 import { createTRPCRouter, protectedProcedure } from "../init";
+import {
+  paginationInputSchema,
+  calculatePagination,
+  createPaginationMeta,
+} from "../schemas/pagination.schema";
 
 import { zodSchema } from "@/lib/db/zod-schema";
 
@@ -46,9 +51,7 @@ const updateIncomeInput = z
     }
   });
 
-const listIncomesInput = z.object({
-  limit: z.number().int().min(1).max(100).default(10),
-  offset: z.number().int().min(0).default(0),
+const listIncomesInput = paginationInputSchema.extend({
   sourceId: z.string().uuid().optional(),
   sortBy: z.enum(["date", "amount"]).default("date"),
   sortOrder: z.enum(["asc", "desc"]).default("desc"),
@@ -68,7 +71,7 @@ export const incomeRouter = createTRPCRouter({
     .input(listIncomesInput)
     .query(async ({ input, ctx }) => {
       const { db, dbSchema, user } = ctx;
-      const { limit, offset, sourceId, sortBy, sortOrder } = input;
+      const { sourceId, sortBy, sortOrder } = input;
 
       const filters = [eq(dbSchema.income.userId, user.id)];
 
@@ -83,8 +86,11 @@ export const incomeRouter = createTRPCRouter({
         .from(dbSchema.income)
         .where(whereClause);
 
+      const totalItems = Number(total?.count ?? 0);
+      const { offset } = calculatePagination(input, totalItems);
+
       const incomes = await db.query.income.findMany({
-        limit,
+        limit: input.limit,
         offset,
         where: whereClause,
         with: {
@@ -101,12 +107,7 @@ export const incomeRouter = createTRPCRouter({
 
       return {
         data: incomes,
-        meta: {
-          limit,
-          offset,
-          totalItems: Number(total?.count ?? 0),
-          hasMore: offset + limit < Number(total?.count ?? 0),
-        },
+        meta: createPaginationMeta(input, totalItems),
       };
     }),
 

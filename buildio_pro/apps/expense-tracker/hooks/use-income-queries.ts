@@ -16,7 +16,7 @@ const incomeKeys = {
 // List incomes
 export function useIncomeList(params: {
   limit: number;
-  offset: number;
+  page: number;
   sourceId?: string;
   sortBy?: "date" | "amount";
   sortOrder?: "asc" | "desc";

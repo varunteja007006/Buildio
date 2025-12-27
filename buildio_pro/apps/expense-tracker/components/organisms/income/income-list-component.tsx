@@ -59,14 +59,14 @@ export function IncomeListComponent({ sourceId }: IncomeListComponentProps) {
   const trpc = useTRPC();
 
   const [limit, setLimit] = React.useState(10);
-  const [offset, setOffset] = React.useState(0);
+  const [page, setPage] = React.useState(1);
   const [sortBy, setSortBy] = React.useState<"date" | "amount">("date");
   const [sortOrder, setSortOrder] = React.useState<"asc" | "desc">("desc");
 
   const { data, isLoading, refetch } = useQuery(
     trpc.income.listIncomes.queryOptions({
       limit,
-      offset,
+      page,
       sourceId,
       sortBy,
       sortOrder,
@@ -97,8 +97,8 @@ export function IncomeListComponent({ sourceId }: IncomeListComponentProps) {
 
   const incomes = data?.data || [];
   const meta = data?.meta;
-  const totalPages = meta ? Math.ceil(meta.totalItems / meta.limit) : 0;
-  const currentPage = meta ? Math.floor(meta.offset / meta.limit) + 1 : 1;
+  const totalPages = meta?.totalPages ?? 0;
+  const currentPage = meta?.currentPage ?? 1;
 
   const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#8884d8"];
 
@@ -254,7 +254,7 @@ export function IncomeListComponent({ sourceId }: IncomeListComponentProps) {
                   value={String(limit)}
                   onValueChange={(val) => {
                     setLimit(Number(val));
-                    setOffset(0);
+                    setPage(1);
                   }}
                 >
                   <SelectTrigger className="w-32">
@@ -389,16 +389,16 @@ export function IncomeListComponent({ sourceId }: IncomeListComponentProps) {
             {meta && totalPages > 1 && (
               <div className="flex items-center justify-between">
                 <span className="text-sm text-muted-foreground">
-                  Showing {offset + 1} to{" "}
-                  {Math.min(offset + limit, meta.totalItems)} of{" "}
+                  Showing {(currentPage - 1) * limit + 1} to{" "}
+                  {Math.min(currentPage * limit, meta.totalItems)} of{" "}
                   {meta.totalItems} income entries
                 </span>
                 <div className="flex gap-2">
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => setOffset(Math.max(0, offset - limit))}
-                    disabled={offset === 0}
+                    onClick={() => setPage((p) => Math.max(1, p - 1))}
+                    disabled={!meta.hasPrevPage}
                   >
                     Previous
                   </Button>
@@ -408,8 +408,8 @@ export function IncomeListComponent({ sourceId }: IncomeListComponentProps) {
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => setOffset(offset + limit)}
-                    disabled={!meta.hasMore}
+                    onClick={() => setPage((p) => p + 1)}
+                    disabled={!meta.hasNextPage}
                   >
                     Next
                   </Button>

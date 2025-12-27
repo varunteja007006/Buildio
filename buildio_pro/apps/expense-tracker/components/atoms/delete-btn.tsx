@@ -10,12 +10,12 @@ export function DeleteBtn({
   iconOnly?: boolean;
 }) {
   return (
-    <Button size={"sm"} variant="destructive" {...props}>
+    <Button size={"sm"} variant="ghost" {...props}>
       {iconOnly ? (
-        <Trash2 className="h-4 w-4" />
+        <Trash2 className="h-4 w-4 text-destructive" />
       ) : (
         <>
-          <Trash2 className="h-4 w-4" />
+          <Trash2 className="h-4 w-4 text-destructive" />
           Delete
         </>
       )}
