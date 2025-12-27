@@ -23,19 +23,19 @@ const expenseAmountSchema = z
 const createExpenseInput = z.object({
   name: z.string().min(1, "Expense name required").max(255),
   expenseAmount: expenseAmountSchema,
-  categoryId: z.string().uuid().optional(),
-  budgetId: z.string().uuid().optional(),
+  categoryId: z.uuid().optional(),
+  budgetId: z.uuid().optional(),
   isRecurring: z.boolean().default(false),
   account: z.string().max(255).optional(),
 });
 
 const updateExpenseInput = z
   .object({
-    expenseId: z.string().uuid(),
+    expenseId: z.uuid(),
     name: z.string().min(1).max(255).optional(),
     expenseAmount: expenseAmountSchema.optional(),
-    categoryId: z.string().uuid().nullable().optional(),
-    budgetId: z.string().uuid().nullable().optional(),
+    categoryId: z.uuid().nullable().optional(),
+    budgetId: z.uuid().nullable().optional(),
     isRecurring: z.boolean().optional(),
     account: z.string().max(255).optional(),
   })
@@ -58,14 +58,14 @@ const updateExpenseInput = z
   });
 
 const listExpensesInput = paginationInputSchema.extend({
-  categoryId: z.string().uuid().optional(),
-  budgetId: z.string().uuid().optional(),
+  categoryId: z.uuid().optional(),
+  budgetId: z.uuid().optional(),
   sortBy: z.enum(["date", "amount"]).default("date"),
   sortOrder: z.enum(["asc", "desc"]).default("desc"),
 });
 
 const expenseIdInput = z.object({
-  expenseId: z.string().uuid(),
+  expenseId: z.uuid(),
 });
 
 const numericToNumber = (value: string | number | null) => {

@@ -11,7 +11,7 @@ export const createEventSchema = createInsertSchema(event)
     userId: true,
   })
   .extend({
-    statusId: z.string().uuid().optional(),
+    statusId: z.uuid().optional(),
   });
 
 export const updateEventSchema = createUpdateSchema(event).omit({
@@ -27,7 +27,7 @@ export const eventIdInput = z.object({
 export const listEventsInput = z.object({
   limit: z.number().int().min(1).max(100).default(10),
   offset: z.number().int().min(0).default(0),
-  statusId: z.string().uuid().optional(),
+  statusId: z.uuid().optional(),
 });
 
 export const addExpenseToEventInput = z.object({

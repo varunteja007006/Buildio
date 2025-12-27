@@ -4,23 +4,8 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTRPC } from "@/lib/trpc-client";
 import { toast } from "sonner";
 
-// Query keys
-const incomeKeys = {
-  all: ["income"] as const,
-  lists: () => [...incomeKeys.all, "list"] as const,
-  list: (filters: any) => [...incomeKeys.lists(), filters] as const,
-  details: () => [...incomeKeys.all, "detail"] as const,
-  detail: (id: string) => [...incomeKeys.details(), id] as const,
-};
-
 // List incomes
-export function useIncomeList(params: {
-  limit: number;
-  page: number;
-  sourceId?: string;
-  sortBy?: "date" | "amount";
-  sortOrder?: "asc" | "desc";
-}) {
+export function useIncomeList(params: { limit: number; page: number }) {
   const trpc = useTRPC();
   return useQuery(trpc.income.listIncomes.queryOptions(params));
 }
@@ -44,7 +29,9 @@ export function useCreateIncome(options?: {
       onSuccess: () => {
         toast.success("Income created successfully!");
         // Invalidate income queries
-        queryClient.invalidateQueries({ queryKey: incomeKeys.all });
+        queryClient.invalidateQueries({
+          queryKey: trpc.income.listIncomes.queryKey(),
+        });
         // Invalidate dashboard (balance changes)
         queryClient.invalidateQueries({ queryKey: ["dashboard"] });
         options?.onSuccess?.();
@@ -71,10 +58,12 @@ export function useUpdateIncome(options?: {
         toast.success("Income updated successfully!");
         // Invalidate specific income
         queryClient.invalidateQueries({
-          queryKey: incomeKeys.detail(variables.incomeId),
+          queryKey: trpc.income.listIncomes.queryKey(),
         });
         // Invalidate lists
-        queryClient.invalidateQueries({ queryKey: incomeKeys.lists() });
+        queryClient.invalidateQueries({
+          queryKey: trpc.income.getIncomeById.queryKey(),
+        });
         // Invalidate dashboard
         queryClient.invalidateQueries({ queryKey: ["dashboard"] });
         options?.onSuccess?.();
@@ -100,9 +89,10 @@ export function useDeleteIncome(options?: {
       onSuccess: () => {
         toast.success("Income deleted successfully!");
         // Invalidate all income queries
-        queryClient.invalidateQueries({ queryKey: incomeKeys.all });
+        queryClient.invalidateQueries({
+          queryKey: trpc.income.listIncomes.queryKey(),
+        });
         // Invalidate dashboard
-        queryClient.invalidateQueries({ queryKey: ["dashboard"] });
         options?.onSuccess?.();
       },
       onError: (error: any) => {

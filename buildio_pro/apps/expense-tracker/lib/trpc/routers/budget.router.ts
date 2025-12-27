@@ -40,7 +40,7 @@ const createBudgetInput = z
 
 const updateBudgetInput = z
   .object({
-    budgetId: z.string().uuid(),
+    budgetId: z.uuid(),
     name: zodSchema.updateBudgetSchema.shape.name,
     description: zodSchema.updateBudgetSchema.shape.description,
     budgetAmount: budgetAmountSchema.optional(),
@@ -77,7 +77,7 @@ const listBudgetInput = paginationInputSchema.extend({
 });
 
 const budgetIdInput = z.object({
-  budgetId: z.string().uuid(),
+  budgetId: z.uuid(),
 });
 
 const numericToNumber = (value: string | number | null) => {

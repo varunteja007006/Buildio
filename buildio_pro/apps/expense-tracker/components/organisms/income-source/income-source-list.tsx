@@ -2,15 +2,16 @@
 
 import * as React from "react";
 
-import { IncomeSourceFormComponent } from "./income-source-form-dialog";
-import { IncomeSourceAnalyticsCard } from "./income-source-analytics-card";
-import { IncomeSourceListTable } from "./income-source-list-table";
 import {
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
 } from "@workspace/ui/components/tabs";
+
+import { IncomeSourceFormComponent } from "./income-source-form-dialog";
+import { IncomeSourceAnalyticsCard } from "./income-source-analytics-card";
+import { IncomeSourceListTable } from "./income-source-list-table";
 
 export function IncomeSourceListComponent() {
   return (

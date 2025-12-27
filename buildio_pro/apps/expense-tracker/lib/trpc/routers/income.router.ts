@@ -9,8 +9,6 @@ import {
   createPaginationMeta,
 } from "../schemas/pagination.schema";
 
-import { zodSchema } from "@/lib/db/zod-schema";
-
 const incomeAmountSchema = z
   .union([z.string(), z.number()])
   .transform((value) =>
@@ -23,17 +21,17 @@ const incomeAmountSchema = z
 const createIncomeInput = z.object({
   name: z.string().min(1, "Income name required").max(255),
   incomeAmount: incomeAmountSchema,
-  sourceId: z.string().uuid().optional(),
-  paymentMethodId: z.string().uuid().optional(),
+  sourceId: z.uuid().optional(),
+  paymentMethodId: z.uuid().optional(),
 });
 
 const updateIncomeInput = z
   .object({
-    incomeId: z.string().uuid(),
+    incomeId: z.uuid(),
     name: z.string().min(1).max(255).optional(),
     incomeAmount: incomeAmountSchema.optional(),
-    sourceId: z.string().uuid().nullable().optional(),
-    paymentMethodId: z.string().uuid().nullable().optional(),
+    sourceId: z.uuid().nullable().optional(),
+    paymentMethodId: z.uuid().nullable().optional(),
   })
   .superRefine((data, ctx) => {
     const hasUpdatableField =
@@ -51,14 +49,14 @@ const updateIncomeInput = z
     }
   });
 
-const listIncomesInput = paginationInputSchema.extend({
-  sourceId: z.string().uuid().optional(),
-  sortBy: z.enum(["date", "amount"]).default("date"),
-  sortOrder: z.enum(["asc", "desc"]).default("desc"),
-});
+const listIncomesInput = paginationInputSchema.extend({});
 
 const incomeIdInput = z.object({
-  incomeId: z.string().uuid(),
+  incomeId: z.uuid(),
+});
+
+const bulkDeleteInput = z.object({
+  incomeIds: z.array(z.uuid()).min(1, "At least one income ID is required"),
 });
 
 const numericToNumber = (value: string | number | null) => {
@@ -71,13 +69,8 @@ export const incomeRouter = createTRPCRouter({
     .input(listIncomesInput)
     .query(async ({ input, ctx }) => {
       const { db, dbSchema, user } = ctx;
-      const { sourceId, sortBy, sortOrder } = input;
 
       const filters = [eq(dbSchema.income.userId, user.id)];
-
-      if (sourceId) {
-        filters.push(eq(dbSchema.income.sourceId, sourceId));
-      }
 
       const whereClause = filters.length === 1 ? filters[0] : and(...filters);
 
@@ -97,11 +90,8 @@ export const incomeRouter = createTRPCRouter({
           source: true,
           paymentMethod: true,
         },
-        orderBy: (income, { asc, desc }) => {
-          const order = sortOrder === "asc" ? asc : desc;
-          return sortBy === "amount"
-            ? order(income.incomeAmount)
-            : order(income.createdAt);
+        orderBy: (income, { desc }) => {
+          return desc(income.createdAt);
         },
       });
 
@@ -310,16 +300,7 @@ export const incomeRouter = createTRPCRouter({
       }
 
       const payload = {
-        ...(updates.name !== undefined ? { name: updates.name } : {}),
-        ...(updates.incomeAmount !== undefined
-          ? { incomeAmount: updates.incomeAmount }
-          : {}),
-        ...(updates.sourceId !== undefined
-          ? { sourceId: updates.sourceId }
-          : {}),
-        ...(updates.paymentMethodId !== undefined
-          ? { paymentMethodId: updates.paymentMethodId }
-          : {}),
+        ...updates,
         updatedAt: new Date(),
       };
 

@@ -16,7 +16,7 @@ const createIncomeSourceInput = z.object({
 
 const updateIncomeSourceInput = z
   .object({
-    sourceId: z.string().uuid(),
+    sourceId: z.uuid(),
     name: z.string().min(1).max(255).optional(),
     description: z.string().max(500).optional(),
   })
@@ -34,7 +34,7 @@ const updateIncomeSourceInput = z
   });
 
 const sourceIdInput = z.object({
-  sourceId: z.string().uuid(),
+  sourceId: z.uuid(),
 });
 
 const bulkDeleteInput = z.object({

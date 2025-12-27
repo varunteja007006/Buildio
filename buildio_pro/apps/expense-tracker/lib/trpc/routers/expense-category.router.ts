@@ -18,7 +18,7 @@ const createCategoryInput = z.object({
 
 const updateCategoryInput = z
   .object({
-    categoryId: z.string().uuid(),
+    categoryId: z.uuid(),
     name: z.string().min(1).max(255).optional(),
     description: z.string().max(500).optional(),
   })
@@ -36,7 +36,7 @@ const updateCategoryInput = z
   });
 
 const categoryIdInput = z.object({
-  categoryId: z.string().uuid(),
+  categoryId: z.uuid(),
 });
 
 export const expenseCategoryRouter = createTRPCRouter({

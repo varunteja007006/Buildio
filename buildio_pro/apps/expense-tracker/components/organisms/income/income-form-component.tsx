@@ -34,9 +34,11 @@ const incomeFormSchema = z.object({
     .refine((val) => !isNaN(Number(val)) && Number(val) > 0, {
       message: "Amount must be a positive number",
     }),
-  sourceId: z.string().uuid("Invalid income source").optional(),
-  paymentMethodId: z.string().uuid("Invalid payment method").optional(),
+  sourceId: z.uuid("Invalid income source").optional(),
+  paymentMethodId: z.uuid("Invalid payment method").optional(),
 });
+
+type IncomeFormValues = z.infer<typeof incomeFormSchema>;
 
 interface IncomeFormProps {
   mode: "create" | "edit";
@@ -95,17 +97,11 @@ export function IncomeFormComponent({
     defaultValues: {
       name: initialValues?.name || "",
       incomeAmount: initialValues?.incomeAmount || "",
-      sourceId: initialValues?.sourceId || "",
-      paymentMethodId: initialValues?.paymentMethodId || "",
-    },
+      sourceId: initialValues?.sourceId || undefined,
+      paymentMethodId: initialValues?.paymentMethodId || undefined,
+    } as IncomeFormValues,
     validators: {
-      onSubmit: ({ value }) => {
-        const result = incomeFormSchema.safeParse(value);
-        if (!result.success) {
-          return result.error.format();
-        }
-        return undefined;
-      },
+      onSubmit: incomeFormSchema,
     },
     onSubmit: async ({ value }) => {
       if (mode === "create") {
@@ -127,6 +123,7 @@ export function IncomeFormComponent({
     },
   });
 
+  console.log(form.getAllErrors());
   const isSubmitting = createMutation.isPending || updateMutation.isPending;
 
   return (
@@ -161,7 +158,6 @@ export function IncomeFormComponent({
             <form.AppField name="sourceId">
               {(field) => (
                 <field.Select label="Income Source (Optional)">
-                  <SelectItem value="">None</SelectItem>
                   {sources.map((source: any) => (
                     <SelectItem key={source.id} value={source.id}>
                       {source.name}

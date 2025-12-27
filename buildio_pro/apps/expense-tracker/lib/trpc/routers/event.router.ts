@@ -40,7 +40,7 @@ const createEventInput = z
 
 const updateEventInput = z
   .object({
-    eventId: z.string().uuid(),
+    eventId: z.uuid(),
     name: zodSchema.updateEventSchema.shape.name,
     description: zodSchema.updateEventSchema.shape.description,
     estimatedBudget: estimatedBudgetSchema,
@@ -75,21 +75,21 @@ const updateEventInput = z
   });
 
 const listEventsInput = paginationInputSchema.extend({
-  statusId: z.string().uuid().optional(),
+  statusId: z.uuid().optional(),
 });
 
 const eventIdInput = z.object({
-  eventId: z.string().uuid(),
+  eventId: z.uuid(),
 });
 
 const addExpenseToEventInput = z.object({
-  eventId: z.string().uuid(),
-  expenseId: z.string().uuid(),
+  eventId: z.uuid(),
+  expenseId: z.uuid(),
 });
 
 const removeExpenseFromEventInput = z.object({
-  eventId: z.string().uuid(),
-  expenseId: z.string().uuid(),
+  eventId: z.uuid(),
+  expenseId: z.uuid(),
 });
 
 function numericToNumber(value: string | number | null | undefined): number {
