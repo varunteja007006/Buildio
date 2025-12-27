@@ -5,6 +5,7 @@ import { Trash2 } from "lucide-react";
 
 export function DeleteBtn({
   iconOnly,
+  children,
   ...props
 }: React.ComponentProps<"button"> & {
   iconOnly?: boolean;
@@ -15,8 +16,13 @@ export function DeleteBtn({
         <Trash2 className="h-4 w-4 text-destructive" />
       ) : (
         <>
-          <Trash2 className="h-4 w-4 text-destructive" />
-          Delete
+          {children ? (
+            children
+          ) : (
+            <>
+              <Trash2 className="h-4 w-4 text-destructive" /> Delete
+            </>
+          )}
         </>
       )}
     </Button>

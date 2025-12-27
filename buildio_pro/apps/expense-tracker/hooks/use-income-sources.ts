@@ -117,3 +117,36 @@ export function useUpdateIncomeSource(options?: {
     }),
   );
 }
+
+// Delete income source
+export const useDeleteMultipleIncomeSource = (options?: {
+  onSuccess?: () => void;
+  onError?: (error: unknown) => void;
+}) => {
+  const trpc = useTRPC();
+  const queryClient = useQueryClient();
+
+  return useMutation(
+    trpc.incomeSource.deleteSources.mutationOptions({
+      onSuccess: (data) => {
+        const success = data.success ? data.success : false;
+        if (!success) {
+          toast.error("Failed to delete income sources");
+          return;
+        }
+        toast.success(data.message || "Income sources deleted successfully!");
+        queryClient.invalidateQueries({
+          queryKey: trpc.incomeSource.listSources.queryKey(),
+        });
+        queryClient.invalidateQueries({
+          queryKey: trpc.incomeSource.getAnalytics.queryKey(),
+        });
+        options?.onSuccess?.();
+      },
+      onError: (error: any) => {
+        toast.error(error.message || "Failed to delete income source");
+        options?.onError?.(error);
+      },
+    }),
+  );
+};

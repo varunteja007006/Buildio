@@ -62,4 +62,5 @@ export {
   useCreateIncomeSource,
   useUpdateIncomeSource,
   useIncomeSourceDetails,
+  useDeleteMultipleIncomeSource,
 } from "./use-income-sources";

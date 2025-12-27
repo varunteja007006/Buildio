@@ -1,5 +1,5 @@
 import { TRPCError } from "@trpc/server";
-import { count, eq } from "drizzle-orm";
+import { count, eq, inArray } from "drizzle-orm";
 import z from "zod";
 
 import { createTRPCRouter, protectedProcedure } from "../init";
@@ -35,6 +35,10 @@ const updateIncomeSourceInput = z
 
 const sourceIdInput = z.object({
   sourceId: z.string().uuid(),
+});
+
+const bulkDeleteInput = z.object({
+  sourceIds: z.array(z.uuid()).min(1, "At least one source ID is required"),
 });
 
 function numericToNumber(value: string | number | null | undefined): number {
@@ -215,5 +219,68 @@ export const incomeSourceRouter = createTRPCRouter({
         .where(eq(dbSchema.incomeSource.id, sourceId));
 
       return { success: true };
+    }),
+
+  deleteSources: protectedProcedure
+    .input(bulkDeleteInput)
+    .mutation(async ({ input, ctx }) => {
+      const { db, dbSchema } = ctx;
+      const { sourceIds } = input;
+
+      // Check which sources exist
+      const existingSources = await db.query.incomeSource.findMany({
+        where: inArray(dbSchema.incomeSource.id, sourceIds),
+      });
+
+      const existingIds = new Set(existingSources.map((s) => s.id));
+      const notFoundIds = sourceIds.filter((id) => !existingIds.has(id));
+
+      if (existingSources.length === 0) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "No income sources found with the provided IDs",
+        });
+      }
+
+      // Check which sources have linked incomes
+      const linkedIncomes = await db
+        .select({
+          sourceId: dbSchema.income.sourceId,
+          count: count(),
+        })
+        .from(dbSchema.income)
+        .where(inArray(dbSchema.income.sourceId, sourceIds))
+        .groupBy(dbSchema.income.sourceId);
+
+      const sourcesWithIncomes = new Set(
+        linkedIncomes
+          .filter((li) => Number(li.count) > 0)
+          .map((li) => li.sourceId)
+      );
+
+      const deletableIds = [...existingIds].filter(
+        (id) => !sourcesWithIncomes.has(id)
+      );
+      const skippedIds = [...existingIds].filter((id) =>
+        sourcesWithIncomes.has(id)
+      );
+
+      // Delete the sources that can be deleted
+      if (deletableIds.length > 0) {
+        await db
+          .delete(dbSchema.incomeSource)
+          .where(inArray(dbSchema.incomeSource.id, deletableIds));
+      }
+
+      return {
+        success: true,
+        deleted: deletableIds,
+        skipped: skippedIds,
+        notFound: notFoundIds,
+        message:
+          skippedIds.length > 0
+            ? `${deletableIds.length} source(s) deleted. ${skippedIds.length} source(s) skipped because they have linked income records.`
+            : `${deletableIds.length} source(s) deleted successfully.`,
+      };
     }),
 });
