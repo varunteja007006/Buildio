@@ -13,7 +13,6 @@ import { useDataTable } from "@workspace/ui/hooks/use-data-table";
 import { ColumnDef, Table } from "@tanstack/react-table";
 import { useQueryState } from "nuqs";
 
-import { SpinnerEmpty } from "@/components/atoms/loaders/spinner-empty";
 import { Checkbox } from "@workspace/ui/components/checkbox";
 import { ActionBar } from "@workspace/ui/components/action-bar";
 import { Trash2Icon } from "lucide-react";
@@ -29,6 +28,8 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@workspace/ui/components/alert-dialog";
+import { ErrorScreen } from "@/components/atoms/error-screen";
+import { FloatingLoader } from "@/components/atoms/loaders/floating-loader";
 
 type IncomeSource = {
   id: string;
@@ -111,7 +112,7 @@ export const IncomeSourceListTable = () => {
     parse: (v) => parseInt(v, 10),
   });
 
-  const { data, isLoading } = useIncomeSourceList({
+  const { data, isLoading, isError } = useIncomeSourceList({
     limit,
     page,
   });
@@ -125,17 +126,16 @@ export const IncomeSourceListTable = () => {
     pageCount: totalPages,
   });
 
+  if (isError) {
+    return <ErrorScreen />;
+  }
+
   return (
     <>
-      {isLoading ? (
-        <div className="min-h-[300px] flex flex-col items-center">
-          <SpinnerEmpty />
-        </div>
-      ) : (
-        <DataTable table={table} actionBar={<TableActionBar table={table} />}>
-          <DataTableAdvancedToolbar table={table}></DataTableAdvancedToolbar>
-        </DataTable>
-      )}
+      <DataTable table={table} actionBar={<TableActionBar table={table} />}>
+        <DataTableAdvancedToolbar table={table}></DataTableAdvancedToolbar>
+      </DataTable>
+      <FloatingLoader open={isLoading} title="Loading income sources..." />
     </>
   );
 };
