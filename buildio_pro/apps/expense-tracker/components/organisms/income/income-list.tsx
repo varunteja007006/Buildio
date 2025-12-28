@@ -2,10 +2,9 @@
 
 import * as React from "react";
 
-import { IncomeAnalyticsCard } from "./income-analytics-card";
-import { IncomeListTable } from "./income-list-table";
+import { IncomeListTable, IncomeAnalyticsCard } from ".";
 
-export function IncomeListComponent() {
+export function IncomeList() {
   return (
     <div className="space-y-6">
       <IncomeAnalyticsCard />

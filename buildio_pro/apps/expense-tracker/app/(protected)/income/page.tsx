@@ -1,5 +1,5 @@
-import { IncomeListComponent } from "@/components/organisms/income";
+import { IncomeList } from "@/components/organisms/income";
 
 export default function IncomePage() {
-  return <IncomeListComponent />;
+  return <IncomeList />;
 }

@@ -11,9 +11,11 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@workspace/ui/components/alert-dialog";
-import { useDeleteIncome } from "@/hooks";
 import { Button } from "@workspace/ui/components/button";
+
 import { DeleteBtn } from "@/components/atoms/delete-btn";
+
+import { useDeleteIncome } from "@/hooks";
 
 export const IncomeDeleteDialog = ({ incomeId }: { incomeId: string }) => {
   const deleteMutation = useDeleteIncome();

@@ -24,10 +24,9 @@ import {
   SelectValue,
 } from "@workspace/ui/components/select";
 
-import { IncomeDetailsComponent } from "./income-details";
-import { IncomeDeleteDialog } from "./income-delete-dialog";
+import { IncomeDetails, IncomeDeleteDialog, IncomeForm } from ".";
+
 import { useIncomeList } from "@/hooks";
-import { IncomeForm } from "./income-form";
 
 export const IncomeListTable = () => {
   const [limit, setLimit] = React.useState(10);
@@ -155,7 +154,7 @@ export const IncomeListTable = () => {
                         </TableCell>
                         <TableCell className="text-right">
                           <div className="flex justify-end gap-2">
-                            <IncomeDetailsComponent incomeId={income.id} />
+                            <IncomeDetails incomeId={income.id} />
                             <IncomeForm
                               mode="edit"
                               incomeId={income.id}

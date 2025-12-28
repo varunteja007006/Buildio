@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 
 import {
@@ -7,7 +9,6 @@ import {
   ChartLegend,
   ChartLegendContent,
 } from "@workspace/ui/components/chart";
-
 import {
   Card,
   CardContent,
@@ -15,7 +16,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@workspace/ui/components/card";
-
 import {
   Bar,
   BarChart,

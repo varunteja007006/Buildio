@@ -17,16 +17,15 @@ import {
 
 import { Eye } from "lucide-react";
 
-import { AuditDateBlock } from "@/components/atoms/audit-date-block";
 import { useIncomeDetails } from "@/hooks";
 
-interface IncomeDetailsComponentProps {
+import { AuditDateBlock } from "@/components/atoms/audit-date-block";
+
+interface IncomeDetailsProps {
   incomeId: string;
 }
 
-export function IncomeDetailsComponent({
-  incomeId,
-}: IncomeDetailsComponentProps) {
+export function IncomeDetails({ incomeId }: IncomeDetailsProps) {
   const { data: income, isLoading, isError } = useIncomeDetails(incomeId);
 
   const renderContent = () => {
