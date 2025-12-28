@@ -23,9 +23,7 @@ interface IncomeSourceDetailsProps {
   sourceId: string;
 }
 
-export function IncomeSourceDetails({
-  sourceId,
-}: IncomeSourceDetailsProps) {
+export function IncomeSourceDetails({ sourceId }: IncomeSourceDetailsProps) {
   const router = useRouter();
 
   const { data: source, isLoading } = useIncomeSourceDetails(sourceId);
@@ -35,7 +33,7 @@ export function IncomeSourceDetails({
       router.push("/income-sources");
     },
   });
-  
+
   const renderContent = () => {
     if (isLoading) {
       return (
