@@ -9,11 +9,13 @@ import {
   TabsTrigger,
 } from "@workspace/ui/components/tabs";
 
-import { IncomeSourceFormComponent } from "./income-source-form-dialog";
-import { IncomeSourceAnalyticsCard } from "./income-source-analytics-card";
-import { IncomeSourceListTable } from "./income-source-list-table";
+import {
+  IncomeSourceAnalyticsCard,
+  IncomeSourceListTable,
+  IncomeSourceForm,
+} from ".";
 
-export function IncomeSourceListComponent() {
+export function IncomeSourceList() {
   return (
     <div className="space-y-4">
       <Tabs defaultValue="analytics" className="w-full">
@@ -23,7 +25,7 @@ export function IncomeSourceListComponent() {
             <TabsTrigger value="listing">Listing</TabsTrigger>
           </TabsList>
           <div>
-            <IncomeSourceFormComponent mode="create" />
+            <IncomeSourceForm mode="create" />
           </div>
         </div>
         <TabsContent value="analytics">

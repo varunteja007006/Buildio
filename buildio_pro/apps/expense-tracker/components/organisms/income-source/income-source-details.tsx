@@ -19,13 +19,13 @@ import { AuditDateBlock } from "@/components/atoms/audit-date-block";
 import { useDeleteIncomeSource, useIncomeSourceDetails } from "@/hooks";
 import { Eye, Loader2 } from "lucide-react";
 
-interface IncomeSourceDetailsComponentProps {
+interface IncomeSourceDetailsProps {
   sourceId: string;
 }
 
-export function IncomeSourceDetailsComponent({
+export function IncomeSourceDetails({
   sourceId,
-}: IncomeSourceDetailsComponentProps) {
+}: IncomeSourceDetailsProps) {
   const router = useRouter();
 
   const { data: source, isLoading } = useIncomeSourceDetails(sourceId);
@@ -35,17 +35,7 @@ export function IncomeSourceDetailsComponent({
       router.push("/income-sources");
     },
   });
-
-  const handleDelete = () => {
-    if (
-      window.confirm(
-        "Are you sure you want to delete this income source? This action cannot be undone.",
-      )
-    ) {
-      deleteMutation.mutate({ sourceId });
-    }
-  };
-
+  
   const renderContent = () => {
     if (isLoading) {
       return (

@@ -15,7 +15,6 @@ import {
   DialogTrigger,
 } from "@workspace/ui/components/dialog";
 
-import { useRouter } from "next/navigation";
 import { useCreateIncomeSource, useUpdateIncomeSource } from "@/hooks";
 
 import { useAppForm } from "@workspace/ui/components/forms/hooks";
@@ -44,7 +43,7 @@ interface IncomeSourceFormProps {
   };
 }
 
-export function IncomeSourceFormComponent({
+export function IncomeSourceForm({
   mode,
   sourceId,
   initialValues,

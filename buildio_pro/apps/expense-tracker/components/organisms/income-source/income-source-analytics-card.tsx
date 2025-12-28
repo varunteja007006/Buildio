@@ -15,6 +15,7 @@ import {
   ChartTooltipContent,
 } from "@workspace/ui/components/chart";
 import { formatCurrency } from "@workspace/ui/lib/currency.utils";
+
 import { useIncomeSourceAnalytics } from "@/hooks";
 
 export const IncomeSourceAnalyticsCard = () => {

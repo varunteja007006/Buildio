@@ -1,21 +1,7 @@
 import React from "react";
 
-import { IncomeSourceFormComponent } from "./income-source-form-dialog";
-
-import { useDeleteMultipleIncomeSource, useIncomeSourceList } from "@/hooks";
-import { IncomeSourceDetailsComponent } from "./income-source-details-dialog";
-
-import { IncomeSourceDeleteDialog } from "./income-source-delete-dialog";
-
-import { DataTable } from "@workspace/ui/components/data-table/data-table";
-import { DataTableAdvancedToolbar } from "@workspace/ui/components/data-table/data-table-advanced-toolbar";
-import { useDataTable } from "@workspace/ui/hooks/use-data-table";
-import { ColumnDef, Table } from "@tanstack/react-table";
-import { useQueryState } from "nuqs";
-
 import { Checkbox } from "@workspace/ui/components/checkbox";
 import { ActionBar } from "@workspace/ui/components/action-bar";
-import { Trash2Icon } from "lucide-react";
 import { Button } from "@workspace/ui/components/button";
 import {
   AlertDialog,
@@ -28,6 +14,22 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@workspace/ui/components/alert-dialog";
+
+import { Trash2Icon } from "lucide-react";
+
+import { ColumnDef, Table } from "@tanstack/react-table";
+
+import {
+  IncomeSourceForm,
+  IncomeSourceDetails,
+  IncomeSourceDeleteDialog,
+} from ".";
+
+import { useQueryState } from "nuqs";
+import { useDeleteMultipleIncomeSource, useIncomeSourceList } from "@/hooks";
+import { DataTableAdvancedToolbar } from "@workspace/ui/components/data-table/data-table-advanced-toolbar";
+import { useDataTable } from "@workspace/ui/hooks/use-data-table";
+import { DataTable } from "@workspace/ui/components/data-table/data-table";
 import { ErrorScreen } from "@/components/atoms/error-screen";
 import { FloatingLoader } from "@/components/atoms/loaders/floating-loader";
 
@@ -82,9 +84,9 @@ const columns: ColumnDef<IncomeSource>[] = [
       const sourceId = row.original.id;
       return (
         <div className="flex justify-start gap-2">
-          <IncomeSourceDetailsComponent sourceId={sourceId} />
+          <IncomeSourceDetails sourceId={sourceId} />
 
-          <IncomeSourceFormComponent
+          <IncomeSourceForm
             mode="edit"
             sourceId={sourceId}
             initialValues={{
