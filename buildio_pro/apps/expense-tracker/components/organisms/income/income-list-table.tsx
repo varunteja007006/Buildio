@@ -1,215 +1,205 @@
 import React from "react";
 
+import { Checkbox } from "@workspace/ui/components/checkbox";
+import { ActionBar } from "@workspace/ui/components/action-bar";
 import { Button } from "@workspace/ui/components/button";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@workspace/ui/components/card";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@workspace/ui/components/table";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@workspace/ui/components/select";
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@workspace/ui/components/alert-dialog";
+
+import { DataTableAdvancedToolbar } from "@workspace/ui/components/data-table/data-table-advanced-toolbar";
+import { useDataTable } from "@workspace/ui/hooks/use-data-table";
+import { DataTable } from "@workspace/ui/components/data-table/data-table";
 
 import { IncomeDetails, IncomeDeleteDialog, IncomeForm } from ".";
 
+import { useQueryState } from "nuqs";
+
 import { useIncomeList } from "@/hooks";
+import { ErrorScreen } from "@/components/atoms/error-screen";
+import { FloatingLoader } from "@/components/atoms/loaders/floating-loader";
+import { Trash2 } from "lucide-react";
+import { ColumnDef, Table } from "@tanstack/react-table";
+
+type IncomeRecord = {
+  id: string;
+  name: string | null;
+  incomeAmount: string;
+  createdAt: Date;
+  sourceId?: string | null;
+  paymentMethodId?: string | null;
+};
+
+const columns: ColumnDef<IncomeRecord>[] = [
+  {
+    id: "select",
+    header: ({ table }) => (
+      <Checkbox
+        checked={
+          table.getIsAllPageRowsSelected() ||
+          (table.getIsSomePageRowsSelected() && "indeterminate")
+        }
+        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+        aria-label="Select all"
+      />
+    ),
+    cell: ({ row }) => (
+      <Checkbox
+        checked={row.getIsSelected()}
+        onCheckedChange={(value) => row.toggleSelected(!!value)}
+        aria-label="Select row"
+      />
+    ),
+    size: 32,
+    enableSorting: false,
+    enableHiding: false,
+  },
+  {
+    accessorKey: "name",
+    header: "Name",
+  },
+  { accessorKey: "description", header: "Description" },
+  {
+    accessorKey: "createdAt",
+    header: "Created At",
+    cell: ({ row }) => {
+      const val = row.original.createdAt;
+      return new Date(val).toLocaleDateString();
+    },
+  },
+  {
+    id: "actions",
+    header: "Actions",
+    cell: ({ row }) => {
+      const income = row.original;
+      return (
+        <div className="flex justify-start gap-2">
+          <IncomeDetails incomeId={income.id} />
+          <IncomeForm
+            mode="edit"
+            incomeId={income.id}
+            initialValues={{
+              name: income.name || "",
+              incomeAmount: income.incomeAmount,
+              sourceId: income.sourceId || undefined,
+              paymentMethodId: income.paymentMethodId || undefined,
+            }}
+          />
+          <IncomeDeleteDialog incomeId={income.id} />
+        </div>
+      );
+    },
+    enableSorting: false,
+  },
+];
 
 export const IncomeListTable = () => {
-  const [limit, setLimit] = React.useState(10);
-  const [page, setPage] = React.useState(1);
-  const [sortBy, setSortBy] = React.useState<"date" | "amount">("date");
-  const [sortOrder, setSortOrder] = React.useState<"asc" | "desc">("desc");
+  const [limit] = useQueryState("perPage", {
+    defaultValue: 10,
+    parse: (v) => parseInt(v, 10),
+  });
 
-  const { data, isLoading } = useIncomeList({
+  const [page] = useQueryState("page", {
+    defaultValue: 1,
+    parse: (v) => parseInt(v, 10),
+  });
+
+  const { data, isLoading, isError } = useIncomeList({
     limit,
     page,
   });
 
   const incomes = data?.data || [];
   const meta = data?.meta;
-  const totalPages = meta?.totalPages ?? 0;
-  const currentPage = meta?.currentPage ?? 1;
+  const totalPages = data?.meta?.totalPages ?? 0;
+
+  const { table } = useDataTable({
+    data: incomes,
+    columns,
+    pageCount: totalPages,
+  });
+
+  if (isError) {
+    return <ErrorScreen />;
+  }
 
   return (
     <>
-      <Card className="w-full">
-        <CardHeader>
-          <CardTitle>Income</CardTitle>
-          <CardDescription>Manage and track your income</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            {/* Controls */}
-            <div className="flex flex-wrap gap-4 items-center justify-between">
-              <div className="flex gap-2">
-                <Select
-                  value={String(limit)}
-                  onValueChange={(val) => {
-                    setLimit(Number(val));
-                    setPage(1);
-                  }}
-                >
-                  <SelectTrigger className="w-32">
-                    <SelectValue placeholder="Items per page" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="5">5 per page</SelectItem>
-                    <SelectItem value="10">10 per page</SelectItem>
-                    <SelectItem value="25">25 per page</SelectItem>
-                    <SelectItem value="50">50 per page</SelectItem>
-                  </SelectContent>
-                </Select>
-
-                <Select
-                  value={sortBy}
-                  onValueChange={(val: any) => setSortBy(val)}
-                >
-                  <SelectTrigger className="w-32">
-                    <SelectValue placeholder="Sort by" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="date">By Date</SelectItem>
-                    <SelectItem value="amount">By Amount</SelectItem>
-                  </SelectContent>
-                </Select>
-
-                <Select
-                  value={sortOrder}
-                  onValueChange={(val: any) => setSortOrder(val)}
-                >
-                  <SelectTrigger className="w-32">
-                    <SelectValue placeholder="Order" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="asc">Ascending</SelectItem>
-                    <SelectItem value="desc">Descending</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <IncomeForm mode="create" />
-            </div>
-
-            {/* Table */}
-            <div className="border rounded-lg overflow-hidden">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Name</TableHead>
-                    <TableHead className="text-right">Amount</TableHead>
-                    <TableHead>Source</TableHead>
-                    <TableHead>Payment Method</TableHead>
-                    <TableHead>Date</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {isLoading ? (
-                    <TableRow>
-                      <TableCell
-                        colSpan={6}
-                        className="text-center py-8 text-muted-foreground"
-                      >
-                        Loading income...
-                      </TableCell>
-                    </TableRow>
-                  ) : incomes.length === 0 ? (
-                    <TableRow>
-                      <TableCell
-                        colSpan={6}
-                        className="text-center py-8 text-muted-foreground"
-                      >
-                        No income found
-                      </TableCell>
-                    </TableRow>
-                  ) : (
-                    incomes.map((income: any) => (
-                      <TableRow key={income.id}>
-                        <TableCell className="font-medium">
-                          {income.name || "-"}
-                        </TableCell>
-                        <TableCell className="text-right text-green-600 font-medium">
-                          ${Number(income.incomeAmount).toFixed(2)}
-                        </TableCell>
-                        <TableCell>{income.source?.name || "-"}</TableCell>
-                        <TableCell>
-                          {income.paymentMethod?.name || "-"}
-                        </TableCell>
-                        <TableCell>
-                          {new Date(income.createdAt).toLocaleDateString()}
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <div className="flex justify-end gap-2">
-                            <IncomeDetails incomeId={income.id} />
-                            <IncomeForm
-                              mode="edit"
-                              incomeId={income.id}
-                              initialValues={{
-                                name: income.name || "",
-                                incomeAmount: income.incomeAmount,
-                                sourceId: income.source?.id || undefined,
-                                paymentMethodId:
-                                  income.paymentMethod?.id || undefined,
-                              }}
-                            />
-                            <IncomeDeleteDialog incomeId={income.id} />
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    ))
-                  )}
-                </TableBody>
-              </Table>
-            </div>
-
-            {/* Pagination */}
-            {meta && totalPages > 1 && (
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-muted-foreground">
-                  Showing {(currentPage - 1) * limit + 1} to{" "}
-                  {Math.min(currentPage * limit, meta.totalItems)} of{" "}
-                  {meta.totalItems} income entries
-                </span>
-                <div className="flex gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setPage((p) => Math.max(1, p - 1))}
-                    disabled={!meta.hasPrevPage}
-                  >
-                    Previous
-                  </Button>
-                  <span className="text-sm px-4 py-2">
-                    Page {currentPage} of {totalPages}
-                  </span>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setPage((p) => p + 1)}
-                    disabled={!meta.hasNextPage}
-                  >
-                    Next
-                  </Button>
-                </div>
-              </div>
-            )}
-          </div>
-        </CardContent>
-      </Card>
+      <DataTable table={table} actionBar={<TableActionBar table={table} />}>
+        <DataTableAdvancedToolbar table={table}></DataTableAdvancedToolbar>
+      </DataTable>
+      <FloatingLoader open={isLoading} title="Loading income records..." />
     </>
   );
 };
+
+function TableActionBar({ table }: { table: Table<IncomeRecord> }) {
+  const rows = table.getFilteredSelectedRowModel().rows;
+  const onOpenChange = React.useCallback(
+    (open: boolean) => {
+      if (!open) {
+        table.toggleAllRowsSelected(false);
+      }
+    },
+    [table],
+  );
+
+  // const deleteSources = useDeleteMultipleIncomeSource({
+  //   onSuccess: () => {
+  //     table.toggleAllRowsSelected(false);
+  //   },
+  // });
+
+  return (
+    <ActionBar open={rows.length > 0} onOpenChange={onOpenChange}>
+      {/* Add your custom actions here */}
+      <p className="text-sm">Delete {rows.length} selected items</p>
+
+      <AlertDialog>
+        <AlertDialogTrigger asChild>
+          <Button variant="destructive" size="sm" disabled={rows.length === 0}>
+            <Trash2 className="h-4 w-4" />
+          </Button>
+        </AlertDialogTrigger>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete your
+              account and remove your data from our servers.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel asChild>
+              <Button variant="outline" size="sm">
+                Cancel
+              </Button>
+            </AlertDialogCancel>
+            <AlertDialogAction asChild>
+              <Button
+                variant="destructive"
+                size="sm"
+                onClick={() => {
+                  // deleteSources.mutate({
+                  //   sourceIds: rows.map((item) => item.original.id),
+                  // });
+                }}
+              >
+                <Trash2 className="h-4 w-4 mr-2" />
+                Delete {rows.length} items
+              </Button>
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </ActionBar>
+  );
+}

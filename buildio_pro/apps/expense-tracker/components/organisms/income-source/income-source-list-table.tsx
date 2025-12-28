@@ -15,9 +15,13 @@ import {
   AlertDialogTrigger,
 } from "@workspace/ui/components/alert-dialog";
 
-import { Trash2Icon } from "lucide-react";
+import { Trash2 } from "lucide-react";
 
 import { ColumnDef, Table } from "@tanstack/react-table";
+
+import { DataTableAdvancedToolbar } from "@workspace/ui/components/data-table/data-table-advanced-toolbar";
+import { useDataTable } from "@workspace/ui/hooks/use-data-table";
+import { DataTable } from "@workspace/ui/components/data-table/data-table";
 
 import {
   IncomeSourceForm,
@@ -27,9 +31,6 @@ import {
 
 import { useQueryState } from "nuqs";
 import { useDeleteMultipleIncomeSource, useIncomeSourceList } from "@/hooks";
-import { DataTableAdvancedToolbar } from "@workspace/ui/components/data-table/data-table-advanced-toolbar";
-import { useDataTable } from "@workspace/ui/hooks/use-data-table";
-import { DataTable } from "@workspace/ui/components/data-table/data-table";
 import { ErrorScreen } from "@/components/atoms/error-screen";
 import { FloatingLoader } from "@/components/atoms/loaders/floating-loader";
 
@@ -167,7 +168,7 @@ function TableActionBar({ table }: { table: Table<IncomeSource> }) {
       <AlertDialog>
         <AlertDialogTrigger asChild>
           <Button variant="destructive" size="sm" disabled={rows.length === 0}>
-            <Trash2Icon className="h-4 w-4" />
+            <Trash2 className="h-4 w-4" />
           </Button>
         </AlertDialogTrigger>
         <AlertDialogContent>
@@ -194,7 +195,7 @@ function TableActionBar({ table }: { table: Table<IncomeSource> }) {
                   });
                 }}
               >
-                <Trash2Icon className="h-4 w-4 mr-2" />
+                <Trash2 className="h-4 w-4 mr-2" />
                 Delete {rows.length} items
               </Button>
             </AlertDialogAction>
