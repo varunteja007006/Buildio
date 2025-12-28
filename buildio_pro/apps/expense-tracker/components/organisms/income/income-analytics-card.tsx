@@ -7,6 +7,7 @@ import {
   ChartLegend,
   ChartLegendContent,
 } from "@workspace/ui/components/chart";
+
 import {
   Card,
   CardContent,
@@ -28,17 +29,12 @@ import {
 
 import { formatCurrency } from "@workspace/ui/lib/currency.utils";
 
-import { useTRPC } from "@/lib/trpc-client";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useIncomeAnalytics } from "@/hooks";
 
 const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#8884d8"];
 
 export const IncomeAnalyticsCard = () => {
-  const trpc = useTRPC();
-
-  const { data: analyticsData } = useQuery(
-    trpc.income.getAnalytics.queryOptions(),
-  );
+  const { data: analyticsData } = useIncomeAnalytics();
 
   return (
     <div>

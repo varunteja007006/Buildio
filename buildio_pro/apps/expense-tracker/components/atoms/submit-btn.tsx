@@ -13,7 +13,7 @@ export function SubmitBtn({
   loading?: boolean;
 } & React.ButtonHTMLAttributes<HTMLButtonElement>) {
   return (
-    <Button type="submit" form={formId} className="w-36" {...props}>
+    <Button type="submit" form={formId} {...props}>
       {loading ? (
         <>
           <Loader2 className="h-4 w-4 animate-spin" />

@@ -1,11 +1,5 @@
 import React from "react";
 
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@workspace/ui/components/tabs";
 import { Button } from "@workspace/ui/components/button";
 import {
   Card,
@@ -30,47 +24,21 @@ import {
   SelectValue,
 } from "@workspace/ui/components/select";
 
-import { Trash2, Edit2, Eye } from "lucide-react";
-
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
-import { useTRPC } from "@/lib/trpc-client";
-
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { IncomeDetailsComponent } from "./income-details";
+import { IncomeDeleteDialog } from "./income-delete-dialog";
+import { useIncomeList } from "@/hooks";
+import { IncomeForm } from "./income-form";
 
 export const IncomeListTable = () => {
-  const router = useRouter();
-  const trpc = useTRPC();
-
   const [limit, setLimit] = React.useState(10);
   const [page, setPage] = React.useState(1);
   const [sortBy, setSortBy] = React.useState<"date" | "amount">("date");
   const [sortOrder, setSortOrder] = React.useState<"asc" | "desc">("desc");
 
-  const { data, isLoading, refetch } = useQuery(
-    trpc.income.listIncomes.queryOptions({
-      limit,
-      page,
-    }),
-  );
-
-  const deleteMutation = useMutation(
-    trpc.income.deleteIncome.mutationOptions({
-      onSuccess: () => {
-        toast.success("Income deleted successfully!");
-        refetch();
-      },
-      onError: (error: any) => {
-        toast.error(error.message || "Failed to delete income");
-      },
-    }),
-  );
-
-  const handleDelete = (incomeId: string) => {
-    if (window.confirm("Are you sure you want to delete this income?")) {
-      deleteMutation.mutate({ incomeId });
-    }
-  };
+  const { data, isLoading } = useIncomeList({
+    limit,
+    page,
+  });
 
   const incomes = data?.data || [];
   const meta = data?.meta;
@@ -134,9 +102,7 @@ export const IncomeListTable = () => {
                 </Select>
               </div>
 
-              <Button onClick={() => router.push("/income/create")}>
-                + Add Income
-              </Button>
+              <IncomeForm mode="create" />
             </div>
 
             {/* Table */}
@@ -189,32 +155,19 @@ export const IncomeListTable = () => {
                         </TableCell>
                         <TableCell className="text-right">
                           <div className="flex justify-end gap-2">
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() =>
-                                router.push(`/income/${income.id}`)
-                              }
-                            >
-                              <Eye className="h-4 w-4" />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() =>
-                                router.push(`/income/${income.id}/edit`)
-                              }
-                            >
-                              <Edit2 className="h-4 w-4" />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => handleDelete(income.id)}
-                              disabled={deleteMutation.isPending}
-                            >
-                              <Trash2 className="h-4 w-4 text-destructive" />
-                            </Button>
+                            <IncomeDetailsComponent incomeId={income.id} />
+                            <IncomeForm
+                              mode="edit"
+                              incomeId={income.id}
+                              initialValues={{
+                                name: income.name || "",
+                                incomeAmount: income.incomeAmount,
+                                sourceId: income.source?.id || undefined,
+                                paymentMethodId:
+                                  income.paymentMethod?.id || undefined,
+                              }}
+                            />
+                            <IncomeDeleteDialog incomeId={income.id} />
                           </div>
                         </TableCell>
                       </TableRow>

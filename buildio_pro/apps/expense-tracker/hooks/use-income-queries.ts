@@ -4,6 +4,12 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useTRPC } from "@/lib/trpc-client";
 import { toast } from "sonner";
 
+// Income analytics
+export function useIncomeAnalytics() {
+  const trpc = useTRPC();
+  return useQuery(trpc.income.getAnalytics.queryOptions());
+}
+
 // List incomes
 export function useIncomeList(params: { limit: number; page: number }) {
   const trpc = useTRPC();
@@ -33,7 +39,9 @@ export function useCreateIncome(options?: {
           queryKey: trpc.income.listIncomes.queryKey(),
         });
         // Invalidate dashboard (balance changes)
-        queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+        queryClient.invalidateQueries({
+          queryKey: trpc.income.getAnalytics.queryKey(),
+        });
         options?.onSuccess?.();
       },
       onError: (error: any) => {
@@ -56,16 +64,18 @@ export function useUpdateIncome(options?: {
     trpc.income.updateIncome.mutationOptions({
       onSuccess: (data, variables) => {
         toast.success("Income updated successfully!");
-        // Invalidate specific income
+        // Invalidate lists
         queryClient.invalidateQueries({
           queryKey: trpc.income.listIncomes.queryKey(),
         });
-        // Invalidate lists
+        // Invalidate specific income
         queryClient.invalidateQueries({
           queryKey: trpc.income.getIncomeById.queryKey(),
         });
-        // Invalidate dashboard
-        queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+        // Invalidate analytics
+        queryClient.invalidateQueries({
+          queryKey: trpc.income.getAnalytics.queryKey(),
+        });
         options?.onSuccess?.();
       },
       onError: (error: any) => {
@@ -92,7 +102,10 @@ export function useDeleteIncome(options?: {
         queryClient.invalidateQueries({
           queryKey: trpc.income.listIncomes.queryKey(),
         });
-        // Invalidate dashboard
+        // Invalidate analytics
+        queryClient.invalidateQueries({
+          queryKey: trpc.income.getAnalytics.queryKey(),
+        });
         options?.onSuccess?.();
       },
       onError: (error: any) => {

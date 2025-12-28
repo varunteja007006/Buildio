@@ -19,6 +19,7 @@ export {
 
 // Income hooks
 export {
+  useIncomeAnalytics,
   useIncomeList,
   useIncomeDetails,
   useCreateIncome,
