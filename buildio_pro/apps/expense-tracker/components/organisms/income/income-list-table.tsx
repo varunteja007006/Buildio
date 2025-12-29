@@ -118,7 +118,6 @@ export const IncomeListTable = () => {
   });
 
   const incomes = data?.data || [];
-  const meta = data?.meta;
   const totalPages = data?.meta?.totalPages ?? 0;
 
   const { table } = useDataTable({
