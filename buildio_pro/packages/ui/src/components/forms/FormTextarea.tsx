@@ -5,7 +5,10 @@ import {
 } from "@workspace/ui/components/forms/FormBase";
 import { useFieldContext } from "@workspace/ui/components/forms/hooks";
 
-export function FormTextarea({placeholder, ...props}: Readonly<FormControlProps>) {
+export function FormTextarea({
+  placeholder,
+  ...props
+}: Readonly<FormControlProps>) {
   const field = useFieldContext<string>();
   const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid;
 
