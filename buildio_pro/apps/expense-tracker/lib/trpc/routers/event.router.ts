@@ -100,7 +100,7 @@ function numericToNumber(value: string | number | null | undefined): number {
 export const eventRouter = createTRPCRouter({
   listStatuses: protectedProcedure.query(async ({ ctx }) => {
     return ctx.db.query.eventStatus.findMany({
-      orderBy: (status: any) => asc(status.sortOrder),
+      orderBy: (status) => asc(status.sortOrder),
     });
   }),
 
@@ -138,10 +138,10 @@ export const eventRouter = createTRPCRouter({
             },
           },
         },
-        orderBy: (event: any) => desc(event.createdAt),
+        orderBy: (event) => desc(event.createdAt),
       });
 
-      const eventsWithTotals = events.map((evt: any) => {
+      const eventsWithTotals = events.map((evt) => {
         const totalSpent = evt.expenses.reduce(
           (sum: number, ee: any) =>
             sum + numericToNumber(ee.expense.expenseAmount),
@@ -218,7 +218,7 @@ export const eventRouter = createTRPCRouter({
         where: eq(dbSchema.eventExpense.eventId, eventId),
       });
 
-      const linkedExpenseIds = linkedExpenses.map((ee: any) => ee.expenseId);
+      const linkedExpenseIds = linkedExpenses.map((ee) => ee.expenseId);
 
       // Get all expenses for user
       const allExpenses = await db.query.expense.findMany({
@@ -230,9 +230,7 @@ export const eventRouter = createTRPCRouter({
       });
 
       // Filter out linked expenses
-      return allExpenses.filter(
-        (exp: any) => !linkedExpenseIds.includes(exp.id),
-      );
+      return allExpenses.filter((exp) => !linkedExpenseIds.includes(exp.id));
     }),
 
   createEvent: protectedProcedure

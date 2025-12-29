@@ -23,7 +23,7 @@ import { IncomeDetails, IncomeDeleteDialog, IncomeForm } from ".";
 
 import { useQueryState } from "nuqs";
 
-import { useIncomeList } from "@/hooks";
+import { useDeleteIncomes, useIncomeList } from "@/hooks";
 import { ErrorScreen } from "@/components/atoms/error-screen";
 import { FloatingLoader } from "@/components/atoms/loaders/floating-loader";
 import { Trash2 } from "lucide-react";
@@ -151,11 +151,11 @@ function TableActionBar({ table }: { table: Table<IncomeRecord> }) {
     [table],
   );
 
-  // const deleteSources = useDeleteMultipleIncomeSource({
-  //   onSuccess: () => {
-  //     table.toggleAllRowsSelected(false);
-  //   },
-  // });
+  const deleteIncomes = useDeleteIncomes({
+    onSuccess: () => {
+      table.toggleAllRowsSelected(false);
+    },
+  });
 
   return (
     <ActionBar open={rows.length > 0} onOpenChange={onOpenChange}>
@@ -187,9 +187,9 @@ function TableActionBar({ table }: { table: Table<IncomeRecord> }) {
                 variant="destructive"
                 size="sm"
                 onClick={() => {
-                  // deleteSources.mutate({
-                  //   sourceIds: rows.map((item) => item.original.id),
-                  // });
+                  deleteIncomes.mutate({
+                    incomeIds: rows.map((item) => item.original.id),
+                  });
                 }}
               >
                 <Trash2 className="h-4 w-4 mr-2" />

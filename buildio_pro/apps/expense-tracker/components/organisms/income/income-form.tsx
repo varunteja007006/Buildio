@@ -53,6 +53,8 @@ interface IncomeFormProps {
 }
 
 export function IncomeForm({ mode, incomeId, initialValues }: IncomeFormProps) {
+  const [open, setOpen] = React.useState(false);
+
   // Fetch income sources
   const { data: sourcesData } = useIncomeSourceList({
     limit: 100,
@@ -61,9 +63,19 @@ export function IncomeForm({ mode, incomeId, initialValues }: IncomeFormProps) {
 
   const sources = sourcesData?.data || [];
 
-  const createMutation = useCreateIncome();
+  const createMutation = useCreateIncome({
+    onSuccess: () => {
+      form.reset();
+      setOpen(false);
+    },
+  });
 
-  const updateMutation = useUpdateIncome();
+  const updateMutation = useUpdateIncome({
+    onSuccess: () => {
+      form.reset();
+      setOpen(false);
+    },
+  });
 
   const form = useAppForm({
     defaultValues: {
@@ -98,7 +110,7 @@ export function IncomeForm({ mode, incomeId, initialValues }: IncomeFormProps) {
   const isSubmitting = createMutation.isPending || updateMutation.isPending;
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         {mode === "create" ? (
           <Button size={"sm"}>+ Add Income</Button>

@@ -1,5 +1,5 @@
 import { TRPCError } from "@trpc/server";
-import { and, count, eq } from "drizzle-orm";
+import { and, count, eq, inArray } from "drizzle-orm";
 import z from "zod";
 
 import { createTRPCRouter, protectedProcedure } from "../init";
@@ -345,5 +345,51 @@ export const incomeRouter = createTRPCRouter({
         );
 
       return { success: true };
+    }),
+
+  deleteIncomes: protectedProcedure
+    .input(bulkDeleteInput)
+    .mutation(async ({ input, ctx }) => {
+      const { db, dbSchema, user } = ctx;
+      const { incomeIds } = input;
+
+      const existingIncomes = await db.query.income.findMany({
+        where: and(
+          inArray(dbSchema.income.id, incomeIds),
+          eq(dbSchema.income.userId, user.id),
+        ),
+      });
+
+      const existingIncomeIds = new Set(
+        existingIncomes.map((income) => income.id),
+      );
+
+      const missingIds = incomeIds.filter((id) => !existingIncomeIds.has(id));
+
+      if (existingIncomes.length === 0) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "No incomes found to delete",
+        });
+      }
+
+      if (existingIncomes.length > 0) {
+        await db
+          .delete(dbSchema.income)
+          .where(
+            and(
+              inArray(dbSchema.income.id, Array.from(existingIncomeIds)),
+              eq(dbSchema.income.userId, user.id),
+            ),
+          );
+      }
+
+      return {
+        success: true,
+        deletedIds: Array.from(existingIncomeIds),
+        notFoundIds: missingIds,
+        skipped: [],
+        message: `${existingIncomeIds.size} income(s) deleted successfully`,
+      };
     }),
 });

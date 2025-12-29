@@ -1,3 +1,6 @@
+// Events hooks
+export { useEventsList } from "./use-events-queries";
+
 // Budget hooks
 export {
   useBudgetList,
@@ -25,6 +28,7 @@ export {
   useCreateIncome,
   useUpdateIncome,
   useDeleteIncome,
+  useDeleteIncomes,
 } from "./use-income-queries";
 
 // Category and Source hooks
@@ -64,4 +68,4 @@ export {
   useUpdateIncomeSource,
   useIncomeSourceDetails,
   useDeleteMultipleIncomeSource,
-} from "./use-income-sources";
+} from "./use-income-sources-queries";

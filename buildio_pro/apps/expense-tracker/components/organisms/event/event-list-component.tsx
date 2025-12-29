@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { Plus, Zap, Loader2 } from "lucide-react";
+import { Plus, Loader2, CalendarDays } from "lucide-react";
 
 import { Button } from "@workspace/ui/components/button";
 import { Card, CardContent } from "@workspace/ui/components/card";
@@ -29,11 +29,12 @@ import {
 import { useTRPC } from "@/lib/trpc-client";
 import { toast } from "sonner";
 import { EventCard } from "@/components/events/event-card";
+import { useEventsList } from "@/hooks";
 
 export function EventListComponent() {
   const router = useRouter();
   const trpc = useTRPC();
-  const [page, setPage] = useState(0);
+  const [page, setPage] = useState(1);
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [eventToDelete, setEventToDelete] = useState<string | null>(null);
 
@@ -41,13 +42,10 @@ export function EventListComponent() {
     trpc.event.listStatuses.queryOptions(),
   );
 
-  const { data: eventsData, isLoading } = useQuery(
-    trpc.event.listEvents.queryOptions({
-      limit: 10,
-      offset: page * 10,
-      statusId: statusFilter === "all" ? undefined : statusFilter,
-    }),
-  );
+  const { data: eventsData, isLoading } = useEventsList({
+    limit: 10,
+    page,
+  });
 
   const deleteEventMutation = useMutation(
     trpc.event.deleteEvent.mutationOptions({
@@ -107,7 +105,7 @@ export function EventListComponent() {
         <Card className="border-dashed">
           <CardContent className="flex flex-col items-center justify-center py-12 text-center">
             <div className="h-12 w-12 rounded-full bg-muted flex items-center justify-center mb-4">
-              <Zap className="h-6 w-6 text-muted-foreground" />
+              <CalendarDays className="h-6 w-6 text-muted-foreground" />
             </div>
             <h3 className="mb-2 text-lg font-semibold">No events found</h3>
             <p className="mb-4 text-sm text-muted-foreground max-w-sm">

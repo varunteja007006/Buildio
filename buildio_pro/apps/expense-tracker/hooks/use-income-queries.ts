@@ -115,3 +115,33 @@ export function useDeleteIncome(options?: {
     }),
   );
 }
+
+// delete incomes
+export function useDeleteIncomes(options?: {
+  onSuccess?: () => void;
+  onError?: (error: any) => void;
+}) {
+  const trpc = useTRPC();
+  const queryClient = useQueryClient();
+
+  return useMutation(
+    trpc.income.deleteIncomes.mutationOptions({
+      onSuccess: () => {
+        toast.success("Income deleted successfully!");
+        // Invalidate all income queries
+        queryClient.invalidateQueries({
+          queryKey: trpc.income.listIncomes.queryKey(),
+        });
+        // Invalidate analytics
+        queryClient.invalidateQueries({
+          queryKey: trpc.income.getAnalytics.queryKey(),
+        });
+        options?.onSuccess?.();
+      },
+      onError: (error: any) => {
+        toast.error(error.message || "Failed to delete income");
+        options?.onError?.(error);
+      },
+    }),
+  );
+}
