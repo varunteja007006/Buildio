@@ -1,27 +1,27 @@
 "use client";
 
 import * as React from "react";
-import { useRouter } from "next/navigation";
-import { Loader2 } from "lucide-react";
 
-import { Button } from "@workspace/ui/components/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@workspace/ui/components/card";
-import { Field, FieldGroup } from "@workspace/ui/components/field";
-import { useAppForm } from "@workspace/ui/components/forms/hooks";
-
-import { toast } from "sonner";
 import * as z from "zod";
 
-import { useTRPC } from "@/lib/trpc-client";
-import { useMutation, useQuery } from "@tanstack/react-query";
 import { SelectItem } from "@workspace/ui/components/select";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@workspace/ui/components/dialog";
+import { FieldGroup } from "@workspace/ui/components/field";
+import { useAppForm } from "@workspace/ui/components/forms/hooks";
+import { SubmitBtn } from "@/components/atoms/submit-btn";
+
+import { useEventCreate, useEventListStatues, useEventUpdate } from "@/hooks";
+import { Button } from "@workspace/ui/components/button";
+import { EditBtn } from "@/components/atoms/edit-btn";
 
 const eventFormSchema = z
   .object({
@@ -45,7 +45,7 @@ const eventFormSchema = z
       .optional(),
     startDate: z.date({ message: "Start date is required" }),
     endDate: z.date().optional(),
-    statusId: z.string().uuid({ message: "Status is required" }),
+    statusId: z.uuid({ message: "Status is required" }),
   })
   .refine(
     (data) => {
@@ -64,50 +64,22 @@ interface EventFormProps {
   mode: "create" | "edit";
   eventId?: string;
   initialValues?: {
-    name?: string;
-    description?: string;
-    estimatedBudget?: string;
-    startDate?: Date;
-    endDate?: Date;
+    name: string;
+    description?: string | null;
+    estimatedBudget?: string | null;
+    startDate?: Date | null;
+    endDate?: Date | null;
     statusId?: string;
   };
 }
 
-export function EventFormComponent({
-  mode,
-  eventId,
-  initialValues,
-}: EventFormProps) {
-  const router = useRouter();
-  const trpc = useTRPC();
+export function EventForm({ mode, eventId, initialValues }: EventFormProps) {
+  const { data: statusOptions, isLoading: isLoadingStatuses } =
+    useEventListStatues();
 
-  const { data: statusOptions, isLoading: isLoadingStatuses } = useQuery(
-    trpc.event.listStatuses.queryOptions(),
-  );
+  const createMutation = useEventCreate();
 
-  const createMutation = useMutation(
-    trpc.event.createEvent.mutationOptions({
-      onSuccess: () => {
-        toast.success("Event created successfully!");
-        router.push("/events");
-      },
-      onError: (error: any) => {
-        toast.error(error.message || "Failed to create event");
-      },
-    }),
-  );
-
-  const updateMutation = useMutation(
-    trpc.event.updateEvent.mutationOptions({
-      onSuccess: () => {
-        toast.success("Event updated successfully!");
-        router.push(`/events/${eventId}`);
-      },
-      onError: (error: any) => {
-        toast.error(error.message || "Failed to update event");
-      },
-    }),
-  );
+  const updateMutation = useEventUpdate();
 
   const form = useAppForm({
     defaultValues: {
@@ -117,15 +89,9 @@ export function EventFormComponent({
       startDate: initialValues?.startDate || undefined,
       endDate: initialValues?.endDate || undefined,
       statusId: initialValues?.statusId || undefined,
-    },
+    } as EventFormProps["initialValues"],
     validators: {
-      onSubmit: ({ value }) => {
-        const result = eventFormSchema.safeParse(value);
-        if (!result.success) {
-          return result.error.format();
-        }
-        return undefined;
-      },
+      onSubmit: eventFormSchema,
     },
     onSubmit: async ({ value }) => {
       if (mode === "create") {
@@ -182,18 +148,25 @@ export function EventFormComponent({
     isSubmitting || isLoadingStatuses || !statusOptions?.length;
 
   return (
-    <Card className="w-full max-w-2xl mx-auto">
-      <CardHeader>
-        <CardTitle>
-          {mode === "create" ? "Create Event" : "Edit Event"}
-        </CardTitle>
-        <CardDescription>
-          {mode === "create"
-            ? "Create a new event to track expenses across multiple months and budgets"
-            : "Update your event details"}
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
+    <Dialog>
+      <DialogTrigger asChild>
+        {mode === "create" ? (
+          <Button size={"sm"}>Create Event</Button>
+        ) : (
+          <EditBtn iconOnly />
+        )}
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>
+            {mode === "create" ? "Create Event" : "Edit Event"}
+          </DialogTitle>
+          <DialogDescription>
+            {mode === "create"
+              ? "Create a new event to track expenses across multiple months and budgets"
+              : "Update your event details"}
+          </DialogDescription>
+        </DialogHeader>
         <form
           id="event-form"
           onSubmit={(e) => {
@@ -241,10 +214,7 @@ export function EventFormComponent({
 
             <form.AppField name="statusId">
               {(field) => (
-                <field.Select
-                  label="Status"
-                  // disabled={isLoadingStatuses || !statusOptions?.length}
-                >
+                <field.Select label="Status" placeholder="Select status">
                   {statusOptions?.length ? (
                     statusOptions.map((status) => (
                       <SelectItem key={status.id} value={status.id}>
@@ -252,7 +222,7 @@ export function EventFormComponent({
                       </SelectItem>
                     ))
                   ) : (
-                    <SelectItem value="" disabled>
+                    <SelectItem value="NA" disabled>
                       {isLoadingStatuses
                         ? "Loading statuses..."
                         : "No statuses configured"}
@@ -263,31 +233,15 @@ export function EventFormComponent({
             </form.AppField>
           </FieldGroup>
         </form>
-      </CardContent>
-      <CardFooter>
-        <Field orientation="horizontal">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => router.back()}
-            disabled={isSubmitting}
-          >
-            Cancel
-          </Button>
-          <Button type="submit" form="event-form" disabled={isSubmitDisabled}>
-            {isSubmitting ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                {mode === "create" ? "Creating..." : "Updating..."}
-              </>
-            ) : mode === "create" ? (
-              "Create Event"
-            ) : (
-              "Update Event"
-            )}
-          </Button>
-        </Field>
-      </CardFooter>
-    </Card>
+        <DialogFooter>
+          <DialogClose>Close</DialogClose>
+          <SubmitBtn
+            loading={isSubmitting}
+            disabled={isSubmitDisabled}
+            formId="event-form"
+          />
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }

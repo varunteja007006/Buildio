@@ -47,11 +47,11 @@ import { Checkbox } from "@workspace/ui/components/checkbox";
 import { useTRPC } from "@/lib/trpc-client";
 import { toast } from "sonner";
 
-interface EventDetailsComponentProps {
+interface EventDetailsProps {
   eventId: string;
 }
 
-export function EventDetailsComponent({ eventId }: EventDetailsComponentProps) {
+export function EventDetails({ eventId }: EventDetailsProps) {
   const router = useRouter();
   const trpc = useTRPC();
   const [addExpenseDialogOpen, setAddExpenseDialogOpen] = useState(false);

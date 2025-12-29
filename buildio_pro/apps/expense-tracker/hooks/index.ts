@@ -1,5 +1,11 @@
 // Events hooks
-export { useEventsList } from "./use-events-queries";
+export {
+  useEventsList,
+  useEventListStatues,
+  useEventCreate,
+  useEventUpdate,
+  useEventDelete,
+} from "./use-events-queries";
 
 // Budget hooks
 export {

@@ -1,4 +1,4 @@
-import { EventDetailsComponent } from "@/components/organisms/event/event-details-component";
+import { EventDetails } from "@/components/organisms/event";
 import { Button } from "@workspace/ui/components/button";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
@@ -21,7 +21,7 @@ export default async function EventDetailsPage({
         </Button>
       </Link>
 
-      <EventDetailsComponent eventId={id} />
+      <EventDetails eventId={id} />
     </div>
   );
 }

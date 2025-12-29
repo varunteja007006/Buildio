@@ -1,14 +1,7 @@
 import React from "react";
 import Link from "next/link";
-import { format, differenceInDays, isPast } from "date-fns";
-import {
-  Calendar,
-  Clock,
-  MoreVertical,
-  Pencil,
-  Trash2,
-  Eye,
-} from "lucide-react";
+import { format, differenceInDays } from "date-fns";
+import { Calendar, Clock, Eye } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -17,17 +10,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@workspace/ui/components/card";
-import { Button } from "@workspace/ui/components/button";
 import { Progress } from "@workspace/ui/components/progress";
 import { Badge } from "@workspace/ui/components/badge";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@workspace/ui/components/dropdown-menu";
 import { formatCurrency } from "@workspace/ui/lib/currency.utils";
 import { cn } from "@workspace/ui/lib/utils";
+import { EventDeleteDialog, EventForm } from ".";
 
 interface EventCardProps {
   event: {
@@ -41,10 +28,9 @@ interface EventCardProps {
     estimatedBudget: number;
     remaining: number;
   };
-  onDelete: (id: string) => void;
 }
 
-export function EventCard({ event, onDelete }: EventCardProps) {
+export function EventCard({ event }: EventCardProps) {
   const progress =
     event.estimatedBudget > 0
       ? (event.totalSpent / event.estimatedBudget) * 100
@@ -70,32 +56,6 @@ export function EventCard({ event, onDelete }: EventCardProps) {
               {event.description || "No description provided."}
             </CardDescription>
           </div>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="-mr-2 h-8 w-8">
-                <MoreVertical className="h-4 w-4" />
-                <span className="sr-only">Open menu</span>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem asChild>
-                <Link href={`/events/${event.id}`}>
-                  <Eye className="mr-2 h-4 w-4" /> View Details
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link href={`/events/${event.id}/edit`}>
-                  <Pencil className="mr-2 h-4 w-4" /> Edit
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                className="text-destructive focus:text-destructive"
-                onClick={() => onDelete(event.id)}
-              >
-                <Trash2 className="mr-2 h-4 w-4" /> Delete
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
         </div>
       </CardHeader>
       <CardContent className="flex-1 pb-3">
@@ -179,6 +139,13 @@ export function EventCard({ event, onDelete }: EventCardProps) {
             {event.remaining < 0 ? "Over: " : "Left: "}
             {formatCurrency(Math.abs(event.remaining))}
           </div>
+        </div>
+        <div>
+          <Link href={`/events/${event.id}`}>
+            <Eye className="mr-2 h-4 w-4" /> View Details
+          </Link>
+          <EventForm mode="edit" eventId={event.id} />
+          <EventDeleteDialog eventId={event.id} />
         </div>
       </CardFooter>
     </Card>
