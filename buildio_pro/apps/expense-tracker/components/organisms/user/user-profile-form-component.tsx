@@ -64,7 +64,7 @@ export function UserProfileFormComponent() {
 
   if (isLoading) {
     return (
-      <Card className="w-full max-w-2xl">
+      <Card className="w-full max-w-lg">
         <CardHeader>
           <CardTitle>Profile</CardTitle>
           <CardDescription>Update your profile information</CardDescription>
@@ -82,7 +82,7 @@ export function UserProfileFormComponent() {
   const hasValidImage = form.state.values.image_url && !imageError;
 
   return (
-    <Card className="w-full max-w-2xl">
+    <Card className="w-full max-w-lg">
       <CardHeader>
         <CardTitle>Profile</CardTitle>
         <CardDescription>Update your profile information</CardDescription>

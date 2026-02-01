@@ -8,7 +8,7 @@ import Image from "next/image";
 
 import { MainCard } from "./main-card";
 import { useSession } from "@/lib/auth-client";
-// import { UserProfileFormComponent } from "../organisms/user";
+import { UserProfileFormComponent } from "../organisms/user";
 
 export default function ProfileSection() {
   const session = useSession();
@@ -57,7 +57,7 @@ export default function ProfileSection() {
             </p>
           </div>
         </div>
-        {/* <UserProfileFormComponent /> */}
+        <UserProfileFormComponent />
       </>
     </MainCard>
   );

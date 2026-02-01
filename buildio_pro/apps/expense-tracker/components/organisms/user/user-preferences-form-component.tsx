@@ -56,7 +56,7 @@ export function UserPreferencesFormComponent() {
 
   if (isLoading) {
     return (
-      <Card className="w-full max-w-2xl">
+      <Card className="w-full max-w-lg">
         <CardHeader>
           <CardTitle>Preferences</CardTitle>
           <CardDescription>Manage your regional preferences</CardDescription>
@@ -71,7 +71,7 @@ export function UserPreferencesFormComponent() {
   }
 
   return (
-    <Card className="w-full max-w-2xl">
+    <Card className="w-full max-w-lg">
       <CardHeader>
         <CardTitle>Preferences</CardTitle>
         <CardDescription>Manage your regional preferences</CardDescription>

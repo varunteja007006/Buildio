@@ -7,7 +7,7 @@ import { appConfig } from "@/app/appConfig";
 export function Navbar() {
   return (
     <nav className="px-8 py-4 flex items-center justify-between w-full bg-sidebar">
-      <h1 className="text-black font-bold">{appConfig.name}</h1>
+      <h1 className="text-black dark:text-white font-bold">{appConfig.name}</h1>
       <div className="flex flex-row items-center gap-4 justify-between">
         <LoginBtn />
         <ModeToggle />
