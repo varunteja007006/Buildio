@@ -39,10 +39,14 @@ export const userProfileRouter = createTRPCRouter({
       });
 
       if (!profile) {
-        throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "User profile not found",
-        });
+        return await db.insert(dbSchema.userProfile).values({
+          user_id: user.id,
+          name: input.name || "",
+          description: input.description || "",
+          image_url: input.image_url || "",
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        }).returning();
       }
 
       const [updated] = await db

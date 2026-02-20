@@ -157,7 +157,7 @@ export const expenseRouter = createTRPCRouter({
       .sort((a, b) => a[0].localeCompare(b[0]))
       .map(([key, amount]) => {
         const [year, month] = key.split("-");
-        const date = new Date(parseInt(year), parseInt(month) - 1);
+        const date = new Date(parseInt(year!), parseInt(month!) - 1); // year and month are guaranteed to be present
         return {
           month: date.toLocaleString("default", {
             month: "short",

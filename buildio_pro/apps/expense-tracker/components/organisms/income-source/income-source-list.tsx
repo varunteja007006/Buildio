@@ -3,13 +3,6 @@
 import * as React from "react";
 
 import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@workspace/ui/components/tabs";
-
-import {
   IncomeSourceAnalyticsCard,
   IncomeSourceListTable,
   IncomeSourceForm,
@@ -18,23 +11,13 @@ import {
 export function IncomeSourceList() {
   return (
     <div className="space-y-4">
-      <Tabs defaultValue="analytics" className="w-full">
-        <div className="flex justify-between items-center">
-          <TabsList>
-            <TabsTrigger value="analytics">Analytics</TabsTrigger>
-            <TabsTrigger value="listing">Listing</TabsTrigger>
-          </TabsList>
-          <div>
-            <IncomeSourceForm mode="create" />
-          </div>
+      <div className="flex justify-end items-center">
+        <div>
+          <IncomeSourceForm mode="create" />
         </div>
-        <TabsContent value="analytics">
-          <IncomeSourceAnalyticsCard />
-        </TabsContent>
-        <TabsContent value="listing">
-          <IncomeSourceListTable />
-        </TabsContent>
-      </Tabs>
+      </div>
+      <IncomeSourceAnalyticsCard />
+      <IncomeSourceListTable />
     </div>
   );
 }

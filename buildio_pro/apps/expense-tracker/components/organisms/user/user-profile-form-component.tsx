@@ -40,7 +40,7 @@ export function UserProfileFormComponent() {
       onSubmit: ({ value }) => {
         const result = profileFormSchema.safeParse(value);
         if (!result.success) {
-          return result.error.format();
+          return result.error.message;
         }
         return undefined;
       },

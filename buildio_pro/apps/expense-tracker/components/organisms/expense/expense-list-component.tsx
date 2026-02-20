@@ -83,7 +83,7 @@ export function ExpenseListComponent({
   );
 
   const { data: analyticsData } = useQuery(
-    trpc.expense.getAnalytics.queryOptions({}),
+    trpc.expense.getAnalytics.queryOptions(),
   );
 
   const deleteMutation = useMutation(
@@ -131,10 +131,10 @@ export function ExpenseListComponent({
   }));
 
   // Filter options
-  const categoryOptions =
-    categories?.map((c) => ({ label: c.name, value: c.id })) || [];
-  const budgetOptions =
-    budgets?.map((b) => ({ label: b.name, value: b.id })) || [];
+  const categoryOptions = 
+    categories?.data?.map((c) => ({ label: c.name, value: c.id })) || [];
+  const budgetOptions = 
+    budgets?.data?.map((b) => ({ label: b.name, value: b.id })) || [];
 
   return (
     <div className="space-y-6">

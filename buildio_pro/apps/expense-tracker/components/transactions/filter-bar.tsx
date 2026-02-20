@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Search, Filter, X } from "lucide-react";
+import { Search, X } from "lucide-react";
 import { Input } from "@workspace/ui/components/input";
 import { Button } from "@workspace/ui/components/button";
 import {
@@ -11,7 +11,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@workspace/ui/components/select";
-import { Badge } from "@workspace/ui/components/badge";
 
 interface FilterOption {
   label: string;
@@ -63,16 +62,15 @@ export function FilterBar({
       <div className="flex items-center gap-2 w-full sm:w-auto overflow-x-auto pb-2 sm:pb-0">
         {categories && (
           <Select value={selectedCategory} onValueChange={onCategoryChange}>
-            <SelectTrigger className="w-[150px] rounded-full border-dashed">
-              <div className="flex items-center gap-2 truncate">
-                <Filter className="h-3.5 w-3.5" />
-                <span className="truncate">
-                  {selectedCategory
+            <SelectTrigger className="max-w-lg">
+              <SelectValue
+                placeholder={
+                  selectedCategory
                     ? categories.find((c) => c.value === selectedCategory)
                         ?.label
-                    : "Category"}
-                </span>
-              </div>
+                    : "Category"
+                }
+              />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Categories</SelectItem>
@@ -87,15 +85,14 @@ export function FilterBar({
 
         {budgets && (
           <Select value={selectedBudget} onValueChange={onBudgetChange}>
-            <SelectTrigger className="w-[150px] rounded-full border-dashed">
-              <div className="flex items-center gap-2 truncate">
-                <Filter className="h-3.5 w-3.5" />
-                <span className="truncate">
-                  {selectedBudget
+            <SelectTrigger className="max-w-lg">
+              <SelectValue
+                placeholder={
+                  selectedBudget
                     ? budgets.find((b) => b.value === selectedBudget)?.label
-                    : "Budget"}
-                </span>
-              </div>
+                    : "Budget"
+                }
+              />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Budgets</SelectItem>

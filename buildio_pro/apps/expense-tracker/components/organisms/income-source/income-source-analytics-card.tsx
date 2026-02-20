@@ -62,7 +62,7 @@ export const IncomeSourceAnalyticsCard = () => {
                     color: "hsl(var(--chart-1))",
                   },
                 }}
-                className="h-[300px]"
+                className="h-[300px] w-full"
               >
                 <BarChart data={analyticsData}>
                   <CartesianGrid vertical={false} />
