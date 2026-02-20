@@ -90,7 +90,7 @@ export function TransactionTable({
 
   return (
     <div className="space-y-4">
-      <div className="rounded-md border bg-card">
+      <div className="rounded-md border">
         <Table>
           <TableHeader>
             <TableRow>
@@ -174,12 +174,12 @@ export function TransactionTable({
                     </TableCell>
                     <TableCell>
                       <div className="flex flex-col">
-                        <span className="text-sm">
+                        {/* <span className="text-sm">
                           {format(new Date(transaction.date), "MMM d, yyyy")}
                         </span>
                         <span className="text-xs text-muted-foreground">
                           {format(new Date(transaction.date), "h:mm a")}
-                        </span>
+                        </span> */}
                       </div>
                     </TableCell>
                     <TableCell>

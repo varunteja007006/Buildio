@@ -6,13 +6,14 @@ import { Loader2 } from "lucide-react";
 
 import { Button } from "@workspace/ui/components/button";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@workspace/ui/components/card";
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogFooter,
+} from "@workspace/ui/components/dialog";
 import { Field, FieldGroup } from "@workspace/ui/components/field";
 import { useAppForm } from "@workspace/ui/components/forms/hooks";
 import { SelectItem } from "@workspace/ui/components/select";
@@ -34,8 +35,8 @@ const expenseFormSchema = z.object({
     .refine((val) => !isNaN(Number(val)) && Number(val) > 0, {
       message: "Amount must be a positive number",
     }),
-  categoryId: z.string().uuid("Invalid category").optional(),
-  budgetId: z.string().uuid("Invalid budget").optional(),
+  categoryId: z.uuid("Invalid category").optional(),
+  budgetId: z.uuid("Invalid budget").optional(),
   isRecurring: z.boolean().default(false),
   account: z.string().max(255).optional(),
 });
@@ -65,7 +66,6 @@ export function ExpenseFormComponent({
   const { data: categoriesData } = useQuery(
     trpc.expenseCategory.listCategories.queryOptions({
       limit: 100,
-      offset: 0,
     }),
   );
 
@@ -73,7 +73,6 @@ export function ExpenseFormComponent({
   const { data: budgetsData } = useQuery(
     trpc.budget.budgetList.queryOptions({
       limit: 100,
-      offset: 0,
     }),
   );
 
@@ -108,8 +107,8 @@ export function ExpenseFormComponent({
     defaultValues: {
       name: initialValues?.name || "",
       expenseAmount: initialValues?.expenseAmount || "",
-      categoryId: initialValues?.categoryId || "",
-      budgetId: initialValues?.budgetId || "",
+      categoryId: initialValues?.categoryId || undefined,
+      budgetId: initialValues?.budgetId || undefined,
       isRecurring: initialValues?.isRecurring || false,
       account: initialValues?.account || "",
     },
@@ -146,28 +145,28 @@ export function ExpenseFormComponent({
     },
   });
 
+  console.log(form.getAllErrors());
+
   const isSubmitting = createMutation.isPending || updateMutation.isPending;
 
   return (
-    <Card className="w-full max-w-2xl mx-auto">
-      <CardHeader>
-        <CardTitle>
-          {mode === "create" ? "Add Expense" : "Edit Expense"}
-        </CardTitle>
-        <CardDescription>
-          {mode === "create"
-            ? "Record a new expense"
-            : "Update expense details"}
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <form
-          id="expense-form"
-          onSubmit={(e) => {
-            e.preventDefault();
-            form.handleSubmit();
-          }}
-        >
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button size={"sm"}>+ Add Expense</Button>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>
+            {mode === "create" ? "Add Expense" : "Edit Expense"}
+          </DialogTitle>
+          <DialogDescription>
+            {mode === "create"
+              ? "Record a new expense"
+              : "Update expense details"}
+          </DialogDescription>
+        </DialogHeader>
+
+        <form id="expense-form">
           <FieldGroup>
             <form.AppField name="name">
               {(field) => <field.Input label="Expense Name" />}
@@ -212,31 +211,40 @@ export function ExpenseFormComponent({
             </form.AppField>
           </FieldGroup>
         </form>
-      </CardContent>
-      <CardFooter>
-        <Field orientation="horizontal">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => router.back()}
-            disabled={isSubmitting}
-          >
-            Cancel
-          </Button>
-          <Button type="submit" form="expense-form" disabled={isSubmitting}>
-            {isSubmitting ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                {mode === "create" ? "Creating..." : "Updating..."}
-              </>
-            ) : mode === "create" ? (
-              "Add Expense"
-            ) : (
-              "Update Expense"
-            )}
-          </Button>
-        </Field>
-      </CardFooter>
-    </Card>
+
+        <DialogFooter>
+          <Field orientation="horizontal" className="justify-end space-x-2">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => router.back()}
+              disabled={isSubmitting}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              form="expense-form"
+              onClick={(e) => {
+                e.preventDefault();
+                form.handleSubmit();
+              }}
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  {mode === "create" ? "Creating..." : "Updating..."}
+                </>
+              ) : mode === "create" ? (
+                "Add Expense"
+              ) : (
+                "Update Expense"
+              )}
+            </Button>
+          </Field>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }

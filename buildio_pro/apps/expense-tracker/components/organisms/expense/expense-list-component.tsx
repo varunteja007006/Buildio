@@ -39,6 +39,7 @@ import {
 } from "@/components/transactions/transaction-table";
 import { FilterBar } from "@/components/transactions/filter-bar";
 import { useExpenseCategoryList, useBudgetList } from "@/hooks";
+import { ExpenseFormComponent } from "./expense-form-component";
 
 interface ExpenseListComponentProps {
   categoryId?: string;
@@ -131,13 +132,17 @@ export function ExpenseListComponent({
   }));
 
   // Filter options
-  const categoryOptions = 
+  const categoryOptions =
     categories?.data?.map((c) => ({ label: c.name, value: c.id })) || [];
-  const budgetOptions = 
+  const budgetOptions =
     budgets?.data?.map((b) => ({ label: b.name, value: b.id })) || [];
 
   return (
     <div className="space-y-6">
+      <div className="flex justify-end">
+        <ExpenseFormComponent mode="create" />
+      </div>
+      
       {/* Analytics Section */}
       {analyticsData && (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
@@ -274,59 +279,51 @@ export function ExpenseListComponent({
         </div>
       )}
 
-      <Card className="w-full">
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
-          <div className="space-y-1">
-            <CardTitle>Expenses</CardTitle>
-            <CardDescription>Manage and track your expenses</CardDescription>
-          </div>
-          <Button onClick={() => router.push("/expenses/create")}>
-            + Add Expense
-          </Button>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <FilterBar
-            searchValue={search}
-            onSearchChange={setSearch}
-            categories={categoryOptions}
-            selectedCategory={selectedCategory}
-            onCategoryChange={(val) => {
-              setSelectedCategory(val);
-              setPage(1);
-            }}
-            budgets={budgetOptions}
-            selectedBudget={selectedBudget}
-            onBudgetChange={(val) => {
-              setSelectedBudget(val);
-              setPage(1);
-            }}
-            onClearFilters={() => {
-              setSearch("");
-              setSelectedCategory(undefined);
-              setSelectedBudget(undefined);
-              setPage(1);
-            }}
-          />
+      <div className="space-y-1">
+        <CardTitle>Expenses</CardTitle>
+        <CardDescription>Manage and track your expenses</CardDescription>
+      </div>
 
-          <TransactionTable
-            data={transactions}
-            isLoading={isLoading}
-            pageCount={totalPages}
-            currentPage={currentPage}
-            onPageChange={(newPage) => setPage(newPage)}
-            onSortChange={(field, order) => {
-              setSortBy(field as any);
-              setSortOrder(order);
-            }}
-            sortField={sortBy}
-            sortOrder={sortOrder}
-            onDelete={handleDelete}
-            onEdit={(id) => router.push(`/expenses/${id}/edit`)}
-            onView={(id) => router.push(`/expenses/${id}`)}
-            type="expense"
-          />
-        </CardContent>
-      </Card>
+      <FilterBar
+        searchValue={search}
+        onSearchChange={setSearch}
+        categories={categoryOptions}
+        selectedCategory={selectedCategory}
+        onCategoryChange={(val) => {
+          setSelectedCategory(val);
+          setPage(1);
+        }}
+        budgets={budgetOptions}
+        selectedBudget={selectedBudget}
+        onBudgetChange={(val) => {
+          setSelectedBudget(val);
+          setPage(1);
+        }}
+        onClearFilters={() => {
+          setSearch("");
+          setSelectedCategory(undefined);
+          setSelectedBudget(undefined);
+          setPage(1);
+        }}
+      />
+
+      <TransactionTable
+        data={transactions}
+        isLoading={isLoading}
+        pageCount={totalPages}
+        currentPage={currentPage}
+        onPageChange={(newPage) => setPage(newPage)}
+        onSortChange={(field, order) => {
+          setSortBy(field as any);
+          setSortOrder(order);
+        }}
+        sortField={sortBy}
+        sortOrder={sortOrder}
+        onDelete={handleDelete}
+        onEdit={(id) => router.push(`/expenses/${id}/edit`)}
+        onView={(id) => router.push(`/expenses/${id}`)}
+        type="expense"
+      />
     </div>
   );
 }
