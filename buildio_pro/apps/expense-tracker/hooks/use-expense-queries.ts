@@ -119,3 +119,8 @@ export function useDeleteExpense(options?: {
     }),
   );
 }
+
+export function useGetExpenseByID(expenseId: string) {
+  const trpc = useTRPC();
+  return useQuery(trpc.expense.getExpenseById.queryOptions({ expenseId }));
+}

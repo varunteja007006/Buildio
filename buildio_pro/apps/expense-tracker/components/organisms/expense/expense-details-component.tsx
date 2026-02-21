@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
-import { Edit2, ArrowLeft, Trash2 } from "lucide-react";
+import { Edit2, ArrowLeft, Trash2, Eye } from "lucide-react";
 
 import { Button } from "@workspace/ui/components/button";
 import {
@@ -17,6 +17,17 @@ import { Badge } from "@workspace/ui/components/badge";
 import { toast } from "sonner";
 import { useTRPC } from "@/lib/trpc-client";
 import { useQuery, useMutation } from "@tanstack/react-query";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@workspace/ui/components/dialog";
+import { useGetExpenseByID } from "@/hooks/use-expense-queries";
 
 interface ExpenseDetailsComponentProps {
   expenseId: string;
@@ -28,9 +39,7 @@ export function ExpenseDetailsComponent({
   const router = useRouter();
   const trpc = useTRPC();
 
-  const { data: expense, isLoading } = useQuery(
-    trpc.expense.getExpenseById.queryOptions({ expenseId }),
-  ) as { data?: any; isLoading: boolean };
+  const { data: expense, isLoading } = useGetExpenseByID(expenseId);
 
   const deleteMutation = useMutation(
     trpc.expense.deleteExpense.mutationOptions({
@@ -50,62 +59,59 @@ export function ExpenseDetailsComponent({
     }
   };
 
-  if (isLoading) {
-    return (
-      <Card className="w-full max-w-2xl mx-auto">
-        <CardContent className="py-8">
-          <div className="text-center text-muted-foreground">
-            Loading expense details...
-          </div>
-        </CardContent>
-      </Card>
+  const renderContent = () => {
+    if (isLoading) {
+      return (
+        <Card className="w-full max-w-2xl mx-auto">
+          <CardContent className="py-8">
+            <div className="text-center text-muted-foreground">
+              Loading expense details...
+            </div>
+          </CardContent>
+        </Card>
+      );
+    }
+
+    if (!expense) {
+      return (
+        <Card className="w-full max-w-2xl mx-auto">
+          <CardContent className="py-8">
+            <div className="text-center text-muted-foreground">
+              Expense not found
+            </div>
+          </CardContent>
+        </Card>
+      );
+    }
+
+    const formattedDate = new Date(expense.createdAt).toLocaleDateString(
+      "en-US",
+      {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      },
     );
-  }
 
-  if (!expense) {
-    return (
-      <Card className="w-full max-w-2xl mx-auto">
-        <CardContent className="py-8">
-          <div className="text-center text-muted-foreground">
-            Expense not found
-          </div>
-        </CardContent>
-      </Card>
+    const updatedDate = new Date(expense.updatedAt).toLocaleDateString(
+      "en-US",
+      {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      },
     );
-  }
 
-  const formattedDate = new Date(expense.createdAt).toLocaleDateString(
-    "en-US",
-    {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    },
-  );
-
-  const updatedDate = new Date(expense.updatedAt).toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
-
-  return (
-    <Card className="w-full max-w-2xl mx-auto">
-      <CardHeader>
-        <div className="flex items-start justify-between">
-          <div>
-            <CardTitle>{expense.name}</CardTitle>
-            <CardDescription>
-              Created on {formattedDate}
-              {formattedDate !== updatedDate && ` • Updated on ${updatedDate}`}
-            </CardDescription>
-          </div>
-          <Button variant="ghost" size="sm" onClick={() => router.back()}>
-            <ArrowLeft className="h-4 w-4" />
-          </Button>
-        </div>
-      </CardHeader>
-      <CardContent>
+    return (
+      <>
+        <DialogHeader>
+          <DialogTitle>{expense.name}</DialogTitle>
+          <DialogDescription>
+            Created on {formattedDate}
+            {formattedDate !== updatedDate &&
+              ` • Updated on ${updatedDate}`}{" "}
+          </DialogDescription>
+        </DialogHeader>
         <div className="space-y-6">
           {/* Amount */}
           <div className="pb-6 border-b">
@@ -165,26 +171,23 @@ export function ExpenseDetailsComponent({
             <p className="text-xs text-muted-foreground">ID: {expense.id}</p>
           </div>
         </div>
-      </CardContent>
+      </>
+    );
+  };
 
-      {/* Footer with Actions */}
-      <div className="flex gap-2 px-6 py-4 border-t bg-muted/50">
-        <Button variant="outline" onClick={() => router.push("/expenses")}>
-          Back to Expenses
+  return (
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button variant="ghost" size="sm">
+          <Eye className="h-4 w-4" />
         </Button>
-        <Button onClick={() => router.push(`/expenses/${expenseId}/edit`)}>
-          <Edit2 className="mr-2 h-4 w-4" />
-          Edit Expense
-        </Button>
-        <Button
-          variant="destructive"
-          onClick={handleDelete}
-          disabled={deleteMutation.isPending}
-        >
-          <Trash2 className="mr-2 h-4 w-4" />
-          Delete
-        </Button>
-      </div>
-    </Card>
+      </DialogTrigger>
+      <DialogContent>
+        {renderContent()}
+        <DialogFooter>
+          <DialogClose>Close</DialogClose>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }

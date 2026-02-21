@@ -106,6 +106,7 @@ export const expenseRouter = createTRPCRouter({
         where: whereClause,
         with: {
           category: true,
+          budget: true,
         },
         orderBy: (expense, { asc, desc }) => {
           const order = sortOrder === "asc" ? asc : desc;

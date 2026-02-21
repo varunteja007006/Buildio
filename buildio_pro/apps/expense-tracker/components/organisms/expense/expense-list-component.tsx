@@ -13,7 +13,6 @@ import {
   Cell,
 } from "recharts";
 
-import { Button } from "@workspace/ui/components/button";
 import {
   Card,
   CardContent,
@@ -37,78 +36,37 @@ import {
   TransactionTable,
   Transaction,
 } from "@/components/transactions/transaction-table";
-import { FilterBar } from "@/components/transactions/filter-bar";
-import { useExpenseCategoryList, useBudgetList } from "@/hooks";
 import { ExpenseFormComponent } from "./expense-form-component";
+import { ExpenseListTable } from ".";
 
 interface ExpenseListComponentProps {
   categoryId?: string;
   budgetId?: string;
 }
 
-export function ExpenseListComponent({
-  categoryId: initialCategoryId,
-  budgetId: initialBudgetId,
-}: ExpenseListComponentProps) {
-  const router = useRouter();
+export function ExpenseListComponent() {
   const trpc = useTRPC();
-
-  const [limit, setLimit] = React.useState(10);
-  const [page, setPage] = React.useState(1);
-  const [sortBy, setSortBy] = React.useState<"date" | "amount">("date");
-  const [sortOrder, setSortOrder] = React.useState<"asc" | "desc">("desc");
-
-  // Filter states
-  const [search, setSearch] = React.useState("");
-  const [selectedCategory, setSelectedCategory] = React.useState<
-    string | undefined
-  >(initialCategoryId);
-  const [selectedBudget, setSelectedBudget] = React.useState<
-    string | undefined
-  >(initialBudgetId);
-
-  // Fetch filters data
-  const { data: categories } = useExpenseCategoryList({ limit: 100, page: 1 });
-  const { data: budgets } = useBudgetList({ limit: 100, page: 1 });
-
-  const { data, isLoading, refetch } = useQuery(
-    trpc.expense.listExpenses.queryOptions({
-      limit,
-      page,
-      categoryId: selectedCategory === "all" ? undefined : selectedCategory,
-      budgetId: selectedBudget === "all" ? undefined : selectedBudget,
-      sortBy,
-      sortOrder,
-      // search, // Assuming the API supports search, if not we might need to filter client side or add it to API
-    }),
-  );
 
   const { data: analyticsData } = useQuery(
     trpc.expense.getAnalytics.queryOptions(),
   );
 
-  const deleteMutation = useMutation(
-    trpc.expense.deleteExpense.mutationOptions({
-      onSuccess: () => {
-        toast.success("Expense deleted successfully!");
-        refetch();
-      },
-      onError: (error: any) => {
-        toast.error(error.message || "Failed to delete expense");
-      },
-    }),
-  );
+  // const deleteMutation = useMutation(
+  //   trpc.expense.deleteExpense.mutationOptions({
+  //     onSuccess: () => {
+  //       toast.success("Expense deleted successfully!");
+  //     },
+  //     onError: (error: any) => {
+  //       toast.error(error.message || "Failed to delete expense");
+  //     },
+  //   }),
+  // );
 
-  const handleDelete = (expenseId: string) => {
-    if (window.confirm("Are you sure you want to delete this expense?")) {
-      deleteMutation.mutate({ expenseId });
-    }
-  };
-
-  const expenses = data?.data || [];
-  const meta = data?.meta;
-  const totalPages = meta?.totalPages ?? 0;
-  const currentPage = meta?.currentPage ?? 1;
+  // const handleDelete = (expenseId: string) => {
+  //   if (window.confirm("Are you sure you want to delete this expense?")) {
+  //     deleteMutation.mutate({ expenseId });
+  //   }
+  // };
 
   const COLORS = [
     "#0088FE",
@@ -119,30 +77,12 @@ export function ExpenseListComponent({
     "#82ca9d",
   ];
 
-  // Map expenses to Transaction interface
-  const transactions: Transaction[] = expenses.map((expense: any) => ({
-    id: expense.id,
-    amount: Number(expense.expenseAmount),
-    date: expense.date,
-    description: expense.description,
-    category: expense.category,
-    budget: expense.budget,
-    name: expense.name,
-    type: "expense",
-  }));
-
-  // Filter options
-  const categoryOptions =
-    categories?.data?.map((c) => ({ label: c.name, value: c.id })) || [];
-  const budgetOptions =
-    budgets?.data?.map((b) => ({ label: b.name, value: b.id })) || [];
-
   return (
     <div className="space-y-6">
       <div className="flex justify-end">
         <ExpenseFormComponent mode="create" />
       </div>
-      
+
       {/* Analytics Section */}
       {analyticsData && (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
@@ -279,51 +219,7 @@ export function ExpenseListComponent({
         </div>
       )}
 
-      <div className="space-y-1">
-        <CardTitle>Expenses</CardTitle>
-        <CardDescription>Manage and track your expenses</CardDescription>
-      </div>
-
-      <FilterBar
-        searchValue={search}
-        onSearchChange={setSearch}
-        categories={categoryOptions}
-        selectedCategory={selectedCategory}
-        onCategoryChange={(val) => {
-          setSelectedCategory(val);
-          setPage(1);
-        }}
-        budgets={budgetOptions}
-        selectedBudget={selectedBudget}
-        onBudgetChange={(val) => {
-          setSelectedBudget(val);
-          setPage(1);
-        }}
-        onClearFilters={() => {
-          setSearch("");
-          setSelectedCategory(undefined);
-          setSelectedBudget(undefined);
-          setPage(1);
-        }}
-      />
-
-      <TransactionTable
-        data={transactions}
-        isLoading={isLoading}
-        pageCount={totalPages}
-        currentPage={currentPage}
-        onPageChange={(newPage) => setPage(newPage)}
-        onSortChange={(field, order) => {
-          setSortBy(field as any);
-          setSortOrder(order);
-        }}
-        sortField={sortBy}
-        sortOrder={sortOrder}
-        onDelete={handleDelete}
-        onEdit={(id) => router.push(`/expenses/${id}/edit`)}
-        onView={(id) => router.push(`/expenses/${id}`)}
-        type="expense"
-      />
+      <ExpenseListTable />
     </div>
   );
 }

@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
-import { Loader2 } from "lucide-react";
+import { Loader2, PencilIcon } from "lucide-react";
 
 import { Button } from "@workspace/ui/components/button";
 import {
@@ -23,6 +23,7 @@ import * as z from "zod";
 
 import { useTRPC } from "@/lib/trpc-client";
 import { useMutation, useQuery } from "@tanstack/react-query";
+import { EditBtn } from "@/components/atoms/edit-btn";
 
 const expenseFormSchema = z.object({
   name: z
@@ -152,7 +153,11 @@ export function ExpenseFormComponent({
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button size={"sm"}>+ Add Expense</Button>
+        {mode === "create" ? (
+          <Button size={"sm"}>+ Add Expense</Button>
+        ) : (
+          <EditBtn iconOnly />
+        )}
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
