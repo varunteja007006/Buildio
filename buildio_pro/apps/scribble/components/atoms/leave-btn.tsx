@@ -1,6 +1,8 @@
-import { Button } from "@workspace/ui/components/button";
-import Link from "next/link";
 import React from "react";
+
+import Link from "next/link";
+
+import { Button } from "@workspace/ui/components/button";
 
 export default function LeaveBtn() {
   return (

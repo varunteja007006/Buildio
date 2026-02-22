@@ -1,21 +1,12 @@
 "use client";
 
 import React, { useMemo } from "react";
+
+import { countries } from "country-data-list";
+import { Check, ChevronsUpDown, Globe } from "lucide-react";
 import { Control, FieldPath, FieldValues } from "react-hook-form";
+
 import { Button } from "@workspace/ui/components/button";
-import {
-  FormField,
-  FormItem,
-  FormLabel,
-  FormControl,
-  FormMessage,
-  FormDescription,
-} from "@workspace/ui/components/form";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@workspace/ui/components/popover";
 import {
   Command,
   CommandEmpty,
@@ -24,9 +15,20 @@ import {
   CommandItem,
   CommandList,
 } from "@workspace/ui/components/command";
-import { Check, ChevronsUpDown, Globe } from "lucide-react";
+import {
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@workspace/ui/components/form";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@workspace/ui/components/popover";
 import { cn } from "@workspace/ui/lib/utils";
-import { countries } from "country-data-list";
 
 /**
  * Country interface from country-data-list

@@ -1,6 +1,11 @@
 "use client";
 
-import React, { useCallback, useState, useEffect } from "react";
+import React, { useCallback, useEffect, useState } from "react";
+
+// data
+import { currencies as AllCurrencies } from "country-data-list";
+// assets
+import { CheckIcon, ChevronDown, DollarSign } from "lucide-react";
 
 // shadcn
 import {
@@ -24,15 +29,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@workspace/ui/components/select";
-
 // utils
 import { cn } from "@workspace/ui/lib/utils";
-
-// assets
-import { ChevronDown, CheckIcon, DollarSign } from "lucide-react";
-
-// data
-import { currencies as AllCurrencies } from "country-data-list";
 
 export interface Currency {
   code: string;

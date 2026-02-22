@@ -1,30 +1,31 @@
 "use client";
 
-import React, { useState } from "react";
+import { useState } from "react";
+
+import { Compact } from "@uiw/react-color";
+import { PaletteIcon } from "lucide-react";
 import {
   Control,
   ControllerRenderProps,
   FieldPath,
   FieldValues,
 } from "react-hook-form";
+
 import { Button } from "@workspace/ui/components/button";
 import {
+  FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
-  FormControl,
   FormMessage,
-  FormDescription,
 } from "@workspace/ui/components/form";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@workspace/ui/components/popover";
-import { PaletteIcon } from "lucide-react";
 import { cn } from "@workspace/ui/lib/utils";
-
-import { Compact } from "@uiw/react-color";
 
 // Define the color result interface for @uiw/react-color
 interface ColorResult {

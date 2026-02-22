@@ -1,6 +1,11 @@
 "use client";
 
-import React, { useCallback, useState, forwardRef, useEffect } from "react";
+import React, { forwardRef, useCallback, useEffect, useState } from "react";
+
+import { countries } from "country-data-list";
+import { CheckIcon, ChevronDown, Globe } from "lucide-react";
+import { CircleFlag } from "react-circle-flags";
+
 import {
   Command,
   CommandEmpty,
@@ -15,9 +20,6 @@ import {
   PopoverTrigger,
 } from "@workspace/ui/components/popover";
 import { cn } from "@workspace/ui/lib/utils";
-import { ChevronDown, CheckIcon, Globe } from "lucide-react";
-import { CircleFlag } from "react-circle-flags";
-import { countries } from "country-data-list";
 
 /**
  * Country interface

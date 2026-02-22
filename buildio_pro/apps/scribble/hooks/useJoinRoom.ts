@@ -2,12 +2,14 @@
 
 import React from "react";
 
-import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 import { useConvex } from "convex/react";
+import { toast } from "sonner";
+
 import { api } from "@workspace/games-convex-backend/convex/_generated/api";
+
 import { useUserStore } from "@/lib/store/user.store";
-import { useRouter } from "next/navigation";
 
 export function useJoinRoom() {
   const { userToken } = useUserStore();

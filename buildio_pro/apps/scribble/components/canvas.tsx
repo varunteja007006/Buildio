@@ -1,8 +1,15 @@
 "use client";
 
 import React, { useRef, useState } from "react";
-import { Stage, Layer, Line } from "react-konva";
+
+import { useParams } from "next/navigation";
+
+import { useMutation, useQuery } from "convex/react";
 import { KonvaEventObject } from "konva/lib/Node";
+import { CircleX, Eraser, Pencil } from "lucide-react";
+import { Layer, Line, Stage } from "react-konva";
+
+import { api } from "@workspace/games-convex-backend/convex/_generated/api";
 import { Button } from "@workspace/ui/components/button";
 import { ButtonGroup } from "@workspace/ui/components/button-group";
 import {
@@ -10,11 +17,8 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@workspace/ui/components/tooltip";
-import { useMutation, useQuery } from "convex/react";
-import { api } from "@workspace/games-convex-backend/convex/_generated/api";
-import { useParams } from "next/navigation";
+
 import { useUserStore } from "@/lib/store/user.store";
-import { CircleX, Eraser, Pencil } from "lucide-react";
 
 interface CanvasProps {
   width?: number;

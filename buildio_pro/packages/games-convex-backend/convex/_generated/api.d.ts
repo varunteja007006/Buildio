@@ -7,6 +7,11 @@
  * To regenerate, run `npx convex dev`.
  * @module
  */
+import type {
+  ApiFromModules,
+  FilterApi,
+  FunctionReference,
+} from "convex/server";
 
 import type * as chat from "../chat.js";
 import type * as cleanup from "../cleanup.js";
@@ -18,12 +23,6 @@ import type * as stories from "../stories.js";
 import type * as storyPoints from "../storyPoints.js";
 import type * as user from "../user.js";
 import type * as utils from "../utils.js";
-
-import type {
-  ApiFromModules,
-  FilterApi,
-  FunctionReference,
-} from "convex/server";
 
 /**
  * A utility for referencing Convex functions in your app's API.

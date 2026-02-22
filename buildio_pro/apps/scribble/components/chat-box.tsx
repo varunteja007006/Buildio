@@ -1,13 +1,16 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
-import { ScrollArea } from "@workspace/ui/components/scroll-area";
-import { Input } from "@workspace/ui/components/input";
-import { Button } from "@workspace/ui/components/button";
-import { MessageCircleMore, Send } from "lucide-react";
-import { cn } from "@workspace/ui/lib/utils";
+import React, { useEffect, useRef, useState } from "react";
+
 import { useMutation, useQuery } from "convex/react";
+import { MessageCircleMore, Send } from "lucide-react";
+
 import { api } from "@workspace/games-convex-backend/convex/_generated/api";
+import { Button } from "@workspace/ui/components/button";
+import { Input } from "@workspace/ui/components/input";
+import { ScrollArea } from "@workspace/ui/components/scroll-area";
+import { cn } from "@workspace/ui/lib/utils";
+
 import { useUserStore } from "@/lib/store/user.store";
 
 interface ChatBoxProps {
