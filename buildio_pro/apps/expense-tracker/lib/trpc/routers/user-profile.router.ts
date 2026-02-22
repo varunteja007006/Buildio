@@ -39,14 +39,17 @@ export const userProfileRouter = createTRPCRouter({
       });
 
       if (!profile) {
-        return await db.insert(dbSchema.userProfile).values({
-          user_id: user.id,
-          name: input.name || "",
-          description: input.description || "",
-          image_url: input.image_url || "",
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        }).returning();
+        return await db
+          .insert(dbSchema.userProfile)
+          .values({
+            user_id: user.id,
+            name: input.name || "",
+            description: input.description || "",
+            image_url: input.image_url || "",
+            createdAt: new Date(),
+            updatedAt: new Date(),
+          })
+          .returning();
       }
 
       const [updated] = await db
