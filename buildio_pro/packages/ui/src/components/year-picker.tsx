@@ -1,14 +1,10 @@
 "use client";
 
 import * as React from "react";
+
 import { CalendarIcon, Check } from "lucide-react";
-import { cn } from "@workspace/ui/lib/utils";
+
 import { Button } from "@workspace/ui/components/button";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@workspace/ui/components/popover";
 import {
   Command,
   CommandEmpty,
@@ -17,6 +13,12 @@ import {
   CommandItem,
   CommandList,
 } from "@workspace/ui/components/command";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@workspace/ui/components/popover";
+import { cn } from "@workspace/ui/lib/utils";
 
 /**
  * Standalone year picker component.

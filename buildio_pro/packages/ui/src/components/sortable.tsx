@@ -1,23 +1,25 @@
 "use client";
 
+import * as React from "react";
+
 import {
   type Announcements,
-  closestCenter,
-  closestCorners,
   DndContext,
   type DndContextProps,
   type DragEndEvent,
-  type DraggableAttributes,
-  type DraggableSyntheticListeners,
   DragOverlay,
   type DragStartEvent,
+  type DraggableAttributes,
+  type DraggableSyntheticListeners,
   type DropAnimation,
-  defaultDropAnimationSideEffects,
   KeyboardSensor,
   MouseSensor,
   type ScreenReaderInstructions,
   TouchSensor,
   type UniqueIdentifier,
+  closestCenter,
+  closestCorners,
+  defaultDropAnimationSideEffects,
   useSensor,
   useSensors,
 } from "@dnd-kit/core";
@@ -27,18 +29,18 @@ import {
   restrictToVerticalAxis,
 } from "@dnd-kit/modifiers";
 import {
-  arrayMove,
-  horizontalListSortingStrategy,
   SortableContext,
   type SortableContextProps,
+  arrayMove,
+  horizontalListSortingStrategy,
   sortableKeyboardCoordinates,
   useSortable,
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { Slot } from "@radix-ui/react-slot";
-import * as React from "react";
 import * as ReactDOM from "react-dom";
+
 import { useComposedRefs } from "@workspace/ui/lib/compose-refs";
 import { cn } from "@workspace/ui/lib/utils";
 

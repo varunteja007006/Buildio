@@ -1,9 +1,11 @@
 "use client";
 
-import type { Column } from "@tanstack/react-table";
-import { Check, PlusCircle, XCircle } from "lucide-react";
 import * as React from "react";
 
+import type { Column } from "@tanstack/react-table";
+import { Check, PlusCircle, XCircle } from "lucide-react";
+
+import type { Option } from "@workspace/ui/types/data-table";
 import { Badge } from "@workspace/ui/components/badge";
 import { Button } from "@workspace/ui/components/button";
 import {
@@ -22,7 +24,6 @@ import {
 } from "@workspace/ui/components/popover";
 import { Separator } from "@workspace/ui/components/separator";
 import { cn } from "@workspace/ui/lib/utils";
-import type { Option } from "@workspace/types/data-table";
 
 interface DataTableFacetedFilterProps<TData, TValue> {
   column?: Column<TData, TValue>;

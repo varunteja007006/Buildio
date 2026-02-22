@@ -1,7 +1,8 @@
 "use client";
 
-import React from "react";
-import Combobox, { type ComboboxOption } from "./combobox";
+import Combobox, {
+  type ComboboxOption,
+} from "@workspace/ui/components/combobox";
 
 /**
  * Simple standalone searchable combobox wrapper.

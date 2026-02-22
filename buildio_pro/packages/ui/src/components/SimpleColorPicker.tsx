@@ -1,6 +1,7 @@
 "use client";
 
 import { Control, FieldPath, FieldValues } from "react-hook-form";
+
 import ColorPicker from "@workspace/ui/components/ColorPicker";
 
 interface SimpleColorPickerProps<

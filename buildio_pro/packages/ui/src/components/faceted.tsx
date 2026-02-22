@@ -1,7 +1,8 @@
 "use client";
 
-import { Check, ChevronsUpDown } from "lucide-react";
 import * as React from "react";
+
+import { Check, ChevronsUpDown } from "lucide-react";
 
 import { Badge } from "@workspace/ui/components/badge";
 import {

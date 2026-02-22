@@ -1,10 +1,10 @@
 "use client";
 
 import * as React from "react";
-import { CalendarIcon } from "lucide-react";
-import { format } from "date-fns";
 
-import { cn } from "@workspace/ui/lib/utils";
+import { format } from "date-fns";
+import { CalendarIcon } from "lucide-react";
+
 import { Button } from "@workspace/ui/components/button";
 import { Calendar } from "@workspace/ui/components/calendar";
 import {
@@ -13,6 +13,7 @@ import {
   PopoverTrigger,
 } from "@workspace/ui/components/popover";
 import { ScrollArea, ScrollBar } from "@workspace/ui/components/scroll-area";
+import { cn } from "@workspace/ui/lib/utils";
 
 interface DateTimePickerProps {
   value?: Date;
