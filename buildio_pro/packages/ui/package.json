@@ -87,6 +87,8 @@
     "./postcss.config": "./postcss.config.mjs",
     "./lib/*": "./src/lib/*.ts",
     "./components/*": "./src/components/*.tsx",
+    "./types/*": "./src/types/*.ts",
+    "./config/*": "./src/config/*.ts",
     "./hooks/*": "./src/hooks/*.ts"
   }
 }
