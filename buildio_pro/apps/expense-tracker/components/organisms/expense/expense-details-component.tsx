@@ -1,16 +1,14 @@
 "use client";
 
 import * as React from "react";
+
 import { useRouter } from "next/navigation";
+
 import { Eye } from "lucide-react";
 
+import { Badge } from "@workspace/ui/components/badge";
 import { Button } from "@workspace/ui/components/button";
 import { Card, CardContent } from "@workspace/ui/components/card";
-import { Badge } from "@workspace/ui/components/badge";
-
-import { toast } from "sonner";
-import { useTRPC } from "@/lib/trpc-client";
-import { useMutation } from "@tanstack/react-query";
 import {
   Dialog,
   DialogClose,
@@ -21,7 +19,9 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@workspace/ui/components/dialog";
+
 import { useGetExpenseByID } from "@/hooks";
+import { useTRPC } from "@/lib/trpc-client";
 
 interface ExpenseDetailsComponentProps {
   expenseId: string;

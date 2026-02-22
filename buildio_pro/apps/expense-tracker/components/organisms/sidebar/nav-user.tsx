@@ -7,7 +7,6 @@ import {
   CreditCard,
   LogOut,
   Sparkles,
-  Crown,
 } from "lucide-react";
 
 import {
@@ -15,6 +14,7 @@ import {
   AvatarFallback,
   AvatarImage,
 } from "@workspace/ui/components/avatar";
+import { Badge } from "@workspace/ui/components/badge";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -30,7 +30,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@workspace/ui/components/sidebar";
-import { Badge } from "@workspace/ui/components/badge";
+
 import { useSignOut } from "@/lib/auth-client";
 
 export function NavUser({

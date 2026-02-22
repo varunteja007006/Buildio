@@ -1,15 +1,25 @@
 "use client";
 
 import React from "react";
+
 import Link from "next/link";
+
 import {
-  AlertTriangle,
   AlertCircle,
-  TrendingUp,
-  TrendingDown,
-  Wallet,
+  AlertTriangle,
   CalendarClock,
+  TrendingDown,
+  TrendingUp,
+  Wallet,
 } from "lucide-react";
+import { Loader2 } from "lucide-react";
+
+import {
+  Alert,
+  AlertDescription,
+  AlertTitle,
+} from "@workspace/ui/components/alert";
+import { Badge } from "@workspace/ui/components/badge";
 import { Button } from "@workspace/ui/components/button";
 import {
   Card,
@@ -18,29 +28,23 @@ import {
   CardHeader,
   CardTitle,
 } from "@workspace/ui/components/card";
-import {
-  Alert,
-  AlertDescription,
-  AlertTitle,
-} from "@workspace/ui/components/alert";
-import { Badge } from "@workspace/ui/components/badge";
 import { Progress } from "@workspace/ui/components/progress";
 import { formatCurrency } from "@workspace/ui/lib/currency.utils";
-import {
-  useDashboardSummary,
-  useDashboardBudgets,
-  useDashboardRecentTransactions,
-  useDashboardTopCategories,
-  useDashboardOverBudgetAnalysis,
-  useDashboardBudgetVsActualHistory,
-  useDashboardMonthlyTrends,
-  useDashboardRecurringExpenses,
-} from "@/hooks";
-import { SummaryCard } from "@/components/dashboard/summary-card";
-import { RecentTransactions } from "@/components/dashboard/recent-transactions";
-import { TopCategories } from "@/components/dashboard/top-categories";
+
 import { MonthlyTrends } from "@/components/dashboard/monthly-trends";
-import { Loader2 } from "lucide-react";
+import { RecentTransactions } from "@/components/dashboard/recent-transactions";
+import { SummaryCard } from "@/components/dashboard/summary-card";
+import { TopCategories } from "@/components/dashboard/top-categories";
+import {
+  useDashboardBudgetVsActualHistory,
+  useDashboardBudgets,
+  useDashboardMonthlyTrends,
+  useDashboardOverBudgetAnalysis,
+  useDashboardRecentTransactions,
+  useDashboardRecurringExpenses,
+  useDashboardSummary,
+  useDashboardTopCategories,
+} from "@/hooks";
 
 export default function DashboardPage() {
   const summaryQuery = useDashboardSummary();
@@ -298,7 +302,7 @@ export default function DashboardPage() {
           />
 
           <RecentTransactions
-            transactions={recentQuery.data || []}
+            transactions={[]}
             isLoading={recentQuery.isLoading}
           />
         </div>

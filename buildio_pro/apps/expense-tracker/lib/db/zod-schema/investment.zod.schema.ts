@@ -1,12 +1,12 @@
-import { z } from "zod";
 import {
-  createSelectSchema,
   createInsertSchema,
+  createSelectSchema,
   createUpdateSchema,
 } from "drizzle-zod";
+
 import {
-  investmentTypes,
   investmentPlatforms,
+  investmentTypes,
 } from "../schema/investment.schema";
 
 export const createInvestmentTypeSchema = createInsertSchema(investmentTypes);

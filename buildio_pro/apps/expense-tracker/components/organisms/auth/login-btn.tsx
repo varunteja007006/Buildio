@@ -2,10 +2,12 @@
 
 import React from "react";
 
+import Link from "next/link";
+
 import { Button } from "@workspace/ui/components/button";
 
-import Link from "next/link";
 import { useSession } from "@/lib/auth-client";
+
 import SignOutBtn from "./sign-out-btn";
 
 export function LoginBtn() {

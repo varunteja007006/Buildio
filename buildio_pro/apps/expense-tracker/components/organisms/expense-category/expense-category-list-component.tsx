@@ -1,8 +1,12 @@
 "use client";
 
 import * as React from "react";
+
 import { useRouter } from "next/navigation";
-import { Trash2, Edit2, Eye } from "lucide-react";
+
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { Edit2, Eye, Trash2 } from "lucide-react";
+import { toast } from "sonner";
 
 import { Button } from "@workspace/ui/components/button";
 import {
@@ -13,6 +17,13 @@ import {
   CardTitle,
 } from "@workspace/ui/components/card";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@workspace/ui/components/select";
+import {
   Table,
   TableBody,
   TableCell,
@@ -20,17 +31,8 @@ import {
   TableHeader,
   TableRow,
 } from "@workspace/ui/components/table";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@workspace/ui/components/select";
 
-import { toast } from "sonner";
 import { useTRPC } from "@/lib/trpc-client";
-import { useQuery, useMutation } from "@tanstack/react-query";
 
 export function ExpenseCategoryListComponent() {
   const router = useRouter();

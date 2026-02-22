@@ -1,7 +1,8 @@
-import { boolean, index, pgTable, text } from "drizzle-orm/pg-core";
-import { auditTimeFields } from "./common.schema";
-import { address } from "./address.schema";
 import { relations } from "drizzle-orm";
+import { boolean, index, pgTable, text } from "drizzle-orm/pg-core";
+
+import { address } from "./address.schema";
+import { auditTimeFields } from "./common.schema";
 
 /**
  * * Banks related package

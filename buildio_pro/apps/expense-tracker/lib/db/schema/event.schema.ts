@@ -1,14 +1,15 @@
+import { relations } from "drizzle-orm";
 import {
+  boolean,
+  integer,
+  numeric,
   pgTable,
   text,
-  numeric,
   timestamp,
-  integer,
-  boolean,
 } from "drizzle-orm/pg-core";
-import { auditTimeFields } from "./common.schema";
+
 import { user } from "./auth-schema";
-import { relations } from "drizzle-orm";
+import { auditTimeFields } from "./common.schema";
 import { expense } from "./expenses.schema";
 
 /**

@@ -1,10 +1,10 @@
-import { z } from "zod";
 import {
-  createSelectSchema,
   createInsertSchema,
+  createSelectSchema,
   createUpdateSchema,
 } from "drizzle-zod";
-import { country, state, city, address } from "../schema/address.schema";
+
+import { address, city, country, state } from "../schema/address.schema";
 
 export const createCountrySchema = createInsertSchema(country);
 export const updateCountrySchema = createUpdateSchema(country);

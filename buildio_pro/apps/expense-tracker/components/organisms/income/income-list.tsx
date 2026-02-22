@@ -2,7 +2,7 @@
 
 import * as React from "react";
 
-import { IncomeListTable, IncomeAnalyticsCard, IncomeForm } from ".";
+import { IncomeAnalyticsCard, IncomeForm, IncomeListTable } from ".";
 
 export function IncomeList() {
   return (

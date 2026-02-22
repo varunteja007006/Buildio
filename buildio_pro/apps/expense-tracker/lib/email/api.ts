@@ -1,7 +1,9 @@
 "server-only";
 
 import { Resend } from "resend";
+
 import { EmailVerificationTemplate } from "@/lib/email/email-verification";
+
 import { PasswordResetTemplate } from "./email-password-reset";
 
 const resend = new Resend(process.env.RESEND_API_KEY);

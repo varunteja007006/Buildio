@@ -1,7 +1,9 @@
+import { redirect } from "next/navigation";
+
+import { eq } from "drizzle-orm";
+
 import { ExpenseCategoryFormComponent } from "@/components/organisms/expense-category";
 import { db } from "@/lib/db";
-import { eq } from "drizzle-orm";
-import { redirect } from "next/navigation";
 import { expenseCategory } from "@/lib/db/schema/expenses.schema";
 
 interface EditExpenseCategoryPageProps {

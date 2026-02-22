@@ -1,6 +1,16 @@
 "use client";
 
 import React from "react";
+
+import { Loader2 } from "lucide-react";
+import {
+  Cell,
+  Pie,
+  PieChart,
+  ResponsiveContainer,
+  Tooltip,
+} from "recharts";
+
 import {
   Card,
   CardContent,
@@ -8,15 +18,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@workspace/ui/components/card";
-import {
-  Pie,
-  PieChart,
-  Cell,
-  ResponsiveContainer,
-  Tooltip,
-  Legend,
-} from "recharts";
-import { Loader2 } from "lucide-react";
 import { formatCurrency } from "@workspace/ui/lib/currency.utils";
 import { cn } from "@workspace/ui/lib/utils";
 

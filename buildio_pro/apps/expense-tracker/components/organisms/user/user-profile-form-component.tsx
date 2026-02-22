@@ -3,6 +3,7 @@
 import * as React from "react";
 
 import { Loader2 } from "lucide-react";
+import * as z from "zod";
 
 import { Button } from "@workspace/ui/components/button";
 import {
@@ -16,8 +17,7 @@ import {
 import { Field, FieldGroup } from "@workspace/ui/components/field";
 import { useAppForm } from "@workspace/ui/components/forms/hooks";
 
-import * as z from "zod";
-import { useUserProfileQuery, useUpdateUserProfile } from "@/hooks";
+import { useUpdateUserProfile, useUserProfileQuery } from "@/hooks";
 
 const profileFormSchema = z.object({
   name: z.string().min(1, "Name is required").max(255),

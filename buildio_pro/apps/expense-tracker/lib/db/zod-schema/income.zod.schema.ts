@@ -1,9 +1,9 @@
-import { z } from "zod";
 import {
-  createSelectSchema,
   createInsertSchema,
+  createSelectSchema,
   createUpdateSchema,
 } from "drizzle-zod";
+
 import { income, incomeSource } from "../schema/income.schema";
 
 export const createIncomeSchema = createInsertSchema(income).omit({

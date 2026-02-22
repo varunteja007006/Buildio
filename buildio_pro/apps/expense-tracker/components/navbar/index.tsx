@@ -1,8 +1,9 @@
 import React from "react";
 
-import { ModeToggle } from "@/components/mode-toggle";
-import { LoginBtn } from "../organisms/auth/login-btn";
 import { appConfig } from "@/app/appConfig";
+import { ModeToggle } from "@/components/mode-toggle";
+
+import { LoginBtn } from "../organisms/auth/login-btn";
 
 export function Navbar() {
   return (

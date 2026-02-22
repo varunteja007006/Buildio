@@ -1,6 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
+
 import { useTRPC } from "@/lib/trpc-client";
 
 // Dashboard query keys

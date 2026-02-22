@@ -1,8 +1,9 @@
-import { boolean, numeric, pgTable, text } from "drizzle-orm/pg-core";
-import { auditTimeFields } from "./common.schema";
-import { user } from "./auth-schema";
 import { relations } from "drizzle-orm";
+import { boolean, numeric, pgTable, text } from "drizzle-orm/pg-core";
+
+import { user } from "./auth-schema";
 import { budget } from "./budget.schema";
+import { auditTimeFields } from "./common.schema";
 
 export const expense = pgTable("expense", {
   id: text("id")

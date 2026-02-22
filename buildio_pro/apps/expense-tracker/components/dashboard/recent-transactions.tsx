@@ -1,4 +1,7 @@
 import React from "react";
+
+import { Loader2 } from "lucide-react";
+
 import {
   Card,
   CardContent,
@@ -6,16 +9,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@workspace/ui/components/card";
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@workspace/ui/components/avatar";
-import { Badge } from "@workspace/ui/components/badge";
 import { formatCurrency } from "@workspace/ui/lib/currency.utils";
-import { getCategoryIcon, getCategoryColor } from "@/lib/category-icons";
 import { cn } from "@workspace/ui/lib/utils";
-import { Loader2 } from "lucide-react";
+
+import { getCategoryColor, getCategoryIcon } from "@/lib/category-icons";
 
 interface Transaction {
   id: string;

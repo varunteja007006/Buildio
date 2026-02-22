@@ -1,4 +1,7 @@
 import React from "react";
+
+import { LucideIcon, TrendingDown, TrendingUp } from "lucide-react";
+
 import {
   Card,
   CardContent,
@@ -6,7 +9,6 @@ import {
   CardTitle,
 } from "@workspace/ui/components/card";
 import { cn } from "@workspace/ui/lib/utils";
-import { LucideIcon, TrendingDown, TrendingUp } from "lucide-react";
 
 interface SummaryCardProps {
   title: string;

@@ -1,24 +1,24 @@
 "use client";
 
 import * as React from "react";
+
+import Link from "next/link";
+
 import {
   CalendarDays,
   HandHeart,
   Landmark,
-  LifeBuoy,
   LayoutDashboard,
+  LifeBuoy,
   MessageSquareText,
   PiggyBank,
   Receipt,
   Settings2,
-  Wallet,
   Tags,
   TrendingUp,
+  Wallet,
 } from "lucide-react";
 
-import { NavMain } from "./nav-main";
-import { NavSecondary } from "./nav-secondary";
-import { NavUser } from "./nav-user";
 import {
   Sidebar,
   SidebarContent,
@@ -28,9 +28,13 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@workspace/ui/components/sidebar";
-import Link from "next/link";
-import { useSession } from "@/lib/auth-client";
+
 import { appConfig } from "@/app/appConfig";
+import { useSession } from "@/lib/auth-client";
+
+import { NavMain } from "./nav-main";
+import { NavSecondary } from "./nav-secondary";
+import { NavUser } from "./nav-user";
 
 const data = {
   navMain: [

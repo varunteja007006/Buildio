@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+
 import { usePathname } from "next/navigation";
 
 const pageHeader = {
@@ -59,23 +60,17 @@ const pageHeader = {
 export default function TopNavText() {
   const pathname = usePathname();
 
-  let activePage = "default";
-
   const keys = Object.keys(pageHeader);
-  for (const key of keys) {
-    if (pathname.startsWith(`/${key}`)) {
-      activePage = key;
-      break;
-    }
-  }
+
+  const found = keys.find((key) => pathname.startsWith(`/${key}`)) ?? "default";
 
   return (
     <div>
       <h1 className="text-sm font-bold tracking-tight">
-        {pageHeader[activePage]?.title}
+        {pageHeader[found as keyof typeof pageHeader]?.title}
       </h1>
       <p className="text-muted-foreground text-xs">
-        {pageHeader[activePage]?.description}
+        {pageHeader[found as keyof typeof pageHeader]?.description}
       </p>
     </div>
   );

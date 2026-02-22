@@ -4,7 +4,7 @@ import * as React from "react";
 
 import * as z from "zod";
 
-import { SelectItem } from "@workspace/ui/components/select";
+import { Button } from "@workspace/ui/components/button";
 import {
   Dialog,
   DialogClose,
@@ -17,11 +17,11 @@ import {
 } from "@workspace/ui/components/dialog";
 import { FieldGroup } from "@workspace/ui/components/field";
 import { useAppForm } from "@workspace/ui/components/forms/hooks";
-import { SubmitBtn } from "@/components/atoms/submit-btn";
+import { SelectItem } from "@workspace/ui/components/select";
 
-import { useEventCreate, useEventListStatues, useEventUpdate } from "@/hooks";
-import { Button } from "@workspace/ui/components/button";
 import { EditBtn } from "@/components/atoms/edit-btn";
+import { SubmitBtn } from "@/components/atoms/submit-btn";
+import { useEventCreate, useEventListStatues, useEventUpdate } from "@/hooks";
 
 const eventFormSchema = z
   .object({

@@ -1,8 +1,12 @@
 "use client";
 
 import * as React from "react";
+
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Edit2, Trash2, Calendar } from "lucide-react";
+
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { ArrowLeft, Calendar, Edit2, Trash2 } from "lucide-react";
+import { toast } from "sonner";
 
 import { Button } from "@workspace/ui/components/button";
 import {
@@ -12,9 +16,7 @@ import {
   CardTitle,
 } from "@workspace/ui/components/card";
 
-import { toast } from "sonner";
 import { useTRPC } from "@/lib/trpc-client";
-import { useQuery, useMutation } from "@tanstack/react-query";
 
 interface ExpenseCategoryDetailsComponentProps {
   categoryId: string;

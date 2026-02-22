@@ -1,18 +1,22 @@
 "use client";
 
 import * as React from "react";
+
+import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
+
+import { useQuery } from "@tanstack/react-query";
 import {
-  Loader2,
   ArrowLeft,
-  Pencil,
   Calendar,
   DollarSign,
-  TrendingUp,
+  Loader2,
+  Pencil,
   TrendingDown,
+  TrendingUp,
 } from "lucide-react";
-import Link from "next/link";
 
+import { Badge } from "@workspace/ui/components/badge";
 import { Button } from "@workspace/ui/components/button";
 import {
   Card,
@@ -21,11 +25,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@workspace/ui/components/card";
-import { Badge } from "@workspace/ui/components/badge";
 
-import { useTRPC } from "@/lib/trpc-client";
 import { BudgetDeleteDialog } from "@/components/organisms/budget/budget-delete-dialog";
-import { useQuery } from "@tanstack/react-query";
+import { useTRPC } from "@/lib/trpc-client";
 
 export default function BudgetDetailPage() {
   const params = useParams();

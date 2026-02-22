@@ -1,10 +1,10 @@
-import { z } from "zod";
 import {
-  createSelectSchema,
   createInsertSchema,
+  createSelectSchema,
   createUpdateSchema,
 } from "drizzle-zod";
-import { bankAccountTypes, banks, bankAddress } from "../schema/bank.schema";
+
+import { bankAccountTypes, bankAddress, banks } from "../schema/bank.schema";
 
 export const createBankAccountTypeSchema = createInsertSchema(bankAccountTypes);
 export const updateBankAccountTypeSchema = createUpdateSchema(bankAccountTypes);

@@ -1,8 +1,9 @@
 import React from "react";
 
+import { redirect } from "next/navigation";
+
 import { GoogleLoginBtn } from "@/components/organisms/auth/google-login-btn";
 import { getAuthSession } from "@/lib/auth-server";
-import { redirect } from "next/navigation";
 
 export default async function Page() {
   const session = await getAuthSession();

@@ -2,6 +2,10 @@
 
 import * as React from "react";
 
+import { useRouter } from "next/navigation";
+
+import { Eye, Loader2 } from "lucide-react";
+
 import { Button } from "@workspace/ui/components/button";
 import {
   Dialog,
@@ -14,10 +18,8 @@ import {
   DialogTrigger,
 } from "@workspace/ui/components/dialog";
 
-import { useRouter } from "next/navigation";
 import { AuditDateBlock } from "@/components/atoms/audit-date-block";
 import { useDeleteIncomeSource, useIncomeSourceDetails } from "@/hooks";
-import { Eye, Loader2 } from "lucide-react";
 
 interface IncomeSourceDetailsProps {
   sourceId: string;

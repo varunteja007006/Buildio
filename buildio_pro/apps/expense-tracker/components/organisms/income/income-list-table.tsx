@@ -1,8 +1,10 @@
 import React from "react";
 
-import { Checkbox } from "@workspace/ui/components/checkbox";
+import { ColumnDef, Table } from "@tanstack/react-table";
+import { Trash2 } from "lucide-react";
+import { useQueryState } from "nuqs";
+
 import { ActionBar } from "@workspace/ui/components/action-bar";
-import { Button } from "@workspace/ui/components/button";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -14,20 +16,17 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@workspace/ui/components/alert-dialog";
-
+import { Button } from "@workspace/ui/components/button";
+import { Checkbox } from "@workspace/ui/components/checkbox";
+import { DataTable } from "@workspace/ui/components/data-table/data-table";
 import { DataTableAdvancedToolbar } from "@workspace/ui/components/data-table/data-table-advanced-toolbar";
 import { useDataTable } from "@workspace/ui/hooks/use-data-table";
-import { DataTable } from "@workspace/ui/components/data-table/data-table";
 
-import { IncomeDetails, IncomeDeleteDialog, IncomeForm } from ".";
-
-import { useQueryState } from "nuqs";
-
-import { useDeleteIncomes, useIncomeList } from "@/hooks";
 import { ErrorScreen } from "@/components/atoms/error-screen";
 import { FloatingLoader } from "@/components/atoms/loaders/floating-loader";
-import { Trash2 } from "lucide-react";
-import { ColumnDef, Table } from "@tanstack/react-table";
+import { useDeleteIncomes, useIncomeList } from "@/hooks";
+
+import { IncomeDeleteDialog, IncomeDetails, IncomeForm } from ".";
 
 type IncomeRecord = {
   id: string;

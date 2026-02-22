@@ -1,37 +1,23 @@
 "use client";
 
-import { useState } from "react";
 
-import { Button } from "@workspace/ui/components/button";
+import { CalendarDays, Loader2 } from "lucide-react";
+
 import { Card, CardContent } from "@workspace/ui/components/card";
 
-import { Loader2, CalendarDays } from "lucide-react";
-
-import Link from "next/link";
-import { useQuery } from "@tanstack/react-query";
-import { useTRPC } from "@/lib/trpc-client";
+import { useEventsList } from "@/hooks";
 
 import { EventCard } from ".";
 import { EventForm } from "./event-form";
-import { useEventsList } from "@/hooks";
 
 export function EventList() {
-  const trpc = useTRPC();
-  const [page, setPage] = useState(1);
-  const [statusFilter, setStatusFilter] = useState<string>("all");
-
-  const { data: statusOptions } = useQuery(
-    trpc.event.listStatuses.queryOptions(),
-  );
 
   const { data: eventsData, isLoading } = useEventsList({
     limit: 10,
-    page,
+    page: 1,
   });
 
   const events = eventsData?.data || [];
-  const total = eventsData?.meta.totalItems || 0;
-  const totalPages = Math.ceil(total / 10);
 
   return (
     <div className="space-y-6">

@@ -1,36 +1,16 @@
 "use client";
 
+import { useState } from "react";
+
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
-import { format } from "date-fns";
+
 import { useMutation, useQuery } from "@tanstack/react-query";
+import { format } from "date-fns";
 import { ArrowLeft, Edit, Plus, Trash2, X } from "lucide-react";
 import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
+import { toast } from "sonner";
 
-import { Button } from "@workspace/ui/components/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@workspace/ui/components/card";
-import { Badge } from "@workspace/ui/components/badge";
-import { Progress } from "@workspace/ui/components/progress";
-import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from "@workspace/ui/components/chart";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@workspace/ui/components/dialog";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -42,10 +22,32 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@workspace/ui/components/alert-dialog";
+import { Badge } from "@workspace/ui/components/badge";
+import { Button } from "@workspace/ui/components/button";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@workspace/ui/components/card";
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "@workspace/ui/components/chart";
 import { Checkbox } from "@workspace/ui/components/checkbox";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@workspace/ui/components/dialog";
+import { Progress } from "@workspace/ui/components/progress";
 
 import { useTRPC } from "@/lib/trpc-client";
-import { toast } from "sonner";
 
 interface EventDetailsProps {
   eventId: string;

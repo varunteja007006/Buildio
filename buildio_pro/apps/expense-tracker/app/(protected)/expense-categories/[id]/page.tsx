@@ -1,7 +1,8 @@
 "use client";
 
-import { ExpenseCategoryDetailsComponent } from "@/components/organisms/expense-category";
 import { use } from "react";
+
+import { ExpenseCategoryDetailsComponent } from "@/components/organisms/expense-category";
 
 export default function ExpenseCategoryDetailPage({
   params,

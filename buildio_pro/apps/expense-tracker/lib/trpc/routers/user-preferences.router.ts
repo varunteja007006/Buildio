@@ -2,7 +2,6 @@ import { TRPCError } from "@trpc/server";
 import { eq } from "drizzle-orm";
 import z from "zod";
 
-import { zodSchema } from "@/lib/db/zod-schema";
 
 import { createTRPCRouter, protectedProcedure } from "../init";
 

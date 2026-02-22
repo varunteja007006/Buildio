@@ -13,8 +13,8 @@ import {
 } from "@workspace/ui/components/alert-dialog";
 import { Button } from "@workspace/ui/components/button";
 
-import { useDeleteIncomeSource } from "@/hooks";
 import { DeleteBtn } from "@/components/atoms/delete-btn";
+import { useDeleteIncomeSource } from "@/hooks";
 
 export function IncomeSourceDeleteDialog({ sourceId }: { sourceId: string }) {
   const deleteMutation = useDeleteIncomeSource();

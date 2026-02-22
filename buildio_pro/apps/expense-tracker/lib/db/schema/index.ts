@@ -1,39 +1,39 @@
 import { address, city, country, state } from "./address.schema";
-import { user, session, account, verification } from "./auth-schema";
-import { bankAccountTypes, banks, bankAddress } from "./bank.schema";
+import { account, session, user, verification } from "./auth-schema";
+import { bankAccountTypes, bankAddress, banks } from "./bank.schema";
 import { budget, budgetRelations } from "./budget.schema";
 import { currency, currencyExchangeSnapshot } from "./currency.schema";
 import {
+  event,
+  eventExpense,
+  eventExpenseRelations,
+  eventRelations,
+  eventStatus,
+} from "./event.schema";
+import {
   expense,
   expenseCategory,
-  expenseRelations,
   expenseCategoryRelations,
+  expenseRelations,
 } from "./expenses.schema";
 import {
   income,
-  incomeSource,
   incomeRelations,
+  incomeSource,
   incomeSourceRelations,
 } from "./income.schema";
 import { investmentPlatforms, investmentTypes } from "./investment.schema";
 import {
   paymentMethods,
+  paymentMethodsRelations,
   paymentProvider,
   paymentProviderRelations,
-  paymentMethodsRelations,
 } from "./payment.schema";
 import {
-  event,
-  eventExpense,
-  eventRelations,
-  eventExpenseRelations,
-  eventStatus,
-} from "./event.schema";
-import {
-  userPreferences,
-  userProfileRelations,
   userBankAccount,
+  userPreferences,
   userProfile,
+  userProfileRelations,
   userSettings,
 } from "./user-extended.schema";
 

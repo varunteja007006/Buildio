@@ -3,12 +3,16 @@
 import React from "react";
 
 import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-  ChartLegend,
-  ChartLegendContent,
-} from "@workspace/ui/components/chart";
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Cell,
+  Pie,
+  PieChart,
+  XAxis,
+  YAxis,
+} from "recharts";
+
 import {
   Card,
   CardContent,
@@ -17,16 +21,12 @@ import {
   CardTitle,
 } from "@workspace/ui/components/card";
 import {
-  Bar,
-  BarChart,
-  CartesianGrid,
-  XAxis,
-  YAxis,
-  Pie,
-  PieChart,
-  Cell,
-} from "recharts";
-
+  ChartContainer,
+  ChartLegend,
+  ChartLegendContent,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "@workspace/ui/components/chart";
 import { formatCurrency } from "@workspace/ui/lib/currency.utils";
 
 import { useIncomeAnalytics } from "@/hooks";

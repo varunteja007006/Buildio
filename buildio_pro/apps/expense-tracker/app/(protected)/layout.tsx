@@ -6,9 +6,10 @@ import {
 } from "@workspace/ui/components/sidebar";
 
 import { ModeToggle } from "@/components/mode-toggle";
-import { Protected } from "./protected";
 import { AppSidebar } from "@/components/organisms/sidebar/app-sidebar";
 import TopNavText from "@/components/organisms/sidebar/top-nav-text";
+
+import { Protected } from "./protected";
 
 export default async function Layout({
   children,

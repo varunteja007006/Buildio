@@ -3,6 +3,7 @@
 import React from "react";
 
 import { useLinkStatus } from "next/link";
+
 import { LoaderCircle } from "lucide-react";
 
 export function LinkStatus() {

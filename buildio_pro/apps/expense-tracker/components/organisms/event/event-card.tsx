@@ -1,7 +1,11 @@
 import React from "react";
+
 import Link from "next/link";
-import { format, differenceInDays } from "date-fns";
+
+import { differenceInDays, format } from "date-fns";
 import { Calendar, Clock, Eye } from "lucide-react";
+
+import { Badge } from "@workspace/ui/components/badge";
 import {
   Card,
   CardContent,
@@ -11,9 +15,9 @@ import {
   CardTitle,
 } from "@workspace/ui/components/card";
 import { Progress } from "@workspace/ui/components/progress";
-import { Badge } from "@workspace/ui/components/badge";
 import { formatCurrency } from "@workspace/ui/lib/currency.utils";
 import { cn } from "@workspace/ui/lib/utils";
+
 import { EventDeleteDialog, EventForm } from ".";
 
 interface EventCardProps {

@@ -1,7 +1,8 @@
 "use client";
 
-import { ExpenseDetailsComponent } from "@/components/organisms/expense";
 import { use } from "react";
+
+import { ExpenseDetailsComponent } from "@/components/organisms/expense";
 
 interface ExpenseDetailsPageProps {
   params: Promise<{

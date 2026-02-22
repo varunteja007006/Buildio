@@ -2,13 +2,14 @@
 
 import React from "react";
 
-import { CircleCheck, CircleX } from "lucide-react";
-
 import Image from "next/image";
 
-import { MainCard } from "./main-card";
+import { CircleCheck, CircleX } from "lucide-react";
+
 import { useSession } from "@/lib/auth-client";
+
 import { UserProfileFormComponent } from "../organisms/user";
+import { MainCard } from "./main-card";
 
 export default function ProfileSection() {
   const session = useSession();

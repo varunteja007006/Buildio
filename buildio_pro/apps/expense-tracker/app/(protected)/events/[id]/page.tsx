@@ -1,7 +1,10 @@
-import { EventDetails } from "@/components/organisms/event";
-import { Button } from "@workspace/ui/components/button";
-import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
+
+import { ArrowLeft } from "lucide-react";
+
+import { Button } from "@workspace/ui/components/button";
+
+import { EventDetails } from "@/components/organisms/event";
 
 interface EventDetailsPageProps {
   params: Promise<{ id: string }>;

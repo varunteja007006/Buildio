@@ -1,7 +1,8 @@
 "use client";
 
-import { ExpenseFormComponent } from "@/components/organisms/expense";
 import { use } from "react";
+
+import { ExpenseFormComponent } from "@/components/organisms/expense";
 
 interface EditExpensePageProps {
   params: Promise<{

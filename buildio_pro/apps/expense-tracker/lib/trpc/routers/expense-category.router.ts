@@ -4,12 +4,10 @@ import z from "zod";
 
 import { createTRPCRouter, protectedProcedure } from "../init";
 import {
-  paginationInputSchema,
   calculatePagination,
   createPaginationMeta,
+  paginationInputSchema,
 } from "../schemas/pagination.schema";
-
-import { zodSchema } from "@/lib/db/zod-schema";
 
 const createCategoryInput = z.object({
   name: z.string().min(1, "Category name is required").max(255),

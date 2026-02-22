@@ -14,7 +14,6 @@ import {
 import { Button } from "@workspace/ui/components/button";
 
 import { DeleteBtn } from "@/components/atoms/delete-btn";
-
 import { useDeleteIncome } from "@/hooks";
 
 export const IncomeDeleteDialog = ({ incomeId }: { incomeId: string }) => {

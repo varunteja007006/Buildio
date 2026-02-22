@@ -1,10 +1,10 @@
-import { z } from "zod";
 import {
-  createSelectSchema,
   createInsertSchema,
+  createSelectSchema,
   createUpdateSchema,
 } from "drizzle-zod";
-import { paymentProvider, paymentMethods } from "../schema/payment.schema";
+
+import { paymentMethods, paymentProvider } from "../schema/payment.schema";
 
 export const createPaymentProviderSchema = createInsertSchema(paymentProvider);
 export const updatePaymentProviderSchema = createUpdateSchema(paymentProvider);

@@ -1,4 +1,8 @@
 import * as React from "react";
+
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+
 import { type LucideIcon } from "lucide-react";
 
 import {
@@ -8,10 +12,9 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@workspace/ui/components/sidebar";
-import Link from "next/link";
-import { LinkStatus } from "@/components/atoms/link-status";
-import { usePathname } from "next/navigation";
 import { cn } from "@workspace/ui/lib/utils";
+
+import { LinkStatus } from "@/components/atoms/link-status";
 
 export function NavSecondary({
   items,

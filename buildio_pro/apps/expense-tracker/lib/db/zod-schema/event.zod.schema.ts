@@ -1,9 +1,10 @@
-import { z } from "zod";
 import {
-  createSelectSchema,
   createInsertSchema,
+  createSelectSchema,
   createUpdateSchema,
 } from "drizzle-zod";
+import { z } from "zod";
+
 import { event } from "../schema/event.schema";
 
 export const createEventSchema = createInsertSchema(event)

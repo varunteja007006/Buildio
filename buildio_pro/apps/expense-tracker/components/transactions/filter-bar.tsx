@@ -1,9 +1,11 @@
 "use client";
 
 import React from "react";
+
 import { Search, X } from "lucide-react";
-import { Input } from "@workspace/ui/components/input";
+
 import { Button } from "@workspace/ui/components/button";
+import { Input } from "@workspace/ui/components/input";
 import {
   Select,
   SelectContent,

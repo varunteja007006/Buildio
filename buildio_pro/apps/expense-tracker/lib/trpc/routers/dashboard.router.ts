@@ -1,4 +1,5 @@
-import { and, count, eq, gte, lte } from "drizzle-orm";
+import { and, eq, gte, lte } from "drizzle-orm";
+
 import { createTRPCRouter, protectedProcedure } from "../init";
 
 function numericToNumber(value: string | number | null | undefined) {

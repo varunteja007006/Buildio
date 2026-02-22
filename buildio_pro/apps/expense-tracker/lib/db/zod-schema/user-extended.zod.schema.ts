@@ -1,14 +1,14 @@
-import { z } from "zod";
 import {
-  createSelectSchema,
   createInsertSchema,
+  createSelectSchema,
   createUpdateSchema,
 } from "drizzle-zod";
+
 import {
+  userBankAccount,
   userPreferences,
   userProfile,
   userSettings,
-  userBankAccount,
 } from "../schema/user-extended.schema";
 
 export const createUserPreferencesSchema = createInsertSchema(

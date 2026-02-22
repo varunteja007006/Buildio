@@ -1,3 +1,4 @@
+import { relations } from "drizzle-orm";
 import {
   index,
   integer,
@@ -5,10 +6,10 @@ import {
   text,
   uniqueIndex,
 } from "drizzle-orm/pg-core";
-import { auditTimeFields } from "./common.schema";
+
 import { user } from "./auth-schema";
-import { relations } from "drizzle-orm";
 import { bankAccountTypes, banks } from "./bank.schema";
+import { auditTimeFields } from "./common.schema";
 
 export const userPreferences = pgTable(
   "user_preferences",

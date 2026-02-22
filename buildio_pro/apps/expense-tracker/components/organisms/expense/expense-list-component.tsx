@@ -1,16 +1,17 @@
 "use client";
 
 import * as React from "react";
-import { useRouter } from "next/navigation";
+
+import { useQuery } from "@tanstack/react-query";
 import {
   Bar,
   BarChart,
   CartesianGrid,
-  XAxis,
-  YAxis,
+  Cell,
   Pie,
   PieChart,
-  Cell,
+  XAxis,
+  YAxis,
 } from "recharts";
 
 import {
@@ -22,27 +23,17 @@ import {
 } from "@workspace/ui/components/card";
 import {
   ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
   ChartLegend,
   ChartLegendContent,
+  ChartTooltip,
+  ChartTooltipContent,
 } from "@workspace/ui/components/chart";
 import { formatCurrency } from "@workspace/ui/lib/currency.utils";
 
-import { toast } from "sonner";
 import { useTRPC } from "@/lib/trpc-client";
-import { useQuery, useMutation } from "@tanstack/react-query";
-import {
-  TransactionTable,
-  Transaction,
-} from "@/components/transactions/transaction-table";
-import { ExpenseFormComponent } from "./expense-form-component";
-import { ExpenseListTable } from ".";
 
-interface ExpenseListComponentProps {
-  categoryId?: string;
-  budgetId?: string;
-}
+import { ExpenseListTable } from ".";
+import { ExpenseFormComponent } from "./expense-form-component";
 
 export function ExpenseListComponent() {
   const trpc = useTRPC();
@@ -51,22 +42,6 @@ export function ExpenseListComponent() {
     trpc.expense.getAnalytics.queryOptions(),
   );
 
-  // const deleteMutation = useMutation(
-  //   trpc.expense.deleteExpense.mutationOptions({
-  //     onSuccess: () => {
-  //       toast.success("Expense deleted successfully!");
-  //     },
-  //     onError: (error: any) => {
-  //       toast.error(error.message || "Failed to delete expense");
-  //     },
-  //   }),
-  // );
-
-  // const handleDelete = (expenseId: string) => {
-  //   if (window.confirm("Are you sure you want to delete this expense?")) {
-  //     deleteMutation.mutate({ expenseId });
-  //   }
-  // };
 
   const COLORS = [
     "#0088FE",

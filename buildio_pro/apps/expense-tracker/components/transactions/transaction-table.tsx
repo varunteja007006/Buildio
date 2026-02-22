@@ -1,14 +1,18 @@
 "use client";
 
 import React from "react";
+
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@workspace/ui/components/table";
+  ArrowUpDown,
+  Edit2,
+  Eye,
+  MoreHorizontal,
+  Trash2,
+} from "lucide-react";
+import { Loader2 } from "lucide-react";
+
+import { Badge } from "@workspace/ui/components/badge";
+import { Button } from "@workspace/ui/components/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,29 +21,18 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@workspace/ui/components/dropdown-menu";
-import { Button } from "@workspace/ui/components/button";
-import { Badge } from "@workspace/ui/components/badge";
 import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@workspace/ui/components/avatar";
-import {
-  MoreHorizontal,
-  ArrowUpDown,
-  Calendar,
-  DollarSign,
-  Tag,
-  Trash2,
-  Edit2,
-  Eye,
-  Filter,
-} from "lucide-react";
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@workspace/ui/components/table";
 import { formatCurrency } from "@workspace/ui/lib/currency.utils";
-import { format } from "date-fns";
-import { getCategoryIcon, getCategoryColor } from "@/lib/category-icons";
 import { cn } from "@workspace/ui/lib/utils";
-import { Loader2 } from "lucide-react";
+
+import { getCategoryColor, getCategoryIcon } from "@/lib/category-icons";
 
 export interface Transaction {
   id: string;

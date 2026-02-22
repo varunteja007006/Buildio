@@ -1,9 +1,9 @@
-import { z } from "zod";
 import {
-  createSelectSchema,
   createInsertSchema,
+  createSelectSchema,
   createUpdateSchema,
 } from "drizzle-zod";
+
 import { platformType } from "../schema/common.schema";
 
 export const createPlatformTypeSchema = createInsertSchema(platformType);

@@ -2,6 +2,8 @@
 
 import * as React from "react";
 
+import { Eye } from "lucide-react";
+
 import { Button } from "@workspace/ui/components/button";
 import { Card, CardContent } from "@workspace/ui/components/card";
 import {
@@ -15,11 +17,8 @@ import {
   DialogTrigger,
 } from "@workspace/ui/components/dialog";
 
-import { Eye } from "lucide-react";
-
-import { useIncomeDetails } from "@/hooks";
-
 import { AuditDateBlock } from "@/components/atoms/audit-date-block";
+import { useIncomeDetails } from "@/hooks";
 
 interface IncomeDetailsProps {
   incomeId: string;

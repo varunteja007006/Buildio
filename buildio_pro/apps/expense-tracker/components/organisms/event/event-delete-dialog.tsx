@@ -12,9 +12,8 @@ import {
   AlertDialogTrigger,
 } from "@workspace/ui/components/alert-dialog";
 
-import { useEventDelete } from "@/hooks";
-
 import { DeleteBtn } from "@/components/atoms/delete-btn";
+import { useEventDelete } from "@/hooks";
 
 export const EventDeleteDialog = ({ eventId }: { eventId: string }) => {
   const deleteEvent = useEventDelete();

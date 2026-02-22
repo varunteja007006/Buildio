@@ -1,13 +1,8 @@
 "use client";
 
 import React from "react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@workspace/ui/components/card";
+
+import { Loader2 } from "lucide-react";
 import {
   Area,
   AreaChart,
@@ -17,7 +12,14 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { Loader2 } from "lucide-react";
+
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@workspace/ui/components/card";
 import { formatCurrency } from "@workspace/ui/lib/currency.utils";
 import { cn } from "@workspace/ui/lib/utils";
 

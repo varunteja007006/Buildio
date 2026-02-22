@@ -1,9 +1,10 @@
 "use client";
 
 import * as React from "react";
-import { Loader2 } from "lucide-react";
 
-import { Button } from "@workspace/ui/components/button";
+import { Loader2 } from "lucide-react";
+import * as z from "zod";
+
 import {
   Card,
   CardContent,
@@ -12,12 +13,11 @@ import {
   CardHeader,
   CardTitle,
 } from "@workspace/ui/components/card";
-import { Field, FieldGroup } from "@workspace/ui/components/field";
+import { FieldGroup } from "@workspace/ui/components/field";
 import { useAppForm } from "@workspace/ui/components/forms/hooks";
 
-import * as z from "zod";
-import { useUserPreferencesQuery, useUpdateUserPreferences } from "@/hooks";
 import { SubmitBtn } from "@/components/atoms/submit-btn";
+import { useUpdateUserPreferences, useUserPreferencesQuery } from "@/hooks";
 
 const preferencesFormSchema = z.object({
   currency: z.string().length(3, "Invalid currency code"),

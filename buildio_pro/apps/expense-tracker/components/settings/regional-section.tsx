@@ -1,8 +1,7 @@
 import React from "react";
 
-import { MainCard } from "./main-card";
-
 import { UserPreferencesFormComponent } from "../organisms/user";
+import { MainCard } from "./main-card";
 
 export default function RegionalSettings() {
   return (

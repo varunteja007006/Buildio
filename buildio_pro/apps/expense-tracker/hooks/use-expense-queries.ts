@@ -1,8 +1,9 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useTRPC } from "@/lib/trpc-client";
 import { toast } from "sonner";
+
+import { useTRPC } from "@/lib/trpc-client";
 
 // List expenses
 export function useExpenseList(params: {

@@ -1,4 +1,7 @@
 import Link from "next/link";
+
+import { ArrowRight, BarChart3, PieChart, Wallet } from "lucide-react";
+
 import { Button } from "@workspace/ui/components/button";
 import {
   Card,
@@ -6,7 +9,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@workspace/ui/components/card";
-import { ArrowRight, BarChart3, PieChart, Wallet } from "lucide-react";
 
 export default function Page() {
   return (

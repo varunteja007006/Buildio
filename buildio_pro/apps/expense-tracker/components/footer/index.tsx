@@ -1,6 +1,8 @@
-import { appConfig } from "@/app/appConfig";
-import { Copyright } from "lucide-react";
 import React from "react";
+
+import { Copyright } from "lucide-react";
+
+import { appConfig } from "@/app/appConfig";
 
 export function Footer() {
   return (

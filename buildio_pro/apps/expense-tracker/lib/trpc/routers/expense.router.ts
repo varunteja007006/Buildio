@@ -4,12 +4,10 @@ import z from "zod";
 
 import { createTRPCRouter, protectedProcedure } from "../init";
 import {
-  paginationInputSchema,
   calculatePagination,
   createPaginationMeta,
+  paginationInputSchema,
 } from "../schemas/pagination.schema";
-
-import { zodSchema } from "@/lib/db/zod-schema";
 
 const expenseAmountSchema = z
   .union([z.string(), z.number()])
