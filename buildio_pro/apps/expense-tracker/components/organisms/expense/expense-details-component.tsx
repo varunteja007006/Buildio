@@ -2,21 +2,15 @@
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
-import { Edit2, ArrowLeft, Trash2, Eye } from "lucide-react";
+import { Eye } from "lucide-react";
 
 import { Button } from "@workspace/ui/components/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@workspace/ui/components/card";
+import { Card, CardContent } from "@workspace/ui/components/card";
 import { Badge } from "@workspace/ui/components/badge";
 
 import { toast } from "sonner";
 import { useTRPC } from "@/lib/trpc-client";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import {
   Dialog,
   DialogClose,
@@ -27,7 +21,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@workspace/ui/components/dialog";
-import { useGetExpenseByID } from "@/hooks/use-expense-queries";
+import { useGetExpenseByID } from "@/hooks";
 
 interface ExpenseDetailsComponentProps {
   expenseId: string;
@@ -40,24 +34,6 @@ export function ExpenseDetailsComponent({
   const trpc = useTRPC();
 
   const { data: expense, isLoading } = useGetExpenseByID(expenseId);
-
-  const deleteMutation = useMutation(
-    trpc.expense.deleteExpense.mutationOptions({
-      onSuccess: () => {
-        toast.success("Expense deleted successfully!");
-        router.push("/expenses");
-      },
-      onError: (error: any) => {
-        toast.error(error.message || "Failed to delete expense");
-      },
-    }),
-  );
-
-  const handleDelete = () => {
-    if (window.confirm("Are you sure you want to delete this expense?")) {
-      deleteMutation.mutate({ expenseId });
-    }
-  };
 
   const renderContent = () => {
     if (isLoading) {

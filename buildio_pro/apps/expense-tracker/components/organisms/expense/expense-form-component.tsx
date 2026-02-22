@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
-import { Loader2, PencilIcon } from "lucide-react";
+import { Loader2 } from "lucide-react";
 
 import { Button } from "@workspace/ui/components/button";
 import {
@@ -13,17 +13,21 @@ import {
   DialogTitle,
   DialogTrigger,
   DialogFooter,
+  DialogClose,
 } from "@workspace/ui/components/dialog";
 import { Field, FieldGroup } from "@workspace/ui/components/field";
 import { useAppForm } from "@workspace/ui/components/forms/hooks";
 import { SelectItem } from "@workspace/ui/components/select";
 
-import { toast } from "sonner";
 import * as z from "zod";
 
-import { useTRPC } from "@/lib/trpc-client";
-import { useMutation, useQuery } from "@tanstack/react-query";
 import { EditBtn } from "@/components/atoms/edit-btn";
+import {
+  useBudgetList,
+  useCreateExpense,
+  useExpenseCategoryList,
+  useUpdateExpense,
+} from "@/hooks";
 
 const expenseFormSchema = z.object({
   name: z
@@ -61,48 +65,25 @@ export function ExpenseFormComponent({
   initialValues,
 }: ExpenseFormProps) {
   const router = useRouter();
-  const trpc = useTRPC();
-
+  const dialogCloseRef = React.useRef<HTMLButtonElement>(null);
   // Fetch categories from database
-  const { data: categoriesData } = useQuery(
-    trpc.expenseCategory.listCategories.queryOptions({
-      limit: 100,
-    }),
-  );
+  const { data: categoriesData } = useExpenseCategoryList({
+    limit: 100,
+    page: 1,
+  });
 
   // Fetch budgets from database
-  const { data: budgetsData } = useQuery(
-    trpc.budget.budgetList.queryOptions({
-      limit: 100,
-    }),
-  );
+  const { data: budgetsData } = useBudgetList({
+    limit: 100,
+    page: 1,
+  });
 
   const categories = categoriesData?.data || [];
   const budgets = budgetsData?.data || [];
 
-  const createMutation = useMutation(
-    trpc.expense.createExpense.mutationOptions({
-      onSuccess: () => {
-        toast.success("Expense created successfully!");
-        router.push("/expenses");
-      },
-      onError: (error: any) => {
-        toast.error(error.message || "Failed to create expense");
-      },
-    }),
-  );
+  const createMutation = useCreateExpense();
 
-  const updateMutation = useMutation(
-    trpc.expense.updateExpense.mutationOptions({
-      onSuccess: () => {
-        toast.success("Expense updated successfully!");
-        router.push(`/expenses/${expenseId}`);
-      },
-      onError: (error: any) => {
-        toast.error(error.message || "Failed to update expense");
-      },
-    }),
-  );
+  const updateMutation = useUpdateExpense();
 
   const form = useAppForm({
     defaultValues: {
@@ -124,29 +105,45 @@ export function ExpenseFormComponent({
     },
     onSubmit: async ({ value }) => {
       if (mode === "create") {
-        createMutation.mutate({
-          name: value.name,
-          expenseAmount: value.expenseAmount,
-          categoryId: value.categoryId ? value.categoryId : undefined,
-          budgetId: value.budgetId ? value.budgetId : undefined,
-          isRecurring: value.isRecurring,
-          account: value.account ? value.account : undefined,
-        });
+        createMutation.mutate(
+          {
+            name: value.name,
+            expenseAmount: value.expenseAmount,
+            categoryId: value.categoryId ? value.categoryId : undefined,
+            budgetId: value.budgetId ? value.budgetId : undefined,
+            isRecurring: value.isRecurring,
+            account: value.account ? value.account : undefined,
+          },
+          {
+            onSuccess: () => {
+              if (dialogCloseRef.current) {
+                dialogCloseRef.current.click();
+              }
+            },
+          },
+        );
       } else if (mode === "edit" && expenseId) {
-        updateMutation.mutate({
-          expenseId,
-          name: value.name,
-          expenseAmount: value.expenseAmount,
-          categoryId: value.categoryId ? value.categoryId : undefined,
-          budgetId: value.budgetId ? value.budgetId : undefined,
-          isRecurring: value.isRecurring,
-          account: value.account ? value.account : undefined,
-        });
+        updateMutation.mutate(
+          {
+            expenseId,
+            name: value.name,
+            expenseAmount: value.expenseAmount,
+            categoryId: value.categoryId ? value.categoryId : undefined,
+            budgetId: value.budgetId ? value.budgetId : undefined,
+            isRecurring: value.isRecurring,
+            account: value.account ? value.account : undefined,
+          },
+          {
+            onSuccess: () => {
+              if (dialogCloseRef.current) {
+                dialogCloseRef.current.click();
+              }
+            },
+          },
+        );
       }
     },
   });
-
-  console.log(form.getAllErrors());
 
   const isSubmitting = createMutation.isPending || updateMutation.isPending;
 
@@ -218,36 +215,32 @@ export function ExpenseFormComponent({
         </form>
 
         <DialogFooter>
-          <Field orientation="horizontal" className="justify-end space-x-2">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => router.back()}
-              disabled={isSubmitting}
-            >
+          <DialogClose ref={dialogCloseRef} asChild>
+            <Button type="button" variant="outline">
               Cancel
             </Button>
-            <Button
-              type="submit"
-              form="expense-form"
-              onClick={(e) => {
-                e.preventDefault();
-                form.handleSubmit();
-              }}
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  {mode === "create" ? "Creating..." : "Updating..."}
-                </>
-              ) : mode === "create" ? (
-                "Add Expense"
-              ) : (
-                "Update Expense"
-              )}
-            </Button>
-          </Field>
+          </DialogClose>
+
+          <Button
+            type="submit"
+            form="expense-form"
+            onClick={(e) => {
+              e.preventDefault();
+              form.handleSubmit();
+            }}
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                {mode === "create" ? "Creating..." : "Updating..."}
+              </>
+            ) : mode === "create" ? (
+              "Add Expense"
+            ) : (
+              "Update Expense"
+            )}
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

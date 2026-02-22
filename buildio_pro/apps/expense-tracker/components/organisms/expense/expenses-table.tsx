@@ -20,19 +20,21 @@ import { DataTableAdvancedToolbar } from "@workspace/ui/components/data-table/da
 import { useDataTable } from "@workspace/ui/hooks/use-data-table";
 import { DataTable } from "@workspace/ui/components/data-table/data-table";
 
-// import { IncomeDetails, IncomeDeleteDialog, IncomeForm } from ".";
-
 import { useQueryState } from "nuqs";
 
-import { useDeleteIncomes, useExpenseList, useIncomeList } from "@/hooks";
+import { useExpenseList } from "@/hooks";
 import { ErrorScreen } from "@/components/atoms/error-screen";
 import { FloatingLoader } from "@/components/atoms/loaders/floating-loader";
 import { Trash2 } from "lucide-react";
 import { ColumnDef, Table } from "@tanstack/react-table";
 import { FilterBar } from "@/components/transactions/filter-bar";
 import { useExpenseCategoryList, useBudgetList } from "@/hooks";
-import { ExpenseFormComponent } from "./expense-form-component";
-import { ExpenseDetailsComponent } from "./expense-details-component";
+import {
+  ExpenseDeleteDialog,
+  ExpenseDetailsComponent,
+  ExpenseFormComponent,
+} from ".";
+import { useDeleteExpenses } from "@/hooks";
 
 type ExpenseRecord = {
   id: string;
@@ -41,6 +43,7 @@ type ExpenseRecord = {
   amount: number;
   category?: { name: string; id: string };
   budget?: { name: string; id: string };
+  isRecurring: boolean;
 };
 
 const columns: ColumnDef<ExpenseRecord>[] = [
@@ -72,8 +75,20 @@ const columns: ColumnDef<ExpenseRecord>[] = [
     header: "Name",
   },
   { accessorKey: "amount", header: "Amount" },
-  { accessorKey: "category", header: "Category" },
-  { accessorKey: "budget", header: "Budget" },
+  {
+    accessorKey: "category",
+    header: "Category",
+    cell: ({ row }) => {
+      return row.original.category?.name || "-";
+    },
+  },
+  {
+    accessorKey: "budget",
+    header: "Budget",
+    cell: ({ row }) => {
+      return row.original.budget?.name || "-";
+    },
+  },
   {
     accessorKey: "date",
     header: "Transaction Date",
@@ -87,22 +102,22 @@ const columns: ColumnDef<ExpenseRecord>[] = [
     header: "Actions",
     cell: ({ row }) => {
       const expense = row.original;
+
       return (
         <div className="flex justify-start gap-2">
           <ExpenseDetailsComponent expenseId={expense.id} />
-          <ExpenseFormComponent mode="edit" expenseId={expense.id} />
-          {/* 
-          <IncomeForm
+          <ExpenseFormComponent
             mode="edit"
-            incomeId={income.id}
             initialValues={{
-              name: income.name || "",
-              incomeAmount: income.incomeAmount,
-              sourceId: income.sourceId || undefined,
-              paymentMethodId: income.paymentMethodId || undefined,
+              name: expense.name,
+              expenseAmount: expense.amount.toString(),
+              categoryId: expense.category?.id,
+              budgetId: expense.budget?.id,
+              isRecurring: expense.isRecurring,
             }}
-          /> */}
-          {/* <IncomeDeleteDialog incomeId={income.id} /> */}
+            expenseId={expense.id}
+          />
+          <ExpenseDeleteDialog expenseId={expense.id} />
         </div>
       );
     },
@@ -153,11 +168,12 @@ export const ExpenseListTable = () => {
     date: expense.createdAt,
     amount: Number(expense.expenseAmount),
     category: expense.category
-      ? { id: expense.category?.id, name: expense.category?.name }
+      ? { id: expense.category.id, name: expense.category.name }
       : undefined,
     budget: expense.budget
-      ? { id: expense.budget, name: expense.budget?.name }
+      ? { id: expense.budget.id, name: expense.budget.name }
       : undefined,
+    isRecurring: expense.isRecurring ?? false,
   }));
 
   const { table } = useDataTable({
@@ -227,11 +243,11 @@ function TableActionBar({ table }: { table: Table<ExpenseRecord> }) {
     [table],
   );
 
-  // const deleteExpenses = useDeleteExpenses({
-  //   onSuccess: () => {
-  //     table.toggleAllRowsSelected(false);
-  //   },
-  // });
+  const deleteExpenses = useDeleteExpenses({
+    onSuccess: () => {
+      table.toggleAllRowsSelected(false);
+    },
+  });
 
   return (
     <ActionBar open={rows.length > 0} onOpenChange={onOpenChange}>
@@ -263,9 +279,9 @@ function TableActionBar({ table }: { table: Table<ExpenseRecord> }) {
                 variant="destructive"
                 size="sm"
                 onClick={() => {
-                  // deleteExpenses.mutate({
-                  //   expenseIds: rows.map((item) => item.original.id),
-                  // });
+                  deleteExpenses.mutate({
+                    expenseIds: rows.map((item) => item.original.id),
+                  });
                 }}
               >
                 <Trash2 className="h-4 w-4 mr-2" />

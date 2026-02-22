@@ -1,5 +1,5 @@
 import { TRPCError } from "@trpc/server";
-import { and, count, eq } from "drizzle-orm";
+import { and, count, eq, inArray } from "drizzle-orm";
 import z from "zod";
 
 import { createTRPCRouter, protectedProcedure } from "../init";
@@ -66,6 +66,10 @@ const listExpensesInput = paginationInputSchema.extend({
 
 const expenseIdInput = z.object({
   expenseId: z.uuid(),
+});
+
+const bulkDeleteInput = z.object({
+  expenseIds: z.array(z.uuid()).min(1, "At least one expense ID is required"),
 });
 
 const numericToNumber = (value: string | number | null) => {
@@ -388,5 +392,51 @@ export const expenseRouter = createTRPCRouter({
         );
 
       return { success: true };
+    }),
+
+  deleteExpenses: protectedProcedure
+    .input(bulkDeleteInput)
+    .mutation(async ({ input, ctx }) => {
+      const { db, dbSchema, user } = ctx;
+      const { expenseIds } = input;
+
+      const expenseExists = await db.query.expense.findMany({
+        where: and(
+          inArray(dbSchema.expense.id, expenseIds),
+          eq(dbSchema.expense.userId, user.id),
+        ),
+      });
+
+      const existingExpensesIds = new Set(expenseExists.map((item) => item.id));
+
+      const missingIds = expenseIds.filter(
+        (id) => !existingExpensesIds.has(id),
+      );
+
+      if (existingExpensesIds.size === 0) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Expenses not found",
+        });
+      }
+
+      if (existingExpensesIds.size > 0) {
+        await db
+          .delete(dbSchema.expense)
+          .where(
+            and(
+              inArray(dbSchema.expense.id, expenseIds),
+              eq(dbSchema.expense.userId, user.id),
+            ),
+          );
+      }
+
+      return {
+        success: true,
+        deletedIds: Array.from(existingExpensesIds),
+        notFoundIds: missingIds,
+        skipped: [],
+        message: `${existingExpensesIds.size} expenses deleted successfully`,
+      };
     }),
 });

@@ -113,8 +113,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     avatar: user.image || "",
   };
 
-  console.log(user.image);
-
   return (
     <Sidebar variant="inset" {...props}>
       <SidebarHeader>

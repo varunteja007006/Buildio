@@ -24,6 +24,8 @@ export {
   useCreateExpense,
   useUpdateExpense,
   useDeleteExpense,
+  useDeleteExpenses,
+  useGetExpenseByID,
 } from "./use-expense-queries";
 
 // Income hooks
