@@ -74,6 +74,7 @@ interface EventFormProps {
 }
 
 export function EventForm({ mode, eventId, initialValues }: EventFormProps) {
+  const [dialogOpen, setDialogOpen] = React.useState(false);
   const { data: statusOptions, isLoading: isLoadingStatuses } =
     useEventListStatues();
 
@@ -95,20 +96,27 @@ export function EventForm({ mode, eventId, initialValues }: EventFormProps) {
     },
     onSubmit: async ({ value }) => {
       if (mode === "create") {
-        createMutation.mutate({
-          name: value.name,
-          description:
-            value.description && value.description.trim() !== ""
-              ? value.description
-              : undefined,
-          estimatedBudget:
-            value.estimatedBudget && value.estimatedBudget.trim() !== ""
-              ? value.estimatedBudget
-              : undefined,
-          startDate: value.startDate!,
-          endDate: value.endDate,
-          statusId: value.statusId,
-        });
+        createMutation.mutate(
+          {
+            name: value.name,
+            description:
+              value.description && value.description.trim() !== ""
+                ? value.description
+                : undefined,
+            estimatedBudget:
+              value.estimatedBudget && value.estimatedBudget.trim() !== ""
+                ? value.estimatedBudget
+                : undefined,
+            startDate: value.startDate!,
+            endDate: value.endDate,
+            statusId: value.statusId,
+          },
+          {
+            onSuccess: () => {
+              setDialogOpen(false);
+            },
+          },
+        );
       } else if (mode === "edit" && eventId) {
         updateMutation.mutate({
           eventId,
@@ -148,7 +156,7 @@ export function EventForm({ mode, eventId, initialValues }: EventFormProps) {
     isSubmitting || isLoadingStatuses || !statusOptions?.length;
 
   return (
-    <Dialog>
+    <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
       <DialogTrigger asChild>
         {mode === "create" ? (
           <Button size={"sm"}>Create Event</Button>
@@ -234,7 +242,11 @@ export function EventForm({ mode, eventId, initialValues }: EventFormProps) {
           </FieldGroup>
         </form>
         <DialogFooter>
-          <DialogClose>Close</DialogClose>
+          <DialogClose asChild>
+            <Button variant="outline" disabled={isSubmitDisabled}>
+              Close
+            </Button>
+          </DialogClose>
           <SubmitBtn
             loading={isSubmitting}
             disabled={isSubmitDisabled}

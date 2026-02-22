@@ -187,7 +187,7 @@ export default function BudgetsPage() {
                         </div>
                         <div className="flex items-center gap-2">
                           <Link href={`/budgets/${budget.id}`}>
-                            <Button variant="outline" size="sm">
+                            <Button variant="default" size="sm">
                               <Eye className="h-4 w-4" />
                             </Button>
                           </Link>

@@ -28,7 +28,7 @@ export default async function Layout({
               />
               <TopNavText />
             </div>
-            <div className="pr-2">
+            <div className="pr-4">
               <ModeToggle />
             </div>
           </header>

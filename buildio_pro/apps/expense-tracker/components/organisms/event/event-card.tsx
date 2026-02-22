@@ -18,7 +18,7 @@ import { Progress } from "@workspace/ui/components/progress";
 import { formatCurrency } from "@workspace/ui/lib/currency.utils";
 import { cn } from "@workspace/ui/lib/utils";
 
-import { EventDeleteDialog, EventForm } from ".";
+import { EventDeleteDialog, EventDetails, EventForm } from ".";
 
 interface EventCardProps {
   event: {
@@ -47,22 +47,14 @@ export function EventCard({ event }: EventCardProps) {
   const isOverdue = daysLeft !== null && daysLeft < 0;
 
   return (
-    <Card className="flex flex-col h-full transition-all hover:shadow-md">
-      <CardHeader className="pb-3">
-        <div className="flex justify-between items-start">
-          <div className="space-y-1">
-            <CardTitle className="line-clamp-1">
-              <Link href={`/events/${event.id}`} className="hover:underline">
-                {event.name}
-              </Link>
-            </CardTitle>
-            <CardDescription className="line-clamp-2 h-10">
-              {event.description || "No description provided."}
-            </CardDescription>
-          </div>
-        </div>
+    <Card className="h-full transition-all hover:shadow-md pb-0">
+      <CardHeader>
+        <CardTitle className="line-clamp-1">{event.name}</CardTitle>
+        <CardDescription className="line-clamp-2">
+          {event.description || "No description provided."}
+        </CardDescription>
       </CardHeader>
-      <CardContent className="flex-1 pb-3">
+      <CardContent className="flex-1 space-y-4">
         <div className="space-y-4">
           {/* Progress Section */}
           <div className="space-y-2">
@@ -114,8 +106,7 @@ export function EventCard({ event }: EventCardProps) {
             )}
           </div>
         </div>
-      </CardContent>
-      <CardFooter className="pt-0 border-t bg-muted/20 p-4 mt-auto">
+
         <div className="flex items-center justify-between w-full">
           <div className="flex items-center gap-2 text-sm">
             <Clock className="h-4 w-4 text-muted-foreground" />
@@ -144,13 +135,11 @@ export function EventCard({ event }: EventCardProps) {
             {formatCurrency(Math.abs(event.remaining))}
           </div>
         </div>
-        <div>
-          <Link href={`/events/${event.id}`}>
-            <Eye className="mr-2 h-4 w-4" /> View Details
-          </Link>
-          <EventForm mode="edit" eventId={event.id} />
-          <EventDeleteDialog eventId={event.id} />
-        </div>
+      </CardContent>
+      <CardFooter className="bg-muted/20 p-4 mt-auto flex justify-end items-center gap-4">
+        <EventDetails eventId={event.id} />
+        <EventForm mode="edit" eventId={event.id} />
+        <EventDeleteDialog eventId={event.id} />
       </CardFooter>
     </Card>
   );

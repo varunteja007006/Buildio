@@ -151,7 +151,7 @@ export function ExpenseCategoryListComponent() {
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-2">
                           <Button
-                            variant="ghost"
+                            variant="default"
                             size="sm"
                             onClick={() =>
                               router.push(`/expense-categories/${category.id}`)

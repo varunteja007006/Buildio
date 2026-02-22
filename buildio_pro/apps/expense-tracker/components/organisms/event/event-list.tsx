@@ -1,6 +1,5 @@
 "use client";
 
-
 import { CalendarDays, Loader2 } from "lucide-react";
 
 import { Card, CardContent } from "@workspace/ui/components/card";
@@ -11,7 +10,6 @@ import { EventCard } from ".";
 import { EventForm } from "./event-form";
 
 export function EventList() {
-
   const { data: eventsData, isLoading } = useEventsList({
     limit: 10,
     page: 1,
@@ -44,13 +42,11 @@ export function EventList() {
           </CardContent>
         </Card>
       ) : (
-        <>
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {events.map((event) => (
-              <EventCard key={event.id} event={event} />
-            ))}
-          </div>
-        </>
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {events.map((event) => (
+            <EventCard key={event.id} event={event} />
+          ))}
+        </div>
       )}
     </div>
   );

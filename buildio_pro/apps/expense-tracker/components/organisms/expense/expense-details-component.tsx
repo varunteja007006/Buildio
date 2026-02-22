@@ -154,7 +154,7 @@ export function ExpenseDetailsComponent({
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="ghost" size="sm">
+        <Button variant="default" size="sm">
           <Eye className="h-4 w-4" />
         </Button>
       </DialogTrigger>

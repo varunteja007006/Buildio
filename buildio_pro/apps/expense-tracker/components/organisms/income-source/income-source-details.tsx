@@ -95,7 +95,7 @@ export function IncomeSourceDetails({ sourceId }: IncomeSourceDetailsProps) {
   return (
     <Dialog>
       <DialogTrigger disabled={!source} asChild>
-        <Button variant="ghost" size="sm">
+        <Button variant="default" size="sm">
           <Eye className="h-4 w-4" />
         </Button>
       </DialogTrigger>

@@ -65,8 +65,8 @@ export function ExpenseFormComponent({
   expenseId,
   initialValues,
 }: ExpenseFormProps) {
-  const router = useRouter();
-  const dialogCloseRef = React.useRef<HTMLButtonElement>(null);
+  const [dialogOpen, setDialogOpen] = React.useState(false);
+
   // Fetch categories from database
   const { data: categoriesData } = useExpenseCategoryList({
     limit: 100,
@@ -117,9 +117,7 @@ export function ExpenseFormComponent({
           },
           {
             onSuccess: () => {
-              if (dialogCloseRef.current) {
-                dialogCloseRef.current.click();
-              }
+              setDialogOpen(false);
             },
           },
         );
@@ -136,9 +134,7 @@ export function ExpenseFormComponent({
           },
           {
             onSuccess: () => {
-              if (dialogCloseRef.current) {
-                dialogCloseRef.current.click();
-              }
+              setDialogOpen(false);
             },
           },
         );
@@ -149,7 +145,7 @@ export function ExpenseFormComponent({
   const isSubmitting = createMutation.isPending || updateMutation.isPending;
 
   return (
-    <Dialog>
+    <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
       <DialogTrigger asChild>
         {mode === "create" ? (
           <Button size={"sm"}>+ Add Expense</Button>
@@ -216,7 +212,7 @@ export function ExpenseFormComponent({
         </form>
 
         <DialogFooter>
-          <DialogClose ref={dialogCloseRef} asChild>
+          <DialogClose asChild>
             <Button type="button" variant="outline">
               Cancel
             </Button>
