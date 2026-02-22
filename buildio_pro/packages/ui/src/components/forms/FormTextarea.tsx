@@ -1,9 +1,9 @@
-import { Textarea } from "@workspace/ui/components/textarea";
 import {
   FormBase,
   FormControlProps,
 } from "@workspace/ui/components/forms/FormBase";
 import { useFieldContext } from "@workspace/ui/components/forms/hooks";
+import { Textarea } from "@workspace/ui/components/textarea";
 
 export function FormTextarea({
   placeholder,

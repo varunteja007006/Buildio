@@ -1,9 +1,9 @@
+import { DatePicker } from "@workspace/ui/components/date-picker";
 import {
   FormBase,
   FormControlProps,
 } from "@workspace/ui/components/forms/FormBase";
 import { useFieldContext } from "@workspace/ui/components/forms/hooks";
-import { DatePicker } from "@workspace/ui/components/date-picker";
 
 /**
  * Form wrapper for the standalone DatePicker.

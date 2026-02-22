@@ -1,14 +1,15 @@
 "use client";
 
-import type { Column, Table } from "@tanstack/react-table";
-import { X } from "lucide-react";
 import * as React from "react";
 
+import type { Column, Table } from "@tanstack/react-table";
+import { X } from "lucide-react";
+
+import { Button } from "@workspace/ui/components/button";
 import { DataTableDateFilter } from "@workspace/ui/components/data-table/data-table-date-filter";
 import { DataTableFacetedFilter } from "@workspace/ui/components/data-table/data-table-faceted-filter";
 import { DataTableSliderFilter } from "@workspace/ui/components/data-table/data-table-slider-filter";
 import { DataTableViewOptions } from "@workspace/ui/components/data-table/data-table-view-options";
-import { Button } from "@workspace/ui/components/button";
 import { Input } from "@workspace/ui/components/input";
 import { cn } from "@workspace/ui/lib/utils";
 

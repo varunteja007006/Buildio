@@ -1,9 +1,9 @@
-import { useFieldContext } from "@workspace/ui/components/forms/hooks";
+import { Checkbox } from "@workspace/ui/components/checkbox";
 import {
   FormBase,
   FormControlProps,
 } from "@workspace/ui/components/forms/FormBase";
-import { Checkbox } from "@workspace/ui/components/checkbox";
+import { useFieldContext } from "@workspace/ui/components/forms/hooks";
 
 export function FormCheckbox(props: Readonly<FormControlProps>) {
   const field = useFieldContext<boolean>();

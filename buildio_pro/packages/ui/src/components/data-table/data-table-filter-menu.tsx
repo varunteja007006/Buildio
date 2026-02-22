@@ -1,5 +1,7 @@
 "use client";
 
+import * as React from "react";
+
 import type { Column, Table } from "@tanstack/react-table";
 import {
   BadgeCheck,
@@ -10,9 +12,11 @@ import {
   X,
 } from "lucide-react";
 import { useQueryState } from "nuqs";
-import * as React from "react";
 
-import { DataTableRangeFilter } from "@workspace/ui/components/data-table/data-table-range-filter";
+import type {
+  ExtendedColumnFilter,
+  FilterOperator,
+} from "@workspace/ui/types/data-table";
 import { Button } from "@workspace/ui/components/button";
 import { Calendar } from "@workspace/ui/components/calendar";
 import {
@@ -23,6 +27,7 @@ import {
   CommandItem,
   CommandList,
 } from "@workspace/ui/components/command";
+import { DataTableRangeFilter } from "@workspace/ui/components/data-table/data-table-range-filter";
 import { Input } from "@workspace/ui/components/input";
 import {
   Popover,
@@ -45,10 +50,6 @@ import { formatDate } from "@workspace/ui/lib/format";
 import { generateId } from "@workspace/ui/lib/id";
 import { getFiltersStateParser } from "@workspace/ui/lib/parsers";
 import { cn } from "@workspace/ui/lib/utils";
-import type {
-  ExtendedColumnFilter,
-  FilterOperator,
-} from "@workspace/types/data-table";
 
 const DEBOUNCE_MS = 300;
 const THROTTLE_MS = 50;

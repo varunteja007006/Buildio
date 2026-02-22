@@ -1,7 +1,16 @@
 "use client";
 
+import * as React from "react";
+
 import {
   type ColumnFiltersState,
+  type PaginationState,
+  type RowSelectionState,
+  type SortingState,
+  type TableOptions,
+  type TableState,
+  type Updater,
+  type VisibilityState,
   getCoreRowModel,
   getFacetedMinMaxValues,
   getFacetedRowModel,
@@ -9,32 +18,24 @@ import {
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
-  type PaginationState,
-  type RowSelectionState,
-  type SortingState,
-  type TableOptions,
-  type TableState,
-  type Updater,
   useReactTable,
-  type VisibilityState,
 } from "@tanstack/react-table";
 import {
+  type SingleParser,
+  type UseQueryStateOptions,
   parseAsArrayOf,
   parseAsInteger,
   parseAsString,
-  type SingleParser,
-  type UseQueryStateOptions,
   useQueryState,
   useQueryStates,
 } from "nuqs";
-import * as React from "react";
 
-import { useDebouncedCallback } from "@workspace/ui/hooks/use-debounced-callback";
-import { getSortingStateParser } from "@workspace/ui/lib/parsers";
 import type {
   ExtendedColumnSort,
   QueryKeys,
-} from "@workspace/types/data-table";
+} from "@workspace/ui/types/data-table";
+import { useDebouncedCallback } from "@workspace/ui/hooks/use-debounced-callback";
+import { getSortingStateParser } from "@workspace/ui/lib/parsers";
 
 const PAGE_KEY = "page";
 const PER_PAGE_KEY = "perPage";

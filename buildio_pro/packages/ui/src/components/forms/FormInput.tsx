@@ -1,9 +1,9 @@
-import { Input } from "@workspace/ui/components/input";
 import {
   FormBase,
   FormControlProps,
 } from "@workspace/ui/components/forms/FormBase";
 import { useFieldContext } from "@workspace/ui/components/forms/hooks";
+import { Input } from "@workspace/ui/components/input";
 
 export function FormInput({
   placeholder,

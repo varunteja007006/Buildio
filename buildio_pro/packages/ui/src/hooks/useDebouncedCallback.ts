@@ -1,5 +1,5 @@
 // The fixed and recommended implementation for useDebouncedCallback
-import React, { useRef, useCallback } from "react";
+import React, { useCallback, useRef } from "react";
 
 export default function useDebouncedCallback<
   T extends (...args: any[]) => void,

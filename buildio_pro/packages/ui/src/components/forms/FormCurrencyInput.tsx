@@ -1,15 +1,16 @@
-import { Input } from "@workspace/ui/components/input";
+import React from "react";
+
+import {
+  Currency,
+  CurrencyPicker,
+} from "@workspace/ui/components/currency-picker";
 import {
   FormBase,
   FormControlProps,
 } from "@workspace/ui/components/forms/FormBase";
 import { useFieldContext } from "@workspace/ui/components/forms/hooks";
-import {
-  CurrencyPicker,
-  Currency,
-} from "@workspace/ui/components/currency-picker";
+import { Input } from "@workspace/ui/components/input";
 import { cn } from "@workspace/ui/lib/utils";
-import React from "react";
 
 interface FormCurrencyInputProps extends FormControlProps {
   showCurrency?: boolean;

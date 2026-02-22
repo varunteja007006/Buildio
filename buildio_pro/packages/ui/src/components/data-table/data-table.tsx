@@ -1,5 +1,6 @@
-import { flexRender, type Table as TanstackTable } from "@tanstack/react-table";
 import type * as React from "react";
+
+import { type Table as TanstackTable, flexRender } from "@tanstack/react-table";
 
 import { DataTablePagination } from "@workspace/ui/components/data-table/data-table-pagination";
 import {
