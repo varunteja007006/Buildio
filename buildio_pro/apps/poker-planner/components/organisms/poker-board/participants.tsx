@@ -1,13 +1,16 @@
 import React from "react";
 
-import { useQuery } from "convex/react";
-import type { Id } from "@workspace/games-convex-backend/convex/_generated/dataModel";
-import { api } from "@workspace/games-convex-backend/convex/_generated/api";
-import usePresence from "@convex-dev/presence/react";
-
 import { useParams } from "next/navigation";
-import { ParticipantCard } from "./participant-card";
+
+import usePresence from "@convex-dev/presence/react";
+import { useQuery } from "convex/react";
+
+import { api } from "@workspace/games-convex-backend/convex/_generated/api";
+import type { Id } from "@workspace/games-convex-backend/convex/_generated/dataModel";
+
 import { useUserStore } from "@/lib/store/user.store";
+
+import { ParticipantCard } from "./participant-card";
 
 const findUserStoryPoint = (
   userId: string,

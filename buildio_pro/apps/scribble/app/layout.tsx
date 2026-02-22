@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 
-import { Providers } from "@/components/providers";
 import { Toaster } from "@workspace/ui/components/sonner";
+
 import { Navbar } from "@/components/navbar";
+import { Providers } from "@/components/providers";
 
 import "./globals.css";
 

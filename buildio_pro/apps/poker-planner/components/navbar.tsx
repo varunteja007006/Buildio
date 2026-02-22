@@ -1,10 +1,10 @@
+import Link from "next/link";
+
 import { Kanban } from "lucide-react";
 
-import { ModeToggle } from "@/components/mode-toggle";
 import { LogoutBtn } from "@/components/logout-btn";
+import { ModeToggle } from "@/components/mode-toggle";
 import { UserCard } from "@/components/user-card";
-
-import Link from "next/link";
 
 export function Navbar() {
   return (

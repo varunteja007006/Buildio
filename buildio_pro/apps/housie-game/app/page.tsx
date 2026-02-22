@@ -1,6 +1,8 @@
-import HousieNumGenerator from "@/components/housie-num-generator";
-import { ModeToggle } from "../components/mode-toggle";
 import { Dices } from "lucide-react";
+
+import HousieNumGenerator from "@/components/housie-num-generator";
+
+import { ModeToggle } from "../components/mode-toggle";
 
 export default function Page() {
   return (

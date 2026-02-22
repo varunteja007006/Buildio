@@ -1,10 +1,12 @@
+import { useParams } from "next/navigation";
+
 import { useQuery } from "convex/react";
 
-import type { Id } from "@workspace/games-convex-backend/convex/_generated/dataModel";
 import { api } from "@workspace/games-convex-backend/convex/_generated/api";
+import type { Id } from "@workspace/games-convex-backend/convex/_generated/dataModel";
 
-import { useParams } from "next/navigation";
 import { useUserStore } from "@/lib/store/user.store";
+
 import { PokerResultChart } from "./poker-chart-result";
 import { PokerResultTable } from "./poker-table-result";
 
