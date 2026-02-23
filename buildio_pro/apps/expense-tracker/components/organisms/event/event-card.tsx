@@ -138,7 +138,19 @@ export function EventCard({ event }: EventCardProps) {
       </CardContent>
       <CardFooter className="bg-muted/20 p-4 mt-auto flex justify-end items-center gap-4">
         <EventDetails eventId={event.id} />
-        <EventForm mode="edit" eventId={event.id} />
+
+        <EventForm
+          mode="edit"
+          eventId={event.id}
+          initialValues={{
+            name: event.name,
+            description: event.description ?? "",
+            estimatedBudget: event.estimatedBudget.toString(),
+            startDate: event.startDate ? new Date(event.startDate) : undefined,
+            endDate: event.endDate ? new Date(event.endDate) : undefined,
+            statusId: event.status?.id,
+          }}
+        />
         <EventDeleteDialog eventId={event.id} />
       </CardFooter>
     </Card>

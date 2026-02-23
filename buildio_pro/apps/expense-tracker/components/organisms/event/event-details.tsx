@@ -139,7 +139,7 @@ export function EventDetails({ eventId }: EventDetailsProps) {
           <Eye className="h-4 w-4" />
         </Button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent className="w-full">
         <DialogTitle>{event.name}</DialogTitle>
         <DialogDescription>
           {event.description ?? "No description"}
@@ -206,63 +206,63 @@ export function EventDetails({ eventId }: EventDetailsProps) {
               <Badge variant={badgeVariant}>{badgeLabel}</Badge>
             </div>
           </div>
-        </div>
 
-        <div>
-          <h2 className="text-lg font-semibold mb-1">Linked Expenses</h2>
-          {!event.expenses ||
-          (Array.isArray(event.expenses) &&
-            (event.expenses as any[]).length === 0) ? (
-            <div className="flex flex-col items-center justify-center py-8">
-              <p className="mb-2 text-sm text-muted-foreground">
-                No expenses linked to this event yet
-              </p>
-              <Button
-                variant="outline"
-                onClick={() => setAddExpenseDialogOpen(true)}
-              >
-                <Plus className="mr-2 h-4 w-4" />
-                Add Expenses
-              </Button>
-            </div>
-          ) : (
-            <div className="space-y-2">
-              {(event.expenses as any[]).map((ee) => (
-                <div
-                  key={ee.id}
-                  className="flex items-center justify-between rounded-md border p-3"
+          <div className="mt-3">
+            <h2 className="text-lg font-semibold mb-1">Linked Expenses</h2>
+            {!event.expenses ||
+            (Array.isArray(event.expenses) &&
+              (event.expenses as any[]).length === 0) ? (
+              <div className="flex flex-col items-center justify-center py-8">
+                <p className="mb-2 text-sm text-muted-foreground">
+                  No expenses linked to this event yet
+                </p>
+                <Button
+                  variant="outline"
+                  onClick={() => setAddExpenseDialogOpen(true)}
                 >
-                  <div className="flex-1">
-                    <p className="font-medium">
-                      {ee.expense.category?.name || "Uncategorized"}
-                    </p>
-                    <p className="text-sm text-muted-foreground">
-                      {ee.expense.name}
-                    </p>
+                  <Plus className="mr-2 h-4 w-4" />
+                  Add Expenses
+                </Button>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {(event.expenses as any[]).map((ee) => (
+                  <div
+                    key={ee.id}
+                    className="flex items-center justify-between rounded-md border p-3"
+                  >
+                    <div className="flex-1">
+                      <p className="font-medium">
+                        {ee.expense.category?.name || "Uncategorized"}
+                      </p>
+                      <p className="text-sm text-muted-foreground">
+                        {ee.expense.name}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-6">
+                      <p className="font-semibold">
+                        ${Number(ee.expense.expenseAmount).toFixed(2)}
+                      </p>
+                      <Button
+                        variant="destructive"
+                        size="icon-sm"
+                        onClick={() =>
+                          removeExpenseMutation.mutate({
+                            eventId,
+                            expenseId: ee.expense.id,
+                          })
+                        }
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <p className="font-semibold">
-                      ${Number(ee.expense.expenseAmount).toFixed(2)}
-                    </p>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() =>
-                        removeExpenseMutation.mutate({
-                          eventId,
-                          expenseId: ee.expense.id,
-                        })
-                      }
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
+                ))}
+              </div>
+            )}
+          </div>
         </div>
-
+        
         <div className="space-y-6">
           {/* 
           {history && history.length > 0 && (
