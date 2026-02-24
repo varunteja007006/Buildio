@@ -2,13 +2,7 @@
 
 import React from "react";
 
-import {
-  ArrowUpDown,
-  Edit2,
-  Eye,
-  MoreHorizontal,
-  Trash2,
-} from "lucide-react";
+import { ArrowUpDown, Edit2, Eye, MoreHorizontal, Trash2 } from "lucide-react";
 import { Loader2 } from "lucide-react";
 
 import { Badge } from "@workspace/ui/components/badge";

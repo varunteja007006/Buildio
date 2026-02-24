@@ -151,6 +151,7 @@ export function EventCard({ event }: EventCardProps) {
             statusId: event.status?.id,
           }}
         />
+
         <EventDeleteDialog eventId={event.id} />
       </CardFooter>
     </Card>

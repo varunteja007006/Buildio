@@ -4,14 +4,7 @@ import * as React from "react";
 
 import Link from "next/link";
 
-import {
-  Calendar,
-  DollarSign,
-  Eye,
-  Loader2,
-  Pencil,
-  Plus,
-} from "lucide-react";
+import { Calendar, DollarSign, Eye, Loader2, Pencil, Plus } from "lucide-react";
 
 import { Badge } from "@workspace/ui/components/badge";
 import { Button } from "@workspace/ui/components/button";

@@ -4,6 +4,9 @@ import React from "react";
 
 import { Control, FieldPath, FieldValues } from "react-hook-form";
 
+import Combobox, {
+  type ComboboxOption,
+} from "@workspace/ui/components/combobox";
 import {
   FormControl,
   FormDescription,
@@ -12,8 +15,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@workspace/ui/components/form";
-
-import Combobox, { type ComboboxOption } from "@workspace/ui/components/combobox";
 
 /**
  * Form-integrated searchable combobox component for react-hook-form.

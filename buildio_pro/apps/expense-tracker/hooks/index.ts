@@ -5,6 +5,9 @@ export {
   useEventCreate,
   useEventUpdate,
   useEventDelete,
+  useGetEventById,
+  useEventSpendingHistory,
+  useGetUnLinkedExpenses,
 } from "./use-events-queries";
 
 // Budget hooks

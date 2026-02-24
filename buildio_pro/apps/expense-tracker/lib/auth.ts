@@ -4,7 +4,6 @@ import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { db, dbSchema } from "@/lib/db";
 
 import { emailResetPassword, emailVerification } from "./email/api";
-
 import { deleteItem, getItem, setItem } from "./redis";
 
 export const auth: Auth = betterAuth({

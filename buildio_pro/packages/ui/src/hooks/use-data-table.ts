@@ -30,12 +30,12 @@ import {
   useQueryStates,
 } from "nuqs";
 
+import { useDebouncedCallback } from "@workspace/ui/hooks/use-debounced-callback";
+import { getSortingStateParser } from "@workspace/ui/lib/parsers";
 import type {
   ExtendedColumnSort,
   QueryKeys,
 } from "@workspace/ui/types/data-table";
-import { useDebouncedCallback } from "@workspace/ui/hooks/use-debounced-callback";
-import { getSortingStateParser } from "@workspace/ui/lib/parsers";
 
 const PAGE_KEY = "page";
 const PER_PAGE_KEY = "perPage";

@@ -1,4 +1,4 @@
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 import { useTRPC } from "@/lib/trpc-client";
@@ -24,10 +24,14 @@ export const useEventCreate = (options?: {
   onError?: (error: unknown) => void;
 }) => {
   const trpc = useTRPC();
+  const queryClient = useQueryClient();
   return useMutation(
     trpc.event.createEvent.mutationOptions({
       onSuccess: () => {
         toast.success("Event created successfully!");
+        queryClient.invalidateQueries({
+          queryKey: trpc.event.listEvents.queryKey(),
+        });
         options?.onSuccess?.();
       },
       onError: (error) => {
@@ -43,10 +47,15 @@ export const useEventUpdate = (options?: {
   onError?: (error: unknown) => void;
 }) => {
   const trpc = useTRPC();
+  const queryClient = useQueryClient();
+
   return useMutation(
     trpc.event.updateEvent.mutationOptions({
       onSuccess: () => {
         toast.success("Event updated successfully!");
+        queryClient.invalidateQueries({
+          queryKey: trpc.event.listEvents.queryKey(),
+        });
         options?.onSuccess?.();
       },
       onError: (error) => {
@@ -62,11 +71,15 @@ export const useEventDelete = (options?: {
   onError?: (error: unknown) => void;
 }) => {
   const trpc = useTRPC();
+  const queryClient = useQueryClient();
 
   return useMutation(
     trpc.event.deleteEvent.mutationOptions({
       onSuccess: () => {
         toast.success("Event deleted successfully");
+        queryClient.invalidateQueries({
+          queryKey: trpc.event.listEvents.queryKey(),
+        });
         options?.onSuccess?.();
       },
       onError: (error) => {
@@ -75,4 +88,19 @@ export const useEventDelete = (options?: {
       },
     }),
   );
+};
+
+export const useEventSpendingHistory = (eventId: string) => {
+  const trpc = useTRPC();
+  return useQuery(trpc.event.getEventSpendingHistory.queryOptions({ eventId }));
+};
+
+export const useGetEventById = (eventId: string) => {
+  const trpc = useTRPC();
+  return useQuery(trpc.event.getEventById.queryOptions({ eventId }));
+};
+
+export const useGetUnLinkedExpenses = (eventId: string) => {
+  const trpc = useTRPC();
+  return useQuery(trpc.event.getUnlinkedExpenses.queryOptions({ eventId }));
 };

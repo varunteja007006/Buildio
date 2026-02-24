@@ -13,11 +13,6 @@ import {
 } from "lucide-react";
 import { parseAsStringEnum, useQueryState } from "nuqs";
 
-import type {
-  ExtendedColumnFilter,
-  FilterOperator,
-  JoinOperator,
-} from "@workspace/ui/types/data-table";
 import { Badge } from "@workspace/ui/components/badge";
 import { Button } from "@workspace/ui/components/button";
 import { Calendar } from "@workspace/ui/components/calendar";
@@ -71,6 +66,11 @@ import { formatDate } from "@workspace/ui/lib/format";
 import { generateId } from "@workspace/ui/lib/id";
 import { getFiltersStateParser } from "@workspace/ui/lib/parsers";
 import { cn } from "@workspace/ui/lib/utils";
+import type {
+  ExtendedColumnFilter,
+  FilterOperator,
+  JoinOperator,
+} from "@workspace/ui/types/data-table";
 
 const DEBOUNCE_MS = 300;
 const THROTTLE_MS = 50;

@@ -42,7 +42,6 @@ export function ExpenseListComponent() {
     trpc.expense.getAnalytics.queryOptions(),
   );
 
-
   const COLORS = [
     "#0088FE",
     "#00C49F",

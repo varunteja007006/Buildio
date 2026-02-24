@@ -2,7 +2,6 @@ import { TRPCError } from "@trpc/server";
 import { eq } from "drizzle-orm";
 import z from "zod";
 
-
 import { createTRPCRouter, protectedProcedure } from "../init";
 
 const updatePreferencesInput = z.object({

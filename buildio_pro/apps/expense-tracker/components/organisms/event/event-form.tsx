@@ -75,6 +75,7 @@ interface EventFormProps {
 
 export function EventForm({ mode, eventId, initialValues }: EventFormProps) {
   const [dialogOpen, setDialogOpen] = React.useState(false);
+
   const { data: statusOptions, isLoading: isLoadingStatuses } =
     useEventListStatues();
 
@@ -118,21 +119,28 @@ export function EventForm({ mode, eventId, initialValues }: EventFormProps) {
           },
         );
       } else if (mode === "edit" && eventId) {
-        updateMutation.mutate({
-          eventId,
-          name: value.name,
-          description:
-            value.description && value.description.trim() !== ""
-              ? value.description
-              : undefined,
-          estimatedBudget:
-            value.estimatedBudget && value.estimatedBudget.trim() !== ""
-              ? value.estimatedBudget
-              : undefined,
-          startDate: value.startDate!,
-          endDate: value.endDate,
-          statusId: value.statusId,
-        });
+        updateMutation.mutate(
+          {
+            eventId,
+            name: value.name,
+            description:
+              value.description && value.description.trim() !== ""
+                ? value.description
+                : undefined,
+            estimatedBudget:
+              value.estimatedBudget && value.estimatedBudget.trim() !== ""
+                ? value.estimatedBudget
+                : undefined,
+            startDate: value.startDate!,
+            endDate: value.endDate,
+            statusId: value.statusId,
+          },
+          {
+            onSuccess: () => {
+              setDialogOpen(false);
+            },
+          },
+        );
       }
     },
   });
