@@ -8,6 +8,8 @@ export {
   useGetEventById,
   useEventSpendingHistory,
   useGetUnLinkedExpenses,
+  useRemoveLinkedExpense,
+  useLinkingExpenseToEvent
 } from "./use-events-queries";
 
 // Budget hooks

@@ -1,3 +1,5 @@
+import router from "next/dist/shared/lib/router/router";
+
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
@@ -103,4 +105,64 @@ export const useGetEventById = (eventId: string) => {
 export const useGetUnLinkedExpenses = (eventId: string) => {
   const trpc = useTRPC();
   return useQuery(trpc.event.getUnlinkedExpenses.queryOptions({ eventId }));
+};
+
+export const useRemoveLinkedExpense = (options?: {
+  onSuccess?: () => void;
+  onError?: (error: unknown) => void;
+}) => {
+  const trpc = useTRPC();
+  const queryClient = useQueryClient();
+  return useMutation(
+    trpc.event.removeExpenseFromEvent.mutationOptions({
+      onSuccess: () => {
+        toast.success("Expense removed successfully");
+        
+        // invalidate queries
+        queryClient.invalidateQueries({
+          queryKey: trpc.event.getUnlinkedExpenses.queryKey(),
+          exact: false,
+        });
+        queryClient.invalidateQueries({
+          queryKey: trpc.event.getEventById.queryKey(),
+          exact: false,
+        });
+        options?.onSuccess?.();
+      },
+      onError: (error: any) => {
+        toast.error(error.message || "Failed to remove expense");
+        options?.onError?.(error);
+      },
+    }),
+  );
+};
+
+export const useLinkingExpenseToEvent = (options?: {
+  onSuccess?: () => void;
+  onError?: (error: unknown) => void;
+}) => {
+  const trpc = useTRPC();
+  const queryClient = useQueryClient();
+  return useMutation(
+    trpc.event.addExpenseToEvent.mutationOptions({
+      onSuccess: () => {
+        toast.success("Expenses added successfully");
+
+        // invalidate queries
+        queryClient.invalidateQueries({
+          queryKey: trpc.event.getUnlinkedExpenses.queryKey(),
+          exact: false,
+        });
+        queryClient.invalidateQueries({
+          queryKey: trpc.event.getEventById.queryKey(),
+          exact: false,
+        });
+        options?.onSuccess?.();
+      },
+      onError: (error: any) => {
+        toast.error(error.message || "Failed to add expenses");
+        options?.onError?.(error);
+      },
+    }),
+  );
 };

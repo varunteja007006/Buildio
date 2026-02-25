@@ -26,7 +26,7 @@ import {
   TabsTrigger,
 } from "@workspace/ui/components/tabs";
 
-import { useGetEventById } from "@/hooks";
+import { useGetEventById, useRemoveLinkedExpense } from "@/hooks";
 import { useTRPC } from "@/lib/trpc-client";
 
 import { EventExpenseLinkForm, EventSpendingHistoryChart } from ".";
@@ -40,18 +40,6 @@ export function EventDetails({ eventId }: EventDetailsProps) {
   const trpc = useTRPC();
 
   const { data: event } = useGetEventById(eventId);
-
-  const removeExpenseMutation = useMutation(
-    trpc.event.removeExpenseFromEvent.mutationOptions({
-      onSuccess: () => {
-        toast.success("Expense removed successfully");
-        router.refresh();
-      },
-      onError: (error: any) => {
-        toast.error(error.message || "Failed to remove expense");
-      },
-    }),
-  );
 
   if (!event) {
     return <Loader className="size-5 animate-spin" />;
@@ -162,7 +150,7 @@ export function EventDetails({ eventId }: EventDetailsProps) {
                 <h2 className="text-lg font-semibold mb-1">Linked Expenses</h2>
                 {!event.expenses ||
                 (Array.isArray(event.expenses) &&
-                  (event.expenses as any[]).length === 0) ? (
+                  event.expenses.length === 0) ? (
                   <div className="flex flex-col items-center justify-center py-8">
                     <p className="mb-2 text-sm text-muted-foreground">
                       No expenses linked to this event yet
@@ -171,37 +159,17 @@ export function EventDetails({ eventId }: EventDetailsProps) {
                   </div>
                 ) : (
                   <div className="space-y-2">
-                    {(event.expenses as any[]).map((ee) => (
-                      <div
+                    {event.expenses.map((ee) => (
+                      <ExpenseCard
                         key={ee.id}
-                        className="flex items-center justify-between rounded-md border p-3"
-                      >
-                        <div className="flex-1">
-                          <p className="font-medium">
-                            {ee.expense.category?.name || "Uncategorized"}
-                          </p>
-                          <p className="text-sm text-muted-foreground">
-                            {ee.expense.name}
-                          </p>
-                        </div>
-                        <div className="flex items-center gap-6">
-                          <p className="font-semibold">
-                            ${Number(ee.expense.expenseAmount).toFixed(2)}
-                          </p>
-                          <Button
-                            variant="destructive"
-                            size="icon-sm"
-                            onClick={() =>
-                              removeExpenseMutation.mutate({
-                                eventId,
-                                expenseId: ee.expense.id,
-                              })
-                            }
-                          >
-                            <X className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </div>
+                        categoryName={
+                          ee.expense.category?.name || "Uncategorized"
+                        }
+                        expenseName={ee.expense.name}
+                        expenseAmount={ee.expense.expenseAmount}
+                        eventId={eventId}
+                        expenseId={ee.expense.id}
+                      />
                     ))}
                   </div>
                 )}
@@ -223,3 +191,43 @@ export function EventDetails({ eventId }: EventDetailsProps) {
     </Dialog>
   );
 }
+
+const ExpenseCard = ({
+  categoryName,
+  expenseName,
+  expenseAmount,
+  eventId,
+  expenseId,
+}: {
+  categoryName: string;
+  expenseName: string;
+  expenseAmount: string;
+  eventId: string;
+  expenseId: string;
+}) => {
+  const removeExpenseMutation = useRemoveLinkedExpense();
+
+  return (
+    <div className="flex items-center justify-between rounded-md border p-3">
+      <div className="flex-1">
+        <p className="font-medium">{categoryName}</p>
+        <p className="text-sm text-muted-foreground">{expenseName}</p>
+      </div>
+      <div className="flex items-center gap-6">
+        <p className="font-semibold">${Number(expenseAmount).toFixed(2)}</p>
+        <Button
+          variant="destructive"
+          size="icon-sm"
+          onClick={() =>
+            removeExpenseMutation.mutate({
+              eventId,
+              expenseId,
+            })
+          }
+        >
+          <X className="h-4 w-4" />
+        </Button>
+      </div>
+    </div>
+  );
+};

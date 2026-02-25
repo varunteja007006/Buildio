@@ -14,7 +14,7 @@ import {
   DialogTrigger,
 } from "@workspace/ui/components/dialog";
 
-import { useGetUnLinkedExpenses } from "@/hooks";
+import { useGetUnLinkedExpenses, useLinkingExpenseToEvent } from "@/hooks";
 
 export const EventExpenseLinkForm = ({ eventId }: { eventId: string }) => {
   const [addExpenseDialogOpen, setAddExpenseDialogOpen] = React.useState(false);
@@ -23,25 +23,20 @@ export const EventExpenseLinkForm = ({ eventId }: { eventId: string }) => {
 
   const { data: unlinkedExpenses } = useGetUnLinkedExpenses(eventId);
 
-  // const addExpenseMutation = useMutation(
-  // trpc.event.addExpenseToEvent.mutationOptions({
-  //   onSuccess: () => {
-  //     toast.success("Expenses added successfully");
-  //     setSelectedExpenses([]);
-  //     setAddExpenseDialogOpen(false);
-  //     router.refresh();
-  //   },
-  //   onError: (error: any) => {
-  //     toast.error(error.message || "Failed to add expenses");
-  //   },
-  // }),
-  // );
+  const addExpenseMutation = useLinkingExpenseToEvent({
+    onSuccess: () => {
+      setSelectedExpenses([]);
+      setAddExpenseDialogOpen(false);
+    },
+  });
 
   const handleAddExpenses = () => {
     selectedExpenses.forEach((expenseId) => {
-      // addExpenseMutation.mutate({ eventId, expenseId });
+      addExpenseMutation.mutate({ eventId, expenseId });
     });
   };
+
+  const disabledBtns = addExpenseMutation.isPending;
 
   return (
     <Dialog open={addExpenseDialogOpen} onOpenChange={setAddExpenseDialogOpen}>
@@ -103,10 +98,11 @@ export const EventExpenseLinkForm = ({ eventId }: { eventId: string }) => {
               setSelectedExpenses([]);
               setAddExpenseDialogOpen(false);
             }}
+            disabled={disabledBtns}
           >
             Cancel
           </Button>
-          <Button onClick={handleAddExpenses}>
+          <Button onClick={handleAddExpenses} disabled={disabledBtns}>
             Add {selectedExpenses.length} Expense
             {selectedExpenses.length !== 1 ? "s" : ""}
           </Button>
