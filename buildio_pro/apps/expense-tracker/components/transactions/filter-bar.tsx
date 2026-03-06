@@ -13,6 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@workspace/ui/components/select";
+import { cn } from "@workspace/ui/lib/utils";
 
 interface FilterOption {
   label: string;
@@ -48,7 +49,7 @@ export function FilterBar({
 
   return (
     <div
-      className={`flex flex-col sm:flex-row gap-4 items-center ${className}`}
+      className={cn(`flex flex-col sm:flex-row gap-4 items-center`, className)}
     >
       <div className="relative w-full sm:w-[300px]">
         <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />

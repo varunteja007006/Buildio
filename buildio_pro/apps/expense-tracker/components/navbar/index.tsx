@@ -7,11 +7,15 @@ import { LoginBtn } from "../organisms/auth/login-btn";
 
 export function Navbar() {
   return (
-    <nav className="px-8 py-4 flex items-center justify-between w-full bg-sidebar">
-      <h1 className="text-black dark:text-white font-bold">{appConfig.name}</h1>
-      <div className="flex flex-row items-center gap-4 justify-between">
-        <LoginBtn />
-        <ModeToggle />
+    <nav className="bg-card w-full">
+      <div className="container flex items-center justify-between">
+        <h1 className="text-black dark:text-white font-bold">
+          {appConfig.name}
+        </h1>
+        <div className="flex flex-row items-center gap-4 justify-between">
+          <LoginBtn />
+          <ModeToggle />
+        </div>
       </div>
     </nav>
   );

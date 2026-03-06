@@ -74,7 +74,7 @@ export function TopCategories({
                   paddingAngle={5}
                   dataKey="totalSpent"
                 >
-                  {activeData.map((entry, index) => (
+                  {activeData.map((_entry, index) => (
                     <Cell
                       key={`cell-${index}`}
                       fill={COLORS[index % COLORS.length]}

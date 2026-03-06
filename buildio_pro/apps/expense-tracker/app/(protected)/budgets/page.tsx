@@ -4,7 +4,7 @@ import * as React from "react";
 
 import Link from "next/link";
 
-import { Calendar, DollarSign, Eye, Loader2, Pencil, Plus } from "lucide-react";
+import { Calendar, Eye, Loader2, Pencil, Plus } from "lucide-react";
 
 import { Badge } from "@workspace/ui/components/badge";
 import { Button } from "@workspace/ui/components/button";
@@ -80,9 +80,8 @@ export default function BudgetsPage() {
                     </CardHeader>
                     <CardContent>
                       <div className="flex items-center gap-2 text-sm">
-                        <DollarSign className="h-4 w-4" />
                         <span className="font-medium">
-                          ${Number(budget.budgetAmount).toFixed(2)}
+                          {Number(budget.budgetAmount).toFixed(2)}
                         </span>
                       </div>
                     </CardContent>
@@ -171,9 +170,8 @@ export default function BudgetsPage() {
                               </span>
                             </div>
                             <div className="flex items-center gap-1">
-                              <DollarSign className="h-4 w-4" />
                               <span className="font-semibold">
-                                ${Number(budget.budgetAmount).toFixed(2)}
+                                {Number(budget.budgetAmount).toFixed(2)}
                               </span>
                             </div>
                           </div>

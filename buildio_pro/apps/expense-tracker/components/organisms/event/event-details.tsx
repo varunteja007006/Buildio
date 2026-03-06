@@ -25,6 +25,7 @@ import {
   TabsList,
   TabsTrigger,
 } from "@workspace/ui/components/tabs";
+import { cn } from "@workspace/ui/lib/utils";
 
 import { useGetEventById, useRemoveLinkedExpense } from "@/hooks";
 import { useTRPC } from "@/lib/trpc-client";
@@ -102,7 +103,10 @@ export function EventDetails({ eventId }: EventDetailsProps) {
                           Remaining
                         </p>
                         <p
-                          className={`text-2xl font-bold ${event.remaining < 0 ? "text-destructive" : "text-green-600"}`}
+                          className={cn(`text-2xl font-bold`, {
+                            "text-destructive": event.remaining < 0,
+                            "text-green-600": event.remaining >= 0,
+                          })}
                         >
                           {event.remaining.toFixed(2)}
                         </p>
@@ -214,7 +218,7 @@ const ExpenseCard = ({
         <p className="text-sm text-muted-foreground">{expenseName}</p>
       </div>
       <div className="flex items-center gap-6">
-        <p className="font-semibold">${Number(expenseAmount).toFixed(2)}</p>
+        <p className="font-semibold">{Number(expenseAmount).toFixed(2)}</p>
         <Button
           variant="destructive"
           size="icon-sm"

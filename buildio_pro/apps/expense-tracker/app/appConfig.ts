@@ -1,3 +1,3 @@
 export const appConfig = {
-  name: "EXP TKR",
+  name: "Expense Tracker",
 };

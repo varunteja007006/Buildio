@@ -135,7 +135,7 @@ export function ExpenseListComponent() {
                   <YAxis
                     tickLine={false}
                     axisLine={false}
-                    tickFormatter={(value) => `$${value}`}
+                    tickFormatter={(value) => `${value}`}
                   />
                   <ChartTooltip content={<ChartTooltipContent />} />
                   <Bar

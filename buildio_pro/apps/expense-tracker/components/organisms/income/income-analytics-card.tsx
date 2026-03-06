@@ -28,6 +28,7 @@ import {
   ChartTooltipContent,
 } from "@workspace/ui/components/chart";
 import { formatCurrency } from "@workspace/ui/lib/currency.utils";
+import { cn } from "@workspace/ui/lib/utils";
 
 import { useIncomeAnalytics } from "@/hooks";
 
@@ -63,7 +64,12 @@ export const IncomeAnalyticsCard = () => {
               </CardHeader>
               <CardContent>
                 <div
-                  className={`text-2xl font-bold ${analyticsData.netIncome >= 0 ? "text-green-600" : "text-red-600"}`}
+                  className={cn(
+                    `text-2xl font-bold`,
+                    analyticsData.netIncome >= 0
+                      ? "text-green-600"
+                      : "text-red-600",
+                  )}
                 >
                   {formatCurrency(analyticsData.netIncome)}
                 </div>
@@ -118,7 +124,7 @@ export const IncomeAnalyticsCard = () => {
                   <YAxis
                     tickLine={false}
                     axisLine={false}
-                    tickFormatter={(value) => `$${value}`}
+                    tickFormatter={(value) => `${value}`}
                   />
                   <ChartTooltip content={<ChartTooltipContent />} />
                   <Bar

@@ -70,7 +70,7 @@ export function IncomeDetails({ incomeId }: IncomeDetailsProps) {
           <p>{income.name || "Untitled Income"}</p>
           <div className="flex items-center gap-2 mt-2">
             <span className="text-2xl font-bold text-green-600">
-              ${Number(income.incomeAmount).toFixed(2)}
+              {Number(income.incomeAmount).toFixed(2)}
             </span>
           </div>
         </div>
@@ -88,7 +88,7 @@ export function IncomeDetails({ incomeId }: IncomeDetailsProps) {
               <div>
                 <p className="text-sm text-muted-foreground">Amount</p>
                 <p className="text-base font-medium text-green-600">
-                  ${Number(income.incomeAmount).toFixed(2)}
+                  {Number(income.incomeAmount).toFixed(2)}
                 </p>
               </div>
 

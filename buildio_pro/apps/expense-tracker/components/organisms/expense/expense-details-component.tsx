@@ -93,7 +93,7 @@ export function ExpenseDetailsComponent({
           <div className="pb-6 border-b">
             <p className="text-sm text-muted-foreground mb-2">Amount</p>
             <p className="text-3xl font-bold">
-              ${Number(expense.expenseAmount).toFixed(2)}
+              {Number(expense.expenseAmount).toFixed(2)}
             </p>
           </div>
 
@@ -133,11 +133,9 @@ export function ExpenseDetailsComponent({
               </p>
               <Button
                 variant="outline"
-                onClick={() =>
-                  router.push(`/budgets/${(expense.budget as any).id}`)
-                }
+                onClick={() => router.push(`/budgets/${expense?.budget?.id}`)}
               >
-                {(expense.budget as any).name}
+                {expense.budget.name}
               </Button>
             </div>
           )}

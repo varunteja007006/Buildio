@@ -85,7 +85,7 @@ export const EventExpenseLinkForm = ({ eventId }: { eventId: string }) => {
                   </p>
                 </div>
                 <p className="font-semibold">
-                  ${Number(expense.expenseAmount).toFixed(2)}
+                  {Number(expense.expenseAmount).toFixed(2)}
                 </p>
               </div>
             ))

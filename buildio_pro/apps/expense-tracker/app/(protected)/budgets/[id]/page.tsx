@@ -9,7 +9,6 @@ import { useQuery } from "@tanstack/react-query";
 import {
   ArrowLeft,
   Calendar,
-  DollarSign,
   Loader2,
   Pencil,
   TrendingDown,
@@ -25,6 +24,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@workspace/ui/components/card";
+import { cn } from "@workspace/ui/lib/utils";
 
 import { BudgetDeleteDialog } from "@/components/organisms/budget/budget-delete-dialog";
 import { useTRPC } from "@/lib/trpc-client";
@@ -122,9 +122,8 @@ export default function BudgetDetailPage() {
           </CardHeader>
           <CardContent>
             <div className="flex items-center gap-2">
-              <DollarSign className="h-5 w-5 text-muted-foreground" />
               <span className="text-2xl font-bold">
-                ${totals.allocated.toFixed(2)}
+                {totals.allocated.toFixed(2)}
               </span>
             </div>
           </CardContent>
@@ -136,9 +135,9 @@ export default function BudgetDetailPage() {
           </CardHeader>
           <CardContent>
             <div className="flex items-center gap-2">
-              <TrendingDown className={`h-5 w-5 ${getProgressColor()}`} />
+              <TrendingDown className={cn(`h-5 w-5`, getProgressColor())} />
               <span className="text-2xl font-bold">
-                ${totals.spent.toFixed(2)}
+                {totals.spent.toFixed(2)}
               </span>
             </div>
             <p className="text-muted-foreground text-xs mt-1">
@@ -154,12 +153,13 @@ export default function BudgetDetailPage() {
           <CardContent>
             <div className="flex items-center gap-2">
               <TrendingUp
-                className={`h-5 w-5 ${
-                  totals.remaining >= 0 ? "text-green-500" : "text-red-500"
-                }`}
+                className={cn(
+                  `h-5 w-5`,
+                  totals.remaining >= 0 ? "text-green-500" : "text-red-500",
+                )}
               />
               <span className="text-2xl font-bold">
-                ${totals.remaining.toFixed(2)}
+                {totals.remaining.toFixed(2)}
               </span>
             </div>
             {totals.remaining < 0 && (
@@ -181,13 +181,14 @@ export default function BudgetDetailPage() {
             </div>
             <div className="w-full bg-secondary h-3 rounded-full overflow-hidden">
               <div
-                className={`h-full transition-all ${
+                className={cn(
+                  `h-full transition-all`,
                   percentageUsed >= 100
                     ? "bg-red-500"
                     : percentageUsed >= 80
                       ? "bg-orange-500"
-                      : "bg-green-500"
-                }`}
+                      : "bg-green-500",
+                )}
                 style={{ width: `${Math.min(percentageUsed, 100)}%` }}
               />
             </div>
@@ -238,7 +239,7 @@ export default function BudgetDetailPage() {
                     </p>
                   </div>
                   <span className="font-semibold">
-                    ${Number(expense.expenseAmount).toFixed(2)}
+                    {Number(expense.expenseAmount).toFixed(2)}
                   </span>
                 </div>
               ))}
