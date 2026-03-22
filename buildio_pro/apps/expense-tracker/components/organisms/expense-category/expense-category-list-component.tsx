@@ -33,7 +33,12 @@ import {
 } from "@workspace/ui/components/table";
 
 import { useTRPC } from "@/lib/trpc-client";
-import { ExpenseCategoryFormDialog } from ".";
+
+import {
+  ExpenseCategoryDelete,
+  ExpenseCategoryDetailsDialog,
+  ExpenseCategoryFormDialog,
+} from ".";
 
 export function ExpenseCategoryListComponent() {
   const router = useRouter();
@@ -48,26 +53,6 @@ export function ExpenseCategoryListComponent() {
       page,
     }),
   );
-
-  const deleteMutation = useMutation(
-    trpc.expenseCategory.deleteCategory.mutationOptions({
-      onSuccess: () => {
-        toast.success("Expense category deleted successfully!");
-        refetch();
-      },
-      onError: (error: any) => {
-        toast.error(error.message || "Failed to delete expense category");
-      },
-    }),
-  );
-
-  const handleDelete = (categoryId: string) => {
-    if (
-      window.confirm("Are you sure you want to delete this expense category?")
-    ) {
-      deleteMutation.mutate({ categoryId });
-    }
-  };
 
   const categories = data?.data || [];
   const meta = data?.meta;
@@ -149,15 +134,10 @@ export function ExpenseCategoryListComponent() {
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex justify-end gap-2">
-                          <Button
-                            variant="default"
-                            size="sm"
-                            onClick={() =>
-                              router.push(`/expense-categories/${category.id}`)
-                            }
-                          >
-                            <Eye className="h-4 w-4" />
-                          </Button>
+                          <ExpenseCategoryDetailsDialog
+                            categoryId={category.id}
+                          />
+
                           <Button
                             variant="ghost"
                             size="sm"
@@ -169,14 +149,8 @@ export function ExpenseCategoryListComponent() {
                           >
                             <Edit2 className="h-4 w-4" />
                           </Button>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => handleDelete(category.id)}
-                            disabled={deleteMutation.isPending}
-                          >
-                            <Trash2 className="h-4 w-4 text-destructive" />
-                          </Button>
+
+                          <ExpenseCategoryDelete categoryId={category.id} />
                         </div>
                       </TableCell>
                     </TableRow>

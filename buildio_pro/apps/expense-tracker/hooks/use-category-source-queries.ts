@@ -5,15 +5,6 @@ import { toast } from "sonner";
 
 import { useTRPC } from "@/lib/trpc-client";
 
-// Query keys for expense categories
-const expenseCategoryKeys = {
-  all: ["expenseCategory"] as const,
-  lists: () => [...expenseCategoryKeys.all, "list"] as const,
-  list: (filters: any) => [...expenseCategoryKeys.lists(), filters] as const,
-  details: () => [...expenseCategoryKeys.all, "detail"] as const,
-  detail: (id: string) => [...expenseCategoryKeys.details(), id] as const,
-};
-
 // List expense categories
 export function useExpenseCategoryList(params: {
   limit: number;
@@ -43,7 +34,6 @@ export function useCreateExpenseCategory(options?: {
     trpc.expenseCategory.createCategory.mutationOptions({
       onSuccess: () => {
         toast.success("Expense category created successfully!");
-        queryClient.invalidateQueries({ queryKey: expenseCategoryKeys.all });
         options?.onSuccess?.();
       },
       onError: (error: any) => {
@@ -66,12 +56,6 @@ export function useUpdateExpenseCategory(options?: {
     trpc.expenseCategory.updateCategory.mutationOptions({
       onSuccess: (data, variables) => {
         toast.success("Expense category updated successfully!");
-        queryClient.invalidateQueries({
-          queryKey: expenseCategoryKeys.detail(variables.categoryId),
-        });
-        queryClient.invalidateQueries({
-          queryKey: expenseCategoryKeys.lists(),
-        });
         options?.onSuccess?.();
       },
       onError: (error: any) => {
@@ -94,9 +78,7 @@ export function useDeleteExpenseCategory(options?: {
     trpc.expenseCategory.deleteCategory.mutationOptions({
       onSuccess: () => {
         toast.success("Expense category deleted successfully!");
-        queryClient.invalidateQueries({ queryKey: expenseCategoryKeys.all });
-        // Also invalidate expenses since they reference categories
-        queryClient.invalidateQueries({ queryKey: ["expense"] });
+
         options?.onSuccess?.();
       },
       onError: (error: any) => {
@@ -106,15 +88,6 @@ export function useDeleteExpenseCategory(options?: {
     }),
   );
 }
-
-// Query keys for income sources
-const incomeSourceKeys = {
-  all: ["incomeSource"] as const,
-  lists: () => [...incomeSourceKeys.all, "list"] as const,
-  list: (filters: any) => [...incomeSourceKeys.lists(), filters] as const,
-  details: () => [...incomeSourceKeys.all, "detail"] as const,
-  detail: (id: string) => [...incomeSourceKeys.details(), id] as const,
-};
 
 // List income sources
 export function useIncomeSourceList(params: { limit: number; page: number }) {

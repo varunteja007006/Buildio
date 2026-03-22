@@ -9,19 +9,9 @@ import * as z from "zod";
 
 import { Button } from "@workspace/ui/components/button";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@workspace/ui/components/card";
-import {
   Dialog,
-  DialogClose,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -103,63 +93,40 @@ export function ExpenseCategoryFormComponent({
   const isSubmitting = createMutation.isPending || updateMutation.isPending;
 
   return (
-    <Card className="w-full max-w-2xl mx-auto">
-      <CardHeader>
-        <CardTitle>
-          {mode === "create"
-            ? "Create Expense Category"
-            : "Edit Expense Category"}
-        </CardTitle>
-        <CardDescription>
-          {mode === "create"
-            ? "Add a new category to organize your expenses"
-            : "Update category information"}
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        <form
-          id="category-form"
-          onSubmit={(e) => {
-            e.preventDefault();
-            form.handleSubmit();
-          }}
-        >
-          <FieldGroup>
-            <form.AppField name="name">
-              {(field) => <field.Input label="Category Name" />}
-            </form.AppField>
+    <>
+      <form
+        id="category-form"
+        onSubmit={(e) => {
+          e.preventDefault();
+          form.handleSubmit();
+        }}
+      >
+        <FieldGroup>
+          <form.AppField name="name">
+            {(field) => <field.Input label="Category Name" />}
+          </form.AppField>
 
-            <form.AppField name="description">
-              {(field) => <field.Textarea label="Description (Optional)" />}
-            </form.AppField>
-          </FieldGroup>
-        </form>
-      </CardContent>
-      <CardFooter>
-        <Field orientation="horizontal">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => router.back()}
-            disabled={isSubmitting}
-          >
-            Cancel
-          </Button>
-          <Button type="submit" form="category-form" disabled={isSubmitting}>
-            {isSubmitting ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                {mode === "create" ? "Creating..." : "Updating..."}
-              </>
-            ) : mode === "create" ? (
-              "Create Category"
-            ) : (
-              "Update Category"
-            )}
-          </Button>
-        </Field>
-      </CardFooter>
-    </Card>
+          <form.AppField name="description">
+            {(field) => <field.Textarea label="Description (Optional)" />}
+          </form.AppField>
+        </FieldGroup>
+      </form>
+
+      <Field orientation="horizontal">
+        <Button type="submit" form="category-form" disabled={isSubmitting}>
+          {isSubmitting ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              {mode === "create" ? "Creating..." : "Updating..."}
+            </>
+          ) : mode === "create" ? (
+            "Create Category"
+          ) : (
+            "Update Category"
+          )}
+        </Button>
+      </Field>
+    </>
   );
 }
 
@@ -187,12 +154,6 @@ export function ExpenseCategoryFormDialog(props: ExpenseCategoryFormProps) {
         </DialogHeader>
 
         <ExpenseCategoryFormComponent {...props} />
-
-        <DialogFooter>
-          <DialogClose asChild>
-            <Button>Close</Button>
-          </DialogClose>
-        </DialogFooter>
       </DialogContent>
     </Dialog>
   );
