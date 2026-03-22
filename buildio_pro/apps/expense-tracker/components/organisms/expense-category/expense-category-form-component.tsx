@@ -16,6 +16,16 @@ import {
   CardHeader,
   CardTitle,
 } from "@workspace/ui/components/card";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@workspace/ui/components/dialog";
 import { Field, FieldGroup } from "@workspace/ui/components/field";
 import { useAppForm } from "@workspace/ui/components/forms/hooks";
 
@@ -150,5 +160,40 @@ export function ExpenseCategoryFormComponent({
         </Field>
       </CardFooter>
     </Card>
+  );
+}
+
+export function ExpenseCategoryFormDialog(props: ExpenseCategoryFormProps) {
+  const { mode } = props;
+  return (
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button variant="default">
+          {mode === "create" ? "Create Category" : "Edit Category"}
+        </Button>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>
+            {mode === "create"
+              ? "Create Expense Category"
+              : "Edit Expense Category"}
+          </DialogTitle>
+          <DialogDescription>
+            {mode === "create"
+              ? "Add a new category to organize your expenses"
+              : "Update category information"}
+          </DialogDescription>
+        </DialogHeader>
+
+        <ExpenseCategoryFormComponent {...props} />
+
+        <DialogFooter>
+          <DialogClose asChild>
+            <Button>Close</Button>
+          </DialogClose>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }

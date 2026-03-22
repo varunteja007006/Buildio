@@ -16,6 +16,7 @@ import {
 } from "@workspace/ui/components/chart";
 import { formatCurrency } from "@workspace/ui/lib/currency.utils";
 
+import { SimpleCard } from "@/components/atoms/card";
 import { useIncomeSourceAnalytics } from "@/hooks";
 
 export const IncomeSourceAnalyticsCard = () => {
@@ -77,7 +78,10 @@ export const IncomeSourceAnalyticsCard = () => {
                     axisLine={false}
                     tickFormatter={(value) => `${value}`}
                   />
-                  <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
+                  <ChartTooltip
+                    cursor={false}
+                    content={<ChartTooltipContent />}
+                  />
                   <Bar
                     dataKey="totalEarned"
                     fill="var(--color-totalEarned)"
@@ -88,41 +92,31 @@ export const IncomeSourceAnalyticsCard = () => {
             </CardContent>
           </Card>
           <div className="col-span-3 space-y-4">
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
-                  Total Sources
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{totalSources}</div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
-                  Top Income Source
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold">{topSource.sourceName}</div>
-                <p className="text-xs text-muted-foreground">
-                  {formatCurrency(topSource.totalAmount)} earned
-                </p>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
-                  Total Earned
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
+            <SimpleCard
+              title="Total Sources"
+              content={<div className="text-2xl font-bold">{totalSources}</div>}
+            />
+            <SimpleCard
+              title="Top Income Source"
+              content={
+                <>
+                  <div className="text-2xl font-bold">
+                    {topSource.sourceName}
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    {formatCurrency(topSource.totalAmount)} earned
+                  </p>
+                </>
+              }
+            />
+            <SimpleCard
+              title="Total Earned"
+              content={
                 <div className="text-2xl font-bold">
                   {formatCurrency(totalEarned)}
                 </div>
-              </CardContent>
-            </Card>
+              }
+            />
           </div>
         </div>
       )}

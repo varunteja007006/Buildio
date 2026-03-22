@@ -45,6 +45,7 @@ import {
   useDashboardSummary,
   useDashboardTopCategories,
 } from "@/hooks";
+import { ExpenseFormComponent } from "@/components/organisms/expense";
 
 export default function DashboardPage() {
   const summaryQuery = useDashboardSummary();
@@ -108,10 +109,8 @@ export default function DashboardPage() {
   return (
     <div className="container mx-auto space-y-6">
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-        <div className="flex items-center gap-2">
-          <Link href="/expenses/add">
-            <Button>Add Expense</Button>
-          </Link>
+        <div className="flex justify-end w-full items-center gap-2">
+          <ExpenseFormComponent mode="create" />
         </div>
       </div>
 

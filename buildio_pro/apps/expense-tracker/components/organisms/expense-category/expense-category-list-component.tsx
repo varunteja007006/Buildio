@@ -33,6 +33,7 @@ import {
 } from "@workspace/ui/components/table";
 
 import { useTRPC } from "@/lib/trpc-client";
+import { ExpenseCategoryFormDialog } from ".";
 
 export function ExpenseCategoryListComponent() {
   const router = useRouter();
@@ -103,9 +104,7 @@ export function ExpenseCategoryListComponent() {
               </SelectContent>
             </Select>
 
-            <Button onClick={() => router.push("/expense-categories/create")}>
-              + Add Category
-            </Button>
+            <ExpenseCategoryFormDialog mode="create" />
           </div>
 
           {/* Table */}
