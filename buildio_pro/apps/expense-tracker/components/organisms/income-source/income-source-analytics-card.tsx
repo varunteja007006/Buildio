@@ -57,17 +57,17 @@ export const IncomeSourceAnalyticsCard = () => {
             <CardContent className="pl-2">
               <ChartContainer
                 config={{
-                  totalAmount: {
+                  totalEarned: {
                     label: "Total Earned",
-                    color: "hsl(var(--chart-1))",
+                    color: "var(--chart-1)",
                   },
                 }}
                 className="h-[300px] w-full"
               >
-                <BarChart data={analyticsData}>
+                <BarChart accessibilityLayer data={analyticsData}>
                   <CartesianGrid vertical={false} />
                   <XAxis
-                    dataKey="sourceName"
+                    dataKey="name"
                     tickLine={false}
                     tickMargin={10}
                     axisLine={false}
@@ -77,10 +77,10 @@ export const IncomeSourceAnalyticsCard = () => {
                     axisLine={false}
                     tickFormatter={(value) => `${value}`}
                   />
-                  <ChartTooltip content={<ChartTooltipContent />} />
+                  <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
                   <Bar
-                    dataKey="totalAmount"
-                    fill="var(--color-totalAmount)"
+                    dataKey="totalEarned"
+                    fill="var(--color-totalEarned)"
                     radius={[4, 4, 0, 0]}
                   />
                 </BarChart>
