@@ -19,6 +19,7 @@ import {
 import { Field, FieldGroup } from "@workspace/ui/components/field";
 import { useAppForm } from "@workspace/ui/components/forms/hooks";
 
+import { EditBtn } from "@/components/atoms/edit-btn";
 import { useCreateExpenseCategory, useUpdateExpenseCategory } from "@/hooks";
 
 const categoryFormSchema = z.object({
@@ -93,7 +94,7 @@ export function ExpenseCategoryFormComponent({
   const isSubmitting = createMutation.isPending || updateMutation.isPending;
 
   return (
-    <>
+    <div className="space-y-6">
       <form
         id="category-form"
         onSubmit={(e) => {
@@ -126,7 +127,7 @@ export function ExpenseCategoryFormComponent({
           )}
         </Button>
       </Field>
-    </>
+    </div>
   );
 }
 
@@ -135,9 +136,11 @@ export function ExpenseCategoryFormDialog(props: ExpenseCategoryFormProps) {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="default">
-          {mode === "create" ? "Create Category" : "Edit Category"}
-        </Button>
+        {mode === "create" ? (
+          <Button variant="default">Create Category</Button>
+        ) : (
+          <EditBtn iconOnly />
+        )}
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>

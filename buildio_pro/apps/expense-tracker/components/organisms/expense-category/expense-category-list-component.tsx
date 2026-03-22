@@ -2,12 +2,6 @@
 
 import * as React from "react";
 
-import { useRouter } from "next/navigation";
-
-import { useMutation, useQuery } from "@tanstack/react-query";
-import { Edit2, Eye, Trash2 } from "lucide-react";
-import { toast } from "sonner";
-
 import { Button } from "@workspace/ui/components/button";
 import {
   Card,
@@ -32,7 +26,7 @@ import {
   TableRow,
 } from "@workspace/ui/components/table";
 
-import { useTRPC } from "@/lib/trpc-client";
+import { useExpenseCategoryList } from "@/hooks";
 
 import {
   ExpenseCategoryDelete,
@@ -41,18 +35,13 @@ import {
 } from ".";
 
 export function ExpenseCategoryListComponent() {
-  const router = useRouter();
-  const trpc = useTRPC();
-
   const [limit, setLimit] = React.useState(10);
   const [page, setPage] = React.useState(1);
 
-  const { data, isLoading, refetch } = useQuery(
-    trpc.expenseCategory.listCategories.queryOptions({
-      limit,
-      page,
-    }),
-  );
+  const { data, isLoading } = useExpenseCategoryList({
+    limit,
+    page,
+  });
 
   const categories = data?.data || [];
   const meta = data?.meta;
@@ -138,17 +127,14 @@ export function ExpenseCategoryListComponent() {
                             categoryId={category.id}
                           />
 
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() =>
-                              router.push(
-                                `/expense-categories/${category.id}/edit`,
-                              )
-                            }
-                          >
-                            <Edit2 className="h-4 w-4" />
-                          </Button>
+                          <ExpenseCategoryFormDialog
+                            mode="edit"
+                            categoryId={category.id}
+                            initialValues={{
+                              name: category.name,
+                              description: category.description || "",
+                            }}
+                          />
 
                           <ExpenseCategoryDelete categoryId={category.id} />
                         </div>
