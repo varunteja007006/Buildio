@@ -45,3 +45,10 @@ export const deleteOldScribbleLines = mutation(async ({ db }) => {
     }
   }
 });
+
+export const deleteAllTeamReactions = mutation(async ({ db }) => {
+  const reactions = await db.query("team_reactions").collect();
+  for (const reaction of reactions) {
+    await db.delete(reaction._id);
+  }
+});

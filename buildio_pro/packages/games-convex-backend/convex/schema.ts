@@ -24,7 +24,16 @@ export default defineSchema({
     created_at: v.number(),
   })
     .index("by_room", ["roomId"])
-    .index("by_user", ["userId"]),
+    .index("by_user", ["userId"])
+    .index("by_room_and_user", ["roomId", "userId"]),
+
+  team_reactions: defineTable({
+    roomId: v.id("rooms"),
+    userId: v.id("users"),
+    reaction: v.string(), // e.g., "like", "dislike", "heart"
+  })
+    .index("by_room_and_user", ["roomId", "userId"])
+    .index("by_room", ["roomId"]),
 
   stories: defineTable({
     title: v.string(),

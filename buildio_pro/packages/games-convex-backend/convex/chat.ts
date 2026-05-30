@@ -62,3 +62,54 @@ export const sendMessage = mutation({
     });
   },
 });
+
+export const getTeamReactions = query({
+  args: {
+    roomCode: v.string(),
+    userToken: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const user = await getUserFromToken(ctx, args.userToken);
+    if (!user.success || !user.id) throw new Error("User not found");
+
+    const room = await ctx.db
+      .query("rooms")
+      .withIndex("by_room_code", (q) => q.eq("room_code", args.roomCode))
+      .unique();
+
+    if (!room) throw new Error("Room not found");
+
+    const reactions = await ctx.db
+      .query("team_reactions")
+      .withIndex("by_room", (q) => q.eq("roomId", room._id))
+      .order("desc")
+      .take(20); // Grab the 20 most recent reactions
+
+    return reactions;
+  },
+});
+
+export const createTeamReaction = mutation({
+  args: {
+    roomCode: v.string(),
+    userToken: v.string(),
+    reaction: v.string(),
+  },
+  handler: async (ctx, args) => {
+    const user = await getUserFromToken(ctx, args.userToken);
+    if (!user.success || !user.id) throw new Error("User not found");
+
+    const room = await ctx.db
+      .query("rooms")
+      .withIndex("by_room_code", (q) => q.eq("room_code", args.roomCode))
+      .unique();
+
+    if (!room) throw new Error("Room not found");
+
+    await ctx.db.insert("team_reactions", {
+      roomId: room._id,
+      userId: user.id,
+      reaction: args.reaction,
+    });
+  },
+});

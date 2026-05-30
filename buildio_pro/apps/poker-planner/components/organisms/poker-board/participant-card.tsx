@@ -1,4 +1,18 @@
+import * as React from "react";
+
+import { EllipsisVertical } from "lucide-react";
+
+import { Button } from "@workspace/ui/components/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@workspace/ui/components/dropdown-menu";
+
 import { getEmojiForUserId } from "@/lib/utils";
+
+import { ConfettiSideCannons } from "./reaction-collection";
 
 export function ParticipantCard({
   name,
@@ -6,12 +20,14 @@ export function ParticipantCard({
   hasVoted,
   lastDisconnected,
   emojiId,
+  isUser,
 }: Readonly<{
   name: string;
   online: boolean;
   hasVoted: boolean;
   lastDisconnected?: number;
   emojiId: string;
+  isUser: boolean;
 }>) {
   return (
     <div className="border-primary/25 flex w-full flex-row items-center justify-between gap-2 overflow-hidden rounded-md border bg-white p-2 pr-4 pl-2 shadow dark:bg-secondary">
@@ -32,6 +48,11 @@ export function ParticipantCard({
         </div>
       </div>
       <div>{hasVoted && <div className="animate-bounce">👍</div>}</div>
+      {isUser && (
+        <div>
+          <ReactionsMenu />
+        </div>
+      )}
     </div>
   );
 }
@@ -48,4 +69,21 @@ function getTimeAgo(timestamp: number): string {
   }
   const days = Math.floor(diff / 86400);
   return `Last seen ${days} day${days === 1 ? "" : "s"} ago`;
+}
+
+export function ReactionsMenu() {
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button variant="ghost" size="icon-sm">
+          <EllipsisVertical />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent>
+        <DropdownMenuItem asChild>
+          <ConfettiSideCannons />
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
 }

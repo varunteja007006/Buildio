@@ -8,13 +8,15 @@ import { PartyPopper } from "lucide-react";
 import { Button } from "@workspace/ui/components/button";
 import { cn } from "@workspace/ui/lib/utils";
 
-export function ConfettiSideCannons({
+export function ConfettiSideCannonsBtn({
   children,
   onClickCb,
   className,
   autoTrigger = false,
+  size = "default",
   ...props
 }: {
+  size?: "sm" | "default" | "lg";
   onClickCb?: () => void;
   autoTrigger?: boolean; // whether to auto trigger confetti on mount
 } & React.ComponentProps<"button">) {
@@ -69,6 +71,7 @@ export function ConfettiSideCannons({
         onClick={handleClickWithCb}
         {...props}
         className={cn("", className)}
+        size={size}
       >
         {children || (
           <>

@@ -28,4 +28,10 @@ crons.interval(
   api.cleanup.deleteOldScribbleLines,
 );
 
+crons.interval(
+  "prune old team reactions",
+  { minutes: 60 }, // every hour
+  api.cleanup.deleteAllTeamReactions,
+);
+
 export default crons;
