@@ -47,7 +47,7 @@ export function useJoinRoom() {
       });
 
       if (joinResult.success) {
-        toast.success(joinResult.message);
+        // toast.success(joinResult.message);
         router.push(`/room/${roomCode}`);
         return true;
       } else {
