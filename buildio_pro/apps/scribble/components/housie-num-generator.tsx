@@ -1,19 +1,20 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+
 import { Button } from "@workspace/ui/components/button";
 import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectItem,
-} from "@workspace/ui/components/select";
-import {
   Card,
+  CardContent,
   CardHeader,
   CardTitle,
-  CardContent,
 } from "@workspace/ui/components/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@workspace/ui/components/select";
 
 interface VoiceOption extends SpeechSynthesisVoice {}
 

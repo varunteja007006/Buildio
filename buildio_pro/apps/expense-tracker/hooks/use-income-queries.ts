@@ -1,0 +1,148 @@
+"use client";
+
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
+
+import { useTRPC } from "@/lib/trpc-client";
+
+// Income analytics
+export function useIncomeAnalytics() {
+  const trpc = useTRPC();
+  return useQuery(trpc.income.getAnalytics.queryOptions());
+}
+
+// List incomes
+export function useIncomeList(params: { limit: number; page: number }) {
+  const trpc = useTRPC();
+  return useQuery(trpc.income.listIncomes.queryOptions(params));
+}
+
+// Income details
+export function useIncomeDetails(incomeId: string) {
+  const trpc = useTRPC();
+  return useQuery(trpc.income.getIncomeById.queryOptions({ incomeId }));
+}
+
+// Create income
+export function useCreateIncome(options?: {
+  onSuccess?: () => void;
+  onError?: (error: any) => void;
+}) {
+  const trpc = useTRPC();
+  const queryClient = useQueryClient();
+
+  return useMutation(
+    trpc.income.createIncome.mutationOptions({
+      onSuccess: () => {
+        toast.success("Income created successfully!");
+        // Invalidate income queries
+        queryClient.invalidateQueries({
+          queryKey: trpc.income.listIncomes.queryKey(),
+        });
+        // Invalidate dashboard (balance changes)
+        queryClient.invalidateQueries({
+          queryKey: trpc.income.getAnalytics.queryKey(),
+        });
+        options?.onSuccess?.();
+      },
+      onError: (error: any) => {
+        toast.error(error.message || "Failed to create income");
+        options?.onError?.(error);
+      },
+    }),
+  );
+}
+
+// Update income
+export function useUpdateIncome(options?: {
+  onSuccess?: () => void;
+  onError?: (error: any) => void;
+}) {
+  const trpc = useTRPC();
+  const queryClient = useQueryClient();
+
+  return useMutation(
+    trpc.income.updateIncome.mutationOptions({
+      onSuccess: (data, variables) => {
+        toast.success("Income updated successfully!");
+        // Invalidate lists
+        queryClient.invalidateQueries({
+          queryKey: trpc.income.listIncomes.queryKey(),
+        });
+        // Invalidate specific income
+        queryClient.invalidateQueries({
+          queryKey: trpc.income.getIncomeById.queryKey(),
+        });
+        // Invalidate analytics
+        queryClient.invalidateQueries({
+          queryKey: trpc.income.getAnalytics.queryKey(),
+        });
+        options?.onSuccess?.();
+      },
+      onError: (error: any) => {
+        toast.error(error.message || "Failed to update income");
+        options?.onError?.(error);
+      },
+    }),
+  );
+}
+
+// Delete income
+export function useDeleteIncome(options?: {
+  onSuccess?: () => void;
+  onError?: (error: any) => void;
+}) {
+  const trpc = useTRPC();
+  const queryClient = useQueryClient();
+
+  return useMutation(
+    trpc.income.deleteIncome.mutationOptions({
+      onSuccess: () => {
+        toast.success("Income deleted successfully!");
+        // Invalidate all income queries
+        queryClient.invalidateQueries({
+          queryKey: trpc.income.listIncomes.queryKey(),
+        });
+        // Invalidate analytics
+        queryClient.invalidateQueries({
+          queryKey: trpc.income.getAnalytics.queryKey(),
+        });
+        options?.onSuccess?.();
+      },
+      onError: (error: any) => {
+        toast.error(error.message || "Failed to delete income");
+        options?.onError?.(error);
+      },
+    }),
+  );
+}
+
+// delete incomes
+export function useDeleteIncomes(options?: {
+  onSuccess?: () => void;
+  onError?: (error: any) => void;
+}) {
+  const trpc = useTRPC();
+  const queryClient = useQueryClient();
+
+  return useMutation(
+    trpc.income.deleteIncomes.mutationOptions({
+      onSuccess: () => {
+        toast.success("Income deleted successfully!");
+        // Invalidate all income queries
+        queryClient.invalidateQueries({
+          queryKey: trpc.income.listIncomes.queryKey(),
+        });
+        // Invalidate analytics
+        queryClient.invalidateQueries({
+          queryKey: trpc.income.getAnalytics.queryKey(),
+        });
+        options?.onSuccess?.();
+      },
+      onError: (error: any) => {
+        toast.error(error.message || "Failed to delete income");
+        options?.onError?.(error);
+      },
+    }),
+  );
+}

@@ -1,14 +1,14 @@
+import { relations } from "drizzle-orm";
 import {
+  integer,
+  jsonb,
+  numeric,
   pgTable,
   text,
-  integer,
-  numeric,
-  jsonb,
   timestamp,
-  uuid,
 } from "drizzle-orm/pg-core";
+
 import { auditTimeFields } from "./common.schema";
-import { relations } from "drizzle-orm";
 
 export const currency = pgTable("currency", {
   id: text("id")

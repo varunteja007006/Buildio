@@ -1,11 +1,14 @@
-import { Textarea } from "@workspace/ui/components/textarea";
 import {
   FormBase,
   FormControlProps,
 } from "@workspace/ui/components/forms/FormBase";
 import { useFieldContext } from "@workspace/ui/components/forms/hooks";
+import { Textarea } from "@workspace/ui/components/textarea";
 
-export function FormTextarea(props: Readonly<FormControlProps>) {
+export function FormTextarea({
+  placeholder,
+  ...props
+}: Readonly<FormControlProps>) {
   const field = useFieldContext<string>();
   const isInvalid = field.state.meta.isTouched && !field.state.meta.isValid;
 
@@ -18,6 +21,7 @@ export function FormTextarea(props: Readonly<FormControlProps>) {
         onBlur={field.handleBlur}
         onChange={(e) => field.handleChange(e.target.value)}
         aria-invalid={isInvalid}
+        placeholder={placeholder}
       />
     </FormBase>
   );

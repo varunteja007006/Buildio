@@ -1,7 +1,8 @@
 "use client";
 
-import { createAuthClient } from "better-auth/react";
 import { useRouter } from "next/navigation";
+
+import { createAuthClient } from "better-auth/react";
 import { toast } from "sonner";
 
 export const authClient = createAuthClient();
@@ -16,7 +17,8 @@ export const useSignOut = (redirectURL = "/") => {
   return async () =>
     await authClient.signOut({
       fetchOptions: {
-        onSuccess: () => {
+        onSuccess: async () => {
+          await new Promise((resolve) => setTimeout(resolve, 500));
           router.push(redirectURL);
           toast.success("Logged out successfully");
         },

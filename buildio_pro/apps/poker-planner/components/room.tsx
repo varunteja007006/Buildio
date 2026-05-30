@@ -1,8 +1,8 @@
 import { CreateRoomForm } from "@/components/create-room-form";
 import { CreatedRoomsList } from "@/components/created-rooms-list";
+import { JoinedRoomsList } from "@/components/joined-rooms-list";
 
 import { JoinRoomForm } from "./join-room-form";
-import { JoinedRoomsList } from "@/components/joined-rooms-list";
 
 export function Room() {
   return (

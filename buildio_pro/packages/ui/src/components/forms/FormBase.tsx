@@ -1,7 +1,5 @@
 import { ReactNode } from "react";
 
-import { useFieldContext } from "@workspace/ui/components/forms/hooks";
-
 import {
   Field,
   FieldContent,
@@ -9,10 +7,12 @@ import {
   FieldError,
   FieldLabel,
 } from "@workspace/ui/components/field";
+import { useFieldContext } from "@workspace/ui/components/forms/hooks";
 
 export type FormControlProps = {
   label: string;
   description?: string;
+  placeholder?: string;
 };
 
 type FormBaseProps = FormControlProps & {

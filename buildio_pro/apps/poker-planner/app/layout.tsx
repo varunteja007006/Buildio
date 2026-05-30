@@ -1,12 +1,12 @@
-import "./globals.css";
-
 import type { Metadata } from "next";
 
-import { Providers } from "@/components/providers";
+import { Toaster } from "@workspace/ui/components/sonner";
 
 import { Footer } from "@/components/footer";
-import { Toaster } from "@workspace/ui/components/sonner";
 import { Navbar } from "@/components/navbar";
+import { Providers } from "@/components/providers";
+
+import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Poker Planner",

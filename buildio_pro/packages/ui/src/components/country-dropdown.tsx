@@ -1,7 +1,11 @@
 "use client";
-import React, { useCallback, useState, forwardRef, useEffect } from "react";
 
-// shadcn
+import React, { forwardRef, useCallback, useEffect, useState } from "react";
+
+import { countries } from "country-data-list";
+import { CheckIcon, ChevronDown, Globe } from "lucide-react";
+import { CircleFlag } from "react-circle-flags";
+
 import {
   Command,
   CommandEmpty,
@@ -15,18 +19,11 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@workspace/ui/components/popover";
-
-// utils
 import { cn } from "@workspace/ui/lib/utils";
 
-// assets
-import { ChevronDown, CheckIcon, Globe } from "lucide-react";
-import { CircleFlag } from "react-circle-flags";
-
-// data
-import { countries } from "country-data-list";
-
-// Country interface
+/**
+ * Country interface
+ */
 export interface Country {
   alpha2: string;
   alpha3: string;
@@ -39,7 +36,24 @@ export interface Country {
   status: string;
 }
 
-// Dropdown props
+/**
+ * Standalone country dropdown using CircleFlag icons.
+ *
+ * Features:
+ * - Compact trigger with circular flag icons
+ * - Optional "slim" mode for icon-only display
+ * - Full-text search for countries
+ * - Controlled component with defaultValue
+ *
+ * @example
+ * ```tsx
+ * <CountryDropdown
+ *   defaultValue="USA"
+ *   onChange={(country) => console.log(country)}
+ * />
+ * ```
+ */
+
 interface CountryDropdownProps {
   options?: Country[];
   onChange?: (country: Country) => void;
@@ -77,11 +91,9 @@ const CountryDropdownComponent = (
       if (initialCountry) {
         setSelectedCountry(initialCountry);
       } else {
-        // Reset selected country if defaultValue is not found
         setSelectedCountry(undefined);
       }
     } else {
-      // Reset selected country if defaultValue is undefined or null
       setSelectedCountry(undefined);
     }
   }, [defaultValue, options]);
@@ -124,13 +136,7 @@ const CountryDropdownComponent = (
             )}
           </div>
         ) : (
-          <span>
-            {slim === false ? (
-              placeholder || setSelectedCountry.name
-            ) : (
-              <Globe size={20} />
-            )}
-          </span>
+          <span>{slim === false ? placeholder : <Globe size={20} />}</span>
         )}
         <ChevronDown size={16} />
       </PopoverTrigger>
@@ -185,4 +191,14 @@ const CountryDropdownComponent = (
 
 CountryDropdownComponent.displayName = "CountryDropdownComponent";
 
+/**
+ * Standalone country dropdown using CircleFlag icons.
+ * @example
+ * ```tsx
+ * <CountryDropdown
+ *   defaultValue="USA"
+ *   onChange={(country) => console.log(country)}
+ * />
+ * ```
+ */
 export const CountryDropdown = forwardRef(CountryDropdownComponent);

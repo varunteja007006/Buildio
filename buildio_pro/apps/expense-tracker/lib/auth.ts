@@ -1,8 +1,10 @@
-import { betterAuth, Auth } from "better-auth";
+import { Auth, betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
-import { db, dbSchema } from "@/lib/db"; // your drizzle instance
-import { deleteItem, getItem, setItem } from "./redis";
+
+import { db, dbSchema } from "@/lib/db";
+
 import { emailResetPassword, emailVerification } from "./email/api";
+import { deleteItem, getItem, setItem } from "./redis";
 
 export const auth: Auth = betterAuth({
   // database config

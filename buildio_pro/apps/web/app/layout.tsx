@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 
-import { Providers } from "@/components/providers";
-
 import "@workspace/ui/globals.css";
+
+import { Providers } from "@/components/providers";
 
 export const metadata: Metadata = {
   title: "Buildio.pro",

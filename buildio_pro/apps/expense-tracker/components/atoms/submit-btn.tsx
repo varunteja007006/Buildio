@@ -1,0 +1,28 @@
+import React from "react";
+
+import { Loader2 } from "lucide-react";
+
+import { Button } from "@workspace/ui/components/button";
+
+export function SubmitBtn({
+  formId,
+  loading,
+  ...props
+}: {
+  disabled?: boolean;
+  formId: string;
+  loading?: boolean;
+} & React.ButtonHTMLAttributes<HTMLButtonElement>) {
+  return (
+    <Button type="submit" form={formId} {...props}>
+      {loading ? (
+        <>
+          <Loader2 className="h-4 w-4 animate-spin" />
+          Saving...
+        </>
+      ) : (
+        "Save Changes"
+      )}
+    </Button>
+  );
+}

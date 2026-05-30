@@ -1,4 +1,5 @@
 import { ReactNode } from "react";
+
 import {
   FormBase,
   FormControlProps,
@@ -12,6 +13,7 @@ import {
 } from "@workspace/ui/components/select";
 
 export function FormSelect({
+  placeholder,
   children,
   ...props
 }: FormControlProps & { children: ReactNode }) {
@@ -29,7 +31,7 @@ export function FormSelect({
           id={field.name}
           onBlur={field.handleBlur}
         >
-          <SelectValue />
+          <SelectValue placeholder={placeholder} />
         </SelectTrigger>
         <SelectContent>{children}</SelectContent>
       </Select>

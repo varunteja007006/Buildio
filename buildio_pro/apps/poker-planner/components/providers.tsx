@@ -1,9 +1,12 @@
 "use client";
 
 import * as React from "react";
+
 import { ThemeProvider as NextThemesProvider } from "next-themes";
-import { ConvexClientProvider } from "./convex-provider";
+
 import { UserStoreProvider } from "@/lib/store/user.store";
+
+import { ConvexClientProvider } from "./convex-provider";
 
 export function Providers({
   children,

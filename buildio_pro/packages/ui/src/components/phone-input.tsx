@@ -1,12 +1,13 @@
 "use client";
-import { useState, forwardRef, useEffect } from "react";
-import parsePhoneNumber, { isValidPhoneNumber } from "libphonenumber-js";
-import { CircleFlag } from "react-circle-flags";
-import { lookup } from "country-data-list";
-import { z } from "zod";
-import { cn } from "@workspace/ui/lib/utils";
+import { forwardRef, useEffect, useState } from "react";
 
+import { lookup } from "country-data-list";
+import parsePhoneNumber, { isValidPhoneNumber } from "libphonenumber-js";
 import { GlobeIcon } from "lucide-react";
+import { CircleFlag } from "react-circle-flags";
+import { z } from "zod";
+
+import { cn } from "@workspace/ui/lib/utils";
 
 export const phoneSchema = z.string().refine((value) => {
   try {
@@ -28,8 +29,10 @@ export type CountryData = {
   status: string;
 };
 
-interface PhoneInputProps
-  extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "onChange"> {
+interface PhoneInputProps extends Omit<
+  React.InputHTMLAttributes<HTMLInputElement>,
+  "onChange"
+> {
   onCountryChange?: (data: CountryData | undefined) => void;
   value?: string;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;

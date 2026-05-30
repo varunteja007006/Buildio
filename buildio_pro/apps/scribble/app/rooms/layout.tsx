@@ -1,8 +1,9 @@
 "use client";
 
 import React from "react";
-import { useUserStore } from "@/lib/store/user.store";
+
 import { UserRegistrationDialog } from "@/components/user-registration-dialog";
+import { useUserStore } from "@/lib/store/user.store";
 
 export default function RoomLayout({
   children,

@@ -1,8 +1,9 @@
 "use client";
 import React from "react";
 
-import { useSession } from "@/lib/auth-client";
+import { GoofyLoader } from "@/components/atoms/loaders/goofy";
 import Unauthorized from "@/components/organisms/auth/unauthorized";
+import { useSession } from "@/lib/auth-client";
 
 export const Protected = ({
   children,
@@ -12,7 +13,7 @@ export const Protected = ({
   const { data, isPending } = useSession();
 
   if (isPending) {
-    return <>Loading....</>;
+    return <GoofyLoader />;
   }
 
   if (data?.user) {

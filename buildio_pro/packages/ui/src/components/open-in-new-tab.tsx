@@ -1,11 +1,11 @@
+import { ExternalLink } from "lucide-react";
+
 import { Button } from "@workspace/ui/components/button";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@workspace/ui/components/tooltip";
-
-import { ExternalLink } from "lucide-react";
 
 export function OpenInNewTabBtn({ fileUrl }: Readonly<{ fileUrl: string }>) {
   return (

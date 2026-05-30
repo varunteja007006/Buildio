@@ -1,19 +1,21 @@
 "use client";
 import React from "react";
 
-import { toast } from "sonner";
+import { useParams } from "next/navigation";
 
 import { useMutation, useQuery } from "convex/react";
+import { toast } from "sonner";
+
 import { api } from "@workspace/games-convex-backend/convex/_generated/api";
 import type { Id } from "@workspace/games-convex-backend/convex/_generated/dataModel";
 
-import { useParams } from "next/navigation";
+import { useJoinRoom } from "@/hooks/useJoinRoom";
 import { useUserStore } from "@/lib/store/user.store";
+
+import { Participants } from "./participants";
 import { PokerBoardHeader } from "./poker-board-header";
 import { PokerCards } from "./poker-card";
 import { PokerResults } from "./poker-results";
-import { Participants } from "./participants";
-import { useJoinRoom } from "@/hooks/useJoinRoom";
 
 export function PokerBoard() {
   const params = useParams();

@@ -1,0 +1,96 @@
+"use client";
+
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
+
+import { useTRPC } from "@/lib/trpc-client";
+
+// List expense categories
+export function useExpenseCategoryList(params: {
+  limit: number;
+  page: number;
+}) {
+  const trpc = useTRPC();
+  return useQuery(trpc.expenseCategory.listCategories.queryOptions(params));
+}
+
+// Expense category details
+export function useExpenseCategoryDetails(categoryId: string) {
+  const trpc = useTRPC();
+  return useQuery(
+    trpc.expenseCategory.getCategoryById.queryOptions({ categoryId }),
+  );
+}
+
+// Create expense category
+export function useCreateExpenseCategory(options?: {
+  onSuccess?: () => void;
+  onError?: (error: any) => void;
+}) {
+  const trpc = useTRPC();
+  const queryClient = useQueryClient();
+
+  return useMutation(
+    trpc.expenseCategory.createCategory.mutationOptions({
+      onSuccess: () => {
+        toast.success("Expense category created successfully!");
+        options?.onSuccess?.();
+      },
+      onError: (error: any) => {
+        toast.error(error.message || "Failed to create expense category");
+        options?.onError?.(error);
+      },
+    }),
+  );
+}
+
+// Update expense category
+export function useUpdateExpenseCategory(options?: {
+  onSuccess?: () => void;
+  onError?: (error: any) => void;
+}) {
+  const trpc = useTRPC();
+  const queryClient = useQueryClient();
+
+  return useMutation(
+    trpc.expenseCategory.updateCategory.mutationOptions({
+      onSuccess: (data, variables) => {
+        toast.success("Expense category updated successfully!");
+        options?.onSuccess?.();
+      },
+      onError: (error: any) => {
+        toast.error(error.message || "Failed to update expense category");
+        options?.onError?.(error);
+      },
+    }),
+  );
+}
+
+// Delete expense category
+export function useDeleteExpenseCategory(options?: {
+  onSuccess?: () => void;
+  onError?: (error: any) => void;
+}) {
+  const trpc = useTRPC();
+  const queryClient = useQueryClient();
+
+  return useMutation(
+    trpc.expenseCategory.deleteCategory.mutationOptions({
+      onSuccess: () => {
+        toast.success("Expense category deleted successfully!");
+
+        options?.onSuccess?.();
+      },
+      onError: (error: any) => {
+        toast.error(error.message || "Failed to delete expense category");
+        options?.onError?.(error);
+      },
+    }),
+  );
+}
+
+// List income sources
+export function useIncomeSourceList(params: { limit: number; page: number }) {
+  const trpc = useTRPC();
+  return useQuery(trpc.incomeSource.listSources.queryOptions(params));
+}

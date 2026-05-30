@@ -5,9 +5,10 @@ import {
   SidebarTrigger,
 } from "@workspace/ui/components/sidebar";
 
-import { AppSideBarClient } from "./dashboard/app-sidebar.client";
-import { BreadCrumbsClient } from "./dashboard/breadCrumbs.client";
 import { ModeToggle } from "@/components/mode-toggle";
+import { AppSidebar } from "@/components/organisms/sidebar/app-sidebar";
+import TopNavText from "@/components/organisms/sidebar/top-nav-text";
+
 import { Protected } from "./protected";
 
 export default async function Layout({
@@ -16,7 +17,7 @@ export default async function Layout({
   return (
     <Protected>
       <SidebarProvider>
-        <AppSideBarClient />
+        <AppSidebar />
         <SidebarInset>
           <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
             <div className="flex flex-1 items-center gap-2 px-4">
@@ -25,13 +26,15 @@ export default async function Layout({
                 orientation="vertical"
                 className="mr-2 data-[orientation=vertical]:h-4"
               />
-              <BreadCrumbsClient />
+              <TopNavText />
             </div>
-            <div className="pr-2">
+            <div className="pr-4">
               <ModeToggle />
             </div>
           </header>
-          <div className="flex flex-1 flex-col gap-4 p-4 pt-0">{children}</div>
+          <div className="flex flex-1 flex-col gap-4 p-4 pt-0 overflow-hidden">
+            {children}
+          </div>
         </SidebarInset>
       </SidebarProvider>
     </Protected>

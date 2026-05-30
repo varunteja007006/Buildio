@@ -1,0 +1,77 @@
+"use client";
+
+import React from "react";
+
+import { usePathname } from "next/navigation";
+
+const pageHeader = {
+  settings: {
+    title: "Settings",
+    description: "Manage your account settings and preferences",
+  },
+  "income-source": {
+    title: "Income Sources",
+    description:
+      "Manage your income sources like Salary, Freelance, Investments, etc.",
+  },
+  events: {
+    title: "Events",
+    description: "Track expenses across multiple months or budgets",
+  },
+  income: {
+    title: "Income",
+    description: "Track and manage all your income in one place",
+  },
+  expenses: {
+    title: "Expenses",
+    description: "Track and manage all your expenses in one place",
+  },
+  "expense-categories": {
+    title: "Expense Categories",
+    description:
+      "Manage your expense categories like Groceries, Rent, Travel, etc.",
+  },
+  budgets: {
+    title: "Budgets",
+    description: "Manage your monthly and yearly budgets",
+  },
+  dashboard: {
+    title: "Dashboard",
+    description: "Overview of your financial activities",
+  },
+  support: {
+    title: "Support",
+    description: "Get help and support for using the Expense Tracker app",
+  },
+  feedback: {
+    title: "Feedback",
+    description: "Provide feedback to help us improve the Expense Tracker app",
+  },
+  donate: {
+    title: "Donate",
+    description: "Support the development of the Expense Tracker app",
+  },
+  default: {
+    title: "",
+    description: "",
+  },
+};
+
+export default function TopNavText() {
+  const pathname = usePathname();
+
+  const keys = Object.keys(pageHeader);
+
+  const found = keys.find((key) => pathname.startsWith(`/${key}`)) ?? "default";
+
+  return (
+    <div>
+      <h1 className="text-sm font-bold tracking-tight">
+        {pageHeader[found as keyof typeof pageHeader]?.title}
+      </h1>
+      <p className="text-muted-foreground text-xs">
+        {pageHeader[found as keyof typeof pageHeader]?.description}
+      </p>
+    </div>
+  );
+}

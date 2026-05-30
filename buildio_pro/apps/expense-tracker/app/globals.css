@@ -4,4 +4,8 @@
 @import "../node_modules/@workspace/ui/src/styles/globals.css";
 
 /* Import the theme styles */
-@import "../node_modules/@workspace/theme/citrus.css";
+@import "../node_modules/@workspace/theme/northern-lights.css";
+
+.container {
+  @apply px-4 py-4 md:px-6 lg:px-8 mx-auto
+}
