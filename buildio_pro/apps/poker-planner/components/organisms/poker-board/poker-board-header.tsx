@@ -9,7 +9,6 @@ import { Button } from "@workspace/ui/components/button";
 
 import { CopyBtn } from "@/components/atoms/copy-btn";
 import { useUserStore } from "@/lib/store/user.store";
-import { ConfettiSideCannons } from "@workspace/ui/components/confetti/side-cannons";
 
 export function PokerBoardHeader() {
   const params = useParams();
@@ -27,7 +26,6 @@ export function PokerBoardHeader() {
         <p className="font-bold text-lg text-primary">
           {roomDetails?.room?.room_name}
         </p>
-        {/* <ConfettiSideCannons /> */}
       </div>
       <div className="flex flex-row items-center gap-2 justify-end">
         <Link href={"/room"}>

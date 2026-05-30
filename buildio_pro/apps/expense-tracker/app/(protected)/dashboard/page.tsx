@@ -35,6 +35,7 @@ import { MonthlyTrends } from "@/components/dashboard/monthly-trends";
 import { RecentTransactions } from "@/components/dashboard/recent-transactions";
 import { SummaryCard } from "@/components/dashboard/summary-card";
 import { TopCategories } from "@/components/dashboard/top-categories";
+import { ExpenseFormComponent } from "@/components/organisms/expense";
 import {
   useDashboardBudgetVsActualHistory,
   useDashboardBudgets,
@@ -45,7 +46,6 @@ import {
   useDashboardSummary,
   useDashboardTopCategories,
 } from "@/hooks";
-import { ExpenseFormComponent } from "@/components/organisms/expense";
 
 export default function DashboardPage() {
   const summaryQuery = useDashboardSummary();

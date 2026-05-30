@@ -9,7 +9,7 @@ export {
   useEventSpendingHistory,
   useGetUnLinkedExpenses,
   useRemoveLinkedExpense,
-  useLinkingExpenseToEvent
+  useLinkingExpenseToEvent,
 } from "./use-events-queries";
 
 // Budget hooks

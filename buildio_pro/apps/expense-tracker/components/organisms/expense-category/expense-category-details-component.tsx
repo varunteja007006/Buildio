@@ -5,10 +5,7 @@ import * as React from "react";
 import { Calendar, Eye } from "lucide-react";
 
 import { Button } from "@workspace/ui/components/button";
-import {
-  Card,
-  CardContent,
-} from "@workspace/ui/components/card";
+import { Card, CardContent } from "@workspace/ui/components/card";
 import {
   Dialog,
   DialogContent,

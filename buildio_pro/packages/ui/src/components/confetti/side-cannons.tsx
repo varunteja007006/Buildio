@@ -1,15 +1,23 @@
 "use client";
 
+import { useEffect } from "react";
+
 import confetti from "canvas-confetti";
 import { PartyPopper } from "lucide-react";
 
 import { Button } from "@workspace/ui/components/button";
+import { cn } from "@workspace/ui/lib/utils";
 
 export function ConfettiSideCannons({
   children,
+  onClickCb,
+  className,
+  autoTrigger = false,
+  ...props
 }: {
-  children?: React.ReactNode;
-}) {
+  onClickCb?: () => void;
+  autoTrigger?: boolean; // whether to auto trigger confetti on mount
+} & React.ComponentProps<"button">) {
   const handleClick = () => {
     const end = Date.now() + 3 * 1000; // 3 seconds
     const colors = ["#a786ff", "#fd8bbc", "#eca184", "#f8deb1"];
@@ -40,9 +48,28 @@ export function ConfettiSideCannons({
     frame();
   };
 
+  const handleClickWithCb = () => {
+    handleClick();
+    if (onClickCb) {
+      onClickCb();
+    }
+  };
+
+  // auto trigger confetti when props change (for example, when teamReactions update)
+  useEffect(() => {
+    if (autoTrigger) {
+      handleClick();
+    }
+  }, [autoTrigger]);
+
   return (
     <div className="relative">
-      <Button variant="outline" onClick={handleClick}>
+      <Button
+        variant="outline"
+        onClick={handleClickWithCb}
+        {...props}
+        className={cn("", className)}
+      >
         {children || (
           <>
             <PartyPopper />
