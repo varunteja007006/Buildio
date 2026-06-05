@@ -1,5 +1,3 @@
-import router from "next/dist/shared/lib/router/router";
-
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
@@ -117,7 +115,7 @@ export const useRemoveLinkedExpense = (options?: {
     trpc.event.removeExpenseFromEvent.mutationOptions({
       onSuccess: () => {
         toast.success("Expense removed successfully");
-        
+
         // invalidate queries
         queryClient.invalidateQueries({
           queryKey: trpc.event.getUnlinkedExpenses.queryKey(),

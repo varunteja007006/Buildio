@@ -11,6 +11,7 @@ import type { Id } from "@workspace/games-convex-backend/convex/_generated/dataM
 import { useUserStore } from "@/lib/store/user.store";
 
 import { ParticipantCard } from "./participant-card";
+import { ConfettiSideCanonsNotifier } from "./reaction-collection";
 
 const findUserStoryPoint = (
   userId: string,
@@ -75,18 +76,20 @@ export function Participants({
 
   return (
     <div className="space-y-2">
-      {participantList.map((user) => {
+      {participantList.map((innerUser) => {
         return (
           <ParticipantCard
-            key={user.userId}
-            name={user.name ?? "Unknown User"}
-            online={user.online}
-            hasVoted={user?.hasVoted}
-            lastDisconnected={user.lastDisconnected}
-            emojiId={user.userId}
+            key={innerUser.userId}
+            name={innerUser.name ?? "Unknown User"}
+            online={innerUser.online}
+            hasVoted={innerUser?.hasVoted}
+            lastDisconnected={innerUser.lastDisconnected}
+            emojiId={innerUser.userId}
+            isUser={innerUser.userId === user?.id}
           />
         );
       })}
+      <ConfettiSideCanonsNotifier />
     </div>
   );
 }
