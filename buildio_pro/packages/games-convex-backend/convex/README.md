@@ -1,92 +1,27 @@
-# Welcome to your Convex functions directory!
+# Games Convex Backend
 
-Write your Convex functions here.
-See https://docs.convex.dev/functions for more.
+Shared Convex backend used by `apps/poker-planner`, `apps/scribble`, and `apps/housie-game`.
 
-A query function that takes two arguments looks like:
+## Source of truth
 
-```ts
-// convex/myFunctions.ts
-import { v } from "convex/values";
+- Function/style rules: `packages/games-convex-backend/convex_rules.txt`
+- App config: `packages/games-convex-backend/convex/convex.config.ts`
+- Schema: `packages/games-convex-backend/convex/schema.ts`
 
-import { query } from "./_generated/server";
+## Commands
 
-export const myQueryFunction = query({
-  // Validators for arguments.
-  args: {
-    first: v.number(),
-    second: v.string(),
-  },
+Run from `buildio_pro/`:
 
-  // Function implementation.
-  handler: async (ctx, args) => {
-    // Read the database as many times as you need here.
-    // See https://docs.convex.dev/database/reading-data.
-    const documents = await ctx.db.query("tablename").collect();
-
-    // Arguments passed from the client are properties of the args object.
-    console.log(args.first, args.second);
-
-    // Write arbitrary JavaScript here: filter, aggregate, build derived data,
-    // remove non-public properties, or create new objects.
-    return documents;
-  },
-});
+```bash
+pnpm --filter=@workspace/games-convex-backend dev
+pnpm --filter=@workspace/games-convex-backend setup
 ```
 
-Using this query function in a React component looks like:
+`setup` runs `convex dev --until-success` and is useful after fresh env setup.
 
-```ts
-const data = useQuery(api.myFunctions.myQueryFunction, {
-  first: 10,
-  second: "hello",
-});
-```
+## Important notes
 
-A mutation function looks like:
-
-```ts
-// convex/myFunctions.ts
-import { v } from "convex/values";
-
-import { mutation } from "./_generated/server";
-
-export const myMutationFunction = mutation({
-  // Validators for arguments.
-  args: {
-    first: v.string(),
-    second: v.string(),
-  },
-
-  // Function implementation.
-  handler: async (ctx, args) => {
-    // Insert or modify documents in the database here.
-    // Mutations can also read from the database like queries.
-    // See https://docs.convex.dev/database/writing-data.
-    const message = { body: args.first, author: args.second };
-    const id = await ctx.db.insert("messages", message);
-
-    // Optionally, return a value from your mutation.
-    return await ctx.db.get(id);
-  },
-});
-```
-
-Using this mutation function in a React component looks like:
-
-```ts
-const mutation = useMutation(api.myFunctions.myMutationFunction);
-function handleButtonPress() {
-  // fire and forget, the most common way to use mutations
-  mutation({ first: "Hello!", second: "me" });
-  // OR
-  // use the result once the mutation has completed
-  mutation({ first: "Hello!", second: "me" }).then((result) =>
-    console.log(result),
-  );
-}
-```
-
-Use the Convex CLI to push your functions to a deployment. See everything
-the Convex CLI can do by running `npx convex -h` in your project root
-directory. To learn more, launch the docs with `npx convex docs`.
+- Keep using the new Convex function syntax with explicit `args` and `returns` validators.
+- Generated files in `convex/_generated` are generated artifacts; do not hand-edit them.
+- Game clients import APIs from `@workspace/games-convex-backend/convex/_generated/api`.
+- `poker-planner` and `scribble` require `NEXT_PUBLIC_CONVEX_URL` at runtime.
