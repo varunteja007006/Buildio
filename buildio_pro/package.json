@@ -22,11 +22,13 @@
     "start:housie-game": "pnpm --filter=housie-game start",
     "start:scribble": "pnpm --filter=scribble start",
     "start:expense-tracker": "pnpm --filter=expense-tracker start",
-    "clean": "git clean -xdf node_modules",
+    "clean": "node ./scripts/clean-workspace.mjs",
+    "clean:dry": "node ./scripts/clean-workspace.mjs --dry-run",
+    "clean:cache": "node ./scripts/clean-workspace.mjs --mode cache",
+    "clean:deps": "node ./scripts/clean-workspace.mjs --mode deps",
+    "clean:all": "turbo run clean && node ./scripts/clean-workspace.mjs",
     "clean:workspaces": "turbo run clean",
-    "clean:all": "turbo run clean && git clean -xdf node_modules",
-    "clean:junk": "node ./scripts/clean-workspace.mjs",
-    "clean:dry": "node ./scripts/clean-workspace.mjs --dry-run"
+    "clean:junk": "node ./scripts/clean-workspace.mjs"
   },
   "devDependencies": {
     "@trivago/prettier-plugin-sort-imports": "^6.0.2",

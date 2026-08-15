@@ -4,7 +4,10 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "clean": "git clean -xdf .cache .turbo node_modules"
+    "clean": "node ../../scripts/clean-workspace.mjs",
+    "clean:dry": "node ../../scripts/clean-workspace.mjs --dry-run",
+    "clean:cache": "git clean -xdf .cache .turbo",
+    "clean:deps": "git clean -xdf node_modules"
   },
   "exports": {
     "./base": "./base.js",
