@@ -1,0 +1,19 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    ":pinDependencies",
+    "schedule:weekly"
+  ],
+  "minimumReleaseAge": "10 days",
+  "rangeStrategy": "pin",
+  "separateMajorMinor": true,
+  "osvVulnerabilityAlerts": true,
+  "packageRules": [
+    {
+      "description": "Security fixes land immediately, bypassing the 10-day stability window",
+      "matchUpdateTypes": ["security"],
+      "minimumReleaseAge": null
+    }
+  ]
+}
