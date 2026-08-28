@@ -31,8 +31,8 @@ catalogs:
       specifier: ^5.9.3
       version: 5.9.3
     zod:
-      specifier: 3.25.76
-      version: 3.25.76
+      specifier: ^4.4.3
+      version: 4.4.3
   react19:
     '@types/react':
       specifier: ^19.2.18
@@ -461,7 +461,7 @@ importers:
         version: 0.4.0(convex@1.45.0(react@19.2.8))(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       '@hookform/resolvers':
         specifier: ^5.9.1
-        version: 5.9.1(@standard-schema/spec@1.1.0)(ajv-formats@2.1.1(ajv@8.20.0))(ajv@8.20.0)(effect@3.17.7)(react-hook-form@7.86.0(react@19.2.8))(zod@3.25.76)
+        version: 5.9.1(@standard-schema/spec@1.1.0)(ajv-formats@2.1.1(ajv@8.20.0))(ajv@8.20.0)(effect@3.17.7)(react-hook-form@7.86.0(react@19.2.8))(zod@4.4.3)
       '@workspace/games-convex-backend':
         specifier: workspace:*
         version: link:../../packages/games-convex-backend
@@ -502,8 +502,8 @@ importers:
         specifier: 'catalog:'
         version: 4.3.3
       zod:
-        specifier: ^3.25.76
-        version: 3.25.76
+        specifier: 'catalog:'
+        version: 4.4.3
     devDependencies:
       '@types/node':
         specifier: 'catalog:'
@@ -531,7 +531,7 @@ importers:
         version: 0.4.0(convex@1.45.0(react@19.2.8))(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       '@hookform/resolvers':
         specifier: ^5.9.1
-        version: 5.9.1(@standard-schema/spec@1.1.0)(ajv-formats@2.1.1(ajv@8.20.0))(ajv@8.20.0)(effect@3.17.7)(react-hook-form@7.86.0(react@19.2.8))(zod@3.25.76)
+        version: 5.9.1(@standard-schema/spec@1.1.0)(ajv-formats@2.1.1(ajv@8.20.0))(ajv@8.20.0)(effect@3.17.7)(react-hook-form@7.86.0(react@19.2.8))(zod@4.4.3)
       '@workspace/games-convex-backend':
         specifier: workspace:*
         version: link:../../packages/games-convex-backend
@@ -573,7 +573,7 @@ importers:
         version: 2.0.8(@types/react@19.2.18)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       zod:
         specifier: 'catalog:'
-        version: 3.25.76
+        version: 4.4.3
     devDependencies:
       '@types/node':
         specifier: 'catalog:'
@@ -716,7 +716,7 @@ importers:
         version: 3.2.2(react@19.2.8)
       '@hookform/resolvers':
         specifier: ^5.9.1
-        version: 5.9.1(@standard-schema/spec@1.1.0)(ajv-formats@2.1.1(ajv@8.20.0))(ajv@8.20.0)(effect@3.17.7)(react-hook-form@7.86.0(react@19.2.8))(zod@3.25.76)
+        version: 5.9.1(@standard-schema/spec@1.1.0)(ajv-formats@2.1.1(ajv@8.20.0))(ajv@8.20.0)(effect@3.17.7)(react-hook-form@7.86.0(react@19.2.8))(zod@4.4.3)
       '@radix-ui/react-accordion':
         specifier: ^1.2.20
         version: 1.2.20(@types/react-dom@19.2.5(@types/react@19.2.18))(@types/react@19.2.18)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
@@ -890,7 +890,7 @@ importers:
         version: 1.1.2(@types/react-dom@19.2.5(@types/react@19.2.18))(@types/react@19.2.18)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       zod:
         specifier: 'catalog:'
-        version: 3.25.76
+        version: 4.4.3
     devDependencies:
       '@faker-js/faker':
         specifier: ^10.6.0
@@ -7861,17 +7861,6 @@ snapshots:
   '@hono/node-server@2.1.1(hono@4.13.5)':
     dependencies:
       hono: 4.13.5
-
-  '@hookform/resolvers@5.9.1(@standard-schema/spec@1.1.0)(ajv-formats@2.1.1(ajv@8.20.0))(ajv@8.20.0)(effect@3.17.7)(react-hook-form@7.86.0(react@19.2.8))(zod@3.25.76)':
-    dependencies:
-      '@standard-schema/utils': 0.3.0
-      react-hook-form: 7.86.0(react@19.2.8)
-    optionalDependencies:
-      '@standard-schema/spec': 1.1.0
-      ajv: 8.20.0
-      ajv-formats: 2.1.1(ajv@8.20.0)
-      effect: 3.17.7
-      zod: 3.25.76
 
   '@hookform/resolvers@5.9.1(@standard-schema/spec@1.1.0)(ajv-formats@2.1.1(ajv@8.20.0))(ajv@8.20.0)(effect@3.17.7)(react-hook-form@7.86.0(react@19.2.8))(zod@4.4.3)':
     dependencies:
