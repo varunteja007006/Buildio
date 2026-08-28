@@ -83,7 +83,7 @@ export function TopCategories({
                   ))}
                 </Pie>
                 <Tooltip
-                  formatter={(value: number) => formatCurrency(value)}
+                  formatter={(value) => formatCurrency(value as number)}
                   contentStyle={{
                     backgroundColor: "hsl(var(--popover))",
                     borderColor: "hsl(var(--border))",

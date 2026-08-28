@@ -1,3 +1,5 @@
+import type { ComponentProps } from "react";
+
 import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
 
 import {
@@ -37,12 +39,11 @@ export function PokerResultChart({
           cursor={false}
           content={
             <ChartTooltipContent
-              coordinate={{
-                x: 0,
-                y: 0,
-              }}
-              payload={chartData}
-              accessibilityLayer
+              payload={
+                chartData as unknown as ComponentProps<
+                  typeof ChartTooltipContent
+                >["payload"]
+              }
               active
               hideLabel
             />
