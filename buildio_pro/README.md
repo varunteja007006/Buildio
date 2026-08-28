@@ -1,31 +1,70 @@
-# shadcn/ui monorepo template
+# Buildio.pro
 
-This template is for creating a monorepo with shadcn/ui.
+Monorepo for buildio.pro — a pnpm + Turborepo workspace of Next.js 16 apps and shared packages.
 
-## Usage
+## Structure
 
-```bash
-pnpm dlx shadcn@latest init
+```text
+apps/
+  web                 Landing page (buildio.pro)
+  expense-tracker     Full-stack expense tracker (tRPC + better-auth + Drizzle/Postgres)
+  cortex-ai           AI RAG chat app (AI SDK + Drizzle + better-auth + uploadthing)
+  poker-planner       Realtime poker planning (Convex)
+  housie-game         Realtime housie/bingo game (Convex)
+  scribble            Realtime drawing game (Convex)
+packages/
+  ui                  Shared shadcn/ui components + Tailwind v4 setup
+  theme               Theme CSS files
+  games-convex-backend Shared Convex backend for the games apps
+  eslint-config       Shared ESLint config
+  typescript-config   Shared tsconfig files
 ```
 
-## Adding components
+## Commands
 
-To add components to your app, run the following command at the root of your `web` app:
+Run everything from this directory (`buildio_pro/`).
+
+```bash
+pnpm install          # install deps
+pnpm dev              # run all 6 apps
+pnpm dev:web          # run a single app (also dev:expense-tracker, dev:cortex-ai, dev:poker-planner, dev:housie-game, dev:scribble)
+pnpm build:<app>      # build a single app
+pnpm start:<app>      # start a production build
+pnpm format           # prettier --write (sorts imports)
+```
+
+See `AGENTS.md` for conventions: adding shadcn components, theme wiring, env setup, and deploy notes.
+
+## Apps
+
+### Realtime games (Convex)
+
+`poker-planner`, `housie-game`, and `scribble` share the backend in `packages/games-convex-backend`. Run `pnpm dev` inside that package (`convex dev`) to watch and regenerate `_generated/`. Production deployments run `npx convex deploy` before the app build.
+
+### Full-stack apps
+
+`expense-tracker` and `cortex-ai` each have their own `.env.example` — copy it to `.env` before developing. All required variables are listed in `turbo.json` `globalEnv`.
+
+## Adding a shadcn/ui component
+
+Components for the shared apps install into `packages/ui/src/components`:
 
 ```bash
 pnpm dlx shadcn@latest add button -c apps/web
 ```
 
-This will place the ui components in the `packages/ui/src/components` directory.
+`cortex-ai` uses its own local `@/components/ui` instead (its `components.json` points `ui` at the app) — add components there with `-c apps/cortex-ai`.
 
-## Tailwind
+## Packages
 
-Your `tailwind.config.ts` and `globals.css` are already set up to use the components from the `ui` package.
+### `@workspace/ui`
 
-## Using components
+Shared shadcn/ui components. Import them in apps as `@workspace/ui/components/<name>` — never with relative paths.
 
-To use the components in your app, import them from the `ui` package.
+### `@workspace/theme`
 
-```tsx
-import { Button } from "@workspace/ui/components/button";
-```
+Tailwind v4 theme CSS. Apps wire it up in their `app/globals.css` via a theme `@import`.
+
+### `@workspace/games-convex-backend`
+
+Shared Convex backend for the games apps. Import generated APIs as `@workspace/games-convex-backend/convex/_generated/api`.

@@ -18,6 +18,9 @@ export const myQueryFunction = query({
     second: v.string(),
   },
 
+  // Output validator for the return value (required — see convex_rules.txt).
+  returns: v.array(v.string()),
+
   // Function implementation.
   handler: async (ctx, args) => {
     // Read the database as many times as you need here.
@@ -57,6 +60,9 @@ export const myMutationFunction = mutation({
     first: v.string(),
     second: v.string(),
   },
+
+  // Output validator for the return value (required — see convex_rules.txt).
+  returns: v.id("messages"),
 
   // Function implementation.
   handler: async (ctx, args) => {

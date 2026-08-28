@@ -107,8 +107,8 @@
 
 ### Filtering & Organization
 
-- [x] Filter income by source (listIncomes with sourceId parameter)
-- [x] Sort by date or amount (sortBy, sortOrder parameters)
+- [ ] Filter income by source (listIncomes with sourceId parameter)
+- [ ] Sort by date or amount (sortBy, sortOrder parameters)
 - [ ] Filter income by date range
 - [ ] Search income by name
 
