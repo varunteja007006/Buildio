@@ -10,8 +10,8 @@ catalogs:
       specifier: ^20.19.27
       version: 20.19.33
     convex:
-      specifier: ^1.31.2
-      version: 1.32.0
+      specifier: ^1.45.0
+      version: 1.45.0
     lucide-react:
       specifier: 0.539.0
       version: 0.539.0
@@ -330,7 +330,7 @@ importers:
         version: 0.0.1
       convex:
         specifier: 'catalog:'
-        version: 1.32.0(react@19.2.3)
+        version: 1.45.0(react@19.2.3)
       date-fns:
         specifier: ^4.1.0
         version: 4.1.0
@@ -430,7 +430,7 @@ importers:
         version: link:../../packages/ui
       convex:
         specifier: 'catalog:'
-        version: 1.32.0(react@19.2.3)
+        version: 1.45.0(react@19.2.3)
       lucide-react:
         specifier: 'catalog:'
         version: 0.539.0(react@19.2.3)
@@ -469,8 +469,8 @@ importers:
   apps/poker-planner:
     dependencies:
       '@convex-dev/presence':
-        specifier: ^0.2.1
-        version: 0.2.1(convex@1.32.0(react@19.2.3))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+        specifier: ^0.4.0
+        version: 0.4.0(convex@1.45.0(react@19.2.3))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       '@hookform/resolvers':
         specifier: ^5.2.2
         version: 5.2.2(react-hook-form@7.69.0(react@19.2.3))
@@ -485,7 +485,7 @@ importers:
         version: link:../../packages/ui
       convex:
         specifier: 'catalog:'
-        version: 1.32.0(react@19.2.3)
+        version: 1.45.0(react@19.2.3)
       lucide-react:
         specifier: 'catalog:'
         version: 0.539.0(react@19.2.3)
@@ -539,8 +539,8 @@ importers:
   apps/scribble:
     dependencies:
       '@convex-dev/presence':
-        specifier: ^0.2.1
-        version: 0.2.1(convex@1.32.0(react@19.2.3))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+        specifier: ^0.4.0
+        version: 0.4.0(convex@1.45.0(react@19.2.3))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       '@hookform/resolvers':
         specifier: ^5.2.2
         version: 5.2.2(react-hook-form@7.69.0(react@19.2.3))
@@ -555,7 +555,7 @@ importers:
         version: link:../../packages/ui
       convex:
         specifier: 'catalog:'
-        version: 1.32.0(react@19.2.3)
+        version: 1.45.0(react@19.2.3)
       konva:
         specifier: ^10.0.12
         version: 10.0.12
@@ -694,11 +694,11 @@ importers:
   packages/games-convex-backend:
     dependencies:
       '@convex-dev/presence':
-        specifier: ^0.2.1
-        version: 0.2.1(convex@1.32.0(react@19.2.3))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+        specifier: ^0.4.0
+        version: 0.4.0(convex@1.45.0(react@19.2.3))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
       convex:
         specifier: 'catalog:'
-        version: 1.32.0(react@19.2.3)
+        version: 1.45.0(react@19.2.3)
     devDependencies:
       typescript:
         specifier: 'catalog:'
@@ -1339,10 +1339,16 @@ packages:
   '@clack/prompts@0.11.0':
     resolution: {integrity: sha512-pMN5FcrEw9hUkZA4f+zLlzivQSeQf5dRGJjSUbvVYDLvpKCdQx5OaknvKzgbtXOizhP+SJJJjqEbOe55uKKfAw==}
 
-  '@convex-dev/presence@0.2.1':
-    resolution: {integrity: sha512-XBcEzb1qxV4yq3UNe+UpZbTb1ecgg14vYZWDZMA2XPh2D/x2yCxTfWyQ/vdMeX2HYiGzj2be5aRu8CK3cogQnA==}
+  '@convex-dev/batch-worker@0.2.1':
+    resolution: {integrity: sha512-QEDW6XmT+SmBJAmNqyl0QAEmJ4yMKJAIoJ+LntsA8KY5gYP+UhSFvTEMCvo177RZxOR/cfkZ3R+4S/UBaj/JnQ==}
     peerDependencies:
-      convex: '>=1.24.8 <1.35.0'
+      convex: ^1.36.1
+      react: ^18.3.1 || ^19.0.0
+
+  '@convex-dev/presence@0.4.0':
+    resolution: {integrity: sha512-T1f2aHyS2D2dxvMnvY+qSJBIRG0W7ph8+mgOvZif52JLlLNscCHTangAgNWR4VLYGhXFFDxwSSpdh7vxzA/hPQ==}
+    peerDependencies:
+      convex: ^1.36.1
       expo-crypto: '>=14.1.0'
       react: ~18.3.1 || ^19.0.0
       react-dom: ~18.3.1 || ^19.0.0
@@ -4751,18 +4757,21 @@ packages:
   convert-source-map@2.0.0:
     resolution: {integrity: sha512-Kvp459HrV2FEJ1CAsi1Ku+MY3kasH19TFykTz2xWmMeq6bk2NU3XXvfJ+Q61m0xktWwt+1HSYf3JZsTms3aRJg==}
 
-  convex@1.32.0:
-    resolution: {integrity: sha512-5FlajdLpW75pdLS+/CgGH5H6yeRuA+ru50AKJEYbJpmyILUS+7fdTvsdTaQ7ZFXMv0gE8mX4S+S3AtJ94k0mfw==}
-    engines: {node: '>=18.0.0', npm: '>=7.0.0'}
+  convex@1.45.0:
+    resolution: {integrity: sha512-AV3B56Ptu/14d76g3urBJ50dwpiZa6uJaLT84OWox5aCwZIJiuAamdjv3lLHDzs8vv5kC31anEZohhUe3qJ2bA==}
+    engines: {node: '>=20.0.0', npm: '>=7.0.0'}
     hasBin: true
     peerDependencies:
       '@auth0/auth0-react': ^2.0.1
       '@clerk/clerk-react': ^4.12.8 || ^5.0.0
+      '@clerk/react': ^6.4.3
       react: ^18.0.0 || ^19.0.0-0 || ^19.0.0
     peerDependenciesMeta:
       '@auth0/auth0-react':
         optional: true
       '@clerk/clerk-react':
+        optional: true
+      '@clerk/react':
         optional: true
       react:
         optional: true
@@ -8738,9 +8747,15 @@ snapshots:
       picocolors: 1.1.1
       sisteransi: 1.0.5
 
-  '@convex-dev/presence@0.2.1(convex@1.32.0(react@19.2.3))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
+  '@convex-dev/batch-worker@0.2.1(convex@1.45.0(react@19.2.3))(react@19.2.3)':
     dependencies:
-      convex: 1.32.0(react@19.2.3)
+      convex: 1.45.0(react@19.2.3)
+      react: 19.2.3
+
+  '@convex-dev/presence@0.4.0(convex@1.45.0(react@19.2.3))(react-dom@19.2.3(react@19.2.3))(react@19.2.3)':
+    dependencies:
+      '@convex-dev/batch-worker': 0.2.1(convex@1.45.0(react@19.2.3))(react@19.2.3)
+      convex: 1.45.0(react@19.2.3)
       react: 19.2.3
       react-dom: 19.2.3(react@19.2.3)
 
@@ -8822,7 +8837,7 @@ snapshots:
 
   '@esbuild-kit/core-utils@3.3.2':
     dependencies:
-      esbuild: 0.27.0
+      esbuild: 0.28.2
       source-map-support: 0.5.21
 
   '@esbuild-kit/esm-loader@2.6.5':
@@ -11932,7 +11947,7 @@ snapshots:
 
   convert-source-map@2.0.0: {}
 
-  convex@1.32.0(react@19.2.3):
+  convex@1.45.0(react@19.2.3):
     dependencies:
       esbuild: 0.27.0
       prettier: 3.7.4

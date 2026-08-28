@@ -13,7 +13,7 @@
     "clean": "git clean -xdf .cache .next .turbo node_modules"
   },
   "dependencies": {
-    "@convex-dev/presence": "^0.2.1",
+    "@convex-dev/presence": "^0.4.0",
     "@hookform/resolvers": "^5.2.2",
     "@workspace/games-convex-backend": "workspace:*",
     "@workspace/theme": "workspace:*",
