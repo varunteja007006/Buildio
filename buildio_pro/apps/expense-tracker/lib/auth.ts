@@ -1,12 +1,18 @@
-import { Auth, betterAuth } from "better-auth";
+import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 
 import { db, dbSchema } from "@/lib/db";
 
 import { emailResetPassword, emailVerification } from "./email/api";
-import { deleteItem, getItem, setItem } from "./redis";
+import {
+  deleteItem,
+  getAndDeleteItem,
+  getItem,
+  incrementItem,
+  setItem,
+} from "./redis";
 
-export const auth: Auth = betterAuth({
+export const auth = betterAuth({
   // database config
   database: drizzleAdapter(db, {
     provider: "pg",
@@ -22,6 +28,8 @@ export const auth: Auth = betterAuth({
   // secondary storage
   secondaryStorage: {
     get: getItem,
+    getAndDelete: getAndDeleteItem,
+    increment: incrementItem,
     set: setItem,
     delete: deleteItem,
   },

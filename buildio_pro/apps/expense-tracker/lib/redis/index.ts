@@ -45,4 +45,23 @@ async function deleteItem(key: string) {
   return res === 1 ? "true" : "false";
 }
 
-export { valkeyClient, getItem, setItem, deleteItem };
+async function getAndDeleteItem(key: string) {
+  if (isDevEnv) {
+    console.log(`----- Getting & deleting cache for ${key} -------`);
+  }
+  return await valkeyClient.getdel(key);
+}
+
+async function incrementItem(key: string, ttl: number) {
+  if (isDevEnv) {
+    console.log(`----- Incrementing cache for ${key} -------`);
+  }
+  const results = await valkeyClient
+    .multi()
+    .incr(key)
+    .expire(key, ttl, "NX")
+    .exec();
+  return results?.[0]?.[1] as number;
+}
+
+export { valkeyClient, getItem, setItem, deleteItem, getAndDeleteItem, incrementItem };
