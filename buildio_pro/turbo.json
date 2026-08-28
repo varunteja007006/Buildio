@@ -43,7 +43,20 @@
   },
   "globalEnv": [
     "DATABASE_URL",
-    "DATABASE_NAME"
+    "DATABASE_NAME",
+    "POSTGRES_USER",
+    "POSTGRES_PASSWORD",
+    "POSTGRES_DB",
+    "VALKEY_URL",
+    "AI_GATEWAY_API_KEY",
+    "OPENAI_API_KEY",
+    "VERCEL_OIDC_TOKEN",
+    "BETTER_AUTH_SECRET",
+    "BETTER_AUTH_URL",
+    "NEXT_PUBLIC_APP_URL",
+    "GOOGLE_CLIENT_ID",
+    "GOOGLE_CLIENT_SECRET",
+    "UPLOADTHING_TOKEN"
   ],
   "globalDependencies": [
     ".env"
