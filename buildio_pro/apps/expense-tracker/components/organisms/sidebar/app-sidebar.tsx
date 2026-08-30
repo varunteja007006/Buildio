@@ -41,11 +41,11 @@ const data = {
     //   url: "/budgets",
     //   icon: PiggyBank,
     // },
-    {
-      title: "Categories",
-      url: "/expense-categories",
-      icon: Tags,
-    },
+    // {
+    //   title: "Categories",
+    //   url: "/expense-categories",
+    //   icon: Tags,
+    // },
     {
       title: "Dashboard",
       url: "/dashboard",
