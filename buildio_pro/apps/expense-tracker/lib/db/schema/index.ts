@@ -24,6 +24,12 @@ import {
 } from "./income.schema";
 import { investmentPlatforms, investmentTypes } from "./investment.schema";
 import {
+  statementDocumentType,
+  statementUpload,
+  statementUploadRelations,
+  statementUploadStatus,
+} from "./statement.schema";
+import {
   paymentMethods,
   paymentMethodsRelations,
   paymentProvider,
@@ -73,6 +79,10 @@ export const dbSchema = {
   eventExpense,
   eventRelations,
   eventExpenseRelations,
+  statementDocumentType,
+  statementUpload,
+  statementUploadRelations,
+  statementUploadStatus,
   address,
   city,
   country,

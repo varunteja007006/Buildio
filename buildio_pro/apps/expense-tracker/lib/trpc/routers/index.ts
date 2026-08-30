@@ -6,6 +6,7 @@ import { expenseCategoryRouter } from "./expense-category.router";
 import { expenseRouter } from "./expense.router";
 import { incomeSourceRouter } from "./income-source.router";
 import { incomeRouter } from "./income.router";
+import { statementRouter } from "./statement.router";
 import { userPreferencesRouter } from "./user-preferences.router";
 import { userProfileRouter } from "./user-profile.router";
 
@@ -19,6 +20,7 @@ export const appRouter = createTRPCRouter({
   userPreferences: userPreferencesRouter,
   userProfile: userProfileRouter,
   event: eventRouter,
+  statement: statementRouter,
 });
 
 // export type definition of API

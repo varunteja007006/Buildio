@@ -20,6 +20,8 @@
     "db:studio": "pnpm drizzle-kit studio"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "catalog:",
+    "@aws-sdk/s3-request-presigner": "catalog:",
     "@hookform/resolvers": "^5.9.1",
     "@react-email/render": "^1.4.0",
     "@tanstack/react-form": "^1.33.5",

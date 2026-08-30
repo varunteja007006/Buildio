@@ -1,0 +1,105 @@
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
+
+import { useTRPC, useTRPCClient } from "@/lib/trpc-client";
+
+export type StatementDocumentType = "credit_card" | "bank_statement";
+
+export const useStatementList = (params: {
+  limit: number;
+  page: number;
+  documentType?: StatementDocumentType;
+}) => {
+  const trpc = useTRPC();
+
+  return useQuery(
+    trpc.statement.listStatements.queryOptions({
+      limit: params.limit,
+      page: params.page,
+      documentType: params.documentType,
+    }),
+  );
+};
+
+export function useStatementUpload() {
+  const trpc = useTRPC();
+  const trpcClient = useTRPCClient();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      file,
+      documentType,
+    }: {
+      file: File;
+      documentType: StatementDocumentType;
+    }) => {
+      const { uploadId, uploadUrl } =
+        await trpcClient.statement.createUpload.mutate({
+          documentType,
+          filename: file.name,
+          contentType: file.type || "application/octet-stream",
+          fileSize: file.size,
+        });
+
+      const response = await fetch(uploadUrl, {
+        method: "PUT",
+        body: file,
+        headers: {
+          "Content-Type": file.type || "application/octet-stream",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to upload file to storage");
+      }
+
+      return trpcClient.statement.completeUpload.mutate({ uploadId });
+    },
+    onSuccess: () => {
+      toast.success("Statement uploaded successfully!");
+      queryClient.invalidateQueries({
+        queryKey: trpc.statement.listStatements.queryKey(),
+      });
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || "Failed to upload statement");
+    },
+  });
+}
+
+export function useStatementDelete(options?: {
+  onSuccess?: () => void;
+  onError?: (error: unknown) => void;
+}) {
+  const trpc = useTRPC();
+  const queryClient = useQueryClient();
+
+  return useMutation(
+    trpc.statement.deleteUpload.mutationOptions({
+      onSuccess: () => {
+        toast.success("Statement deleted successfully!");
+        queryClient.invalidateQueries({
+          queryKey: trpc.statement.listStatements.queryKey(),
+        });
+        options?.onSuccess?.();
+      },
+      onError: (error) => {
+        toast.error(error.message || "Failed to delete statement");
+        options?.onError?.(error);
+      },
+    }),
+  );
+}
+
+export function useStatementDownload() {
+  const trpcClient = useTRPCClient();
+
+  return useMutation({
+    mutationFn: async (uploadId: string) => {
+      const { downloadUrl, originalFilename, contentType } =
+        await trpcClient.statement.getDownloadUrl.query({ uploadId });
+      return { downloadUrl, originalFilename, contentType };
+    },
+  });
+}

@@ -82,3 +82,12 @@ export {
   useIncomeSourceDetails,
   useDeleteMultipleIncomeSource,
 } from "./use-income-sources-queries";
+
+// Statement upload hooks
+export {
+  useStatementList,
+  useStatementUpload,
+  useStatementDelete,
+  useStatementDownload,
+} from "./use-statement-queries";
+export type { StatementDocumentType } from "./use-statement-queries";

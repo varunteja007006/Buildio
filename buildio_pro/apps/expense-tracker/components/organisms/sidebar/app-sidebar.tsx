@@ -11,6 +11,7 @@ import {
 } from "@workspace/ui/components/sidebar";
 import {
   CalendarDays,
+  FileText,
   HandHeart,
   Landmark,
   LayoutDashboard,
@@ -72,6 +73,11 @@ const data = {
       title: "Income Sources",
       url: "/income-sources",
       icon: Landmark,
+    },
+    {
+      title: "Statements",
+      url: "/statements",
+      icon: FileText,
     },
     {
       title: "Settings",
