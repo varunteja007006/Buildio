@@ -19,6 +19,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@workspace/ui/components/card";
+import { Input } from "@workspace/ui/components/input";
 import {
   Select,
   SelectContent,
@@ -35,13 +36,18 @@ import {
   TableRow,
 } from "@workspace/ui/components/table";
 import {
+  Banknote,
+  Check,
   CreditCard,
   Download,
+  FileSpreadsheet,
   FileText,
   Landmark,
   Loader2,
+  Pencil,
   Trash2,
   Upload,
+  X,
 } from "lucide-react";
 import * as React from "react";
 
@@ -49,6 +55,7 @@ import {
   useStatementDelete,
   useStatementDownload,
   useStatementList,
+  useStatementRename,
   useStatementUpload,
   type StatementDocumentType,
 } from "@/hooks";
@@ -56,11 +63,15 @@ import {
 const documentTypeLabels: Record<StatementDocumentType, string> = {
   credit_card: "Credit Card",
   bank_statement: "Bank Statement",
+  income_statement: "Income Statement",
+  income_tax_statement: "Income Tax Statement",
 };
 
 const documentTypeIcons: Record<StatementDocumentType, React.ElementType> = {
   credit_card: CreditCard,
   bank_statement: Landmark,
+  income_statement: Banknote,
+  income_tax_statement: FileSpreadsheet,
 };
 
 const statusVariants: Record<
@@ -87,6 +98,96 @@ function formatDate(value: string | Date | null | undefined): string {
     month: "short",
     day: "numeric",
   });
+}
+
+function StatementFilenameCell({
+  uploadId,
+  filename,
+}: {
+  uploadId: string;
+  filename: string;
+}) {
+  const [editing, setEditing] = React.useState(false);
+  const [value, setValue] = React.useState(filename);
+  const inputRef = React.useRef<HTMLInputElement>(null);
+  const renameMutation = useStatementRename();
+
+  React.useEffect(() => {
+    if (editing) inputRef.current?.select();
+  }, [editing]);
+
+  const startEditing = () => {
+    setValue(filename);
+    setEditing(true);
+  };
+
+  const cancel = () => {
+    setValue(filename);
+    setEditing(false);
+  };
+
+  const save = () => {
+    const trimmed = value.trim();
+    if (!trimmed || trimmed === filename) {
+      setEditing(false);
+      return;
+    }
+    renameMutation.mutate(
+      { uploadId, filename: trimmed },
+      { onSuccess: () => setEditing(false) },
+    );
+  };
+
+  if (editing) {
+    return (
+      <div className="flex items-center gap-1">
+        <Input
+          ref={inputRef}
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") save();
+            if (e.key === "Escape") cancel();
+          }}
+          className="h-8 w-56"
+        />
+        <Button
+          variant="ghost"
+          size="icon"
+          className="size-8 shrink-0"
+          disabled={renameMutation.isPending}
+          onClick={save}
+          aria-label="Save new filename"
+        >
+          <Check className="size-4" />
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="size-8 shrink-0"
+          onClick={cancel}
+          aria-label="Cancel rename"
+        >
+          <X className="size-4" />
+        </Button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="group flex max-w-64 items-center gap-1">
+      <span className="min-w-0 flex-1 truncate">{filename}</span>
+      <Button
+        variant="ghost"
+        size="icon"
+        className="size-6 shrink-0 opacity-0 group-hover:opacity-100"
+        onClick={startEditing}
+        aria-label="Rename statement"
+      >
+        <Pencil className="size-3.5" />
+      </Button>
+    </div>
+  );
 }
 
 export function StatementsPage() {
@@ -153,6 +254,12 @@ export function StatementsPage() {
                 <SelectContent>
                   <SelectItem value="credit_card">Credit Card</SelectItem>
                   <SelectItem value="bank_statement">Bank Statement</SelectItem>
+                  <SelectItem value="income_statement">
+                    Income Statement
+                  </SelectItem>
+                  <SelectItem value="income_tax_statement">
+                    Income Tax Statement
+                  </SelectItem>
                 </SelectContent>
               </Select>
 
@@ -256,6 +363,12 @@ export function StatementsPage() {
                   <SelectItem value="all">All types</SelectItem>
                   <SelectItem value="credit_card">Credit Card</SelectItem>
                   <SelectItem value="bank_statement">Bank Statement</SelectItem>
+                  <SelectItem value="income_statement">
+                    Income Statement
+                  </SelectItem>
+                  <SelectItem value="income_tax_statement">
+                    Income Tax Statement
+                  </SelectItem>
                 </SelectContent>
               </Select>
 
@@ -324,8 +437,11 @@ export function StatementsPage() {
                               </span>
                             </div>
                           </TableCell>
-                          <TableCell className="max-w-64 truncate">
-                            {statement.originalFilename}
+                          <TableCell>
+                            <StatementFilenameCell
+                              uploadId={statement.id}
+                              filename={statement.originalFilename}
+                            />
                           </TableCell>
                           <TableCell>
                             {formatFileSize(statement.fileSize)}

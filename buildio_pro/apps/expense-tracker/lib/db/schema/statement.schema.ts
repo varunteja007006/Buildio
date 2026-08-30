@@ -14,6 +14,8 @@ import { auditTimeFields } from "./common.schema";
 export const statementDocumentType = pgEnum("statement_document_type", [
   "credit_card",
   "bank_statement",
+  "income_statement",
+  "income_tax_statement",
 ]);
 
 export const statementUploadStatus = pgEnum("statement_upload_status", [

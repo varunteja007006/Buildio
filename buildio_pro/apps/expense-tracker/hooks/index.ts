@@ -87,6 +87,7 @@ export {
 export {
   useStatementList,
   useStatementUpload,
+  useStatementRename,
   useStatementDelete,
   useStatementDownload,
 } from "./use-statement-queries";

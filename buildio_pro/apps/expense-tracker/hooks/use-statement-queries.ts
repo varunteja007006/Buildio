@@ -3,7 +3,11 @@ import { toast } from "sonner";
 
 import { useTRPC, useTRPCClient } from "@/lib/trpc-client";
 
-export type StatementDocumentType = "credit_card" | "bank_statement";
+export type StatementDocumentType =
+  | "credit_card"
+  | "bank_statement"
+  | "income_statement"
+  | "income_tax_statement";
 
 export const useStatementList = (params: {
   limit: number;
@@ -66,6 +70,30 @@ export function useStatementUpload() {
       toast.error(error.message || "Failed to upload statement");
     },
   });
+}
+
+export function useStatementRename(options?: {
+  onSuccess?: () => void;
+  onError?: (error: unknown) => void;
+}) {
+  const trpc = useTRPC();
+  const queryClient = useQueryClient();
+
+  return useMutation(
+    trpc.statement.renameUpload.mutationOptions({
+      onSuccess: () => {
+        toast.success("Statement renamed successfully!");
+        queryClient.invalidateQueries({
+          queryKey: trpc.statement.listStatements.queryKey(),
+        });
+        options?.onSuccess?.();
+      },
+      onError: (error) => {
+        toast.error(error.message || "Failed to rename statement");
+        options?.onError?.(error);
+      },
+    }),
+  );
 }
 
 export function useStatementDelete(options?: {

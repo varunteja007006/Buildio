@@ -18,7 +18,12 @@ import {
   paginationInputSchema,
 } from "../schemas/pagination.schema";
 
-const documentTypeSchema = z.enum(["credit_card", "bank_statement"]);
+const documentTypeSchema = z.enum([
+  "credit_card",
+  "bank_statement",
+  "income_statement",
+  "income_tax_statement",
+]);
 
 const createUploadInput = z.object({
   documentType: documentTypeSchema,
@@ -33,6 +38,11 @@ const createUploadInput = z.object({
 
 const uploadIdInput = z.object({
   uploadId: z.uuid(),
+});
+
+const renameUploadInput = z.object({
+  uploadId: z.uuid(),
+  filename: z.string().trim().min(1, "Filename is required").max(255),
 });
 
 const listStatementsInput = paginationInputSchema.extend({
@@ -118,6 +128,44 @@ export const statementRouter = createTRPCRouter({
         })
         .where(eq(dbSchema.statementUpload.id, input.uploadId))
         .returning();
+
+      return updated;
+    }),
+
+  renameUpload: protectedProcedure
+    .input(renameUploadInput)
+    .mutation(async ({ input, ctx }) => {
+      const { db, dbSchema, user } = ctx;
+
+      const record = await db.query.statementUpload.findFirst({
+        where: and(
+          eq(dbSchema.statementUpload.id, input.uploadId),
+          eq(dbSchema.statementUpload.userId, user.id),
+        ),
+      });
+
+      if (!record) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Upload record not found",
+        });
+      }
+
+      const [updated] = await db
+        .update(dbSchema.statementUpload)
+        .set({
+          originalFilename: input.filename,
+          updatedAt: new Date(),
+        })
+        .where(eq(dbSchema.statementUpload.id, input.uploadId))
+        .returning();
+
+      if (!updated) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to rename statement",
+        });
+      }
 
       return updated;
     }),
