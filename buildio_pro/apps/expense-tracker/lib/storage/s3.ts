@@ -85,6 +85,24 @@ export async function deleteStatementObject(key: string): Promise<void> {
   await s3Client.send(command);
 }
 
+export async function getStatementObject(
+  key: string,
+): Promise<{ buffer: Buffer; contentType: string }> {
+  const command = new GetObjectCommand({
+    Bucket: S3_BUCKET,
+    Key: key,
+  });
+  const response = await s3Client.send(command);
+  const body = await response.Body?.transformToByteArray();
+  if (!body || body.byteLength === 0) {
+    throw new Error("Statement file is empty or could not be read");
+  }
+  return {
+    buffer: Buffer.from(body),
+    contentType: response.ContentType ?? "application/pdf",
+  };
+}
+
 export async function statementObjectExists(key: string): Promise<boolean> {
   try {
     const command = new HeadObjectCommand({

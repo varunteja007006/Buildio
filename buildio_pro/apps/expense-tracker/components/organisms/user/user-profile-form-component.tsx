@@ -15,15 +15,11 @@ import { Field, FieldGroup } from "@workspace/ui/components/field";
 import { useAppForm } from "@workspace/ui/components/forms/hooks";
 import { Loader2 } from "lucide-react";
 import * as React from "react";
-import * as z from "zod";
 
 import { useUpdateUserProfile, useUserProfileQuery } from "@/hooks";
+import { zodSchema } from "@/lib/db/zod-schema";
 
-const profileFormSchema = z.object({
-  name: z.string().min(1, "Name is required").max(255),
-  description: z.string().max(500).optional(),
-  image_url: z.union([z.url("Invalid URL"), z.literal("")]).optional(),
-});
+const profileFormSchema = zodSchema.updateUserProfileSchema;
 
 export function UserProfileFormComponent() {
   const { data: profile, isLoading } = useUserProfileQuery();

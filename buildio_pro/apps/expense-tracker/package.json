@@ -21,6 +21,7 @@
     "db:studio": "pnpm drizzle-kit studio"
   },
   "dependencies": {
+    "@ai-sdk/gateway": "catalog:",
     "@aws-sdk/client-s3": "catalog:",
     "@aws-sdk/s3-request-presigner": "catalog:",
     "@hookform/resolvers": "^5.9.1",
@@ -35,6 +36,7 @@
     "@trpc/tanstack-react-query": "^11.18.0",
     "@workspace/theme": "workspace:*",
     "@workspace/ui": "workspace:*",
+    "ai": "catalog:",
     "better-auth": "^1.7.2",
     "client-only": "^0.0.1",
     "convex": "catalog:",

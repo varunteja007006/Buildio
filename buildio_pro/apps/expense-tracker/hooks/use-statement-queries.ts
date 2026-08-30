@@ -131,3 +131,56 @@ export function useStatementDownload() {
     },
   });
 }
+
+export function useStatementModels() {
+  const trpc = useTRPC();
+
+  return useQuery(trpc.statement.listExtractionModels.queryOptions());
+}
+
+export function useStatementProcess(options?: {
+  onSuccess?: (data: {
+    model: string;
+    extractedCount: number;
+    insertedCount: number;
+    skippedCount: number;
+  }) => void;
+  onError?: (error: Error) => void;
+}) {
+  const trpc = useTRPC();
+  const queryClient = useQueryClient();
+
+  return useMutation(
+    trpc.statement.processUpload.mutationOptions({
+      onMutate: () => {
+        queryClient.invalidateQueries({
+          queryKey: trpc.statement.listStatements.queryKey(),
+        });
+      },
+      onSuccess: (data) => {
+        toast.success(
+          `Extracted ${data.extractedCount} transactions (${data.insertedCount} new) from ${data.model}.`,
+        );
+        queryClient.invalidateQueries({
+          queryKey: trpc.statement.listStatements.queryKey(),
+        });
+        queryClient.invalidateQueries({
+          queryKey: trpc.transaction.listTransactions.queryKey(),
+        });
+        queryClient.invalidateQueries({
+          queryKey: trpc.transaction.getAnalytics.queryKey(),
+        });
+        options?.onSuccess?.(data);
+      },
+      onError: (error) => {
+        toast.error(
+          error instanceof Error ? error.message : "Failed to process statement",
+        );
+        queryClient.invalidateQueries({
+          queryKey: trpc.statement.listStatements.queryKey(),
+        });
+        options?.onError?.(error instanceof Error ? error : new Error(String(error)));
+      },
+    }),
+  );
+}

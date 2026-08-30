@@ -12,8 +12,10 @@ allowBuilds:
   unrs-resolver: true
 
 catalog:
+  '@ai-sdk/gateway': ^4.0.67
   '@aws-sdk/client-s3': ^3.1121.0
   '@aws-sdk/s3-request-presigner': ^3.1121.0
+  ai: ^7.0.83
   '@types/node': ^20.19.43
   convex: ^1.45.0
   eslint-plugin-import-x: ^4.17.1

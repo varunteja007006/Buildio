@@ -25,7 +25,7 @@ pnpm + Turborepo monorepo of Next.js 16 apps and shared packages. **All code liv
 ## Apps
 
 - **`apps/web`** — landing page (buildio.pro). Imports `@workspace/ui/globals.css` in `app/layout.tsx`.
-- **`apps/expense-tracker`** — full-stack: tRPC + better-auth + Drizzle/Postgres + Valkey. Drizzle `db:push|generate|migrate|studio` scripts require `DATABASE_URL`. Schema in `lib/db/schema/*.schema.ts`, zod in `lib/db/zod-schema/`, tRPC routers in `lib/trpc/routers/*.router.ts` (all protected). Local docs (`apps/expense-tracker/docs/`, `todo.md`) are untracked but current.
+- **`apps/expense-tracker`** — full-stack: tRPC + better-auth + Drizzle/Postgres + Valkey. Drizzle `db:push|generate|migrate|studio` scripts require `DATABASE_URL`. DB schema in `lib/db/schema/*.schema.ts`, **shared zod schemas in `lib/db/zod-schema/` (reuse these — see tRPC section), tRPC routers in `lib/trpc/routers/*.router.ts` (all protected)**. Local docs (`apps/expense-tracker/docs/`, `todo.md`) are untracked but current.
 - **`apps/cortex-ai`** — AI RAG chat app (AI SDK + Drizzle + better-auth + uploadthing). Diverges from other apps:
   - Uses the same stable `drizzle-orm` (`^0.45.2`) / `drizzle-kit` (`^0.31.10`) as expense-tracker. Keep all apps on the stable `latest` tag — do not pin rc/beta builds (a `1.0.0-rc.x` + `0.31.x` mix breaks drizzle-kit's runtime version check via pnpm hoisting).
   - Has its **own** shadcn components in `@/components/ui` (its `components.json` points `ui` at the local app, not `@workspace/ui`) — adding a component with `-c apps/cortex-ai` goes there, not `packages/ui`.
@@ -61,6 +61,11 @@ pnpm + Turborepo monorepo of Next.js 16 apps and shared packages. **All code liv
   - Server: `lib/trpc/routers/<feature>.router.ts` (all `protectedProcedure`), merged into `appRouter` in `lib/trpc/routers/index.ts` (type `AppRouter`).
   - Client: `lib/trpc-client.tsx` exports `TRPCAppProvider` + `useTRPC`; wrap new routes in the provider.
   - Data hooks: `hooks/use-<feature>-queries.ts` — `const trpc = useTRPC();` then `useQuery(trpc.feature.proc.queryOptions(...))` / `useMutation(trpc.feature.proc.mutationOptions(...))`. Invalidate via a local query-key factory + `queryClient.invalidateQueries(...)`.
+- **Zod schemas are single-source, not duplicated per file.** `lib/db/zod-schema/*.zod.schema.ts` exports per-table `create/update/select*Schema` (drizzle-zod-generated) via the `zodSchema` barrel (`zodSchema.createEventSchema`). Reuse them in both the router and the client form instead of redefining the shape in each:
+  - Router input: `.input(zodSchema.updateXSchema)` (see `user-profile.router.ts`) or compose fields from generated shapes with `zodSchema.createXSchema.shape.name` (see `event.router.ts`, `budget.router.ts`).
+  - Client form: `const schema = zodSchema.updateXSchema;` and pass to `useAppForm` validators (see `components/organisms/user/user-profile-form-component.tsx`).
+  - If drizzle-zod's generated schema lacks the validation you need (`.url()`, min/max), hand-write the shape as a plain `z.object` in the zod-schema file — e.g. `updateUserProfileSchema` — and share that. Do NOT re-declare a `z.object` inside a component.
+  - Importing `zodSchema` into a client component pulls `drizzle-orm` into the client bundle — it's browser-safe (no node builtins) but adds weight; still prefer reuse over duplication.
 
 ## Deploy & reference
 

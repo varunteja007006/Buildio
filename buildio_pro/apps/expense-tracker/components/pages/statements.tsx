@@ -19,7 +19,18 @@ import {
   CardHeader,
   CardTitle,
 } from "@workspace/ui/components/card";
+import { ComboboxSelect } from "@workspace/ui/components/combobox-select";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@workspace/ui/components/dialog";
 import { Input } from "@workspace/ui/components/input";
+import { Label } from "@workspace/ui/components/label";
 import {
   Select,
   SelectContent,
@@ -45,6 +56,7 @@ import {
   Landmark,
   Loader2,
   Pencil,
+  Sparkles,
   Trash2,
   Upload,
   X,
@@ -55,6 +67,8 @@ import {
   useStatementDelete,
   useStatementDownload,
   useStatementList,
+  useStatementModels,
+  useStatementProcess,
   useStatementRename,
   useStatementUpload,
   type StatementDocumentType,
@@ -190,6 +204,125 @@ function StatementFilenameCell({
   );
 }
 
+function ExtractStatementDialog({
+  statement,
+  open,
+  onOpenChange,
+}: {
+  statement: {
+    id: string;
+    originalFilename: string;
+    extractionModel: string | null;
+  } | null;
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}) {
+  const { data: models, isLoading: modelsLoading, isError: modelsError } =
+    useStatementModels();
+  const processMutation = useStatementProcess({
+    onSuccess: () => onOpenChange(false),
+  });
+
+  const options = React.useMemo(
+    () =>
+      (models ?? []).map((model) => ({
+        value: model.id,
+        label: model.id,
+        searchValue: `${model.id} ${model.name} ${model.description ?? ""}`,
+      })),
+    [models],
+  );
+
+  const [selectedModel, setSelectedModel] = React.useState("");
+
+  React.useEffect(() => {
+    if (!open || !statement) return;
+    setSelectedModel(
+      statement.extractionModel ??
+        options.find((option) => option.value === "google/gemini-2.5-flash")
+          ?.value ??
+        options[0]?.value ??
+        "",
+    );
+  }, [open, statement, options]);
+
+  const canStart =
+    !modelsLoading && Boolean(selectedModel) && Boolean(statement);
+
+  const contentRef = React.useRef<HTMLDivElement>(null);
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent ref={contentRef} className="sm:max-w-lg">
+        <DialogHeader>
+          <DialogTitle>Extract transactions</DialogTitle>
+          <DialogDescription>
+            Parse {statement?.originalFilename ?? "this statement"} into
+            normalized transactions using the Vercel AI Gateway.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <Label>Model</Label>
+            {modelsLoading ? (
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <Loader2 className="size-4 animate-spin" />
+                Loading available models...
+              </div>
+            ) : (
+              <ComboboxSelect
+                container={contentRef}
+                options={options}
+                value={selectedModel}
+                onValueChange={setSelectedModel}
+                placeholder="Search and select a model"
+                searchPlaceholder="Search by name or provider..."
+                emptyMessage="No models returned by the gateway"
+              />
+            )}
+          </div>
+          {!modelsLoading && modelsError && (
+            <p className="text-xs text-destructive">
+              Could not reach the gateway to list models. Verify that
+              AI_GATEWAY_API_KEY is configured on the server.
+            </p>
+          )}
+          {!modelsLoading && !modelsError && models && models.length === 0 && (
+            <p className="text-xs text-destructive">
+              No models were returned by the gateway. Verify that
+              AI_GATEWAY_API_KEY is configured on the server.
+            </p>
+          )}
+        </div>
+        <DialogFooter>
+          <DialogClose asChild>
+            <Button variant="outline" disabled={processMutation.isPending}>
+              Cancel
+            </Button>
+          </DialogClose>
+          <Button
+            disabled={!canStart || processMutation.isPending}
+            onClick={() =>
+              statement &&
+              processMutation.mutate({
+                uploadId: statement.id,
+                model: selectedModel,
+              })
+            }
+          >
+            {processMutation.isPending ? (
+              <Loader2 className="size-4 animate-spin" />
+            ) : (
+              <Sparkles className="size-4" />
+            )}
+            {processMutation.isPending ? "Extracting..." : "Start extraction"}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 export function StatementsPage() {
   const [documentType, setDocumentType] =
     React.useState<StatementDocumentType>("credit_card");
@@ -200,13 +333,31 @@ export function StatementsPage() {
   const [page, setPage] = React.useState(1);
   const [file, setFile] = React.useState<File | null>(null);
   const [isDragging, setIsDragging] = React.useState(false);
+  const [extractingStatement, setExtractingStatement] = React.useState<{
+    id: string;
+    originalFilename: string;
+    extractionModel: string | null;
+  } | null>(null);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
-  const { data, isLoading } = useStatementList({
+  const { data, isLoading, refetch } = useStatementList({
     limit,
     page,
     documentType: filter === "all" ? undefined : filter,
   });
+
+  const hasProcessing = React.useMemo(
+    () => data?.data.some((statement) => statement.status === "processing") ?? false,
+    [data],
+  );
+
+  React.useEffect(() => {
+    if (!hasProcessing) return;
+    const interval = window.setInterval(() => {
+      refetch();
+    }, 3000);
+    return () => window.clearInterval(interval);
+  }, [hasProcessing, refetch]);
   const uploadMutation = useStatementUpload();
   const deleteMutation = useStatementDelete();
   const downloadMutation = useStatementDownload();
@@ -447,18 +598,64 @@ export function StatementsPage() {
                             {formatFileSize(statement.fileSize)}
                           </TableCell>
                           <TableCell>
-                            <Badge
-                              variant={statusVariants[statement.status] ?? "outline"}
-                              className="capitalize"
-                            >
-                              {statement.status}
-                            </Badge>
+                            <div className="flex flex-col gap-1">
+                              <div className="flex items-center gap-2">
+                                <Badge
+                                  variant={
+                                    statusVariants[statement.status] ??
+                                    "outline"
+                                  }
+                                  className="capitalize"
+                                >
+                                  {statement.status}
+                                </Badge>
+                                {statement.status === "processing" && (
+                                  <Loader2 className="size-3.5 animate-spin text-muted-foreground" />
+                                )}
+                                {typeof statement.processedTransactionsCount ===
+                                  "number" &&
+                                  statement.processedTransactionsCount > 0 && (
+                                  <span className="text-xs text-muted-foreground">
+                                    {statement.processedTransactionsCount}{" "}
+                                    {statement.processedTransactionsCount === 1
+                                      ? "transaction"
+                                      : "transactions"}
+                                  </span>
+                                )}
+                              </div>
+                              {statement.status === "failed" &&
+                                statement.processingError && (
+                                  <span className="max-w-56 truncate text-xs text-destructive">
+                                    {statement.processingError}
+                                  </span>
+                                )}
+                            </div>
                           </TableCell>
                           <TableCell>
                             {formatDate(statement.uploadedAt)}
                           </TableCell>
                           <TableCell className="text-right">
                             <div className="flex justify-end gap-2">
+                              <Button
+                                variant="outline"
+                                size="icon"
+                                title="Extract transactions with AI"
+                                disabled={
+                                  statement.status === "processing" ||
+                                  statement.status === "pending"
+                                }
+                                onClick={() =>
+                                  setExtractingStatement({
+                                    id: statement.id,
+                                    originalFilename:
+                                      statement.originalFilename,
+                                    extractionModel: statement.extractionModel,
+                                  })
+                                }
+                              >
+                                <Sparkles className="size-4" />
+                              </Button>
+
                               <Button
                                 variant="outline"
                                 size="icon"
@@ -544,6 +741,14 @@ export function StatementsPage() {
           </div>
         </CardContent>
       </Card>
+
+      <ExtractStatementDialog
+        statement={extractingStatement}
+        open={Boolean(extractingStatement)}
+        onOpenChange={(open) => {
+          if (!open) setExtractingStatement(null);
+        }}
+      />
     </div>
   );
 }

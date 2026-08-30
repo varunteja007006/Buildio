@@ -2,6 +2,8 @@ import { relations } from "drizzle-orm";
 import {
   bigint,
   index,
+  integer,
+  jsonb,
   pgEnum,
   pgTable,
   text,
@@ -42,6 +44,10 @@ export const statementUpload = pgTable(
     fileSize: bigint("file_size", { mode: "number" }).notNull(),
     status: statementUploadStatus("status").default("pending").notNull(),
     uploadedAt: timestamp("uploaded_at"),
+    processedTransactionsCount: integer("processed_transactions_count"),
+    processingError: text("processing_error"),
+    extractionModel: text("extraction_model"),
+    statementMetadata: jsonb("statement_metadata"),
     ...auditTimeFields,
   },
   (table) => [

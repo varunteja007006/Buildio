@@ -24,6 +24,12 @@ interface ComboboxSelectProps {
   disabled?: boolean;
   clearable?: boolean;
   className?: string;
+  /**
+   * Element to render the popup into instead of <body>. Required when the
+   * combobox is used inside a modal dialog so the popup stays within the
+   * dialog's focus scope.
+   */
+  container?: React.RefObject<HTMLElement | null>;
 }
 
 function ComboboxSelect({
@@ -36,6 +42,7 @@ function ComboboxSelect({
   disabled = false,
   clearable = false,
   className,
+  container,
 }: Readonly<ComboboxSelectProps>) {
   const selected = options.find((opt) => opt.value === value) ?? null;
 
@@ -69,7 +76,7 @@ function ComboboxSelect({
       >
         <ComboboxValue placeholder={placeholder} />
       </ComboboxTrigger>
-      <ComboboxContent>
+      <ComboboxContent container={container}>
         <ComboboxInput placeholder={searchPlaceholder} showTrigger={false} />
         <ComboboxEmpty>{emptyMessage}</ComboboxEmpty>
         <ComboboxList>

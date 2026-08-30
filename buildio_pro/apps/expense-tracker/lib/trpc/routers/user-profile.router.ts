@@ -1,16 +1,11 @@
 import { TRPCError } from "@trpc/server";
 import { eq } from "drizzle-orm";
-import z from "zod";
 
 import { zodSchema } from "@/lib/db/zod-schema";
 
 import { createTRPCRouter, protectedProcedure } from "../init";
 
-const updateProfileInput = z.object({
-  name: z.string().min(1, "Name is required").max(255).optional(),
-  description: z.string().max(500).optional(),
-  image_url: z.union([z.string().url(), z.literal("")]).optional(),
-});
+const updateProfileInput = zodSchema.updateUserProfileSchema;
 
 export const userProfileRouter = createTRPCRouter({
   getProfile: protectedProcedure.query(async ({ ctx }) => {

@@ -90,6 +90,8 @@ export {
   useStatementRename,
   useStatementDelete,
   useStatementDownload,
+  useStatementModels,
+  useStatementProcess,
 } from "./use-statement-queries";
 export type { StatementDocumentType } from "./use-statement-queries";
 
