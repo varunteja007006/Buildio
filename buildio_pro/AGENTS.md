@@ -22,7 +22,7 @@ pnpm + Turborepo monorepo of Next.js 16 apps and shared packages. **All code liv
 - **`apps/web`** — landing page (buildio.pro). Imports `@workspace/ui/globals.css` in `app/layout.tsx`.
 - **`apps/expense-tracker`** — full-stack: tRPC + better-auth + Drizzle/Postgres + Valkey. Drizzle `db:push|generate|migrate|studio` scripts require `DATABASE_URL`. Schema in `lib/db/schema/*.schema.ts`, zod in `lib/db/zod-schema/`, tRPC routers in `lib/trpc/routers/*.router.ts` (all protected). Local docs (`apps/expense-tracker/docs/`, `todo.md`) are untracked but current.
 - **`apps/cortex-ai`** — AI RAG chat app (AI SDK + Drizzle + better-auth + uploadthing). Diverges from other apps:
-  - Uses `drizzle-orm`/`drizzle-kit` `1.0.0-rc.4` (expense-tracker uses 0.45.x / 0.31.x) — don't mix.
+  - Uses the same stable `drizzle-orm` (`^0.45.2`) / `drizzle-kit` (`^0.31.10`) as expense-tracker. Keep all apps on the stable `latest` tag — do not pin rc/beta builds (a `1.0.0-rc.x` + `0.31.x` mix breaks drizzle-kit's runtime version check via pnpm hoisting).
   - Has its **own** shadcn components in `@/components/ui` (its `components.json` points `ui` at the local app, not `@workspace/ui`) — adding a component with `-c apps/cortex-ai` goes there, not `packages/ui`.
   - Auth middleware in `proxy.ts` protects `/dashboard` and `/chat`. `reactCompiler: true` in `next.config.ts`.
   - Requires more env than others (`AI_GATEWAY_API_KEY` or `VERCEL_OIDC_TOKEN`, `UPLOADTHING_TOKEN`, Google OAuth, etc. — see `.env.example`).
