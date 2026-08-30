@@ -1,10 +1,10 @@
+import { sql } from "drizzle-orm";
 import {
   pgTable,
   text,
   timestamp,
   boolean,
 } from "drizzle-orm/pg-core";
-import { sql } from "drizzle-orm";
 
 export const user = pgTable("user", {
   id: text("id").primaryKey(),

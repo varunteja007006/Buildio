@@ -1,9 +1,10 @@
+import { and, asc, count, eq, isNull, max } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
+
 import { db } from "@/lib/db";
 import { topics } from "@/lib/db/schema/topics";
-import { and, asc, count, eq, isNull, max } from "drizzle-orm";
-import { slugify } from "@/lib/slug";
 import { getCurrentUser } from "@/lib/session";
+import { slugify } from "@/lib/slug";
 import { getActiveWorkspace } from "@/lib/workspaces";
 
 const MAX_TOPICS = 10;

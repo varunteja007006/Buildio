@@ -1,8 +1,7 @@
 "use client"
 
 import { useQueryClient } from "@tanstack/react-query"
-import { toast } from "sonner"
-
+import { Button } from "@workspace/ui/components/button"
 import {
   Dialog,
   DialogContent,
@@ -11,9 +10,11 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@workspace/ui/components/dialog"
-import { Button } from "@workspace/ui/components/button"
-import { FileUpload, type FileUploadConfig } from "@/components/file-upload"
+import { toast } from "sonner"
+
+
 import { documentKeys } from "@/api/documents/query"
+import { FileUpload, type FileUploadConfig } from "@/components/file-upload"
 
 interface UploadDocumentDialogProps {
   open: boolean

@@ -1,7 +1,8 @@
 "use client"
 
-import { SidebarTrigger } from "@workspace/ui/components/sidebar"
 import { Separator } from "@workspace/ui/components/separator"
+import { SidebarTrigger } from "@workspace/ui/components/sidebar"
+
 import { ThemeToggle } from "@/components/theme-toggle"
 
 export function DashboardHeader() {

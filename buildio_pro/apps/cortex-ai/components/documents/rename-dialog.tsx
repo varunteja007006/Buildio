@@ -1,7 +1,7 @@
 "use client"
 
-import { useState } from "react"
 
+import { Button } from "@workspace/ui/components/button"
 import {
   Dialog,
   DialogContent,
@@ -10,9 +10,10 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@workspace/ui/components/dialog"
-import { Button } from "@workspace/ui/components/button"
 import { Input } from "@workspace/ui/components/input"
 import { Label } from "@workspace/ui/components/label"
+import { useState } from "react"
+
 import { cn } from "@/lib/utils"
 
 const MAX_NAME_LENGTH = 150

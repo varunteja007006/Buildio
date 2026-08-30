@@ -1,12 +1,14 @@
-import { NextResponse } from "next/server";
 import { promises as fs } from "node:fs";
 import path from "node:path";
+
+import { and, eq } from "drizzle-orm";
+import { NextResponse } from "next/server";
+
+import { generateChunks, generateEmbeddings } from "@/lib/ai/embedding";
 import { db } from "@/lib/db";
 import { documents } from "@/lib/db/schema/documents";
-import { resources } from "@/lib/db/schema/resources";
 import { embeddings } from "@/lib/db/schema/embeddings";
-import { generateChunks, generateEmbeddings } from "@/lib/ai/embedding";
-import { and, eq } from "drizzle-orm";
+import { resources } from "@/lib/db/schema/resources";
 import { getCurrentUser } from "@/lib/session";
 import { getActiveWorkspace } from "@/lib/workspaces";
 

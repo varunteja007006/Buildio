@@ -1,11 +1,12 @@
-import { NextRequest, NextResponse } from "next/server";
 import { and, eq, isNull, sql } from "drizzle-orm";
+import { NextRequest, NextResponse } from "next/server";
+
 import { db } from "@/lib/db";
-import { getCurrentUser } from "@/lib/session";
-import { workspaces } from "@/lib/db/schema/workspaces";
 import { workspaceMembers } from "@/lib/db/schema/workspace-members";
-import { getWorkspace, getWorkspaceMembership } from "@/lib/workspaces";
+import { workspaces } from "@/lib/db/schema/workspaces";
+import { getCurrentUser } from "@/lib/session";
 import { slugify } from "@/lib/slug";
+import { getWorkspace, getWorkspaceMembership } from "@/lib/workspaces";
 
 type Params = { params: Promise<{ id: string }> };
 

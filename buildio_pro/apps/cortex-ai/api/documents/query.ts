@@ -1,6 +1,7 @@
 "use client";
 
 import { useMutation, useQuery, useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
+
 import { getDocuments } from "./api";
 import type { DocumentsResponse, DocumentsQuery, ScanResponse } from "./types";
 

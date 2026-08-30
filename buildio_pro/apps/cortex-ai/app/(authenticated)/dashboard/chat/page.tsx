@@ -1,11 +1,12 @@
 "use client";
 
 import { useChat } from "@ai-sdk/react";
-import { isToolUIPart, getToolName } from "ai";
-import { AppBreadcrumb } from "@/components/app-breadcrumb";
 import { Button } from "@workspace/ui/components/button";
+import { isToolUIPart, getToolName } from "ai";
 import { Send, Square } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+
+import { AppBreadcrumb } from "@/components/app-breadcrumb";
 
 export default function ChatPage() {
   const [input, setInput] = useState("");

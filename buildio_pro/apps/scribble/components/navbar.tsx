@@ -1,6 +1,6 @@
+import { Pencil } from "lucide-react";
 import Link from "next/link";
 
-import { Pencil } from "lucide-react";
 
 import { LogoutBtn } from "@/components/logout-btn";
 import { ModeToggle } from "@/components/mode-toggle";

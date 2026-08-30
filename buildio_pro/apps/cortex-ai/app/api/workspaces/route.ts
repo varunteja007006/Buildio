@@ -1,16 +1,17 @@
-import { NextRequest, NextResponse } from "next/server";
 import { asc, eq, max } from "drizzle-orm";
+import { NextRequest, NextResponse } from "next/server";
+
 import { db } from "@/lib/db";
-import { getCurrentUser } from "@/lib/session";
-import { workspaces } from "@/lib/db/schema/workspaces";
 import { workspaceMembers } from "@/lib/db/schema/workspace-members";
+import { workspaces } from "@/lib/db/schema/workspaces";
+import { getCurrentUser } from "@/lib/session";
+import { slugify } from "@/lib/slug";
 import {
   countUserWorkspaces,
   ensurePersonalWorkspace,
   MAX_WORKSPACES_PER_USER,
   setActiveWorkspace,
 } from "@/lib/workspaces";
-import { slugify } from "@/lib/slug";
 
 export async function GET() {
   try {

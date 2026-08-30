@@ -1,5 +1,6 @@
 import js from "@eslint/js"
 import eslintConfigPrettier from "eslint-config-prettier"
+import importX from "eslint-plugin-import-x"
 import onlyWarn from "eslint-plugin-only-warn"
 import turboPlugin from "eslint-plugin-turbo"
 import tseslint from "typescript-eslint"
@@ -19,6 +20,29 @@ export const config = [
     },
     rules: {
       "turbo/no-undeclared-env-vars": "warn",
+    },
+  },
+  {
+    plugins: {
+      import: importX,
+    },
+    rules: {
+      "import/order": [
+        "error",
+        {
+          groups: ["builtin", "external", "internal", ["parent", "sibling", "index"]],
+          pathGroups: [
+            { pattern: "react", group: "external", position: "before" },
+            { pattern: "next", group: "external", position: "before" },
+            { pattern: "next/**", group: "external", position: "before" },
+            { pattern: "@next/**", group: "external", position: "before" },
+            { pattern: "@workspace/**", group: "internal", position: "before" },
+            { pattern: "@/**", group: "internal", position: "after" },
+          ],
+          "newlines-between": "always",
+          alphabetize: { order: "asc", caseInsensitive: true },
+        },
+      ],
     },
   },
   {

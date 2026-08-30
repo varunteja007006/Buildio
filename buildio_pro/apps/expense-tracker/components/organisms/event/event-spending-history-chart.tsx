@@ -1,7 +1,3 @@
-import React from "react";
-
-import { BarChart, CartesianGrid, XAxis } from "recharts";
-
 import {
   Card,
   CardContent,
@@ -13,6 +9,9 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@workspace/ui/components/chart";
+import React from "react";
+import { BarChart, CartesianGrid, XAxis } from "recharts";
+
 
 import { useEventSpendingHistory } from "@/hooks";
 

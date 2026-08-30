@@ -1,13 +1,12 @@
-import type { ComponentProps } from "react";
-
-import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
-
 import {
   type ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
 } from "@workspace/ui/components/chart";
+import type { ComponentProps } from "react";
+import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
+
 
 const chartConfig = {
   value: {

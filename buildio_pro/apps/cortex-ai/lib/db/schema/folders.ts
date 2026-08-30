@@ -1,3 +1,4 @@
+import { sql } from "drizzle-orm";
 import {
   text,
   timestamp,
@@ -7,7 +8,7 @@ import {
   check,
   type AnyPgColumn,
 } from "drizzle-orm/pg-core";
-import { sql } from "drizzle-orm";
+
 import { topics } from "./topics";
 import { workspaces } from "./workspaces";
 

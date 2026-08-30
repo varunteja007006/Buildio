@@ -1,9 +1,6 @@
 "use client";
 
-import * as React from "react";
 
-import { Loader2 } from "lucide-react";
-import * as z from "zod";
 
 import { Button } from "@workspace/ui/components/button";
 import {
@@ -16,6 +13,9 @@ import {
 } from "@workspace/ui/components/card";
 import { Field, FieldGroup } from "@workspace/ui/components/field";
 import { useAppForm } from "@workspace/ui/components/forms/hooks";
+import { Loader2 } from "lucide-react";
+import * as React from "react";
+import * as z from "zod";
 
 import { useUpdateUserProfile, useUserProfileQuery } from "@/hooks";
 

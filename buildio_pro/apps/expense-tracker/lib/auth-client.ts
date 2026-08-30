@@ -1,8 +1,7 @@
 "use client";
 
-import { useRouter } from "next/navigation";
-
 import { createAuthClient } from "better-auth/react";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 export const authClient = createAuthClient();

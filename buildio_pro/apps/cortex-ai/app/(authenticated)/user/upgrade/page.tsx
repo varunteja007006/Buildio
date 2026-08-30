@@ -1,5 +1,6 @@
-import { AppBreadcrumb } from "@/components/app-breadcrumb"
 import { SparklesIcon } from "lucide-react"
+
+import { AppBreadcrumb } from "@/components/app-breadcrumb"
 
 export default function UpgradePage() {
   return (

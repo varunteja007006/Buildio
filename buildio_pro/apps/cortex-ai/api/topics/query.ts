@@ -5,6 +5,7 @@ import {
   useMutation,
   useQueryClient,
 } from "@tanstack/react-query";
+
 import { createTopic, deleteTopic, getTopics, hardDeleteTopic, renameTopic, restoreTopic } from "./api";
 import type { CreateTopicInput, RenameTopicInput, Topic } from "./types";
 

@@ -1,7 +1,7 @@
-import { Users } from "lucide-react";
 
 import { Badge } from "@workspace/ui/components/badge";
 import { Button } from "@workspace/ui/components/button";
+import { Users } from "lucide-react";
 
 import { CopyBtn } from "@/components/atoms/copy-btn";
 import { useJoinRoom } from "@/hooks/useJoinRoom";

@@ -1,4 +1,5 @@
 import apiClient from "@/api/client";
+
 import type { DocumentsQuery, DocumentsResponse } from "./types";
 
 /** Build a query string from pagination/filter params, omitting defaults */

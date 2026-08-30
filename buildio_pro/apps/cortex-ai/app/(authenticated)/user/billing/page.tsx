@@ -1,5 +1,6 @@
-import { AppBreadcrumb } from "@/components/app-breadcrumb"
 import { CreditCardIcon } from "lucide-react"
+
+import { AppBreadcrumb } from "@/components/app-breadcrumb"
 
 export default function BillingPage() {
   return (

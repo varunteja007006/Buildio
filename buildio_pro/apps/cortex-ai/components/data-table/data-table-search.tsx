@@ -1,11 +1,10 @@
 "use client"
 
-import * as React from "react"
-import { useQueryState, parseAsString } from "nuqs"
-import { Search, X } from "lucide-react"
-
-import { Input } from "@workspace/ui/components/input"
 import { Button } from "@workspace/ui/components/button"
+import { Input } from "@workspace/ui/components/input"
+import { Search, X } from "lucide-react"
+import { useQueryState, parseAsString } from "nuqs"
+import * as React from "react"
 
 interface DataTableSearchProps {
   placeholder?: string

@@ -1,12 +1,10 @@
 "use client";
 
-import * as React from "react";
-
-import { X } from "lucide-react";
-import * as ReactDOM from "react-dom";
-
 import { Spinner } from "@workspace/ui/components/spinner";
 import { cn } from "@workspace/ui/lib/utils";
+import { X } from "lucide-react";
+import * as React from "react";
+import * as ReactDOM from "react-dom";
 
 type Side = "top" | "bottom";
 type Align = "start" | "center" | "end";

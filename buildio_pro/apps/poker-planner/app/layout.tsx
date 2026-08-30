@@ -1,6 +1,6 @@
+import { Toaster } from "@workspace/ui/components/sonner";
 import type { Metadata } from "next";
 
-import { Toaster } from "@workspace/ui/components/sonner";
 
 import { Footer } from "@/components/footer";
 import { Navbar } from "@/components/navbar";

@@ -1,6 +1,4 @@
-import React from "react";
 
-import { Plus } from "lucide-react";
 
 import { Button } from "@workspace/ui/components/button";
 import { Checkbox } from "@workspace/ui/components/checkbox";
@@ -13,6 +11,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@workspace/ui/components/dialog";
+import { Plus } from "lucide-react";
+import React from "react";
 
 import { useGetUnLinkedExpenses, useLinkingExpenseToEvent } from "@/hooks";
 

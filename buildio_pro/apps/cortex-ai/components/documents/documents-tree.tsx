@@ -1,6 +1,8 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
+import { Badge } from "@workspace/ui/components/badge"
+import { Button } from "@workspace/ui/components/button"
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@workspace/ui/components/collapsible"
 import {
   ChevronRight,
   FilePlus,
@@ -12,14 +14,12 @@ import {
   Pencil,
   Trash2,
 } from "lucide-react"
+import { useEffect, useRef, useState } from "react"
 
-import type { Document } from "@/api/documents/types"
-import type { Topic } from "@/api/topics/types"
-import type { Folder } from "@/api/folders/types"
 import { useInfiniteDocuments } from "@/api/documents/query"
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@workspace/ui/components/collapsible"
-import { Badge } from "@workspace/ui/components/badge"
-import { Button } from "@workspace/ui/components/button"
+import type { Document } from "@/api/documents/types"
+import type { Folder } from "@/api/folders/types"
+import type { Topic } from "@/api/topics/types"
 import { ActionButton } from "@/components/documents/action-button"
 import { cn } from "@/lib/utils"
 

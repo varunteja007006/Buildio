@@ -1,9 +1,6 @@
 "use client"
 
-import * as React from "react"
 import { flexRender, type Table as TanstackTable } from "@tanstack/react-table"
-
-import { cn } from "@/lib/utils"
 import {
   Table,
   TableBody,
@@ -12,7 +9,10 @@ import {
   TableHeader,
   TableRow,
 } from "@workspace/ui/components/table"
+import * as React from "react"
+
 import { DataTablePagination } from "@/components/data-table/data-table-pagination"
+import { cn } from "@/lib/utils"
 
 interface DataTableProps<TData> extends React.ComponentProps<"div"> {
   table: TanstackTable<TData>

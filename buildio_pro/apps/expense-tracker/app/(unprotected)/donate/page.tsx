@@ -1,4 +1,3 @@
-import React from "react";
 
 import { Input } from "@workspace/ui/components/input";
 import {
@@ -10,6 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@workspace/ui/components/select";
+import React from "react";
 
 const DONATION_AMOUNTS = [5, 10, 20, 25, 50, 100, 250, 500, 750, 1000];
 

@@ -1,8 +1,6 @@
 "use client";
 
-import React from "react";
 
-import { Search, X } from "lucide-react";
 
 import { Button } from "@workspace/ui/components/button";
 import { Input } from "@workspace/ui/components/input";
@@ -14,6 +12,8 @@ import {
   SelectValue,
 } from "@workspace/ui/components/select";
 import { cn } from "@workspace/ui/lib/utils";
+import { Search, X } from "lucide-react";
+import React from "react";
 
 interface FilterOption {
   label: string;

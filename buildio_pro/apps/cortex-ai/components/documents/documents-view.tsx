@@ -1,30 +1,6 @@
 "use client"
 
-import { useState } from "react"
-import {
-  FileText as FileTextIcon,
-  ListTree,
-  Loader2,
-  Table2,
-  Upload,
-} from "lucide-react"
-
-import { useInfiniteDocuments } from "@/api/documents/query"
-import { useDeleteTopic, useRenameTopic, useTopics } from "@/api/topics/query"
-import {
-  useAllFolders,
-  useDeleteFolder,
-  useRenameFolder,
-} from "@/api/folders/query"
-import type { Folder } from "@/api/folders/types"
-import type { Topic } from "@/api/topics/types"
-import { DocumentsDataTable } from "@/components/documents-data-table"
-import { DocumentsTree } from "@/components/documents/documents-tree"
-import { UploadDocumentDialog } from "@/components/documents/upload-dialog"
-import { NewTopicDialog } from "@/components/documents/new-topic-dialog"
-import { NewFolderDialog } from "@/components/documents/new-folder-dialog"
-import { RenameDialog } from "@/components/documents/rename-dialog"
-import { DeleteDialog } from "@/components/documents/delete-dialog"
+import { Button } from "@workspace/ui/components/button"
 import {
   Empty,
   EmptyContent,
@@ -33,8 +9,33 @@ import {
   EmptyMedia,
   EmptyTitle,
 } from "@workspace/ui/components/empty"
-import { Button } from "@workspace/ui/components/button"
 import { ToggleGroup, ToggleGroupItem } from "@workspace/ui/components/toggle-group"
+import {
+  FileText as FileTextIcon,
+  ListTree,
+  Loader2,
+  Table2,
+  Upload,
+} from "lucide-react"
+import { useState } from "react"
+
+import { useInfiniteDocuments } from "@/api/documents/query"
+import {
+  useAllFolders,
+  useDeleteFolder,
+  useRenameFolder,
+} from "@/api/folders/query"
+import type { Folder } from "@/api/folders/types"
+import { useDeleteTopic, useRenameTopic, useTopics } from "@/api/topics/query"
+import type { Topic } from "@/api/topics/types"
+import { DeleteDialog } from "@/components/documents/delete-dialog"
+import { DocumentsTree } from "@/components/documents/documents-tree"
+import { NewFolderDialog } from "@/components/documents/new-folder-dialog"
+import { NewTopicDialog } from "@/components/documents/new-topic-dialog"
+import { RenameDialog } from "@/components/documents/rename-dialog"
+import { UploadDocumentDialog } from "@/components/documents/upload-dialog"
+import { DocumentsDataTable } from "@/components/documents-data-table"
+
 
 type ViewMode = "tree" | "table"
 

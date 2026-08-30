@@ -1,5 +1,6 @@
 import { text, pgTable, index } from "drizzle-orm/pg-core";
 import { vector } from "drizzle-orm/pg-core";
+
 import { resources } from "./resources";
 import { workspaces } from "./workspaces";
 

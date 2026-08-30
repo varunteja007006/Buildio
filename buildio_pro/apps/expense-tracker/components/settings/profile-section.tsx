@@ -1,15 +1,15 @@
 "use client";
 
+import { CircleCheck, CircleX } from "lucide-react";
+import Image from "next/image";
 import React from "react";
 
-import Image from "next/image";
 
-import { CircleCheck, CircleX } from "lucide-react";
 
 import { useSession } from "@/lib/auth-client";
 
-import { UserProfileFormComponent } from "../organisms/user";
 import { MainCard } from "./main-card";
+import { UserProfileFormComponent } from "../organisms/user";
 
 export default function ProfileSection() {
   const session = useSession();

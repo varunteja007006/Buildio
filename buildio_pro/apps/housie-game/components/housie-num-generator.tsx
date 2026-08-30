@@ -1,5 +1,4 @@
 "use client";
-import { useEffect, useState } from "react";
 
 import { Button } from "@workspace/ui/components/button";
 import {
@@ -15,6 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@workspace/ui/components/select";
+import { useEffect, useState } from "react";
 
 interface VoiceOption extends SpeechSynthesisVoice {}
 

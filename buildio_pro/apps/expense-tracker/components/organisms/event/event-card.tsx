@@ -1,9 +1,5 @@
-import React from "react";
 
-import Link from "next/link";
 
-import { differenceInDays, format } from "date-fns";
-import { Calendar, Clock, Eye } from "lucide-react";
 
 import { Badge } from "@workspace/ui/components/badge";
 import {
@@ -17,6 +13,10 @@ import {
 import { Progress } from "@workspace/ui/components/progress";
 import { formatCurrency } from "@workspace/ui/lib/currency.utils";
 import { cn } from "@workspace/ui/lib/utils";
+import { differenceInDays, format } from "date-fns";
+import { Calendar, Clock, Eye } from "lucide-react";
+import Link from "next/link";
+import React from "react";
 
 import { EventDeleteDialog, EventDetails, EventForm } from ".";
 

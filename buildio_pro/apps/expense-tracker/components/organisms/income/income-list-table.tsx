@@ -1,9 +1,5 @@
-import React from "react";
 
 import { ColumnDef, Table } from "@tanstack/react-table";
-import { Trash2 } from "lucide-react";
-import { useQueryState } from "nuqs";
-
 import { ActionBar } from "@workspace/ui/components/action-bar";
 import {
   AlertDialog,
@@ -21,6 +17,9 @@ import { Checkbox } from "@workspace/ui/components/checkbox";
 import { DataTable } from "@workspace/ui/components/data-table/data-table";
 import { DataTableAdvancedToolbar } from "@workspace/ui/components/data-table/data-table-advanced-toolbar";
 import { useDataTable } from "@workspace/ui/hooks/use-data-table";
+import { Trash2 } from "lucide-react";
+import { useQueryState } from "nuqs";
+import React from "react";
 
 import { ErrorScreen } from "@/components/atoms/error-screen";
 import { FloatingLoader } from "@/components/atoms/loaders/floating-loader";

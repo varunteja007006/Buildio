@@ -1,6 +1,4 @@
-import * as React from "react";
 
-import { EllipsisVertical } from "lucide-react";
 
 import { Button } from "@workspace/ui/components/button";
 import {
@@ -9,6 +7,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@workspace/ui/components/dropdown-menu";
+import { EllipsisVertical } from "lucide-react";
+import * as React from "react";
 
 import { getEmojiForUserId } from "@/lib/utils";
 

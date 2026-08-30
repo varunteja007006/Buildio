@@ -1,7 +1,5 @@
 "use client";
 
-import React from "react";
-
 import {
   AlertDialog,
   AlertDialogContent,
@@ -9,6 +7,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@workspace/ui/components/alert-dialog";
+import React from "react";
+
 
 import { UserRegistration } from "@/components/user-registration";
 

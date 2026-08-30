@@ -1,8 +1,6 @@
 "use client";
 
-import * as React from "react";
 
-import { Eye } from "lucide-react";
 
 import { Button } from "@workspace/ui/components/button";
 import { Card, CardContent } from "@workspace/ui/components/card";
@@ -16,6 +14,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@workspace/ui/components/dialog";
+import { Eye } from "lucide-react";
+import * as React from "react";
 
 import { AuditDateBlock } from "@/components/atoms/audit-date-block";
 import { useIncomeDetails } from "@/hooks";

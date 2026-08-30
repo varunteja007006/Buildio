@@ -1,16 +1,8 @@
 "use client";
 
-import React from "react";
 
-import { useParams, usePathname, useRouter } from "next/navigation";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMutation } from "convex/react";
-import { SendHorizontal } from "lucide-react";
-import { useForm } from "react-hook-form";
-import { toast } from "sonner";
-import { z } from "zod";
-
 import { api } from "@workspace/games-convex-backend/convex/_generated/api";
 import { Button } from "@workspace/ui/components/button";
 import {
@@ -23,6 +15,13 @@ import {
   FormMessage,
 } from "@workspace/ui/components/form";
 import { Input } from "@workspace/ui/components/input";
+import { useMutation } from "convex/react";
+import { SendHorizontal } from "lucide-react";
+import { useParams, usePathname, useRouter } from "next/navigation";
+import React from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { z } from "zod";
 
 import { useUserStore } from "@/lib/store/user.store";
 import { createUserSchema } from "@/lib/validators";

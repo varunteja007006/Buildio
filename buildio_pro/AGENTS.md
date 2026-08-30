@@ -9,7 +9,7 @@ pnpm + Turborepo monorepo of Next.js 16 apps and shared packages. **All code liv
 - Typecheck: apps expose `typecheck` (`tsc --noEmit`), e.g. `pnpm --filter=cortex-ai typecheck`. **Do not run `pnpm check-types`** — turbo.json defines a `check-types` task but no package has that script.
 - `pnpm lint` is broken for most apps: `web`, `expense-tracker`, `poker-planner`, `scribble`, `housie-game` still use `next lint`, which was removed in Next 16 (installed: 16.3.3) and errors out. Only `cortex-ai` and `@workspace/ui` have working lint (`eslint .`). Lint an app directly with `eslint .` in its directory.
 - No test framework or test scripts exist anywhere. No CI workflows.
-- `pnpm format` = prettier with `@trivago/prettier-plugin-sort-imports` — keep imports sorted (it runs with `--write`).
+- `pnpm format` = prettier only (`--write`). Import sorting is NOT done by prettier — it's enforced by ESLint's `import/order` rule (via `eslint-plugin-import-x`) in `@workspace/eslint-config/base.js`, configured with pathGroups matching the old trivago groups (`react`/`next` first, then third-party, `@workspace/*`, `@/*`, then relative). Fix with `eslint <dir> --fix`.
 - `pnpm clean` runs `git clean -xdf node_modules` — destructive; prefer `turbo run clean` per package.
 
 ## Dependencies

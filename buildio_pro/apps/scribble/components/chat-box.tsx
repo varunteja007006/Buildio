@@ -1,15 +1,15 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
 
-import { useMutation, useQuery } from "convex/react";
-import { MessageCircleMore, Send } from "lucide-react";
 
 import { api } from "@workspace/games-convex-backend/convex/_generated/api";
 import { Button } from "@workspace/ui/components/button";
 import { Input } from "@workspace/ui/components/input";
 import { ScrollArea } from "@workspace/ui/components/scroll-area";
 import { cn } from "@workspace/ui/lib/utils";
+import { useMutation, useQuery } from "convex/react";
+import { MessageCircleMore, Send } from "lucide-react";
+import React, { useEffect, useRef, useState } from "react";
 
 import { useUserStore } from "@/lib/store/user.store";
 

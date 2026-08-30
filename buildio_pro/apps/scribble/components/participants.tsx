@@ -1,13 +1,12 @@
 "use client";
 
-import React from "react";
 
-import { useParams } from "next/navigation";
 
 import usePresence from "@convex-dev/presence/react";
-import { useQuery } from "convex/react";
-
 import { api } from "@workspace/games-convex-backend/convex/_generated/api";
+import { useQuery } from "convex/react";
+import { useParams } from "next/navigation";
+import React from "react";
 
 import { ParticipantCard } from "@/components/participant-card";
 import { useUserStore } from "@/lib/store/user.store";

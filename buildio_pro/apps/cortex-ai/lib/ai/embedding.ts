@@ -1,8 +1,9 @@
 import { embed, embedMany } from "ai";
 import { and, cosineDistance, desc, eq, gt, sql } from "drizzle-orm";
+
+import { embeddingModel } from "@/lib/ai";
 import { db } from "@/lib/db";
 import { embeddings } from "@/lib/db/schema/embeddings";
-import { embeddingModel } from "@/lib/ai";
 
 /**
  * Splits text into overlapping chunks of roughly `chunkSize` characters.

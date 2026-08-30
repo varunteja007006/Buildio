@@ -1,9 +1,6 @@
 "use client"
 
-import * as React from "react"
 import type { Table } from "@tanstack/react-table"
-import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from "lucide-react"
-
 import { Button } from "@workspace/ui/components/button"
 import {
   Select,
@@ -12,6 +9,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@workspace/ui/components/select"
+import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from "lucide-react"
+import * as React from "react"
 
 interface DataTablePaginationProps<TData> {
   table: Table<TData>

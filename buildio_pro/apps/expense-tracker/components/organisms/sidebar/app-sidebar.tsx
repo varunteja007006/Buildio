@@ -1,9 +1,14 @@
 "use client";
 
-import * as React from "react";
-
-import Link from "next/link";
-
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+} from "@workspace/ui/components/sidebar";
 import {
   CalendarDays,
   HandHeart,
@@ -18,16 +23,10 @@ import {
   TrendingUp,
   Wallet,
 } from "lucide-react";
+import Link from "next/link";
+import * as React from "react";
 
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarHeader,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-} from "@workspace/ui/components/sidebar";
+
 
 import { appConfig } from "@/app/appConfig";
 import { useSession } from "@/lib/auth-client";

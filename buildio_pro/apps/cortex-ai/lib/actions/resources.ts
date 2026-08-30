@@ -1,9 +1,9 @@
 "use server";
 
-import { db } from "@/lib/db";
-import { resources } from "@/lib/db/schema/resources";
-import { embeddings } from "@/lib/db/schema/embeddings";
 import { generateChunks, generateEmbeddings } from "@/lib/ai/embedding";
+import { db } from "@/lib/db";
+import { embeddings } from "@/lib/db/schema/embeddings";
+import { resources } from "@/lib/db/schema/resources";
 
 export interface CreateResourceResult {
   success: boolean;

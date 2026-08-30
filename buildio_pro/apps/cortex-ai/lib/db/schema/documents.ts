@@ -1,7 +1,8 @@
-import { text, timestamp, boolean, pgTable, index } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
-import { topics } from "./topics";
+import { text, timestamp, boolean, pgTable, index } from "drizzle-orm/pg-core";
+
 import { folders } from "./folders";
+import { topics } from "./topics";
 import { workspaces } from "./workspaces";
 
 export const documents = pgTable(

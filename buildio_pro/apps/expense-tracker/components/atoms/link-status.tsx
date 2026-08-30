@@ -1,10 +1,10 @@
 "use client";
 
+import { LoaderCircle } from "lucide-react";
+import { useLinkStatus } from "next/link";
 import React from "react";
 
-import { useLinkStatus } from "next/link";
 
-import { LoaderCircle } from "lucide-react";
 
 export function LinkStatus() {
   const { pending } = useLinkStatus();

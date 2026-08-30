@@ -1,8 +1,9 @@
-import { NextRequest, NextResponse } from "next/server";
-import { db } from "@/lib/db";
-import { folders } from "@/lib/db/schema/folders";
 import { and, eq, isNull } from "drizzle-orm";
 import { sql } from "drizzle-orm";
+import { NextRequest, NextResponse } from "next/server";
+
+import { db } from "@/lib/db";
+import { folders } from "@/lib/db/schema/folders";
 import { getCurrentUser } from "@/lib/session";
 import { getWorkspaceMembership } from "@/lib/workspaces";
 

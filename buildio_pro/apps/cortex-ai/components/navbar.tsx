@@ -1,11 +1,13 @@
 "use client";
 
-import Link from "next/link";
-import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@workspace/ui/components/button";
-import { useSession } from "@/api/auth/query";
-import { authClient } from "@/lib/auth-client";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
+
+import { useSession } from "@/api/auth/query";
+import { ThemeToggle } from "@/components/theme-toggle";
+import { authClient } from "@/lib/auth-client";
+
 
 export function Navbar() {
   const { data: session, isLoading } = useSession();

@@ -1,17 +1,6 @@
 "use client";
 
-import React from "react";
 
-import {
-  Bar,
-  BarChart,
-  CartesianGrid,
-  Cell,
-  Pie,
-  PieChart,
-  XAxis,
-  YAxis,
-} from "recharts";
 
 import {
   Card,
@@ -29,6 +18,17 @@ import {
 } from "@workspace/ui/components/chart";
 import { formatCurrency } from "@workspace/ui/lib/currency.utils";
 import { cn } from "@workspace/ui/lib/utils";
+import React from "react";
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Cell,
+  Pie,
+  PieChart,
+  XAxis,
+  YAxis,
+} from "recharts";
 
 import { useIncomeAnalytics } from "@/hooks";
 

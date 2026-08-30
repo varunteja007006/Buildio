@@ -1,6 +1,4 @@
-import React from "react";
 
-import { LucideIcon, TrendingDown, TrendingUp } from "lucide-react";
 
 import {
   Card,
@@ -9,6 +7,8 @@ import {
   CardTitle,
 } from "@workspace/ui/components/card";
 import { cn } from "@workspace/ui/lib/utils";
+import { LucideIcon, TrendingDown, TrendingUp } from "lucide-react";
+import React from "react";
 
 interface SummaryCardProps {
   title: string;

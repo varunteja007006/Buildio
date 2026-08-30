@@ -1,14 +1,14 @@
 "use client";
 
-import { Copy } from "lucide-react";
-import { toast } from "sonner";
-
 import { Button } from "@workspace/ui/components/button";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@workspace/ui/components/tooltip";
+import { Copy } from "lucide-react";
+import { toast } from "sonner";
+
 
 type CopyBtnProps = {
   text: string;

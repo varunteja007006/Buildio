@@ -1,5 +1,6 @@
-import { AppBreadcrumb } from "@/components/app-breadcrumb"
 import { BellIcon } from "lucide-react"
+
+import { AppBreadcrumb } from "@/components/app-breadcrumb"
 
 export default function NotificationsPage() {
   return (

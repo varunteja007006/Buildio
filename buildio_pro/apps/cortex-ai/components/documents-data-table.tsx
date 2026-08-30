@@ -1,6 +1,5 @@
 "use client"
 
-import * as React from "react"
 import {
   flexRender,
   getCoreRowModel,
@@ -8,14 +7,6 @@ import {
   type ColumnDef,
   type SortingState,
 } from "@tanstack/react-table"
-import { FileText, Loader2 } from "lucide-react"
-import { parseAsString, useQueryState } from "nuqs"
-
-import { DataTableSearch } from "@/components/data-table/data-table-search"
-import { DataTableColumnHeader } from "@/components/data-table/data-table-column-header"
-import { useInfiniteDocuments } from "@/api/documents/query"
-import type { Document } from "@/api/documents/types"
-import { formatDate, truncateHash } from "@/api/documents/helpers"
 import { Badge } from "@workspace/ui/components/badge"
 import { Button } from "@workspace/ui/components/button"
 import {
@@ -26,6 +17,15 @@ import {
   TableHeader,
   TableRow,
 } from "@workspace/ui/components/table"
+import { FileText, Loader2 } from "lucide-react"
+import { parseAsString, useQueryState } from "nuqs"
+import * as React from "react"
+
+import { formatDate, truncateHash } from "@/api/documents/helpers"
+import { useInfiniteDocuments } from "@/api/documents/query"
+import type { Document } from "@/api/documents/types"
+import { DataTableColumnHeader } from "@/components/data-table/data-table-column-header"
+import { DataTableSearch } from "@/components/data-table/data-table-search"
 import { cn } from "@/lib/utils"
 
 const columns: ColumnDef<Document>[] = [

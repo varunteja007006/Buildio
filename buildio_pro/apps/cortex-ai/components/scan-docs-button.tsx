@@ -8,6 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@workspace/ui/components/card";
+
 import { useScanDocuments } from "@/api/documents/query";
 
 export function ScanDocsButton() {

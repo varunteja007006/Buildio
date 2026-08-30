@@ -1,11 +1,11 @@
-import { Metadata } from "next";
-
 import {
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
 } from "@workspace/ui/components/tabs";
+import { Metadata } from "next";
+
 
 import { appConfig } from "@/app/appConfig";
 import ProfileSection from "@/components/settings/profile-section";

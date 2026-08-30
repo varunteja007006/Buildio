@@ -1,13 +1,14 @@
 "use client";
 
-import { Button } from "@workspace/ui/components/button";
 import { Badge } from "@workspace/ui/components/badge";
-import { DataTable, type Column } from "@/components/data-table";
+import { Button } from "@workspace/ui/components/button";
 import { Loader2, RefreshCw, Scan, Brain } from "lucide-react";
-import { useDocuments, useScanDocuments } from "@/api/documents/query";
-import { useIngestDocuments } from "@/api/ingest/query";
-import type { Document } from "@/api/documents/types";
+
 import { formatDate, truncateHash } from "@/api/documents/helpers";
+import { useDocuments, useScanDocuments } from "@/api/documents/query";
+import type { Document } from "@/api/documents/types";
+import { useIngestDocuments } from "@/api/ingest/query";
+import { DataTable, type Column } from "@/components/data-table";
 
 const columns: Column<Document>[] = [
   {

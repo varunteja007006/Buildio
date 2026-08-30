@@ -1,5 +1,6 @@
-import { text, timestamp, pgTable, index } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
+import { text, timestamp, pgTable, index } from "drizzle-orm/pg-core";
+
 import { user } from "./auth";
 import { workspaces } from "./workspaces";
 

@@ -1,7 +1,5 @@
 "use client"
 
-import { Trash2 } from "lucide-react"
-
 import {
   AlertDialog,
   AlertDialogAction,
@@ -12,6 +10,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@workspace/ui/components/alert-dialog"
+import { Trash2 } from "lucide-react"
+
 
 interface DeleteDialogProps {
   open: boolean

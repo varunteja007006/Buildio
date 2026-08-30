@@ -1,6 +1,4 @@
-import React from "react";
 
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 
 import {
   Card,
@@ -15,6 +13,8 @@ import {
   ChartTooltipContent,
 } from "@workspace/ui/components/chart";
 import { formatCurrency } from "@workspace/ui/lib/currency.utils";
+import React from "react";
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts";
 
 import { SimpleCard } from "@/components/atoms/card";
 import { useIncomeSourceAnalytics } from "@/hooks";

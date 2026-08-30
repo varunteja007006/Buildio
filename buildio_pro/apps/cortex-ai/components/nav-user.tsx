@@ -1,6 +1,5 @@
 "use client"
 
-import { useRouter } from "next/navigation"
 import { Avatar, AvatarFallback, AvatarImage } from "@workspace/ui/components/avatar"
 import {
   DropdownMenu,
@@ -25,9 +24,11 @@ import {
   BellIcon,
   LogOutIcon,
 } from "lucide-react"
-import { authClient } from "@/lib/auth-client"
+import { useRouter } from "next/navigation"
+
 import { getUserInitials } from "@/api/auth/helpers"
 import type { User } from "@/api/auth/types"
+import { authClient } from "@/lib/auth-client"
 
 export function NavUser({ user }: { user: User }) {
   const { isMobile } = useSidebar()

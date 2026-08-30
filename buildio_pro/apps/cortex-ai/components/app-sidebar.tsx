@@ -1,10 +1,5 @@
 "use client"
 
-import * as React from "react"
-
-import { NavMain } from "@/components/nav-main"
-import { NavUser } from "@/components/nav-user"
-import { WorkspaceSwitcher } from "@/components/workspace-switcher"
 import {
   Sidebar,
   SidebarContent,
@@ -13,8 +8,15 @@ import {
   SidebarRail,
 } from "@workspace/ui/components/sidebar"
 import { Skeleton } from "@workspace/ui/components/skeleton"
-import { useSession } from "@/api/auth/query"
 import { MessageSquareIcon, FileTextIcon, BotIcon } from "lucide-react"
+import * as React from "react"
+
+import { useSession } from "@/api/auth/query"
+import { NavMain } from "@/components/nav-main"
+import { NavUser } from "@/components/nav-user"
+import { WorkspaceSwitcher } from "@/components/workspace-switcher"
+
+
 
 const navMain = [
   {

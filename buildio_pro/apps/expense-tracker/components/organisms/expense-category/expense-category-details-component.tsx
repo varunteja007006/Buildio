@@ -1,8 +1,6 @@
 "use client";
 
-import * as React from "react";
 
-import { Calendar, Eye } from "lucide-react";
 
 import { Button } from "@workspace/ui/components/button";
 import { Card, CardContent } from "@workspace/ui/components/card";
@@ -14,6 +12,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@workspace/ui/components/dialog";
+import { Calendar, Eye } from "lucide-react";
+import * as React from "react";
 
 import { useExpenseCategoryDetails } from "@/hooks";
 import { localDateFormat } from "@/lib/utils/date.utils";

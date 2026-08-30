@@ -1,10 +1,11 @@
+import { and, count, eq, isNull } from "drizzle-orm";
+import { sql } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
+
 import { db } from "@/lib/db";
 import { topics } from "@/lib/db/schema/topics";
-import { and, count, eq, isNull } from "drizzle-orm";
-import { slugify } from "@/lib/slug";
-import { sql } from "drizzle-orm";
 import { getCurrentUser } from "@/lib/session";
+import { slugify } from "@/lib/slug";
 import { getActiveWorkspace } from "@/lib/workspaces";
 
 type Params = { params: Promise<{ id: string }> };

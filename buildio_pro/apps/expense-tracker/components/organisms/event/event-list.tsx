@@ -1,8 +1,8 @@
 "use client";
 
+import { Card, CardContent } from "@workspace/ui/components/card";
 import { CalendarDays, Loader2 } from "lucide-react";
 
-import { Card, CardContent } from "@workspace/ui/components/card";
 
 import { useEventsList } from "@/hooks";
 

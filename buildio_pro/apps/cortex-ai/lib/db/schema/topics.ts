@@ -1,5 +1,6 @@
-import { text, timestamp, integer, pgTable, index, uniqueIndex } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
+import { text, timestamp, integer, pgTable, index, uniqueIndex } from "drizzle-orm/pg-core";
+
 import { workspaces } from "./workspaces";
 
 export const topics = pgTable(

@@ -1,9 +1,6 @@
 "use client";
 
-import React from "react";
 
-import { ArrowUpDown, Edit2, Eye, MoreHorizontal, Trash2 } from "lucide-react";
-import { Loader2 } from "lucide-react";
 
 import { Badge } from "@workspace/ui/components/badge";
 import { Button } from "@workspace/ui/components/button";
@@ -25,6 +22,9 @@ import {
 } from "@workspace/ui/components/table";
 import { formatCurrency } from "@workspace/ui/lib/currency.utils";
 import { cn } from "@workspace/ui/lib/utils";
+import { Loader2 } from "lucide-react";
+import { ArrowUpDown, Edit2, Eye, MoreHorizontal, Trash2 } from "lucide-react";
+import React from "react";
 
 import { getCategoryColor, getCategoryIcon } from "@/lib/category-icons";
 

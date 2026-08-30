@@ -1,7 +1,3 @@
-import { createResource } from "@/lib/actions/resources";
-import { findRelevantContent } from "@/lib/ai/embedding";
-import { getCurrentUser } from "@/lib/session";
-import { getActiveWorkspace } from "@/lib/workspaces";
 import {
   convertToModelMessages,
   createUIMessageStreamResponse,
@@ -11,8 +7,14 @@ import {
   type UIMessage,
   isStepCount,
 } from "ai";
-import { z } from "zod";
 import { NextResponse } from "next/server";
+import { z } from "zod";
+
+import { createResource } from "@/lib/actions/resources";
+import { findRelevantContent } from "@/lib/ai/embedding";
+import { getCurrentUser } from "@/lib/session";
+import { getActiveWorkspace } from "@/lib/workspaces";
+
 
 // Allow streaming responses up to 30 seconds
 export const maxDuration = 30;

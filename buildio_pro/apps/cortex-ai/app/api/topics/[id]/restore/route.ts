@@ -1,7 +1,8 @@
+import { and, count, eq, isNotNull, isNull } from "drizzle-orm";
 import { NextResponse } from "next/server";
+
 import { db } from "@/lib/db";
 import { topics } from "@/lib/db/schema/topics";
-import { and, count, eq, isNotNull, isNull } from "drizzle-orm";
 import { getCurrentUser } from "@/lib/session";
 import { getWorkspaceMembership } from "@/lib/workspaces";
 

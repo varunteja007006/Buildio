@@ -1,4 +1,3 @@
-import { Fragment } from "react"
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -7,6 +6,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@workspace/ui/components/breadcrumb"
+import { Fragment } from "react"
 
 export type BreadcrumbSegment = {
   label: string

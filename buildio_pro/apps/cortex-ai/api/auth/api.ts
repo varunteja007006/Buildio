@@ -1,4 +1,5 @@
 import { authClient } from "@/lib/auth-client";
+
 import type { SignInInput, SignUpInput, SessionResponse, User } from "./types";
 
 /** Sign in with email + password. Returns user data; session is set via cookie. */

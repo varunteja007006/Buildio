@@ -1,11 +1,10 @@
+import { api } from "@workspace/games-convex-backend/convex/_generated/api";
+import { Button } from "@workspace/ui/components/button";
+import { useQuery } from "convex/react";
+import { Copy } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 
-import { useQuery } from "convex/react";
-import { Copy } from "lucide-react";
-
-import { api } from "@workspace/games-convex-backend/convex/_generated/api";
-import { Button } from "@workspace/ui/components/button";
 
 import { CopyBtn } from "@/components/atoms/copy-btn";
 import { useUserStore } from "@/lib/store/user.store";

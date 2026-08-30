@@ -1,8 +1,9 @@
-import { NextResponse } from "next/server";
 import { and, eq, isNotNull } from "drizzle-orm";
+import { NextResponse } from "next/server";
+
 import { db } from "@/lib/db";
-import { getCurrentUser } from "@/lib/session";
 import { workspaces } from "@/lib/db/schema/workspaces";
+import { getCurrentUser } from "@/lib/session";
 import { getWorkspaceMembership } from "@/lib/workspaces";
 
 type Params = { params: Promise<{ id: string }> };

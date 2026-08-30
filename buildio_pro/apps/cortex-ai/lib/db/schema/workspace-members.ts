@@ -1,3 +1,4 @@
+import { sql } from "drizzle-orm";
 import {
   text,
   timestamp,
@@ -7,9 +8,9 @@ import {
   index,
   uniqueIndex,
 } from "drizzle-orm/pg-core";
-import { sql } from "drizzle-orm";
-import { workspaces } from "./workspaces";
+
 import { user } from "./auth";
+import { workspaces } from "./workspaces";
 
 export const workspaceMembers = pgTable(
   "workspace_members",

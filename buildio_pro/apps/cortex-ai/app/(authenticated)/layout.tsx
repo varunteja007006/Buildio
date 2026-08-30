@@ -1,9 +1,10 @@
-import { AppSidebar } from "@/components/app-sidebar";
-import { DashboardHeader } from "@/components/dashboard-header";
 import {
 	SidebarInset,
 	SidebarProvider,
 } from "@workspace/ui/components/sidebar";
+
+import { AppSidebar } from "@/components/app-sidebar";
+import { DashboardHeader } from "@/components/dashboard-header";
 
 export default function AuthenticatedLayout({
 	children,

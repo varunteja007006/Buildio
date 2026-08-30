@@ -1,13 +1,15 @@
 "use client"
 
-import * as React from "react"
-import { CheckIcon, ChevronsUpDownIcon, PlusIcon, SparklesIcon } from "lucide-react"
 
+import { Button } from "@workspace/ui/components/button"
 import {
-  useActivateWorkspace,
-  useCreateWorkspace,
-  useWorkspaces,
-} from "@/api/workspaces/query"
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@workspace/ui/components/dialog"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,24 +19,23 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@workspace/ui/components/dropdown-menu"
+import { Input } from "@workspace/ui/components/input"
+import { Label } from "@workspace/ui/components/label"
 import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
 } from "@workspace/ui/components/sidebar"
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@workspace/ui/components/dialog"
-import { Button } from "@workspace/ui/components/button"
-import { Input } from "@workspace/ui/components/input"
-import { Label } from "@workspace/ui/components/label"
 import { Skeleton } from "@workspace/ui/components/skeleton"
+import { CheckIcon, ChevronsUpDownIcon, PlusIcon, SparklesIcon } from "lucide-react"
+import * as React from "react"
+
+import {
+  useActivateWorkspace,
+  useCreateWorkspace,
+  useWorkspaces,
+} from "@/api/workspaces/query"
 import { cn } from "@/lib/utils"
 
 function getWorkspaceInitials(name: string): string {

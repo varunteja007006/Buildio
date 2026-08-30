@@ -1,4 +1,5 @@
 import apiClient from "@/api/client";
+
 import type { Resource, CreateResourceInput } from "./types";
 
 /** Fetch all resources */

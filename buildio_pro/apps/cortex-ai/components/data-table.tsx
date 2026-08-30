@@ -1,7 +1,5 @@
 "use client";
 
-import { type ReactNode } from "react";
-import { Loader2 } from "lucide-react";
 import {
   Table,
   TableBody,
@@ -10,6 +8,8 @@ import {
   TableHeader,
   TableRow,
 } from "@workspace/ui/components/table";
+import { Loader2 } from "lucide-react";
+import { type ReactNode } from "react";
 
 export type Column<T> = {
   header: string;

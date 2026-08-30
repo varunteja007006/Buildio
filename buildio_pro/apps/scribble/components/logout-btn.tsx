@@ -1,7 +1,5 @@
 "use client";
 
-import { Power } from "lucide-react";
-import { toast } from "sonner";
 
 import {
   AlertDialog,
@@ -20,6 +18,8 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@workspace/ui/components/tooltip";
+import { Power } from "lucide-react";
+import { toast } from "sonner";
 
 const clearLocalStorage = (): void => {
   localStorage.clear();

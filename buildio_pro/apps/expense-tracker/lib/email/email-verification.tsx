@@ -13,7 +13,7 @@ export function EmailVerificationTemplate({
         Welcome User, Please verify your email, click this link to verify -{" "}
         {url}
       </h1>
-      <a target="_blank" href={url}>
+      <a target="_blank" href={url} rel="noreferrer">
         Verify
       </a>
     </div>

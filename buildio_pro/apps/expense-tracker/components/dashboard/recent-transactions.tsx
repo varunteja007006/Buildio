@@ -1,6 +1,4 @@
-import React from "react";
 
-import { Loader2 } from "lucide-react";
 
 import {
   Card,
@@ -11,6 +9,8 @@ import {
 } from "@workspace/ui/components/card";
 import { formatCurrency } from "@workspace/ui/lib/currency.utils";
 import { cn } from "@workspace/ui/lib/utils";
+import { Loader2 } from "lucide-react";
+import React from "react";
 
 import { getCategoryColor, getCategoryIcon } from "@/lib/category-icons";
 

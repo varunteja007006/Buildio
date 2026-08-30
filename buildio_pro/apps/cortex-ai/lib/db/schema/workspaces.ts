@@ -1,5 +1,6 @@
-import { text, timestamp, boolean, pgTable, index } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
+import { text, timestamp, boolean, pgTable, index } from "drizzle-orm/pg-core";
+
 import { user } from "./auth";
 
 export const workspaces = pgTable(

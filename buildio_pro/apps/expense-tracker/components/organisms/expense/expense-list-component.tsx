@@ -1,19 +1,7 @@
 "use client";
 
-import * as React from "react";
 
 import { useQuery } from "@tanstack/react-query";
-import {
-  Bar,
-  BarChart,
-  CartesianGrid,
-  Cell,
-  Pie,
-  PieChart,
-  XAxis,
-  YAxis,
-} from "recharts";
-
 import {
   Card,
   CardContent,
@@ -29,6 +17,17 @@ import {
   ChartTooltipContent,
 } from "@workspace/ui/components/chart";
 import { formatCurrency } from "@workspace/ui/lib/currency.utils";
+import * as React from "react";
+import {
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Cell,
+  Pie,
+  PieChart,
+  XAxis,
+  YAxis,
+} from "recharts";
 
 import { useTRPC } from "@/lib/trpc-client";
 

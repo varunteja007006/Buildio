@@ -1,8 +1,8 @@
+import { Button } from "@workspace/ui/components/button";
+import { Edit2 } from "lucide-react";
 import React from "react";
 
-import { Edit2 } from "lucide-react";
 
-import { Button } from "@workspace/ui/components/button";
 
 export function EditBtn({
   iconOnly,

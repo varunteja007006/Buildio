@@ -1,9 +1,6 @@
 "use client";
 
-import { useParams } from "next/navigation";
 
-import { useQuery } from "convex/react";
-import { Play, Settings } from "lucide-react";
 
 import { api } from "@workspace/games-convex-backend/convex/_generated/api";
 import { Button } from "@workspace/ui/components/button";
@@ -12,6 +9,9 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@workspace/ui/components/tooltip";
+import { useQuery } from "convex/react";
+import { Play, Settings } from "lucide-react";
+import { useParams } from "next/navigation";
 
 import { CopyBtn } from "@/components/atoms/copy-btn";
 import { GameSettingsDialog } from "@/components/game-settings-dialog";

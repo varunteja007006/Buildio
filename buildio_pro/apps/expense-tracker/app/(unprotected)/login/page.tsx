@@ -1,6 +1,6 @@
+import { redirect } from "next/navigation";
 import React from "react";
 
-import { redirect } from "next/navigation";
 
 import { GoogleLoginBtn } from "@/components/organisms/auth/google-login-btn";
 import { getAuthSession } from "@/lib/auth-server";

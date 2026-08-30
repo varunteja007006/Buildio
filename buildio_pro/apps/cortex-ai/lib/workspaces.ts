@@ -1,7 +1,8 @@
 import { and, count, eq, isNull } from "drizzle-orm";
+
 import { db } from "@/lib/db";
-import { workspaces } from "@/lib/db/schema/workspaces";
 import { workspaceMembers } from "@/lib/db/schema/workspace-members";
+import { workspaces } from "@/lib/db/schema/workspaces";
 import { slugify } from "@/lib/slug";
 
 export const MAX_WORKSPACES_PER_USER = 5;

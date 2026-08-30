@@ -1,10 +1,7 @@
 "use client";
 
-import * as React from "react";
 
-import { useRouter } from "next/navigation";
 
-import { Eye } from "lucide-react";
 
 import { Badge } from "@workspace/ui/components/badge";
 import { Button } from "@workspace/ui/components/button";
@@ -19,6 +16,9 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@workspace/ui/components/dialog";
+import { Eye } from "lucide-react";
+import { useRouter } from "next/navigation";
+import * as React from "react";
 
 import { useGetExpenseByID } from "@/hooks";
 import { useTRPC } from "@/lib/trpc-client";

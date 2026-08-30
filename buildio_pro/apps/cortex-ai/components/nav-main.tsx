@@ -1,6 +1,5 @@
 "use client"
 
-import Link from "next/link"
 import {
   Collapsible,
   CollapsibleContent,
@@ -17,6 +16,7 @@ import {
   SidebarMenuSubItem,
 } from "@workspace/ui/components/sidebar"
 import { ChevronRightIcon } from "lucide-react"
+import Link from "next/link"
 
 export function NavMain({
   items,

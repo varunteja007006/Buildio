@@ -1,10 +1,6 @@
 "use client"
 
-import { useState } from "react"
-
-import { useCreateFolder } from "@/api/folders/query"
-import type { Folder } from "@/api/folders/types"
-import type { Topic } from "@/api/topics/types"
+import { Button } from "@workspace/ui/components/button"
 import {
   Dialog,
   DialogContent,
@@ -13,7 +9,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@workspace/ui/components/dialog"
-import { Button } from "@workspace/ui/components/button"
 import { Input } from "@workspace/ui/components/input"
 import { Label } from "@workspace/ui/components/label"
 import {
@@ -23,6 +18,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@workspace/ui/components/select"
+import { useState } from "react"
+
+import { useCreateFolder } from "@/api/folders/query"
+import type { Folder } from "@/api/folders/types"
+import type { Topic } from "@/api/topics/types"
 import { cn } from "@/lib/utils"
 
 const MAX_NAME_LENGTH = 150

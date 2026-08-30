@@ -1,8 +1,9 @@
-import { NextRequest, NextResponse } from "next/server";
 import { and, desc, eq, sql } from "drizzle-orm";
+import { NextRequest, NextResponse } from "next/server";
+
 import { db } from "@/lib/db";
-import { chatThreads } from "@/lib/db/schema/threads";
 import { chatMessages } from "@/lib/db/schema/messages";
+import { chatThreads } from "@/lib/db/schema/threads";
 import { getCurrentUser } from "@/lib/session";
 import { getActiveWorkspace } from "@/lib/workspaces";
 

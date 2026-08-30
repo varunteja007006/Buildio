@@ -1,6 +1,5 @@
 "use client";
 
-import * as React from "react";
 
 import { Button } from "@workspace/ui/components/button";
 import {
@@ -25,6 +24,7 @@ import {
   TableHeader,
   TableRow,
 } from "@workspace/ui/components/table";
+import * as React from "react";
 
 import { useExpenseCategoryList } from "@/hooks";
 

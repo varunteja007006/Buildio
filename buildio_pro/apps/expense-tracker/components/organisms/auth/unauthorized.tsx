@@ -1,12 +1,11 @@
 "use client";
 
+import { Button } from "@workspace/ui/components/button";
+import { AlertTriangle } from "lucide-react";
+import Link from "next/link";
 import React from "react";
 
-import Link from "next/link";
 
-import { AlertTriangle } from "lucide-react";
-
-import { Button } from "@workspace/ui/components/button";
 
 export default function Unauthorized() {
   return (

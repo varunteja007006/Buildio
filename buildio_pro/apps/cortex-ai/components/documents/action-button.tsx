@@ -1,6 +1,5 @@
 "use client"
 
-import type { LucideIcon } from "lucide-react"
 
 import { Button } from "@workspace/ui/components/button"
 import {
@@ -8,6 +7,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@workspace/ui/components/tooltip"
+import type { LucideIcon } from "lucide-react"
 
 interface ActionButtonProps {
   label: string

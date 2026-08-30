@@ -1,8 +1,8 @@
 "use client";
 
+import { api } from "@workspace/games-convex-backend/convex/_generated/api";
 import { useQuery } from "convex/react";
 
-import { api } from "@workspace/games-convex-backend/convex/_generated/api";
 
 import { useUserStore } from "@/lib/store/user.store";
 

@@ -1,9 +1,3 @@
-import * as React from "react";
-
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-
-import { type LucideIcon } from "lucide-react";
 
 import {
   SidebarGroup,
@@ -13,6 +7,10 @@ import {
   SidebarMenuItem,
 } from "@workspace/ui/components/sidebar";
 import { cn } from "@workspace/ui/lib/utils";
+import { type LucideIcon } from "lucide-react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import * as React from "react";
 
 import { LinkStatus } from "@/components/atoms/link-status";
 

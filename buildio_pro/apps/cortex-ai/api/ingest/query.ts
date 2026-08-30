@@ -1,9 +1,11 @@
 "use client";
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+
+import { documentKeys } from "@/api/documents/query";
+
 import { ingestDocuments } from "./api";
 import type { IngestResponse } from "./types";
-import { documentKeys } from "@/api/documents/query";
 
 /** Ingest all uningested documents (chunk → embed → store) */
 export function useIngestDocuments() {

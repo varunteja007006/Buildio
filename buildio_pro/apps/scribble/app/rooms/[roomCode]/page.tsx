@@ -1,13 +1,11 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-
+import { api } from "@workspace/games-convex-backend/convex/_generated/api";
+import { useMutation, useQuery } from "convex/react";
 import dynamic from "next/dynamic";
 import { useParams } from "next/navigation";
+import React, { useEffect, useState } from "react";
 
-import { useMutation, useQuery } from "convex/react";
-
-import { api } from "@workspace/games-convex-backend/convex/_generated/api";
 
 import { ChatBox } from "@/components/chat-box";
 import { Participants } from "@/components/participants";
