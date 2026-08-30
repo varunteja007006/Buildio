@@ -6,22 +6,35 @@ import { z } from "zod/v4";
 
 import { db, dbSchema } from "@/lib/db";
 import { runTransactionEnrichment } from "@/lib/transactions";
+import { computeTransactionHash } from "@/lib/utils/transaction.utils";
 
-import type {
-  ExtractedTransaction,
-  StatementExtraction,
-} from "./schema";
+import type { ExtractedTransaction, StatementExtraction } from "./schema";
 import { paymentMethodSchema, transactionTypeSchema } from "./schema";
 
 const CURRENCY_DEFAULTS: Record<
   string,
   { symbol: string; name: string; symbolNative: string; decimalDigits: number }
 > = {
-  INR: { symbol: "₹", name: "Indian Rupee", symbolNative: "₹", decimalDigits: 2 },
+  INR: {
+    symbol: "₹",
+    name: "Indian Rupee",
+    symbolNative: "₹",
+    decimalDigits: 2,
+  },
   USD: { symbol: "$", name: "US Dollar", symbolNative: "$", decimalDigits: 2 },
   EUR: { symbol: "€", name: "Euro", symbolNative: "€", decimalDigits: 2 },
-  GBP: { symbol: "£", name: "British Pound", symbolNative: "£", decimalDigits: 2 },
-  JPY: { symbol: "¥", name: "Japanese Yen", symbolNative: "¥", decimalDigits: 0 },
+  GBP: {
+    symbol: "£",
+    name: "British Pound",
+    symbolNative: "£",
+    decimalDigits: 2,
+  },
+  JPY: {
+    symbol: "¥",
+    name: "Japanese Yen",
+    symbolNative: "¥",
+    decimalDigits: 0,
+  },
 };
 
 const TRANSACTION_TYPES = transactionTypeSchema.options;
@@ -62,27 +75,46 @@ function normalizeDirection(value: string): "credit" | "debit" {
 function normalizeTransactionType(
   value: string,
 ): z.infer<typeof transactionTypeSchema> {
-  const normalized = value.trim().toLowerCase().replace(/[\s_-]+/g, "_");
+  const normalized = value
+    .trim()
+    .toLowerCase()
+    .replace(/[\s_-]+/g, "_");
   const exact = (TRANSACTION_TYPES as readonly string[]).find(
     (option) => option === normalized,
   );
   if (exact) return exact as z.infer<typeof transactionTypeSchema>;
-  if (normalized === "loan" || normalized === "emi" || normalized === "housingloan") {
+  if (
+    normalized === "loan" ||
+    normalized === "emi" ||
+    normalized === "housingloan"
+  ) {
     return "loan_payment";
   }
-  if (normalized === "premium" || normalized === "ins" || normalized === "insurancepremium") {
+  if (
+    normalized === "premium" ||
+    normalized === "ins" ||
+    normalized === "insurancepremium"
+  ) {
     return "insurance";
   }
   if (normalized === "sip" || normalized === "invest" || normalized === "mf") {
     return "investment";
   }
-  if (normalized === "rfd" || normalized === "cashback" || normalized === "reversal") {
+  if (
+    normalized === "rfd" ||
+    normalized === "cashback" ||
+    normalized === "reversal"
+  ) {
     return "refund";
   }
   if (normalized === "int" || normalized === "interestincome") {
     return "interest";
   }
-  if (normalized === "charges" || normalized === "bankfee" || normalized === "penalty") {
+  if (
+    normalized === "charges" ||
+    normalized === "bankfee" ||
+    normalized === "penalty"
+  ) {
     return "fee";
   }
   if (normalized === "withdrawal" || normalized === "atmwithdrawal") {
@@ -106,7 +138,10 @@ function normalizeTransactionType(
 function normalizePaymentMethod(
   value: string,
 ): z.infer<typeof paymentMethodSchema> {
-  const normalized = value.trim().toUpperCase().replace(/[^A-Z0-9]/g, "");
+  const normalized = value
+    .trim()
+    .toUpperCase()
+    .replace(/[^A-Z0-9]/g, "");
   const exact = (PAYMENT_METHODS as readonly string[]).find(
     (option) => option === normalized,
   );
@@ -146,23 +181,6 @@ function maskAccountNumber(value: string | null | undefined): {
   if (!digits) return { masked: null, lastFour: null };
   const lastFour = digits.slice(-4);
   return { masked: `****${lastFour}`, lastFour };
-}
-
-function computeTransactionHash(input: {
-  bankAccountId?: string | null;
-  date: string;
-  amount: number;
-  referenceNumber?: string | null;
-  rawDescription?: string | null;
-}): string {
-  const parts = [
-    input.bankAccountId ?? "",
-    input.date,
-    input.amount.toFixed(2),
-    input.referenceNumber?.trim() ?? "",
-    input.rawDescription?.trim() ?? "",
-  ];
-  return createHash("sha256").update(parts.join("|")).digest("hex");
 }
 
 /**
@@ -242,7 +260,10 @@ class ReferenceResolver {
   }
 
   async accountType(name: string): Promise<string> {
-    const key = name.trim().toUpperCase().replace(/\s+ACCOUNT$/, "");
+    const key = name
+      .trim()
+      .toUpperCase()
+      .replace(/\s+ACCOUNT$/, "");
     const cached = this.accountTypeCache.get(key);
     if (cached) return cached;
 
@@ -347,10 +368,7 @@ class ReferenceResolver {
     return row.id;
   }
 
-  async category(
-    name: string,
-    parentId?: string,
-  ): Promise<string> {
+  async category(name: string, parentId?: string): Promise<string> {
     const key = `${parentId ?? ""}|${name.trim()}`;
     const cached = this.categoryCache.get(key);
     if (cached) return cached;
@@ -497,7 +515,6 @@ export async function ingestStatementExtraction(
         date,
         amount,
         referenceNumber: transaction.referenceNumber,
-        rawDescription,
       }),
     });
   }
@@ -522,7 +539,10 @@ export async function ingestStatementExtraction(
       status: "processed",
       processedTransactionsCount: inserted.length,
       extractionModel,
-      statementMetadata: extraction.statement,
+      statementMetadata: {
+        ...extraction.statement,
+        emiSummary: extraction.emiSummary,
+      },
       processingError: null,
       updatedAt: new Date(),
     })

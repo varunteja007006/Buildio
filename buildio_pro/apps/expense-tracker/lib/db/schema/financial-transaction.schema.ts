@@ -87,6 +87,7 @@ export const financialTransaction = pgTable(
       precision: 5,
       scale: 4,
     }),
+    reviewedAt: timestamp("reviewed_at"),
     transactionHash: text("transaction_hash"),
     ...auditTimeFields,
   },

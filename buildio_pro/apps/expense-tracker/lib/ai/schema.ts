@@ -57,6 +57,12 @@ export const extractedTransactionSchema = z.object({
   isTransfer: z.boolean(),
   rawDescription: z.string(),
   extractionConfidence: z.coerce.number(),
+  // Credit-card specific; null/false for bank statements.
+  isEmi: z.boolean(),
+  emiInstallmentNumber: nullableNumber,
+  emiTotalInstallments: nullableNumber,
+  international: z.boolean(),
+  rewardPoints: nullableNumber,
 });
 
 export const extractedStatementSchema = z.object({
@@ -68,13 +74,43 @@ export const extractedStatementSchema = z.object({
   statementEnd: nullableString,
   openingBalance: nullableNumber,
   closingBalance: nullableNumber,
+  // Credit-card specific; null for bank statements.
+  cardProduct: nullableString,
+  cardNetwork: nullableString,
+  statementDate: nullableString,
+  paymentDueDate: nullableString,
+  totalAmountDue: nullableNumber,
+  minimumAmountDue: nullableNumber,
+  creditLimit: nullableNumber,
+  availableCredit: nullableNumber,
+  cashLimit: nullableNumber,
+  availableCash: nullableNumber,
+  // Required object (not .nullable()) so the OpenAI strict JSON schema
+  // stays flat; the fields themselves carry the nullability.
+  rewards: z.object({
+    earned: nullableNumber,
+    unit: nullableString,
+  }),
+});
+
+export const extractedEmiSummarySchema = z.object({
+  merchant: nullableString,
+  originalAmount: nullableNumber,
+  installmentNumber: nullableNumber,
+  totalInstallments: nullableNumber,
+  pendingInstallments: nullableNumber,
+  outstanding: nullableNumber,
+  monthlyInstallment: nullableNumber,
 });
 
 export const statementExtractionSchema = z.object({
   statement: extractedStatementSchema,
   transactions: z.array(extractedTransactionSchema),
+  // Separate EMI tables (e.g. ICICI) that are not transaction rows.
+  emiSummary: z.array(extractedEmiSummarySchema),
 });
 
 export type ExtractedTransaction = z.infer<typeof extractedTransactionSchema>;
 export type ExtractedStatement = z.infer<typeof extractedStatementSchema>;
+export type ExtractedEmiSummary = z.infer<typeof extractedEmiSummarySchema>;
 export type StatementExtraction = z.infer<typeof statementExtractionSchema>;

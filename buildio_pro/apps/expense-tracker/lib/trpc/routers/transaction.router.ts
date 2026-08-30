@@ -1,5 +1,5 @@
 import { TRPCError } from "@trpc/server";
-import { and, count, desc, eq, gte, ilike, lte, or } from "drizzle-orm";
+import { and, count, eq, gte, ilike, isNull, lte, or } from "drizzle-orm";
 import z from "zod";
 
 import { runTransactionEnrichment } from "@/lib/transactions";
@@ -15,6 +15,46 @@ import {
 const transactionIdInput = z.object({
   transactionId: z.uuid(),
 });
+
+const updateTransactionInput = z
+  .object({
+    transactionId: z.uuid(),
+    merchantName: z.string().trim().max(255).nullable().optional(),
+    counterpartyName: z.string().trim().max(255).nullable().optional(),
+    description: z.string().trim().max(1000).nullable().optional(),
+    categoryId: z.uuid().nullable().optional(),
+    paymentMethodId: z.uuid().nullable().optional(),
+    transactionType: z
+      .enum([
+        "expense",
+        "income",
+        "transfer",
+        "investment",
+        "loan_payment",
+        "insurance",
+        "refund",
+        "interest",
+        "fee",
+        "cash_withdrawal",
+        "round_up",
+        "unknown",
+      ])
+      .optional(),
+    direction: z.enum(["debit", "credit"]).optional(),
+    transactionDate: z.coerce.date().optional(),
+    amount: z.coerce.number().positive("Amount must be positive").optional(),
+    referenceNumber: z.string().trim().max(255).nullable().optional(),
+    isRecurring: z.boolean().optional(),
+    isTransfer: z.boolean().optional(),
+    balanceAfter: z.coerce.number().nullable().optional(),
+  })
+  .refine(
+    (data) =>
+      Object.entries(data).some(
+        ([key, value]) => key !== "transactionId" && value !== undefined,
+      ),
+    { message: "Provide at least one field to update" },
+  );
 
 const listTransactionsInput = paginationInputSchema.extend({
   bankAccountId: z.uuid().optional(),
@@ -106,7 +146,10 @@ export const transactionRouter = createTRPCRouter({
       }
       if (input.markForReviewOnly) {
         filters.push(
-          lte(dbSchema.financialTransaction.extractionConfidence, "0.8"),
+          and(
+            lte(dbSchema.financialTransaction.extractionConfidence, "0.8"),
+            isNull(dbSchema.financialTransaction.reviewedAt),
+          )!,
         );
       }
       if (input.search) {
@@ -158,7 +201,7 @@ export const transactionRouter = createTRPCRouter({
           extractionConfidence: transaction.extractionConfidence
             ? numericToNumber(transaction.extractionConfidence)
             : null,
-          needsReview: needsReview(transaction.extractionConfidence),
+          needsReview: needsReview(transaction.extractionConfidence, transaction.reviewedAt),
         })),
         meta: createPaginationMeta(input, totalItems),
       };
@@ -200,7 +243,7 @@ export const transactionRouter = createTRPCRouter({
         extractionConfidence: transaction.extractionConfidence
           ? numericToNumber(transaction.extractionConfidence)
           : null,
-        needsReview: needsReview(transaction.extractionConfidence),
+        needsReview: needsReview(transaction.extractionConfidence, transaction.reviewedAt),
       };
     }),
 
@@ -225,7 +268,7 @@ export const transactionRouter = createTRPCRouter({
       } else {
         totalCredit += amount;
       }
-      if (needsReview(transaction.extractionConfidence)) {
+      if (needsReview(transaction.extractionConfidence, transaction.reviewedAt)) {
         reviewCount += 1;
       }
 
@@ -316,7 +359,7 @@ export const transactionRouter = createTRPCRouter({
       return transactions.map((transaction) => ({
         ...transaction,
         amount: numericToNumber(transaction.amount),
-        needsReview: needsReview(transaction.extractionConfidence),
+        needsReview: needsReview(transaction.extractionConfidence, transaction.reviewedAt),
       }));
     }),
 
@@ -329,4 +372,222 @@ export const transactionRouter = createTRPCRouter({
       userId: user.id,
     });
   }),
+
+  listPaymentMethods: protectedProcedure.query(async ({ ctx }) => {
+    const methods = await ctx.db.query.paymentMethods.findMany({
+      orderBy: (method, { asc }) => asc(method.name),
+    });
+
+    return methods;
+  }),
+
+  listBankAccounts: protectedProcedure.query(async ({ ctx }) => {
+    const { db, dbSchema, user } = ctx;
+
+    // Flat select instead of relational `with` — inferring the `bank`
+    // relation through the full AppRouter type collapses to `never`.
+    return db
+      .select({
+        id: dbSchema.userBankAccount.id,
+        name: dbSchema.userBankAccount.name,
+        lastFour: dbSchema.userBankAccount.lastFour,
+        bankName: dbSchema.banks.name,
+        accountTypeName: dbSchema.bankAccountTypes.name,
+      })
+      .from(dbSchema.userBankAccount)
+      .leftJoin(
+        dbSchema.banks,
+        eq(dbSchema.banks.id, dbSchema.userBankAccount.bankId),
+      )
+      .leftJoin(
+        dbSchema.bankAccountTypes,
+        eq(
+          dbSchema.bankAccountTypes.id,
+          dbSchema.userBankAccount.bankAccountTypeId,
+        ),
+      )
+      .where(eq(dbSchema.userBankAccount.user_id, user.id))
+      .orderBy(dbSchema.userBankAccount.name);
+  }),
+  updateTransaction: protectedProcedure
+    .input(updateTransactionInput)
+    .mutation(async ({ input, ctx }) => {
+      const { db, dbSchema, user } = ctx;
+      const { transactionId, ...fields } = input;
+
+      const transaction = await db.query.financialTransaction.findFirst({
+        where: and(
+          eq(dbSchema.financialTransaction.id, transactionId),
+          eq(dbSchema.financialTransaction.userId, user.id),
+        ),
+      });
+
+      if (!transaction) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Transaction not found",
+        });
+      }
+
+      const payload: Record<string, unknown> = {
+        updatedAt: new Date(),
+        // editing implies the reviewer has verified the row
+        reviewedAt: new Date(),
+      };
+      if (fields.merchantName !== undefined) {
+        payload.merchantName = fields.merchantName;
+      }
+      if (fields.counterpartyName !== undefined) {
+        payload.counterpartyName = fields.counterpartyName;
+      }
+      if (fields.description !== undefined) {
+        payload.description = fields.description;
+      }
+      if (fields.categoryId !== undefined) {
+        payload.categoryId = fields.categoryId;
+      }
+      if (fields.paymentMethodId !== undefined) {
+        payload.paymentMethodId = fields.paymentMethodId;
+      }
+      if (fields.transactionType !== undefined) {
+        payload.transactionType = fields.transactionType;
+      }
+      if (fields.direction !== undefined) {
+        payload.direction = fields.direction;
+      }
+      if (fields.transactionDate !== undefined) {
+        payload.transactionDate = fields.transactionDate;
+      }
+      if (fields.amount !== undefined) {
+        payload.amount = fields.amount.toFixed(4);
+      }
+      if (fields.referenceNumber !== undefined) {
+        payload.referenceNumber = fields.referenceNumber;
+      }
+      if (fields.isRecurring !== undefined) {
+        payload.isRecurring = fields.isRecurring;
+      }
+      if (fields.isTransfer !== undefined) {
+        payload.isTransfer = fields.isTransfer;
+      }
+      if (fields.balanceAfter !== undefined) {
+        payload.balanceAfter =
+          fields.balanceAfter === null
+            ? null
+            : fields.balanceAfter.toFixed(4);
+      }
+
+      const [updated] = await db
+        .update(dbSchema.financialTransaction)
+        .set(payload)
+        .where(eq(dbSchema.financialTransaction.id, transactionId))
+        .returning();
+
+      if (!updated) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to update transaction",
+        });
+      }
+
+      return {
+        ...updated,
+        amount: numericToNumber(updated.amount),
+        balanceAfter: updated.balanceAfter
+          ? numericToNumber(updated.balanceAfter)
+          : null,
+        extractionConfidence: updated.extractionConfidence
+          ? numericToNumber(updated.extractionConfidence)
+          : null,
+        needsReview: needsReview(
+          updated.extractionConfidence,
+          updated.reviewedAt,
+        ),
+      };
+    }),
+
+  deleteTransaction: protectedProcedure
+    .input(transactionIdInput)
+    .mutation(async ({ input, ctx }) => {
+      const { db, dbSchema, user } = ctx;
+
+      const transaction = await db.query.financialTransaction.findFirst({
+        where: and(
+          eq(dbSchema.financialTransaction.id, input.transactionId),
+          eq(dbSchema.financialTransaction.userId, user.id),
+        ),
+      });
+
+      if (!transaction) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Transaction not found",
+        });
+      }
+
+      const [deleted] = await db
+        .delete(dbSchema.financialTransaction)
+        .where(eq(dbSchema.financialTransaction.id, input.transactionId))
+        .returning({ id: dbSchema.financialTransaction.id });
+
+      if (!deleted) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to delete transaction",
+        });
+      }
+
+      return { id: deleted.id };
+    }),
+
+  confirmTransaction: protectedProcedure
+    .input(transactionIdInput)
+    .mutation(async ({ input, ctx }) => {
+      const { db, dbSchema, user } = ctx;
+
+      const transaction = await db.query.financialTransaction.findFirst({
+        where: and(
+          eq(dbSchema.financialTransaction.id, input.transactionId),
+          eq(dbSchema.financialTransaction.userId, user.id),
+        ),
+      });
+
+      if (!transaction) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Transaction not found",
+        });
+      }
+
+      const [updated] = await db
+        .update(dbSchema.financialTransaction)
+        .set({
+          reviewedAt: new Date(),
+          updatedAt: new Date(),
+        })
+        .where(eq(dbSchema.financialTransaction.id, input.transactionId))
+        .returning();
+
+      if (!updated) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to confirm transaction",
+        });
+      }
+
+      return {
+        ...updated,
+        amount: numericToNumber(updated.amount),
+        balanceAfter: updated.balanceAfter
+          ? numericToNumber(updated.balanceAfter)
+          : null,
+        extractionConfidence: updated.extractionConfidence
+          ? numericToNumber(updated.extractionConfidence)
+          : null,
+        needsReview: needsReview(
+          updated.extractionConfidence,
+          updated.reviewedAt,
+        ),
+      };
+    }),
 });

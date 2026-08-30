@@ -4,7 +4,7 @@ import "server-only";
 import { getItem, setItem } from "@/lib/redis";
 
 export const DEFAULT_EXTRACTION_MODEL =
-  process.env.AI_EXTRACTION_MODEL ?? "openai/gpt-5.6-sol";
+  process.env.AI_EXTRACTION_MODEL ?? "openai/gpt-5.6-luna";
 
 export const gateway = createGateway({
   apiKey: process.env.AI_GATEWAY_API_KEY,

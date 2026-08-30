@@ -1,0 +1,1 @@
+ALTER TABLE "financial_transaction" ADD COLUMN "reviewed_at" timestamp;

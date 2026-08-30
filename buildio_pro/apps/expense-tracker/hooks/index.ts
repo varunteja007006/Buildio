@@ -102,5 +102,11 @@ export {
   useTransactionAnalytics,
   useStatementTransactions,
   useRunTransactionEnrichment,
+  usePaymentMethodList,
+  useBankAccountList,
+  useTransactionConfirm,
+  useTransactionUpdate,
+  useTransactionDelete,
 } from "./use-transaction-queries";
 export type { TransactionDirection, TransactionType } from "./use-transaction-queries";
+export type { BankAccountListItem } from "./use-transaction-queries";

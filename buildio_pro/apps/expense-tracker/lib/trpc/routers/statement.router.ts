@@ -59,6 +59,8 @@ const listStatementsInput = paginationInputSchema.extend({
 const processUploadInput = z.object({
   uploadId: z.uuid(),
   model: z.string().trim().min(1).max(255).optional(),
+  // Overrides the stored document type (and with it the extraction prompt).
+  documentType: documentTypeSchema.optional(),
 });
 
 export const statementRouter = createTRPCRouter({
@@ -285,6 +287,7 @@ export const statementRouter = createTRPCRouter({
       }
 
       const model = input.model ?? DEFAULT_EXTRACTION_MODEL;
+      const documentType = input.documentType ?? record.documentType;
 
       await db
         .update(dbSchema.statementUpload)
@@ -292,6 +295,9 @@ export const statementRouter = createTRPCRouter({
           status: "processing",
           processingError: null,
           extractionModel: model,
+          ...(input.documentType && input.documentType !== record.documentType
+            ? { documentType: input.documentType }
+            : {}),
           updatedAt: new Date(),
         })
         .where(eq(dbSchema.statementUpload.id, input.uploadId));
@@ -303,7 +309,7 @@ export const statementRouter = createTRPCRouter({
           buffer,
           contentType,
           filename: record.originalFilename,
-          documentType: record.documentType,
+          documentType,
           modelId: model,
         });
 
@@ -320,7 +326,9 @@ export const statementRouter = createTRPCRouter({
         };
       } catch (error) {
         const message =
-          error instanceof Error ? error.message : "Failed to process statement";
+          error instanceof Error
+            ? error.message
+            : "Failed to process statement";
         await db
           .update(dbSchema.statementUpload)
           .set({

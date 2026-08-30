@@ -51,6 +51,7 @@ import {
   Check,
   CreditCard,
   Download,
+  Eye,
   FileSpreadsheet,
   FileText,
   Landmark,
@@ -61,6 +62,7 @@ import {
   Upload,
   X,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import * as React from "react";
 
 import {
@@ -212,13 +214,17 @@ function ExtractStatementDialog({
   statement: {
     id: string;
     originalFilename: string;
+    documentType: StatementDocumentType;
     extractionModel: string | null;
   } | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
-  const { data: models, isLoading: modelsLoading, isError: modelsError } =
-    useStatementModels();
+  const {
+    data: models,
+    isLoading: modelsLoading,
+    isError: modelsError,
+  } = useStatementModels();
   const processMutation = useStatementProcess({
     onSuccess: () => onOpenChange(false),
   });
@@ -234,16 +240,19 @@ function ExtractStatementDialog({
   );
 
   const [selectedModel, setSelectedModel] = React.useState("");
+  const [selectedType, setSelectedType] =
+    React.useState<StatementDocumentType>("bank_statement");
 
   React.useEffect(() => {
     if (!open || !statement) return;
     setSelectedModel(
       statement.extractionModel ??
-        options.find((option) => option.value === "google/gemini-2.5-flash")
+        options.find((option) => option.value === "openai/gpt-5.6-luna")
           ?.value ??
         options[0]?.value ??
         "",
     );
+    setSelectedType(statement.documentType);
   }, [open, statement, options]);
 
   const canStart =
@@ -262,6 +271,32 @@ function ExtractStatementDialog({
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-4">
+          <div className="space-y-2">
+            <Label>Document type</Label>
+            <Select
+              value={selectedType}
+              onValueChange={(val) =>
+                setSelectedType(val as StatementDocumentType)
+              }
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Document type" />
+              </SelectTrigger>
+              <SelectContent>
+                {(
+                  Object.keys(documentTypeLabels) as StatementDocumentType[]
+                ).map((type) => (
+                  <SelectItem key={type} value={type}>
+                    {documentTypeLabels[type]}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <p className="text-xs text-muted-foreground">
+              Changing the type re-extracts with that document type&apos;s
+              prompt. Previously extracted transactions are kept.
+            </p>
+          </div>
           <div className="space-y-2">
             <Label>Model</Label>
             {modelsLoading ? (
@@ -307,6 +342,7 @@ function ExtractStatementDialog({
               processMutation.mutate({
                 uploadId: statement.id,
                 model: selectedModel,
+                documentType: selectedType,
               })
             }
           >
@@ -336,6 +372,7 @@ export function StatementsPage() {
   const [extractingStatement, setExtractingStatement] = React.useState<{
     id: string;
     originalFilename: string;
+    documentType: StatementDocumentType;
     extractionModel: string | null;
   } | null>(null);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
@@ -347,7 +384,9 @@ export function StatementsPage() {
   });
 
   const hasProcessing = React.useMemo(
-    () => data?.data.some((statement) => statement.status === "processing") ?? false,
+    () =>
+      data?.data.some((statement) => statement.status === "processing") ??
+      false,
     [data],
   );
 
@@ -361,6 +400,7 @@ export function StatementsPage() {
   const uploadMutation = useStatementUpload();
   const deleteMutation = useStatementDelete();
   const downloadMutation = useStatementDownload();
+  const router = useRouter();
 
   const statements = data?.data || [];
   const meta = data?.meta;
@@ -493,9 +533,7 @@ export function StatementsPage() {
       <Card className="w-full">
         <CardHeader>
           <CardTitle>Statement Uploads</CardTitle>
-          <CardDescription>
-            History of your uploaded statements
-          </CardDescription>
+          <CardDescription>History of your uploaded statements</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
@@ -615,13 +653,14 @@ export function StatementsPage() {
                                 {typeof statement.processedTransactionsCount ===
                                   "number" &&
                                   statement.processedTransactionsCount > 0 && (
-                                  <span className="text-xs text-muted-foreground">
-                                    {statement.processedTransactionsCount}{" "}
-                                    {statement.processedTransactionsCount === 1
-                                      ? "transaction"
-                                      : "transactions"}
-                                  </span>
-                                )}
+                                    <span className="text-xs text-muted-foreground">
+                                      {statement.processedTransactionsCount}{" "}
+                                      {statement.processedTransactionsCount ===
+                                      1
+                                        ? "transaction"
+                                        : "transactions"}
+                                    </span>
+                                  )}
                               </div>
                               {statement.status === "failed" &&
                                 statement.processingError && (
@@ -636,6 +675,23 @@ export function StatementsPage() {
                           </TableCell>
                           <TableCell className="text-right">
                             <div className="flex justify-end gap-2">
+                              {typeof statement.processedTransactionsCount ===
+                                "number" &&
+                                statement.processedTransactionsCount > 0 && (
+                                  <Button
+                                    variant="outline"
+                                    size="icon"
+                                    title="View extracted transactions"
+                                    onClick={() =>
+                                      router.push(
+                                        `/transactions?statementUploadId=${statement.id}`,
+                                      )
+                                    }
+                                  >
+                                    <Eye className="size-4" />
+                                  </Button>
+                                )}
+
                               <Button
                                 variant="outline"
                                 size="icon"
@@ -649,6 +705,7 @@ export function StatementsPage() {
                                     id: statement.id,
                                     originalFilename:
                                       statement.originalFilename,
+                                    documentType: statement.documentType,
                                     extractionModel: statement.extractionModel,
                                   })
                                 }
@@ -683,7 +740,9 @@ export function StatementsPage() {
                                     </AlertDialogDescription>
                                   </AlertDialogHeader>
                                   <AlertDialogFooter>
-                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                    <AlertDialogCancel>
+                                      Cancel
+                                    </AlertDialogCancel>
                                     <Button
                                       variant="destructive"
                                       disabled={deleteMutation.isPending}
