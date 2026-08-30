@@ -18,6 +18,30 @@ export const auth = betterAuth({
     provider: "pg",
     schema: dbSchema,
   }),
+  // when a new user is created, seed their profile, preferences and settings
+  databaseHooks: {
+    user: {
+      create: {
+        after: async (user) => {
+          const { userProfile, userPreferences, userSettings } = dbSchema;
+
+          await Promise.all([
+            db.insert(userProfile).values({
+              user_id: user.id,
+              name: user.name || user.email.split("@")[0] || "User",
+              image_url: user.image ?? null,
+            }),
+            db.insert(userPreferences).values({
+              user_id: user.id,
+            }),
+            db.insert(userSettings).values({
+              user_id: user.id,
+            }),
+          ]);
+        },
+      },
+    },
+  },
   // session config
   session: {
     cookieCache: {

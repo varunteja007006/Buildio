@@ -5,12 +5,27 @@ const isDevEnv = process.env.NEXT_PUBLIC_ENV === "dev";
 // Type definition for the client we will export
 export type ValkeyClient = Redis;
 
-const valkeyClient: Redis = VALKEY_URL
-  ? new Redis(VALKEY_URL)
-  : new Redis({
-      host: process.env.VALKEY_HOST || "localhost",
-      port: Number.parseInt(process.env.VALKEY_PORT || "6379", 10),
-    });
+function createValkeyClient(): Redis {
+  if (VALKEY_URL) {
+    try {
+      const parsed = new URL(VALKEY_URL);
+      if (parsed.protocol === "redis:" || parsed.protocol === "rediss:") {
+        return new Redis(VALKEY_URL);
+      }
+    } catch {
+      // fall through to host/port config
+    }
+    console.warn(
+      "VALKEY_URL is invalid or missing a redis:// scheme; falling back to VALKEY_HOST/VALKEY_PORT.",
+    );
+  }
+  return new Redis({
+    host: process.env.VALKEY_HOST || "localhost",
+    port: Number.parseInt(process.env.VALKEY_PORT || "6379", 10),
+  });
+}
+
+const valkeyClient: Redis = createValkeyClient();
 
 valkeyClient.on("connect", () => {
   console.log("Valkey Client connected successfully.");
@@ -64,4 +79,11 @@ async function incrementItem(key: string, ttl: number) {
   return results?.[0]?.[1] as number;
 }
 
-export { valkeyClient, getItem, setItem, deleteItem, getAndDeleteItem, incrementItem };
+export {
+  valkeyClient,
+  getItem,
+  setItem,
+  deleteItem,
+  getAndDeleteItem,
+  incrementItem,
+};

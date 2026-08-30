@@ -7,5 +7,49 @@
 @import "../node_modules/@workspace/theme/northern-lights.css";
 
 .container {
-  @apply px-4 py-4 md:px-6 lg:px-8 mx-auto
+  @apply px-4 py-4 md:px-6 lg:px-8 mx-auto;
+}
+
+@theme {
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-float-delayed: float 7s ease-in-out 1.5s infinite;
+  --animate-marquee: marquee 36s linear infinite;
+  --animate-drift: drift 18s ease-in-out infinite alternate;
+  --animate-drift-slow: drift 26s ease-in-out 3s infinite alternate;
+  --animate-pulse-soft: pulse-soft 4s ease-in-out infinite;
+
+  @keyframes float {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
+  }
+
+  @keyframes marquee {
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
+  @keyframes drift {
+    0% {
+      transform: translate(0, 0) scale(1);
+    }
+    100% {
+      transform: translate(42px, -28px) scale(1.12);
+    }
+  }
+
+  @keyframes pulse-soft {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.55;
+    }
+  }
 }

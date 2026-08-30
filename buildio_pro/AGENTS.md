@@ -2,6 +2,11 @@
 
 pnpm + Turborepo monorepo of Next.js 16 apps and shared packages. **All code lives in `buildio_pro/`** — run every command from `buildio_pro/`. The git repo root (`Buildio/`) only holds the workspace, `README.md`, `LICENSE`, and `.github/`.
 
+## Do not
+
+- Do not run the dev server unless user explicitly mentions.
+- Do not push the code without building all the applications once to check if they are all working or not.
+
 ## Commands (from `buildio_pro/`)
 
 - Per-app dev/build/start wrappers: `pnpm dev:web`, `pnpm dev:expense-tracker`, `pnpm dev:poker-planner`, `pnpm dev:housie-game`, `pnpm dev:scribble`, `pnpm dev:cortex-ai` (same for `build:` and `start:`). Prefer these over `pnpm dev` (runs all 6 apps).
@@ -42,6 +47,20 @@ pnpm + Turborepo monorepo of Next.js 16 apps and shared packages. **All code liv
 - Theme wiring (Tailwind v4) in an app's `app/globals.css`: `@import "tailwindcss"` + `@import "../node_modules/@workspace/ui/src/styles/globals.css"` + one `@import "../node_modules/@workspace/theme/<theme>.css"`. cortex-ai instead uses `shadcn/tailwind.css` + `@source "../../packages/ui/src"`.
 - Every app's `next.config` must `transpilePackages: ["@workspace/ui"]` (games apps also `@workspace/games-convex-backend`).
 - Env: `.env` is gitignored — copy the app's `.env.example`. `turbo.json` `globalEnv` lists every required variable.
+
+## Client-side data & page structure
+
+- **`page.tsx` = one-line re-export only**: `import { SamplePage } from "@/components/pages/sample"` then `export default SamplePage`. Page-level UI lives in `components/pages/`. (Not yet applied repo-wide — use it for new pages.)
+- **HTTP apps (reference: `apps/cortex-ai/api/`)** — client API layer lives in `<app>/api/`, one folder per feature:
+  - `api/endpoints.ts` — every endpoint, grouped by feature; dynamic ids as builders: `thread: (id: string) => \`/chat/threads/${id}\``.
+  - `api/client.ts` — one axios instance per backend server, each with its own `baseURL` (add a named export per backend if there are two).
+  - `api/<feature>/api.ts` — thin typed fetchers: `export const getX = (): Promise<X> => apiClient.get(endpoints.f.x).then((res) => res.data);`
+  - `api/<feature>/query.ts` — TanStack Query hooks (`useQuery`/`useInfiniteQuery`/`useMutation`) + a query-key factory. Requires the React Query provider (`providers/query-provider.tsx` in cortex-ai).
+  - `api/<feature>/helpers.ts` — transformations/constants; `api/<feature>/types.ts` — input/response types.
+- **tRPC apps (reference: `apps/expense-tracker`)** — no `api/` folder; queries/mutations are typed out of the box:
+  - Server: `lib/trpc/routers/<feature>.router.ts` (all `protectedProcedure`), merged into `appRouter` in `lib/trpc/routers/index.ts` (type `AppRouter`).
+  - Client: `lib/trpc-client.tsx` exports `TRPCAppProvider` + `useTRPC`; wrap new routes in the provider.
+  - Data hooks: `hooks/use-<feature>-queries.ts` — `const trpc = useTRPC();` then `useQuery(trpc.feature.proc.queryOptions(...))` / `useMutation(trpc.feature.proc.mutationOptions(...))`. Invalidate via a local query-key factory + `queryClient.invalidateQueries(...)`.
 
 ## Deploy & reference
 
