@@ -46,6 +46,11 @@ const updateTransactionInput = z
     referenceNumber: z.string().trim().max(255).nullable().optional(),
     isRecurring: z.boolean().optional(),
     isTransfer: z.boolean().optional(),
+    isEmi: z.boolean().optional(),
+    emiInstallmentNumber: z.number().int().nullable().optional(),
+    emiTotalInstallments: z.number().int().nullable().optional(),
+    international: z.boolean().optional(),
+    rewardPoints: z.coerce.number().nullable().optional(),
     balanceAfter: z.coerce.number().nullable().optional(),
   })
   .refine(
@@ -252,11 +257,18 @@ export const transactionRouter = createTRPCRouter({
 
     const transactions = await db.query.financialTransaction.findMany({
       where: eq(dbSchema.financialTransaction.userId, user.id),
+      with: {
+        statementUpload: true,
+        bankAccount: true,
+      },
     });
 
     const typeMap = new Map<string, number>();
     const categoryMap = new Map<string, number>();
     const monthMap = new Map<string, number>();
+    // bankAccountId -> "YYYY-MM" -> { debit, credit }
+    const accountMonthMap = new Map<string, Map<string, { debit: number; credit: number }>>();
+    const accountSet = new Set<string>();
     let totalDebit = 0;
     let totalCredit = 0;
     let reviewCount = 0;
@@ -287,6 +299,21 @@ export const transactionRouter = createTRPCRouter({
       const d = new Date(transaction.transactionDate);
       const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
       monthMap.set(key, (monthMap.get(key) || 0) + amount);
+
+      const accountId = transaction.bankAccountId ?? "unknown";
+      accountSet.add(accountId);
+      let monthForAccount = accountMonthMap.get(accountId);
+      if (!monthForAccount) {
+        monthForAccount = new Map();
+        accountMonthMap.set(accountId, monthForAccount);
+      }
+      const entry = monthForAccount.get(key) ?? { debit: 0, credit: 0 };
+      if (transaction.direction === "debit") {
+        entry.debit += amount;
+      } else {
+        entry.credit += amount;
+      }
+      monthForAccount.set(key, entry);
     }
 
     const typeBreakdown = Array.from(typeMap.entries())
@@ -308,6 +335,51 @@ export const transactionRouter = createTRPCRouter({
         };
       });
 
+    const accountsById = new Map(
+      transactions
+        .map((t) => t.bankAccount)
+        .filter((a): a is NonNullable<typeof a> => a !== null)
+        .map((a) => [a.id, a]),
+    );
+    const statementDocumentTypeByAccount = new Map<string, string | null>();
+    for (const transaction of transactions) {
+      if (transaction.bankAccountId && transaction.statementUpload) {
+        statementDocumentTypeByAccount.set(
+          transaction.bankAccountId,
+          transaction.statementUpload.documentType,
+        );
+      }
+    }
+
+    const perAccountMonthlyBreakdown = Array.from(accountMonthMap.entries())
+      .sort((a, b) => (a[0] < b[0] ? -1 : 1))
+      .map(([bankAccountId, monthForAccount]) => {
+        const account = accountsById.get(bankAccountId);
+        const months = Array.from(monthForAccount.entries())
+          .sort((a, b) => a[0].localeCompare(b[0]))
+          .map(([rawDate, entry]) => {
+            const [year, month] = rawDate.split("-");
+            const date = new Date(parseInt(year!), parseInt(month!) - 1);
+            return {
+              month: date.toLocaleString("default", {
+                month: "short",
+                year: "numeric",
+              }),
+              rawDate,
+              debit: entry.debit,
+              credit: entry.credit,
+              net: entry.credit - entry.debit,
+            };
+          });
+        return {
+          bankAccountId,
+          accountName: account?.name ?? null,
+          documentType:
+            statementDocumentTypeByAccount.get(bankAccountId) ?? null,
+          months,
+        };
+      });
+
     return {
       totalDebit,
       totalCredit,
@@ -318,6 +390,7 @@ export const transactionRouter = createTRPCRouter({
         .map(([categoryId, amount]) => ({ categoryId, amount }))
         .sort((a, b) => b.amount - a.amount),
       monthlyBreakdown,
+      perAccountMonthlyBreakdown,
     };
   }),
 
@@ -469,6 +542,24 @@ export const transactionRouter = createTRPCRouter({
       }
       if (fields.isTransfer !== undefined) {
         payload.isTransfer = fields.isTransfer;
+      }
+      if (fields.isEmi !== undefined) {
+        payload.isEmi = fields.isEmi;
+      }
+      if (fields.emiInstallmentNumber !== undefined) {
+        payload.emiInstallmentNumber = fields.emiInstallmentNumber;
+      }
+      if (fields.emiTotalInstallments !== undefined) {
+        payload.emiTotalInstallments = fields.emiTotalInstallments;
+      }
+      if (fields.international !== undefined) {
+        payload.international = fields.international;
+      }
+      if (fields.rewardPoints !== undefined) {
+        payload.rewardPoints =
+          fields.rewardPoints === null
+            ? null
+            : fields.rewardPoints.toFixed(4);
       }
       if (fields.balanceAfter !== undefined) {
         payload.balanceAfter =

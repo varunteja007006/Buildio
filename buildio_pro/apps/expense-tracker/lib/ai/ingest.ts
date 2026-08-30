@@ -507,6 +507,11 @@ export async function ingestStatementExtraction(
       categoryId,
       isRecurring: transaction.isRecurring,
       isTransfer: transaction.isTransfer,
+      isEmi: transaction.isEmi,
+      emiInstallmentNumber: transaction.emiInstallmentNumber ?? null,
+      emiTotalInstallments: transaction.emiTotalInstallments ?? null,
+      international: transaction.international,
+      rewardPoints: transaction.rewardPoints?.toFixed(4) ?? null,
       extractionConfidence: clampConfidence(
         Number(transaction.extractionConfidence),
       ).toFixed(4),

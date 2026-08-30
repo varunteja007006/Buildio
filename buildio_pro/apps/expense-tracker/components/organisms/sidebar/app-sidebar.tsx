@@ -73,6 +73,11 @@ const data = {
     //   icon: Landmark,
     // },
     {
+      title: "Insights",
+      url: "/insights",
+      icon: TrendingUp,
+    },
+    {
       title: "Statements",
       url: "/statements",
       icon: FileText,

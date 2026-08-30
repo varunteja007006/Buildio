@@ -110,3 +110,16 @@ export {
 } from "./use-transaction-queries";
 export type { TransactionDirection, TransactionType } from "./use-transaction-queries";
 export type { BankAccountListItem } from "./use-transaction-queries";
+
+// Analytics hooks
+export {
+  useEmiSummary,
+  useCashFlow,
+  useCardIntelligence,
+  useCategoryAnalytics,
+  useCommitments,
+  useIncomeSavings,
+  useLeakage,
+  useInvestments,
+  useCrossCutting,
+} from "./use-analytics-queries";

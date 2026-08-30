@@ -1,4 +1,5 @@
 import { createTRPCRouter } from "../init";
+import { analyticsRouter } from "./analytics.router";
 import { budgetRouter } from "./budget.router";
 import { dashboardRouter } from "./dashboard.router";
 import { eventRouter } from "./event.router";
@@ -12,6 +13,7 @@ import { userPreferencesRouter } from "./user-preferences.router";
 import { userProfileRouter } from "./user-profile.router";
 
 export const appRouter = createTRPCRouter({
+  analytics: analyticsRouter,
   dashboard: dashboardRouter,
   budget: budgetRouter,
   expense: expenseRouter,

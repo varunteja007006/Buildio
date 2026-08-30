@@ -2,6 +2,7 @@ import { relations } from "drizzle-orm";
 import {
   boolean,
   index,
+  integer,
   numeric,
   pgEnum,
   pgTable,
@@ -79,6 +80,11 @@ export const financialTransaction = pgTable(
     }),
     isRecurring: boolean("is_recurring").default(false).notNull(),
     isTransfer: boolean("is_transfer").default(false).notNull(),
+    isEmi: boolean("is_emi").default(false).notNull(),
+    emiInstallmentNumber: integer("emi_installment_number"),
+    emiTotalInstallments: integer("emi_total_installments"),
+    international: boolean("international").default(false).notNull(),
+    rewardPoints: numeric("reward_points", { precision: 19, scale: 4 }),
     linkedTransactionId: text("linked_transaction_id").references(
       (): any => financialTransaction.id,
       { onDelete: "set null" },
