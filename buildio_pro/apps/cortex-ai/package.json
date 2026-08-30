@@ -17,6 +17,7 @@
     "clean:deps": "node ./scripts/clean-workspace.mjs --mode deps",
     "clean:deps:dry": "node ./scripts/clean-workspace.mjs --mode deps --dry-run",
     "db:generate": "drizzle-kit generate",
+    "db:export": "drizzle-kit export --config=drizzle.export.config.ts > lib/db/migrations/schema_export.sql",
     "db:migrate": "drizzle-kit migrate",
     "db:studio": "drizzle-kit studio",
     "db:push": "drizzle-kit push"

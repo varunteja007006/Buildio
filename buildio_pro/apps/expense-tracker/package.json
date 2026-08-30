@@ -12,6 +12,7 @@
     "typecheck": "tsc --noEmit",
     "clean": "git clean -xdf .cache .next .turbo node_modules",
     "db:generate": "pnpm drizzle-kit generate",
+    "db:export": "pnpm drizzle-kit export --config=drizzle.export.config.ts > drizzle/schema_export.sql",
     "db:migrate": "pnpm drizzle-kit migrate",
     "db:push": "pnpm drizzle-kit push",
     "db:pull": "pnpm drizzle-kit pull",
