@@ -93,7 +93,7 @@ export function ExpenseDetailsComponent({
           <div className="pb-6 border-b">
             <p className="text-sm text-muted-foreground mb-2">Amount</p>
             <p className="text-3xl font-bold">
-              {Number(expense.expenseAmount).toFixed(2)}
+              {Number(expense.amount).toFixed(2)}
             </p>
           </div>
 
@@ -108,14 +108,6 @@ export function ExpenseDetailsComponent({
               </p>
             )}
           </div>
-
-          {/* Account */}
-          {expense.account && (
-            <div>
-              <p className="text-sm text-muted-foreground mb-2">Account</p>
-              <p className="text-sm">{expense.account}</p>
-            </div>
-          )}
 
           {/* Recurring */}
           <div>

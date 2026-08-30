@@ -22,7 +22,7 @@ import { useUpdateUserProfile, useUserProfileQuery } from "@/hooks";
 const profileFormSchema = z.object({
   name: z.string().min(1, "Name is required").max(255),
   description: z.string().max(500).optional(),
-  image_url: z.string().url("Invalid URL").optional(),
+  image_url: z.union([z.url("Invalid URL"), z.literal("")]).optional(),
 });
 
 export function UserProfileFormComponent() {
@@ -62,21 +62,6 @@ export function UserProfileFormComponent() {
     }
   }, [profile, form]);
 
-  if (isLoading) {
-    return (
-      <Card className="w-full max-w-lg">
-        <CardHeader>
-          <CardTitle>Profile</CardTitle>
-          <CardDescription>Update your profile information</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="flex justify-center py-8">
-            <Loader2 className="h-8 w-8 animate-spin" />
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
 
   const isSubmitting = updateMutation.isPending;
   const hasValidImage = form.state.values.image_url && !imageError;
@@ -85,7 +70,9 @@ export function UserProfileFormComponent() {
     <Card className="w-full max-w-lg">
       <CardHeader>
         <CardTitle>Profile</CardTitle>
-        <CardDescription>Update your profile information</CardDescription>
+        <CardDescription className="flex gap-2">Update your profile information {isLoading && <span>
+          <Loader2 className="h-4 w-4 animate-spin" />
+        </span>}</CardDescription>
       </CardHeader>
       <CardContent>
         <form

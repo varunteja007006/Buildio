@@ -9,7 +9,7 @@ import { createTRPCRouter, protectedProcedure } from "../init";
 const updateProfileInput = z.object({
   name: z.string().min(1, "Name is required").max(255).optional(),
   description: z.string().max(500).optional(),
-  image_url: z.string().url().optional(),
+  image_url: z.union([z.string().url(), z.literal("")]).optional(),
 });
 
 export const userProfileRouter = createTRPCRouter({

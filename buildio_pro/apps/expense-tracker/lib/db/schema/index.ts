@@ -2,6 +2,7 @@ import { address, city, country, state } from "./address.schema";
 import { account, session, user, verification } from "./auth-schema";
 import { bankAccountTypes, bankAddress, banks } from "./bank.schema";
 import { budget, budgetRelations } from "./budget.schema";
+import { expenseCategory, expenseCategoryRelations } from "./categories.schema";
 import { currency, currencyExchangeSnapshot } from "./currency.schema";
 import {
   event,
@@ -12,17 +13,27 @@ import {
 } from "./event.schema";
 import {
   expense,
-  expenseCategory,
-  expenseCategoryRelations,
   expenseRelations,
 } from "./expenses.schema";
+import {
+  financialTransaction,
+  financialTransactionRelations,
+  transactionDirection,
+  transactionType,
+} from "./financial-transaction.schema";
 import {
   income,
   incomeRelations,
   incomeSource,
   incomeSourceRelations,
 } from "./income.schema";
-import { investmentPlatforms, investmentTypes } from "./investment.schema";
+import {
+  investmentPlatforms,
+  investmentTransaction,
+  investmentTransactionRelations,
+  investmentTypes,
+} from "./investment.schema";
+import { paymentMethods, paymentMethodsRelations, paymentProvider, paymentProviderRelations } from "./payment.schema";
 import {
   statementDocumentType,
   statementUpload,
@@ -30,11 +41,9 @@ import {
   statementUploadStatus,
 } from "./statement.schema";
 import {
-  paymentMethods,
-  paymentMethodsRelations,
-  paymentProvider,
-  paymentProviderRelations,
-} from "./payment.schema";
+  transactionTransfer,
+  transactionTransferRelations,
+} from "./transfer.schema";
 import {
   userBankAccount,
   userPreferences,
@@ -50,6 +59,8 @@ export const dbSchema = {
   paymentMethodsRelations,
   investmentPlatforms,
   investmentTypes,
+  investmentTransaction,
+  investmentTransactionRelations,
   bankAddress,
   budget,
   budgetRelations,
@@ -74,6 +85,12 @@ export const dbSchema = {
   incomeSource,
   incomeRelations,
   incomeSourceRelations,
+  transactionDirection,
+  transactionType,
+  financialTransaction,
+  financialTransactionRelations,
+  transactionTransfer,
+  transactionTransferRelations,
   event,
   eventStatus,
   eventExpense,

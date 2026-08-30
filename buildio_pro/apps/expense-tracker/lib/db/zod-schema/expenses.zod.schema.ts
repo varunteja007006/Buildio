@@ -4,7 +4,8 @@ import {
   createUpdateSchema,
 } from "drizzle-zod";
 
-import { expense, expenseCategory } from "../schema/expenses.schema";
+import { expenseCategory } from "../schema/categories.schema";
+import { expense } from "../schema/expenses.schema";
 
 export const createExpenseSchema = createInsertSchema(expense).omit({
   userId: true,

@@ -109,7 +109,7 @@ const columns: ColumnDef<ExpenseRecord>[] = [
             mode="edit"
             initialValues={{
               name: expense.name,
-              expenseAmount: expense.amount.toString(),
+              amount: expense.amount.toString(),
               categoryId: expense.category?.id,
               budgetId: expense.budget?.id,
               isRecurring: expense.isRecurring,
@@ -164,8 +164,8 @@ export const ExpenseListTable = () => {
   const transactions: ExpenseRecord[] = expenses.map((expense) => ({
     id: expense.id,
     name: expense.name,
-    date: expense.createdAt,
-    amount: Number(expense.expenseAmount),
+    date: expense.transactionDate,
+    amount: Number(expense.amount),
     category: expense.category
       ? { id: expense.category.id, name: expense.category.name }
       : undefined,

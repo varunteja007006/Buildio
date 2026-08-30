@@ -28,14 +28,13 @@ const incomeFormSchema = z.object({
     .string()
     .min(1, "Income name is required")
     .max(255, "Income name must be at most 255 characters"),
-  incomeAmount: z
+  amount: z
     .string()
     .min(1, "Amount is required")
     .refine((val) => !isNaN(Number(val)) && Number(val) > 0, {
       message: "Amount must be a positive number",
     }),
   sourceId: z.uuid("Invalid income source").optional(),
-  paymentMethodId: z.uuid("Invalid payment method").optional(),
 });
 
 type IncomeFormValues = z.infer<typeof incomeFormSchema>;
@@ -45,9 +44,8 @@ interface IncomeFormProps {
   incomeId?: string;
   initialValues?: {
     name?: string;
-    incomeAmount?: string;
+    amount?: string;
     sourceId?: string;
-    paymentMethodId?: string;
   };
 }
 
@@ -79,9 +77,8 @@ export function IncomeForm({ mode, incomeId, initialValues }: IncomeFormProps) {
   const form = useAppForm({
     defaultValues: {
       name: initialValues?.name || "",
-      incomeAmount: initialValues?.incomeAmount || "",
+      amount: initialValues?.amount || "",
       sourceId: initialValues?.sourceId || undefined,
-      paymentMethodId: initialValues?.paymentMethodId || undefined,
     } as IncomeFormValues,
     validators: {
       onSubmit: incomeFormSchema,
@@ -90,17 +87,15 @@ export function IncomeForm({ mode, incomeId, initialValues }: IncomeFormProps) {
       if (mode === "create") {
         createMutation.mutate({
           name: value.name,
-          incomeAmount: value.incomeAmount,
+          amount: value.amount,
           sourceId: value.sourceId || undefined,
-          paymentMethodId: value.paymentMethodId || undefined,
         });
       } else if (mode === "edit" && incomeId) {
         updateMutation.mutate({
           incomeId,
           name: value.name,
-          incomeAmount: value.incomeAmount,
+          amount: value.amount,
           sourceId: value.sourceId || null,
-          paymentMethodId: value.paymentMethodId || null,
         });
       }
     },
@@ -141,7 +136,7 @@ export function IncomeForm({ mode, incomeId, initialValues }: IncomeFormProps) {
               {(field) => <field.Input label="Income Name" />}
             </form.AppField>
 
-            <form.AppField name="incomeAmount">
+            <form.AppField name="amount">
               {(field) => <field.Input label="Amount" />}
             </form.AppField>
 

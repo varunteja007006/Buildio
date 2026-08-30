@@ -10,6 +10,7 @@ import {
 import { user } from "./auth-schema";
 import { bankAccountTypes, banks } from "./bank.schema";
 import { auditTimeFields } from "./common.schema";
+import { currency } from "./currency.schema";
 
 export const userPreferences = pgTable(
   "user_preferences",
@@ -133,6 +134,12 @@ export const userBankAccount = pgTable(
       .references(() => banks.id, {
         onDelete: "cascade",
       }),
+    accountNumberMasked: text("account_number_masked"),
+    accountNumberHash: text("account_number_hash"),
+    currencyId: text("currency_id").references(() => currency.id, {
+      onDelete: "set null",
+    }),
+    lastFour: text("last_four"),
     ...auditTimeFields,
   },
   (table) => [

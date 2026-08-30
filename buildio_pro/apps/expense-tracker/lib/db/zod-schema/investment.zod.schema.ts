@@ -6,6 +6,7 @@ import {
 
 import {
   investmentPlatforms,
+  investmentTransaction,
   investmentTypes,
 } from "../schema/investment.schema";
 
@@ -27,3 +28,12 @@ export const updateInvestmentPlatformSchema = createUpdateSchema(
 
 export const selectInvestmentPlatformSchema =
   createSelectSchema(investmentPlatforms);
+
+export const createInvestmentTransactionSchema = createInsertSchema(
+  investmentTransaction,
+).omit({
+  userId: true,
+});
+
+export const selectInvestmentTransactionSchema =
+  createSelectSchema(investmentTransaction);

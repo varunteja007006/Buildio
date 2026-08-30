@@ -229,7 +229,7 @@ export const budgetRouter = createTRPCRouter({
         .from(dbSchema.expense)
         .where(
           and(
-            eq(dbSchema.expense.budget, budgetId),
+            eq(dbSchema.expense.budgetId, budgetId),
             eq(dbSchema.expense.userId, user.id),
           ),
         );
@@ -273,14 +273,18 @@ export const budgetRouter = createTRPCRouter({
       const expenses = await db.query.expense.findMany({
         where: and(
           eq(dbSchema.expense.userId, user.id),
-          eq(dbSchema.expense.budget, budgetId),
+          eq(dbSchema.expense.budgetId, budgetId),
         ),
+        with: {
+          transaction: true,
+        },
         orderBy: (expense, { desc }) => desc(expense.createdAt),
       });
 
       const allocated = numericToNumber(budget.budgetAmount);
       const spent = expenses.reduce(
-        (acc, expenseItem) => acc + numericToNumber(expenseItem.expenseAmount),
+        (acc, expenseItem) =>
+          acc + numericToNumber(expenseItem.transaction?.amount),
         0,
       );
 

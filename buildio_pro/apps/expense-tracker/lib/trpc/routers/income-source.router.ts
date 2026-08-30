@@ -56,6 +56,9 @@ export const incomeSourceRouter = createTRPCRouter({
     // Get all incomes for the user
     const incomes = await db.query.income.findMany({
       where: eq(dbSchema.income.userId, user.id),
+      with: {
+        transaction: true,
+      },
     });
 
     // Aggregate data
@@ -65,7 +68,7 @@ export const incomeSourceRouter = createTRPCRouter({
       if (!inc.sourceId) continue;
       const current = stats.get(inc.sourceId) || { count: 0, total: 0 };
       current.count += 1;
-      current.total += numericToNumber(inc.incomeAmount);
+      current.total += numericToNumber(inc.transaction?.amount);
       stats.set(inc.sourceId, current);
     }
 

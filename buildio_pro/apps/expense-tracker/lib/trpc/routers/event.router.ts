@@ -136,7 +136,11 @@ export const eventRouter = createTRPCRouter({
           status: true,
           expenses: {
             with: {
-              expense: true,
+              expense: {
+                with: {
+                  transaction: true,
+                },
+              },
             },
           },
         },
@@ -146,7 +150,7 @@ export const eventRouter = createTRPCRouter({
       const eventsWithTotals = events.map((evt) => {
         const totalSpent = evt.expenses.reduce(
           (sum: number, ee: any) =>
-            sum + numericToNumber(ee.expense.expenseAmount),
+            sum + numericToNumber(ee.expense.transaction?.amount),
           0,
         );
         return {
@@ -181,6 +185,7 @@ export const eventRouter = createTRPCRouter({
               expense: {
                 with: {
                   category: true,
+                  transaction: true,
                 },
               },
             },
@@ -197,7 +202,7 @@ export const eventRouter = createTRPCRouter({
 
       const totalSpent = evt.expenses.reduce(
         (sum: number, ee: any) =>
-          sum + numericToNumber(ee.expense.expenseAmount),
+          sum + numericToNumber(ee.expense.transaction?.amount),
         0,
       );
 
@@ -227,6 +232,7 @@ export const eventRouter = createTRPCRouter({
         where: eq(dbSchema.expense.userId, user.id),
         with: {
           category: true,
+          transaction: true,
         },
         limit: 100,
       });
@@ -472,7 +478,11 @@ export const eventRouter = createTRPCRouter({
       const linkedExpenses = await db.query.eventExpense.findMany({
         where: eq(dbSchema.eventExpense.eventId, eventId),
         with: {
-          expense: true,
+          expense: {
+            with: {
+              transaction: true,
+            },
+          },
         },
       });
 
@@ -481,15 +491,15 @@ export const eventRouter = createTRPCRouter({
 
       for (const item of linkedExpenses) {
         const expense = item.expense;
-        if (!expense.createdAt) continue;
+        if (!expense.transaction) continue;
 
-        const date = new Date(expense.createdAt);
+        const date = new Date(expense.transaction.transactionDate);
         const key = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
 
-        // Fix: Map set key/value order was swapped in my thought process, correcting it now
         historyMap.set(
           key,
-          (historyMap.get(key) || 0) + numericToNumber(expense.expenseAmount),
+          (historyMap.get(key) || 0) +
+            numericToNumber(expense.transaction.amount),
         );
       }
 

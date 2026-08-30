@@ -1,5 +1,5 @@
 import { TRPCError } from "@trpc/server";
-import { and, count, eq, inArray } from "drizzle-orm";
+import { and, count, desc, eq, inArray } from "drizzle-orm";
 import z from "zod";
 
 import { createTRPCRouter, protectedProcedure } from "../init";
@@ -9,42 +9,39 @@ import {
   paginationInputSchema,
 } from "../schemas/pagination.schema";
 
-const expenseAmountSchema = z
+const amountSchema = z
   .union([z.string(), z.number()])
   .transform((value) =>
     typeof value === "number" ? value.toString() : value.trim(),
   )
   .refine((value) => Number(value) > 0, {
-    message: "Expense amount must be greater than zero",
+    message: "Amount must be greater than zero",
   });
 
 const createExpenseInput = z.object({
   name: z.string().min(1, "Expense name required").max(255),
-  expenseAmount: expenseAmountSchema,
+  amount: amountSchema,
   categoryId: z.uuid().optional(),
   budgetId: z.uuid().optional(),
   isRecurring: z.boolean().default(false),
-  account: z.string().max(255).optional(),
 });
 
 const updateExpenseInput = z
   .object({
     expenseId: z.uuid(),
     name: z.string().min(1).max(255).optional(),
-    expenseAmount: expenseAmountSchema.optional(),
+    amount: amountSchema.optional(),
     categoryId: z.uuid().nullable().optional(),
     budgetId: z.uuid().nullable().optional(),
     isRecurring: z.boolean().optional(),
-    account: z.string().max(255).optional(),
   })
   .superRefine((data, ctx) => {
     const hasUpdatableField =
       data.name !== undefined ||
-      data.expenseAmount !== undefined ||
+      data.amount !== undefined ||
       data.categoryId !== undefined ||
       data.budgetId !== undefined ||
-      data.isRecurring !== undefined ||
-      data.account !== undefined;
+      data.isRecurring !== undefined;
 
     if (!hasUpdatableField) {
       ctx.addIssue({
@@ -70,10 +67,26 @@ const bulkDeleteInput = z.object({
   expenseIds: z.array(z.uuid()).min(1, "At least one expense ID is required"),
 });
 
-const numericToNumber = (value: string | number | null) => {
+const numericToNumber = (value: string | number | null | undefined) => {
   const parsed = Number(value ?? 0);
   return Number.isNaN(parsed) ? 0 : parsed;
 };
+
+type ExpenseRow = {
+  expense: typeof import("../../db/schema/expenses.schema").expense.$inferSelect;
+  transaction: typeof import("../../db/schema/financial-transaction.schema").financialTransaction.$inferSelect;
+  category: typeof import("../../db/schema/categories.schema").expenseCategory.$inferSelect | null;
+  budget: typeof import("../../db/schema/budget.schema").budget.$inferSelect | null;
+};
+
+const toExpenseDto = (row: ExpenseRow) => ({
+  ...row.expense,
+  transaction: row.transaction,
+  category: row.category,
+  budget: row.budget,
+  amount: numericToNumber(row.transaction.amount),
+  transactionDate: row.transaction.transactionDate,
+});
 
 export const expenseRouter = createTRPCRouter({
   listExpenses: protectedProcedure
@@ -89,7 +102,7 @@ export const expenseRouter = createTRPCRouter({
       }
 
       if (budgetId) {
-        filters.push(eq(dbSchema.expense.budget, budgetId));
+        filters.push(eq(dbSchema.expense.budgetId, budgetId));
       }
 
       const whereClause = filters.length === 1 ? filters[0] : and(...filters);
@@ -102,24 +115,45 @@ export const expenseRouter = createTRPCRouter({
       const totalItems = Number(total?.count ?? 0);
       const { offset } = calculatePagination(input, totalItems);
 
-      const expenses = await db.query.expense.findMany({
-        limit: input.limit,
-        offset,
-        where: whereClause,
-        with: {
-          category: true,
-          budget: true,
-        },
-        orderBy: (expense, { asc, desc }) => {
-          const order = sortOrder === "asc" ? asc : desc;
-          return sortBy === "amount"
-            ? order(expense.expenseAmount)
-            : order(expense.createdAt);
-        },
-      });
+      const orderBy =
+        sortBy === "amount"
+          ? sortOrder === "asc"
+            ? dbSchema.financialTransaction.amount
+            : desc(dbSchema.financialTransaction.amount)
+          : sortOrder === "asc"
+            ? dbSchema.expense.createdAt
+            : desc(dbSchema.expense.createdAt);
+
+      const rows = await db
+        .select({
+          expense: dbSchema.expense,
+          transaction: dbSchema.financialTransaction,
+          category: dbSchema.expenseCategory,
+          budget: dbSchema.budget,
+        })
+        .from(dbSchema.expense)
+        .innerJoin(
+          dbSchema.financialTransaction,
+          eq(
+            dbSchema.expense.transactionId,
+            dbSchema.financialTransaction.id,
+          ),
+        )
+        .leftJoin(
+          dbSchema.expenseCategory,
+          eq(dbSchema.expense.categoryId, dbSchema.expenseCategory.id),
+        )
+        .leftJoin(
+          dbSchema.budget,
+          eq(dbSchema.expense.budgetId, dbSchema.budget.id),
+        )
+        .where(whereClause)
+        .orderBy(orderBy)
+        .limit(input.limit)
+        .offset(offset);
 
       return {
-        data: expenses,
+        data: rows.map(toExpenseDto),
         meta: createPaginationMeta(input, totalItems),
       };
     }),
@@ -127,40 +161,55 @@ export const expenseRouter = createTRPCRouter({
   getAnalytics: protectedProcedure.query(async ({ ctx }) => {
     const { db, dbSchema, user } = ctx;
 
-    // Fetch all expenses
-    const allExpenses = await db.query.expense.findMany({
-      where: eq(dbSchema.expense.userId, user.id),
-      with: {
-        category: true,
-      },
-      orderBy: (expense, { asc }) => asc(expense.createdAt),
-    });
+    const rows = await db
+      .select({
+        expense: dbSchema.expense,
+        transaction: dbSchema.financialTransaction,
+        category: dbSchema.expenseCategory,
+      })
+      .from(dbSchema.expense)
+      .innerJoin(
+        dbSchema.financialTransaction,
+        eq(dbSchema.expense.transactionId, dbSchema.financialTransaction.id),
+      )
+      .leftJoin(
+        dbSchema.expenseCategory,
+        eq(dbSchema.expense.categoryId, dbSchema.expenseCategory.id),
+      )
+      .where(eq(dbSchema.expense.userId, user.id));
+
+    const allExpenses = rows.map((row) => ({
+      expense: row.expense,
+      amount: numericToNumber(row.transaction.amount),
+      transactionDate: row.transaction.transactionDate,
+      category: row.category,
+    }));
 
     const totalSpending = allExpenses.reduce(
-      (sum, item) => sum + numericToNumber(item.expenseAmount),
+      (sum, item) => sum + item.amount,
       0,
     );
 
-    const recurringExpenses = allExpenses.filter((item) => item.isRecurring);
+    const recurringExpenses = allExpenses.filter(
+      (item) => item.expense.isRecurring,
+    );
     const totalRecurring = recurringExpenses.reduce(
-      (sum, item) => sum + numericToNumber(item.expenseAmount),
+      (sum, item) => sum + item.amount,
       0,
     );
 
-    // Monthly Breakdown
     const monthlyData: Record<string, number> = {};
     allExpenses.forEach((item) => {
-      const d = new Date(item.createdAt);
+      const d = new Date(item.transactionDate);
       const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
-      monthlyData[key] =
-        (monthlyData[key] || 0) + numericToNumber(item.expenseAmount);
+      monthlyData[key] = (monthlyData[key] || 0) + item.amount;
     });
 
     const monthlyBreakdown = Object.entries(monthlyData)
       .sort((a, b) => a[0].localeCompare(b[0]))
       .map(([key, amount]) => {
         const [year, month] = key.split("-");
-        const date = new Date(parseInt(year!), parseInt(month!) - 1); // year and month are guaranteed to be present
+        const date = new Date(parseInt(year!), parseInt(month!) - 1);
         return {
           month: date.toLocaleString("default", {
             month: "short",
@@ -171,7 +220,6 @@ export const expenseRouter = createTRPCRouter({
         };
       });
 
-    // Category Breakdown
     const categoryMap = new Map<
       string,
       { amount: number; count: number; name: string }
@@ -184,7 +232,7 @@ export const expenseRouter = createTRPCRouter({
         name: categoryName,
       };
       categoryMap.set(categoryName, {
-        amount: current.amount + numericToNumber(item.expenseAmount),
+        amount: current.amount + item.amount,
         count: current.count + 1,
         name: categoryName,
       });
@@ -208,25 +256,45 @@ export const expenseRouter = createTRPCRouter({
       const { db, dbSchema, user } = ctx;
       const { expenseId } = input;
 
-      const expense = await db.query.expense.findFirst({
-        where: and(
-          eq(dbSchema.expense.id, expenseId),
-          eq(dbSchema.expense.userId, user.id),
-        ),
-        with: {
-          category: true,
-          budget: true,
-        },
-      });
+      const [row] = await db
+        .select({
+          expense: dbSchema.expense,
+          transaction: dbSchema.financialTransaction,
+          category: dbSchema.expenseCategory,
+          budget: dbSchema.budget,
+        })
+        .from(dbSchema.expense)
+        .innerJoin(
+          dbSchema.financialTransaction,
+          eq(
+            dbSchema.expense.transactionId,
+            dbSchema.financialTransaction.id,
+          ),
+        )
+        .leftJoin(
+          dbSchema.expenseCategory,
+          eq(dbSchema.expense.categoryId, dbSchema.expenseCategory.id),
+        )
+        .leftJoin(
+          dbSchema.budget,
+          eq(dbSchema.expense.budgetId, dbSchema.budget.id),
+        )
+        .where(
+          and(
+            eq(dbSchema.expense.id, expenseId),
+            eq(dbSchema.expense.userId, user.id),
+          ),
+        )
+        .limit(1);
 
-      if (!expense) {
+      if (!row) {
         throw new TRPCError({
           code: "NOT_FOUND",
           message: "Expense not found",
         });
       }
 
-      return expense;
+      return toExpenseDto(row);
     }),
 
   createExpense: protectedProcedure
@@ -234,7 +302,6 @@ export const expenseRouter = createTRPCRouter({
     .mutation(async ({ input, ctx }) => {
       const { db, dbSchema, user } = ctx;
 
-      // Validate budget exists if provided
       if (input.budgetId) {
         const budgetExists = await db.query.budget.findFirst({
           where: and(
@@ -251,7 +318,6 @@ export const expenseRouter = createTRPCRouter({
         }
       }
 
-      // Validate category exists if provided
       if (input.categoryId) {
         const categoryExists = await db.query.expenseCategory.findFirst({
           where: eq(dbSchema.expenseCategory.id, input.categoryId),
@@ -265,17 +331,66 @@ export const expenseRouter = createTRPCRouter({
         }
       }
 
-      const [expenseRecord] = await db
-        .insert(dbSchema.expense)
-        .values({
-          ...input,
-          expenseAmount: input.expenseAmount,
-          userId: user.id,
-          budget: input.budgetId || null,
-        })
-        .returning();
+      const result = await db.transaction(async (tx) => {
+        const [transaction] = await tx
+          .insert(dbSchema.financialTransaction)
+          .values({
+            userId: user.id,
+            amount: input.amount,
+            direction: "debit",
+            transactionType: "expense",
+            merchantName: input.name,
+            description: input.name,
+            isRecurring: input.isRecurring,
+          })
+          .returning();
 
-      return expenseRecord;
+        const [expenseRecord] = await tx
+          .insert(dbSchema.expense)
+          .values({
+            userId: user.id,
+            transactionId: transaction!.id,
+            name: input.name,
+            categoryId: input.categoryId || null,
+            budgetId: input.budgetId || null,
+            isRecurring: input.isRecurring,
+          })
+          .returning();
+
+        const [row] = await tx
+          .select({
+            expense: dbSchema.expense,
+            transaction: dbSchema.financialTransaction,
+            category: dbSchema.expenseCategory,
+            budget: dbSchema.budget,
+          })
+          .from(dbSchema.expense)
+          .innerJoin(
+            dbSchema.financialTransaction,
+            eq(dbSchema.expense.transactionId, dbSchema.financialTransaction.id),
+          )
+          .leftJoin(
+            dbSchema.expenseCategory,
+            eq(dbSchema.expense.categoryId, dbSchema.expenseCategory.id),
+          )
+          .leftJoin(
+            dbSchema.budget,
+            eq(dbSchema.expense.budgetId, dbSchema.budget.id),
+          )
+          .where(eq(dbSchema.expense.id, expenseRecord!.id))
+          .limit(1);
+
+        return row;
+      });
+
+      if (!result) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to create expense",
+        });
+      }
+
+      return toExpenseDto(result);
     }),
 
   updateExpense: protectedProcedure
@@ -284,7 +399,6 @@ export const expenseRouter = createTRPCRouter({
       const { db, dbSchema, user } = ctx;
       const { expenseId, ...updates } = input;
 
-      // Verify expense exists and belongs to user
       const existingExpense = await db.query.expense.findFirst({
         where: and(
           eq(dbSchema.expense.id, expenseId),
@@ -299,7 +413,6 @@ export const expenseRouter = createTRPCRouter({
         });
       }
 
-      // Validate budget exists if updating
       if (updates.budgetId !== undefined && updates.budgetId !== null) {
         const budgetExists = await db.query.budget.findFirst({
           where: and(
@@ -316,7 +429,6 @@ export const expenseRouter = createTRPCRouter({
         }
       }
 
-      // Validate category exists if updating
       if (updates.categoryId !== undefined && updates.categoryId !== null) {
         const categoryExists = await db.query.expenseCategory.findFirst({
           where: eq(dbSchema.expenseCategory.id, updates.categoryId),
@@ -330,34 +442,82 @@ export const expenseRouter = createTRPCRouter({
         }
       }
 
-      const payload = {
-        ...(updates.name !== undefined ? { name: updates.name } : {}),
-        ...(updates.expenseAmount !== undefined
-          ? { expenseAmount: updates.expenseAmount }
-          : {}),
-        ...(updates.categoryId !== undefined
-          ? { categoryId: updates.categoryId }
-          : {}),
-        ...(updates.budgetId !== undefined ? { budget: updates.budgetId } : {}),
-        ...(updates.isRecurring !== undefined
-          ? { isRecurring: updates.isRecurring }
-          : {}),
-        ...(updates.account !== undefined ? { account: updates.account } : {}),
-        updatedAt: new Date(),
-      };
+      await db.transaction(async (tx) => {
+        const expensePayload: Record<string, unknown> = {
+          updatedAt: new Date(),
+        };
+        if (updates.name !== undefined) {
+          expensePayload.name = updates.name;
+        }
+        if (updates.categoryId !== undefined) {
+          expensePayload.categoryId = updates.categoryId;
+        }
+        if (updates.budgetId !== undefined) {
+          expensePayload.budgetId = updates.budgetId;
+        }
+        if (updates.isRecurring !== undefined) {
+          expensePayload.isRecurring = updates.isRecurring;
+        }
 
-      const [updatedExpense] = await db
-        .update(dbSchema.expense)
-        .set(payload)
-        .where(
-          and(
-            eq(dbSchema.expense.id, expenseId),
-            eq(dbSchema.expense.userId, user.id),
-          ),
+        await tx
+          .update(dbSchema.expense)
+          .set(expensePayload)
+          .where(
+            and(
+              eq(dbSchema.expense.id, expenseId),
+              eq(dbSchema.expense.userId, user.id),
+            ),
+          );
+
+        if (updates.amount !== undefined || updates.name !== undefined) {
+          const transactionPayload: Record<string, unknown> = {
+            updatedAt: new Date(),
+          };
+          if (updates.amount !== undefined) {
+            transactionPayload.amount = updates.amount;
+          }
+          if (updates.name !== undefined) {
+            transactionPayload.merchantName = updates.name;
+            transactionPayload.description = updates.name;
+          }
+          await tx
+            .update(dbSchema.financialTransaction)
+            .set(transactionPayload)
+            .where(eq(dbSchema.financialTransaction.id, existingExpense.transactionId));
+        }
+      });
+
+      const [row] = await db
+        .select({
+          expense: dbSchema.expense,
+          transaction: dbSchema.financialTransaction,
+          category: dbSchema.expenseCategory,
+          budget: dbSchema.budget,
+        })
+        .from(dbSchema.expense)
+        .innerJoin(
+          dbSchema.financialTransaction,
+          eq(dbSchema.expense.transactionId, dbSchema.financialTransaction.id),
         )
-        .returning();
+        .leftJoin(
+          dbSchema.expenseCategory,
+          eq(dbSchema.expense.categoryId, dbSchema.expenseCategory.id),
+        )
+        .leftJoin(
+          dbSchema.budget,
+          eq(dbSchema.expense.budgetId, dbSchema.budget.id),
+        )
+        .where(eq(dbSchema.expense.id, expenseId))
+        .limit(1);
 
-      return updatedExpense;
+      if (!row) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Expense not found",
+        });
+      }
+
+      return toExpenseDto(row);
     }),
 
   deleteExpense: protectedProcedure
@@ -380,14 +540,21 @@ export const expenseRouter = createTRPCRouter({
         });
       }
 
-      await db
-        .delete(dbSchema.expense)
-        .where(
-          and(
-            eq(dbSchema.expense.id, expenseId),
-            eq(dbSchema.expense.userId, user.id),
-          ),
-        );
+      await db.transaction(async (tx) => {
+        await tx
+          .delete(dbSchema.expense)
+          .where(
+            and(
+              eq(dbSchema.expense.id, expenseId),
+              eq(dbSchema.expense.userId, user.id),
+            ),
+          );
+        await tx
+          .delete(dbSchema.financialTransaction)
+          .where(
+            eq(dbSchema.financialTransaction.id, expenseExists.transactionId),
+          );
+      });
 
       return { success: true };
     }),
@@ -406,6 +573,7 @@ export const expenseRouter = createTRPCRouter({
       });
 
       const existingExpensesIds = new Set(expenseExists.map((item) => item.id));
+      const transactionIds = expenseExists.map((item) => item.transactionId);
 
       const missingIds = expenseIds.filter(
         (id) => !existingExpensesIds.has(id),
@@ -419,14 +587,19 @@ export const expenseRouter = createTRPCRouter({
       }
 
       if (existingExpensesIds.size > 0) {
-        await db
-          .delete(dbSchema.expense)
-          .where(
-            and(
-              inArray(dbSchema.expense.id, expenseIds),
-              eq(dbSchema.expense.userId, user.id),
-            ),
-          );
+        await db.transaction(async (tx) => {
+          await tx
+            .delete(dbSchema.expense)
+            .where(
+              and(
+                inArray(dbSchema.expense.id, expenseIds),
+                eq(dbSchema.expense.userId, user.id),
+              ),
+            );
+          await tx
+            .delete(dbSchema.financialTransaction)
+            .where(inArray(dbSchema.financialTransaction.id, transactionIds));
+        });
       }
 
       return {

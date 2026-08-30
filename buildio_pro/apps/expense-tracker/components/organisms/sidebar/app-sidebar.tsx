@@ -27,8 +27,6 @@ import {
 import Link from "next/link";
 import * as React from "react";
 
-
-
 import { appConfig } from "@/app/appConfig";
 import { useSession } from "@/lib/auth-client";
 
@@ -38,42 +36,42 @@ import { NavUser } from "./nav-user";
 
 const data = {
   navMain: [
-    {
-      title: "Budgets",
-      url: "/budgets",
-      icon: PiggyBank,
-    },
-    {
-      title: "Categories",
-      url: "/expense-categories",
-      icon: Tags,
-    },
+    // {
+    //   title: "Budgets",
+    //   url: "/budgets",
+    //   icon: PiggyBank,
+    // },
+    // {
+    //   title: "Categories",
+    //   url: "/expense-categories",
+    //   icon: Tags,
+    // },
     {
       title: "Dashboard",
       url: "/dashboard",
       icon: LayoutDashboard,
     },
-    {
-      title: "Events",
-      url: "/events",
-      icon: CalendarDays,
-      isActive: false,
-    },
-    {
-      title: "Expenses",
-      url: "/expenses",
-      icon: Receipt,
-    },
-    {
-      title: "Income",
-      url: "/income",
-      icon: TrendingUp,
-    },
-    {
-      title: "Income Sources",
-      url: "/income-sources",
-      icon: Landmark,
-    },
+    // {
+    //   title: "Events",
+    //   url: "/events",
+    //   icon: CalendarDays,
+    //   isActive: false,
+    // },
+    // {
+    //   title: "Expenses",
+    //   url: "/expenses",
+    //   icon: Receipt,
+    // },
+    // {
+    //   title: "Income",
+    //   url: "/income",
+    //   icon: TrendingUp,
+    // },
+    // {
+    //   title: "Income Sources",
+    //   url: "/income-sources",
+    //   icon: Landmark,
+    // },
     {
       title: "Statements",
       url: "/statements",
@@ -86,21 +84,21 @@ const data = {
     },
   ],
   navSecondary: [
-    {
-      url: "/donate",
-      title: "Donate",
-      icon: HandHeart,
-    },
-    {
-      title: "Feedback",
-      url: "/feedback",
-      icon: MessageSquareText,
-    },
-    {
-      title: "Support",
-      url: "/support",
-      icon: LifeBuoy,
-    },
+    // {
+    //   url: "/donate",
+    //   title: "Donate",
+    //   icon: HandHeart,
+    // },
+    // {
+    //   title: "Feedback",
+    //   url: "/feedback",
+    //   icon: MessageSquareText,
+    // },
+    // {
+    //   title: "Support",
+    //   url: "/support",
+    //   icon: LifeBuoy,
+    // },
   ],
 };
 

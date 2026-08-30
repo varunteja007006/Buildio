@@ -30,10 +30,9 @@ import { IncomeDeleteDialog, IncomeDetails, IncomeForm } from ".";
 type IncomeRecord = {
   id: string;
   name: string | null;
-  incomeAmount: string;
+  amount: number;
   createdAt: Date;
   sourceId?: string | null;
-  paymentMethodId?: string | null;
 };
 
 const columns: ColumnDef<IncomeRecord>[] = [
@@ -86,9 +85,8 @@ const columns: ColumnDef<IncomeRecord>[] = [
             incomeId={income.id}
             initialValues={{
               name: income.name || "",
-              incomeAmount: income.incomeAmount,
+              amount: String(income.amount),
               sourceId: income.sourceId || undefined,
-              paymentMethodId: income.paymentMethodId || undefined,
             }}
           />
           <IncomeDeleteDialog incomeId={income.id} />
@@ -118,8 +116,16 @@ export const IncomeListTable = () => {
   const incomes = data?.data || [];
   const totalPages = data?.meta?.totalPages ?? 0;
 
+  const records: IncomeRecord[] = incomes.map((income) => ({
+    id: income.id,
+    name: income.name,
+    amount: income.amount,
+    createdAt: income.transactionDate,
+    sourceId: income.sourceId,
+  }));
+
   const { table } = useDataTable({
-    data: incomes,
+    data: records,
     columns,
     pageCount: totalPages,
   });

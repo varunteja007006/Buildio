@@ -1,9 +1,11 @@
 import { relations } from "drizzle-orm";
-import { boolean, numeric, pgTable, text } from "drizzle-orm/pg-core";
+import { boolean, pgTable, text } from "drizzle-orm/pg-core";
 
 import { user } from "./auth-schema";
 import { budget } from "./budget.schema";
+import { expenseCategory } from "./categories.schema";
 import { auditTimeFields } from "./common.schema";
+import { financialTransaction } from "./financial-transaction.schema";
 
 export const expense = pgTable("expense", {
   id: text("id")
@@ -12,35 +14,19 @@ export const expense = pgTable("expense", {
   userId: text("user_id")
     .notNull()
     .references(() => user.id, { onDelete: "cascade" }),
+  transactionId: text("transaction_id")
+    .notNull()
+    .references(() => financialTransaction.id, { onDelete: "cascade" }),
   categoryId: text("category_id").references(() => expenseCategory.id, {
     onDelete: "set null",
   }),
   name: text("name").notNull(),
-  expenseAmount: numeric("income").notNull(),
   isRecurring: boolean("is_recurring").default(false),
-  account: text("account"),
-  budget: text("budget").references(() => budget.id, {
+  budgetId: text("budget_id").references(() => budget.id, {
     onDelete: "set null",
   }),
   ...auditTimeFields,
 });
-
-export const expenseCategory = pgTable("expense_category", {
-  id: text("id")
-    .primaryKey()
-    .$defaultFn(() => crypto.randomUUID()),
-  name: text("name").notNull(), // e.g., 'Groceries', 'Rent', 'Travel'
-  description: text("description").notNull(), // e.g., 'Groceries', 'Rent', 'Travel'
-  ...auditTimeFields,
-});
-
-export const expenseCategoryRelations = relations(
-  expenseCategory,
-  ({ many }) => ({
-    // An expense category can have many individual expense records
-    expenses: many(expense),
-  }),
-);
 
 export const expenseRelations = relations(expense, ({ one }) => ({
   user: one(user, {
@@ -54,8 +40,13 @@ export const expenseRelations = relations(expense, ({ one }) => ({
     relationName: "expense_to_category",
   }),
   budget: one(budget, {
-    fields: [expense.budget],
+    fields: [expense.budgetId],
     references: [budget.id],
     relationName: "expense_to_budget",
+  }),
+  transaction: one(financialTransaction, {
+    fields: [expense.transactionId],
+    references: [financialTransaction.id],
+    relationName: "expense_to_transaction",
   }),
 }));

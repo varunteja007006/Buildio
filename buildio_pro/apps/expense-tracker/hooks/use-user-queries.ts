@@ -1,6 +1,6 @@
 "use client";
 
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 import { useTRPC } from "@/lib/trpc-client";
@@ -39,7 +39,9 @@ export function useUpdateUserPreferences(options?: {
 // Get user profile
 export function useUserProfileQuery() {
   const trpc = useTRPC();
-  return useQuery(trpc.userProfile.getProfile.queryOptions());
+  return useQuery(trpc.userProfile.getProfile.queryOptions(undefined, {
+    placeholderData: keepPreviousData((data)  => data),
+  }));
 }
 
 // Update user profile

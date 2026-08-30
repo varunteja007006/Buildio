@@ -35,7 +35,7 @@ const expenseFormSchema = z.object({
     .string()
     .min(1, "Expense name is required")
     .max(255, "Expense name must be at most 255 characters"),
-  expenseAmount: z
+  amount: z
     .string()
     .min(1, "Amount is required")
     .refine((val) => !isNaN(Number(val)) && Number(val) > 0, {
@@ -44,7 +44,6 @@ const expenseFormSchema = z.object({
   categoryId: z.uuid("Invalid category").optional(),
   budgetId: z.uuid("Invalid budget").optional(),
   isRecurring: z.boolean().default(false),
-  account: z.string().max(255).optional(),
 });
 
 interface ExpenseFormProps {
@@ -52,11 +51,10 @@ interface ExpenseFormProps {
   expenseId?: string;
   initialValues?: {
     name?: string;
-    expenseAmount?: string;
+    amount?: string;
     categoryId?: string;
     budgetId?: string;
     isRecurring?: boolean;
-    account?: string;
   };
 }
 
@@ -89,11 +87,10 @@ export function ExpenseFormComponent({
   const form = useAppForm({
     defaultValues: {
       name: initialValues?.name || "",
-      expenseAmount: initialValues?.expenseAmount || "",
+      amount: initialValues?.amount || "",
       categoryId: initialValues?.categoryId || undefined,
       budgetId: initialValues?.budgetId || undefined,
       isRecurring: initialValues?.isRecurring || false,
-      account: initialValues?.account || "",
     },
     validators: {
       onSubmit: ({ value }) => {
@@ -109,11 +106,10 @@ export function ExpenseFormComponent({
         createMutation.mutate(
           {
             name: value.name,
-            expenseAmount: value.expenseAmount,
+            amount: value.amount,
             categoryId: value.categoryId ? value.categoryId : undefined,
             budgetId: value.budgetId ? value.budgetId : undefined,
             isRecurring: value.isRecurring,
-            account: value.account ? value.account : undefined,
           },
           {
             onSuccess: () => {
@@ -126,11 +122,10 @@ export function ExpenseFormComponent({
           {
             expenseId,
             name: value.name,
-            expenseAmount: value.expenseAmount,
+            amount: value.amount,
             categoryId: value.categoryId ? value.categoryId : undefined,
             budgetId: value.budgetId ? value.budgetId : undefined,
             isRecurring: value.isRecurring,
-            account: value.account ? value.account : undefined,
           },
           {
             onSuccess: () => {
@@ -171,7 +166,7 @@ export function ExpenseFormComponent({
               {(field) => <field.Input label="Expense Name" />}
             </form.AppField>
 
-            <form.AppField name="expenseAmount">
+            <form.AppField name="amount">
               {(field) => <field.Input label="Amount" />}
             </form.AppField>
 
@@ -200,10 +195,6 @@ export function ExpenseFormComponent({
                 )}
               </form.AppField>
             </div>
-
-            <form.AppField name="account">
-              {(field) => <field.Input label="Account (Optional)" />}
-            </form.AppField>
 
             <form.AppField name="isRecurring">
               {(field) => <field.Checkbox label="Recurring Expense" />}

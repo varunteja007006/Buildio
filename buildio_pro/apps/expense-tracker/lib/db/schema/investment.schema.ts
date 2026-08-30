@@ -1,6 +1,9 @@
-import { pgTable, text } from "drizzle-orm/pg-core";
+import { relations } from "drizzle-orm";
+import { numeric, pgTable, text } from "drizzle-orm/pg-core";
 
+import { user } from "./auth-schema";
 import { auditTimeFields, platformType } from "./common.schema";
+import { financialTransaction } from "./financial-transaction.schema";
 
 /**
  * Stores metadata for different types of investments.
@@ -75,3 +78,51 @@ export const investmentPlatforms = pgTable("investment_platforms", {
   country: text("country"),
   ...auditTimeFields,
 });
+
+export const investmentTransaction = pgTable("investment_transaction", {
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  transactionId: text("transaction_id")
+    .notNull()
+    .references(() => financialTransaction.id, { onDelete: "cascade" }),
+  userId: text("user_id")
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
+  platformId: text("platform_id").references(() => investmentPlatforms.id, {
+    onDelete: "set null",
+  }),
+  investmentTypeId: text("investment_type_id").references(
+    () => investmentTypes.id,
+    { onDelete: "set null" },
+  ),
+  units: numeric("units", { precision: 19, scale: 8 }),
+  unitPrice: numeric("unit_price", { precision: 19, scale: 8 }),
+  ...auditTimeFields,
+});
+
+export const investmentTransactionRelations = relations(
+  investmentTransaction,
+  ({ one }) => ({
+    transaction: one(financialTransaction, {
+      fields: [investmentTransaction.transactionId],
+      references: [financialTransaction.id],
+      relationName: "investment_transaction_to_transaction",
+    }),
+    user: one(user, {
+      fields: [investmentTransaction.userId],
+      references: [user.id],
+      relationName: "investment_transaction_to_user",
+    }),
+    platform: one(investmentPlatforms, {
+      fields: [investmentTransaction.platformId],
+      references: [investmentPlatforms.id],
+      relationName: "investment_transaction_to_platform",
+    }),
+    investmentType: one(investmentTypes, {
+      fields: [investmentTransaction.investmentTypeId],
+      references: [investmentTypes.id],
+      relationName: "investment_transaction_to_type",
+    }),
+  }),
+);

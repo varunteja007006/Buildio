@@ -1,9 +1,9 @@
 import { relations } from "drizzle-orm";
-import { numeric, pgTable, text } from "drizzle-orm/pg-core";
+import { pgTable, text } from "drizzle-orm/pg-core";
 
 import { user } from "./auth-schema";
 import { auditTimeFields } from "./common.schema";
-import { paymentMethods } from "./payment.schema";
+import { financialTransaction } from "./financial-transaction.schema";
 
 export const incomeSource = pgTable("income_source", {
   id: text("id")
@@ -21,38 +21,34 @@ export const income = pgTable("income", {
   userId: text("user_id")
     .notNull()
     .references(() => user.id, { onDelete: "cascade" }),
+  transactionId: text("transaction_id")
+    .notNull()
+    .references(() => financialTransaction.id, { onDelete: "cascade" }),
   name: text("name"),
   sourceId: text("source_id").references(() => incomeSource.id, {
     onDelete: "set null",
   }),
-  incomeAmount: numeric("income").notNull(),
-  paymentMethodId: text("payment_method_id").references(
-    () => paymentMethods.id,
-    { onDelete: "set null" },
-  ),
   ...auditTimeFields,
 });
 
 export const incomeSourceRelations = relations(incomeSource, ({ many }) => ({
-  incomes: many(income), // An income source can have many income entries
+  incomes: many(income),
 }));
 
 export const incomeRelations = relations(income, ({ one }) => ({
-  // Relation to the user who recorded the income
   user: one(user, {
     fields: [income.userId],
     references: [user.id],
     relationName: "income_to_user",
   }),
-  // Relation to the source of the income (e.g., 'Salary', 'Freelance')
   source: one(incomeSource, {
     fields: [income.sourceId],
     references: [incomeSource.id],
     relationName: "income_to_source",
   }),
-  paymentMethod: one(paymentMethods, {
-    fields: [income.paymentMethodId],
-    references: [paymentMethods.id],
-    relationName: "income_to_payment_methods",
+  transaction: one(financialTransaction, {
+    fields: [income.transactionId],
+    references: [financialTransaction.id],
+    relationName: "income_to_transaction",
   }),
 }));

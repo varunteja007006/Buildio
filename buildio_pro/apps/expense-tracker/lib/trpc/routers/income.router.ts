@@ -1,5 +1,5 @@
 import { TRPCError } from "@trpc/server";
-import { and, count, eq, inArray } from "drizzle-orm";
+import { and, count, desc, eq, inArray } from "drizzle-orm";
 import z from "zod";
 
 import { createTRPCRouter, protectedProcedure } from "../init";
@@ -9,36 +9,33 @@ import {
   paginationInputSchema,
 } from "../schemas/pagination.schema";
 
-const incomeAmountSchema = z
+const amountSchema = z
   .union([z.string(), z.number()])
   .transform((value) =>
     typeof value === "number" ? value.toString() : value.trim(),
   )
   .refine((value) => Number(value) > 0, {
-    message: "Income amount must be greater than zero",
+    message: "Amount must be greater than zero",
   });
 
 const createIncomeInput = z.object({
   name: z.string().min(1, "Income name required").max(255),
-  incomeAmount: incomeAmountSchema,
+  amount: amountSchema,
   sourceId: z.uuid().optional(),
-  paymentMethodId: z.uuid().optional(),
 });
 
 const updateIncomeInput = z
   .object({
     incomeId: z.uuid(),
     name: z.string().min(1).max(255).optional(),
-    incomeAmount: incomeAmountSchema.optional(),
+    amount: amountSchema.optional(),
     sourceId: z.uuid().nullable().optional(),
-    paymentMethodId: z.uuid().nullable().optional(),
   })
   .superRefine((data, ctx) => {
     const hasUpdatableField =
       data.name !== undefined ||
-      data.incomeAmount !== undefined ||
-      data.sourceId !== undefined ||
-      data.paymentMethodId !== undefined;
+      data.amount !== undefined ||
+      data.sourceId !== undefined;
 
     if (!hasUpdatableField) {
       ctx.addIssue({
@@ -59,10 +56,24 @@ const bulkDeleteInput = z.object({
   incomeIds: z.array(z.uuid()).min(1, "At least one income ID is required"),
 });
 
-const numericToNumber = (value: string | number | null) => {
+const numericToNumber = (value: string | number | null | undefined) => {
   const parsed = Number(value ?? 0);
   return Number.isNaN(parsed) ? 0 : parsed;
 };
+
+type IncomeRow = {
+  income: typeof import("../../db/schema/income.schema").income.$inferSelect;
+  transaction: typeof import("../../db/schema/financial-transaction.schema").financialTransaction.$inferSelect;
+  source: typeof import("../../db/schema/income.schema").incomeSource.$inferSelect | null;
+};
+
+const toIncomeDto = (row: IncomeRow) => ({
+  ...row.income,
+  transaction: row.transaction,
+  source: row.source,
+  amount: numericToNumber(row.transaction.amount),
+  transactionDate: row.transaction.transactionDate,
+});
 
 export const incomeRouter = createTRPCRouter({
   listIncomes: protectedProcedure
@@ -82,21 +93,28 @@ export const incomeRouter = createTRPCRouter({
       const totalItems = Number(total?.count ?? 0);
       const { offset } = calculatePagination(input, totalItems);
 
-      const incomes = await db.query.income.findMany({
-        limit: input.limit,
-        offset,
-        where: whereClause,
-        with: {
-          source: true,
-          paymentMethod: true,
-        },
-        orderBy: (income, { desc }) => {
-          return desc(income.createdAt);
-        },
-      });
+      const rows = await db
+        .select({
+          income: dbSchema.income,
+          transaction: dbSchema.financialTransaction,
+          source: dbSchema.incomeSource,
+        })
+        .from(dbSchema.income)
+        .innerJoin(
+          dbSchema.financialTransaction,
+          eq(dbSchema.income.transactionId, dbSchema.financialTransaction.id),
+        )
+        .leftJoin(
+          dbSchema.incomeSource,
+          eq(dbSchema.income.sourceId, dbSchema.incomeSource.id),
+        )
+        .where(whereClause)
+        .orderBy(desc(dbSchema.financialTransaction.transactionDate))
+        .limit(input.limit)
+        .offset(offset);
 
       return {
-        data: incomes,
+        data: rows.map(toIncomeDto),
         meta: createPaginationMeta(input, totalItems),
       };
     }),
@@ -104,40 +122,56 @@ export const incomeRouter = createTRPCRouter({
   getAnalytics: protectedProcedure.query(async ({ ctx }) => {
     const { db, dbSchema, user } = ctx;
 
-    // Fetch all income
-    const allIncomes = await db.query.income.findMany({
-      where: eq(dbSchema.income.userId, user.id),
-      with: {
-        source: true,
-      },
-      orderBy: (income, { asc }) => asc(income.createdAt),
-    });
+    const rows = await db
+      .select({
+        income: dbSchema.income,
+        transaction: dbSchema.financialTransaction,
+        source: dbSchema.incomeSource,
+      })
+      .from(dbSchema.income)
+      .innerJoin(
+        dbSchema.financialTransaction,
+        eq(dbSchema.income.transactionId, dbSchema.financialTransaction.id),
+      )
+      .leftJoin(
+        dbSchema.incomeSource,
+        eq(dbSchema.income.sourceId, dbSchema.incomeSource.id),
+      )
+      .where(eq(dbSchema.income.userId, user.id));
 
-    // Fetch all expenses for Net Income calculation
-    const allExpenses = await db
-      .select({ amount: dbSchema.expense.expenseAmount })
+    const allIncomes = rows.map((row) => ({
+      income: row.income,
+      amount: numericToNumber(row.transaction.amount),
+      transactionDate: row.transaction.transactionDate,
+      source: row.source,
+    }));
+
+    const expenseRows = await db
+      .select({ transaction: dbSchema.financialTransaction })
       .from(dbSchema.expense)
+      .innerJoin(
+        dbSchema.financialTransaction,
+        eq(dbSchema.expense.transactionId, dbSchema.financialTransaction.id),
+      )
       .where(eq(dbSchema.expense.userId, user.id));
 
     const totalIncome = allIncomes.reduce(
-      (sum, item) => sum + numericToNumber(item.incomeAmount),
+      (sum, item) => sum + item.amount,
       0,
     );
 
-    const totalExpenses = allExpenses.reduce(
-      (sum, item) => sum + numericToNumber(item.amount),
+    const totalExpenses = expenseRows.reduce(
+      (sum, item) => sum + numericToNumber(item.transaction.amount),
       0,
     );
 
     const netIncome = totalIncome - totalExpenses;
 
-    // Monthly Breakdown
     const monthlyData: Record<string, number> = {};
     allIncomes.forEach((item) => {
-      const d = new Date(item.createdAt);
+      const d = new Date(item.transactionDate);
       const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
-      monthlyData[key] =
-        (monthlyData[key] || 0) + numericToNumber(item.incomeAmount);
+      monthlyData[key] = (monthlyData[key] || 0) + item.amount;
     });
 
     const monthlyBreakdown = Object.entries(monthlyData)
@@ -158,12 +192,11 @@ export const incomeRouter = createTRPCRouter({
         };
       });
 
-    // Source Breakdown
     const sourceMap = new Map<string, number>();
     allIncomes.forEach((item) => {
       const sourceName = item.source?.name || "Unspecified";
       const current = sourceMap.get(sourceName) || 0;
-      sourceMap.set(sourceName, current + numericToNumber(item.incomeAmount));
+      sourceMap.set(sourceName, current + item.amount);
     });
 
     const sourceBreakdown = Array.from(sourceMap.entries())
@@ -187,22 +220,34 @@ export const incomeRouter = createTRPCRouter({
       const { db, dbSchema, user } = ctx;
       const { incomeId } = input;
 
-      const income = await db.query.income.findFirst({
-        where: and(
-          eq(dbSchema.income.id, incomeId),
-          eq(dbSchema.income.userId, user.id),
-        ),
-        with: {
-          source: true,
-          paymentMethod: true,
-        },
-      });
+      const [row] = await db
+        .select({
+          income: dbSchema.income,
+          transaction: dbSchema.financialTransaction,
+          source: dbSchema.incomeSource,
+        })
+        .from(dbSchema.income)
+        .innerJoin(
+          dbSchema.financialTransaction,
+          eq(dbSchema.income.transactionId, dbSchema.financialTransaction.id),
+        )
+        .leftJoin(
+          dbSchema.incomeSource,
+          eq(dbSchema.income.sourceId, dbSchema.incomeSource.id),
+        )
+        .where(
+          and(
+            eq(dbSchema.income.id, incomeId),
+            eq(dbSchema.income.userId, user.id),
+          ),
+        )
+        .limit(1);
 
-      if (!income) {
+      if (!row) {
         throw new TRPCError({ code: "NOT_FOUND", message: "Income not found" });
       }
 
-      return income;
+      return toIncomeDto(row);
     }),
 
   createIncome: protectedProcedure
@@ -210,7 +255,6 @@ export const incomeRouter = createTRPCRouter({
     .mutation(async ({ input, ctx }) => {
       const { db, dbSchema, user } = ctx;
 
-      // Validate source exists if provided
       if (input.sourceId) {
         const sourceExists = await db.query.incomeSource.findFirst({
           where: eq(dbSchema.incomeSource.id, input.sourceId),
@@ -224,30 +268,58 @@ export const incomeRouter = createTRPCRouter({
         }
       }
 
-      // Validate payment method exists if provided
-      if (input.paymentMethodId) {
-        const paymentMethodExists = await db.query.paymentMethods.findFirst({
-          where: eq(dbSchema.paymentMethods.id, input.paymentMethodId),
-        });
+      const result = await db.transaction(async (tx) => {
+        const [transaction] = await tx
+          .insert(dbSchema.financialTransaction)
+          .values({
+            userId: user.id,
+            amount: input.amount,
+            direction: "credit",
+            transactionType: "income",
+            merchantName: input.name,
+            description: input.name,
+          })
+          .returning();
 
-        if (!paymentMethodExists) {
-          throw new TRPCError({
-            code: "NOT_FOUND",
-            message: "Payment method not found",
-          });
-        }
+        const [incomeRecord] = await tx
+          .insert(dbSchema.income)
+          .values({
+            userId: user.id,
+            transactionId: transaction!.id,
+            name: input.name,
+            sourceId: input.sourceId || null,
+          })
+          .returning();
+
+        const [row] = await tx
+          .select({
+            income: dbSchema.income,
+            transaction: dbSchema.financialTransaction,
+            source: dbSchema.incomeSource,
+          })
+          .from(dbSchema.income)
+          .innerJoin(
+            dbSchema.financialTransaction,
+            eq(dbSchema.income.transactionId, dbSchema.financialTransaction.id),
+          )
+          .leftJoin(
+            dbSchema.incomeSource,
+            eq(dbSchema.income.sourceId, dbSchema.incomeSource.id),
+          )
+          .where(eq(dbSchema.income.id, incomeRecord!.id))
+          .limit(1);
+
+        return row;
+      });
+
+      if (!result) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to create income",
+        });
       }
 
-      const [incomeRecord] = await db
-        .insert(dbSchema.income)
-        .values({
-          ...input,
-          incomeAmount: input.incomeAmount,
-          userId: user.id,
-        })
-        .returning();
-
-      return incomeRecord;
+      return toIncomeDto(result);
     }),
 
   updateIncome: protectedProcedure
@@ -256,7 +328,6 @@ export const incomeRouter = createTRPCRouter({
       const { db, dbSchema, user } = ctx;
       const { incomeId, ...updates } = input;
 
-      // Verify income exists and belongs to user
       const existingIncome = await db.query.income.findFirst({
         where: and(
           eq(dbSchema.income.id, incomeId),
@@ -268,7 +339,6 @@ export const incomeRouter = createTRPCRouter({
         throw new TRPCError({ code: "NOT_FOUND", message: "Income not found" });
       }
 
-      // Validate source exists if updating
       if (updates.sourceId !== undefined && updates.sourceId !== null) {
         const sourceExists = await db.query.incomeSource.findFirst({
           where: eq(dbSchema.incomeSource.id, updates.sourceId),
@@ -282,40 +352,73 @@ export const incomeRouter = createTRPCRouter({
         }
       }
 
-      // Validate payment method exists if updating
-      if (
-        updates.paymentMethodId !== undefined &&
-        updates.paymentMethodId !== null
-      ) {
-        const paymentMethodExists = await db.query.paymentMethods.findFirst({
-          where: eq(dbSchema.paymentMethods.id, updates.paymentMethodId),
-        });
-
-        if (!paymentMethodExists) {
-          throw new TRPCError({
-            code: "NOT_FOUND",
-            message: "Payment method not found",
-          });
+      await db.transaction(async (tx) => {
+        const incomePayload: Record<string, unknown> = {
+          updatedAt: new Date(),
+        };
+        if (updates.name !== undefined) {
+          incomePayload.name = updates.name;
         }
+        if (updates.sourceId !== undefined) {
+          incomePayload.sourceId = updates.sourceId;
+        }
+
+        await tx
+          .update(dbSchema.income)
+          .set(incomePayload)
+          .where(
+            and(
+              eq(dbSchema.income.id, incomeId),
+              eq(dbSchema.income.userId, user.id),
+            ),
+          );
+
+        if (updates.amount !== undefined || updates.name !== undefined) {
+          const transactionPayload: Record<string, unknown> = {
+            updatedAt: new Date(),
+          };
+          if (updates.amount !== undefined) {
+            transactionPayload.amount = updates.amount;
+          }
+          if (updates.name !== undefined) {
+            transactionPayload.merchantName = updates.name;
+            transactionPayload.description = updates.name;
+          }
+          await tx
+            .update(dbSchema.financialTransaction)
+            .set(transactionPayload)
+            .where(
+              eq(
+                dbSchema.financialTransaction.id,
+                existingIncome.transactionId,
+              ),
+            );
+        }
+      });
+
+      const [row] = await db
+        .select({
+          income: dbSchema.income,
+          transaction: dbSchema.financialTransaction,
+          source: dbSchema.incomeSource,
+        })
+        .from(dbSchema.income)
+        .innerJoin(
+          dbSchema.financialTransaction,
+          eq(dbSchema.income.transactionId, dbSchema.financialTransaction.id),
+        )
+        .leftJoin(
+          dbSchema.incomeSource,
+          eq(dbSchema.income.sourceId, dbSchema.incomeSource.id),
+        )
+        .where(eq(dbSchema.income.id, incomeId))
+        .limit(1);
+
+      if (!row) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "Income not found" });
       }
 
-      const payload = {
-        ...updates,
-        updatedAt: new Date(),
-      };
-
-      const [updatedIncome] = await db
-        .update(dbSchema.income)
-        .set(payload)
-        .where(
-          and(
-            eq(dbSchema.income.id, incomeId),
-            eq(dbSchema.income.userId, user.id),
-          ),
-        )
-        .returning();
-
-      return updatedIncome;
+      return toIncomeDto(row);
     }),
 
   deleteIncome: protectedProcedure
@@ -335,14 +438,24 @@ export const incomeRouter = createTRPCRouter({
         throw new TRPCError({ code: "NOT_FOUND", message: "Income not found" });
       }
 
-      await db
-        .delete(dbSchema.income)
-        .where(
-          and(
-            eq(dbSchema.income.id, incomeId),
-            eq(dbSchema.income.userId, user.id),
-          ),
-        );
+      await db.transaction(async (tx) => {
+        await tx
+          .delete(dbSchema.income)
+          .where(
+            and(
+              eq(dbSchema.income.id, incomeId),
+              eq(dbSchema.income.userId, user.id),
+            ),
+          );
+        await tx
+          .delete(dbSchema.financialTransaction)
+          .where(
+            eq(
+              dbSchema.financialTransaction.id,
+              incomeExists.transactionId,
+            ),
+          );
+      });
 
       return { success: true };
     }),
@@ -363,6 +476,7 @@ export const incomeRouter = createTRPCRouter({
       const existingIncomeIds = new Set(
         existingIncomes.map((income) => income.id),
       );
+      const transactionIds = existingIncomes.map((income) => income.transactionId);
 
       const missingIds = incomeIds.filter((id) => !existingIncomeIds.has(id));
 
@@ -374,14 +488,19 @@ export const incomeRouter = createTRPCRouter({
       }
 
       if (existingIncomes.length > 0) {
-        await db
-          .delete(dbSchema.income)
-          .where(
-            and(
-              inArray(dbSchema.income.id, Array.from(existingIncomeIds)),
-              eq(dbSchema.income.userId, user.id),
-            ),
-          );
+        await db.transaction(async (tx) => {
+          await tx
+            .delete(dbSchema.income)
+            .where(
+              and(
+                inArray(dbSchema.income.id, Array.from(existingIncomeIds)),
+                eq(dbSchema.income.userId, user.id),
+              ),
+            );
+          await tx
+            .delete(dbSchema.financialTransaction)
+            .where(inArray(dbSchema.financialTransaction.id, transactionIds));
+        });
       }
 
       return {

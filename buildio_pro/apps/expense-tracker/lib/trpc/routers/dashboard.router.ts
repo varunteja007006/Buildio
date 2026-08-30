@@ -1,4 +1,4 @@
-import { and, eq, gte, lte } from "drizzle-orm";
+import { and, desc, eq, gte, lte } from "drizzle-orm";
 
 import { createTRPCRouter, protectedProcedure } from "../init";
 
@@ -18,36 +18,49 @@ export const dashboardRouter = createTRPCRouter({
     const { db, dbSchema, user } = ctx;
     const { start, end } = monthBounds();
 
+    const incomeTx = dbSchema.financialTransaction;
+    const expenseTx = dbSchema.financialTransaction;
+
     const incomesThisMonth = await db
-      .select({ amount: dbSchema.income.incomeAmount })
+      .select({ amount: incomeTx.amount })
       .from(dbSchema.income)
+      .innerJoin(
+        incomeTx,
+        eq(dbSchema.income.transactionId, incomeTx.id),
+      )
       .where(
         and(
           eq(dbSchema.income.userId, user.id),
-          gte(dbSchema.income.createdAt, start),
-          lte(dbSchema.income.createdAt, end),
+          gte(incomeTx.transactionDate, start),
+          lte(incomeTx.transactionDate, end),
         ),
       );
 
     const expensesThisMonth = await db
-      .select({ amount: dbSchema.expense.expenseAmount })
+      .select({ amount: expenseTx.amount })
       .from(dbSchema.expense)
+      .innerJoin(
+        expenseTx,
+        eq(dbSchema.expense.transactionId, expenseTx.id),
+      )
       .where(
         and(
           eq(dbSchema.expense.userId, user.id),
-          gte(dbSchema.expense.createdAt, start),
-          lte(dbSchema.expense.createdAt, end),
+          gte(expenseTx.transactionDate, start),
+          lte(expenseTx.transactionDate, end),
         ),
       );
 
     const allIncomes = await db
-      .select({ amount: dbSchema.income.incomeAmount })
+      .select({ amount: incomeTx.amount })
       .from(dbSchema.income)
+      .innerJoin(incomeTx, eq(dbSchema.income.transactionId, incomeTx.id))
       .where(eq(dbSchema.income.userId, user.id));
 
     const allExpenses = await db
-      .select({ amount: dbSchema.expense.expenseAmount })
+      .select({ amount: expenseTx.amount })
       .from(dbSchema.expense)
+      .innerJoin(expenseTx, eq(dbSchema.expense.transactionId, expenseTx.id))
       .where(eq(dbSchema.expense.userId, user.id));
 
     const incomeMonth = incomesThisMonth.reduce(
@@ -99,14 +112,9 @@ export const dashboardRouter = createTRPCRouter({
 
     if (budgets.length === 0) return [];
 
-    // Fetch all expenses for these budgets in one query
-    const budgetIds = budgets.map((b) => b.id);
     const expenses = await db.query.expense.findMany({
-      where: and(
-        eq(dbSchema.expense.userId, user.id),
-        // expense.budget may be null; filter by ids
-        // drizzle doesn't support IN via array eq; use a simple select-all then reduce
-      ),
+      where: eq(dbSchema.expense.userId, user.id),
+      with: { transaction: true },
     });
 
     const spendByBudget = new Map<string, number>();
@@ -114,10 +122,11 @@ export const dashboardRouter = createTRPCRouter({
       spendByBudget.set(b.id, 0);
     }
     for (const e of expenses) {
-      if (e.budget && spendByBudget.has(e.budget)) {
+      if (e.budgetId && spendByBudget.has(e.budgetId)) {
         spendByBudget.set(
-          e.budget,
-          (spendByBudget.get(e.budget) || 0) + numericToNumber(e.expenseAmount),
+          e.budgetId,
+          (spendByBudget.get(e.budgetId) || 0) +
+            numericToNumber(e.transaction?.amount),
         );
       }
     }
@@ -150,14 +159,14 @@ export const dashboardRouter = createTRPCRouter({
       where: eq(dbSchema.expense.userId, user.id),
       orderBy: (expense, { desc }) => desc(expense.createdAt),
       limit: 10,
-      with: { category: true },
+      with: { category: true, transaction: true },
     });
 
     const recentIncomes = await db.query.income.findMany({
       where: eq(dbSchema.income.userId, user.id),
       orderBy: (income, { desc }) => desc(income.createdAt),
       limit: 10,
-      with: { source: true },
+      with: { source: true, transaction: true },
     });
 
     const combined = [
@@ -165,17 +174,17 @@ export const dashboardRouter = createTRPCRouter({
         id: e.id,
         type: "expense" as const,
         name: e.name,
-        amount: numericToNumber(e.expenseAmount),
-        createdAt: e.createdAt,
-        meta: { label: (e as any).category?.name ?? "Expense" },
+        amount: numericToNumber(e.transaction?.amount),
+        createdAt: e.transaction?.transactionDate ?? e.createdAt,
+        meta: { label: e.category?.name ?? "Expense" },
       })),
       ...recentIncomes.map((i) => ({
         id: i.id,
         type: "income" as const,
         name: i.name,
-        amount: numericToNumber(i.incomeAmount),
-        createdAt: i.createdAt,
-        meta: { label: (i as any).source?.name ?? "Income" },
+        amount: numericToNumber(i.transaction?.amount),
+        createdAt: i.transaction?.transactionDate ?? i.createdAt,
+        meta: { label: i.source?.name ?? "Income" },
       })),
     ].sort((a, b) => +new Date(b.createdAt) - +new Date(a.createdAt));
 
@@ -192,7 +201,7 @@ export const dashboardRouter = createTRPCRouter({
         gte(dbSchema.expense.createdAt, start),
         lte(dbSchema.expense.createdAt, end),
       ),
-      with: { category: true },
+      with: { category: true, transaction: true },
     });
 
     const totals = new Map<
@@ -201,11 +210,11 @@ export const dashboardRouter = createTRPCRouter({
     >();
 
     for (const e of expenses) {
-      const cat = (e as any).category;
+      const cat = e.category;
       const key = cat?.id ?? "uncategorized";
       const name = cat?.name ?? "Uncategorized";
       const prev = totals.get(key) || { name, amount: 0, count: 0 };
-      prev.amount += numericToNumber(e.expenseAmount);
+      prev.amount += numericToNumber(e.transaction?.amount);
       prev.count += 1;
       totals.set(key, prev);
     }
@@ -227,7 +236,6 @@ export const dashboardRouter = createTRPCRouter({
     const { db, dbSchema, user } = ctx;
     const now = new Date();
 
-    // Get active budgets
     const budgets = await db.query.budget.findMany({
       where: and(
         eq(dbSchema.budget.userId, user.id),
@@ -238,30 +246,29 @@ export const dashboardRouter = createTRPCRouter({
 
     if (budgets.length === 0) return [];
 
-    // Get expenses for these budgets
     const expenses = await db.query.expense.findMany({
       where: eq(dbSchema.expense.userId, user.id),
-      with: { category: true },
+      with: { category: true, transaction: true },
     });
 
     const result = [];
 
     for (const b of budgets) {
-      const budgetExpenses = expenses.filter((e) => e.budget === b.id);
+      const budgetExpenses = expenses.filter((e) => e.budgetId === b.id);
       const spent = budgetExpenses.reduce(
-        (acc, e) => acc + numericToNumber(e.expenseAmount),
+        (acc, e) => acc + numericToNumber(e.transaction?.amount),
         0,
       );
       const allocated = numericToNumber(b.budgetAmount);
 
       if (spent > allocated) {
-        // Analyze categories
         const catTotals = new Map<string, number>();
         for (const e of budgetExpenses) {
-          const catName = (e as any).category?.name ?? "Uncategorized";
+          const catName = e.category?.name ?? "Uncategorized";
           catTotals.set(
             catName,
-            (catTotals.get(catName) || 0) + numericToNumber(e.expenseAmount),
+            (catTotals.get(catName) || 0) +
+              numericToNumber(e.transaction?.amount),
           );
         }
 
@@ -289,7 +296,6 @@ export const dashboardRouter = createTRPCRouter({
     const sixMonthsAgo = new Date();
     sixMonthsAgo.setMonth(now.getMonth() - 6);
 
-    // Get budgets ending in the last 6 months
     const budgets = await db.query.budget.findMany({
       where: and(
         eq(dbSchema.budget.userId, user.id),
@@ -299,15 +305,15 @@ export const dashboardRouter = createTRPCRouter({
       orderBy: (budget, { asc }) => asc(budget.endMonth),
     });
 
-    // Get expenses
     const expenses = await db.query.expense.findMany({
       where: eq(dbSchema.expense.userId, user.id),
+      with: { transaction: true },
     });
 
     return budgets.map((b) => {
-      const budgetExpenses = expenses.filter((e) => e.budget === b.id);
+      const budgetExpenses = expenses.filter((e) => e.budgetId === b.id);
       const spent = budgetExpenses.reduce(
-        (acc, e) => acc + numericToNumber(e.expenseAmount),
+        (acc, e) => acc + numericToNumber(e.transaction?.amount),
         0,
       );
       return {
@@ -330,6 +336,7 @@ export const dashboardRouter = createTRPCRouter({
         eq(dbSchema.expense.userId, user.id),
         gte(dbSchema.expense.createdAt, sixMonthsAgo),
       ),
+      with: { transaction: true },
     });
 
     const incomes = await db.query.income.findMany({
@@ -337,6 +344,7 @@ export const dashboardRouter = createTRPCRouter({
         eq(dbSchema.income.userId, user.id),
         gte(dbSchema.income.createdAt, sixMonthsAgo),
       ),
+      with: { transaction: true },
     });
 
     const data = new Map<string, { income: number; expense: number }>();
@@ -352,24 +360,30 @@ export const dashboardRouter = createTRPCRouter({
     }
 
     expenses.forEach((e) => {
-      const key = e.createdAt.toLocaleString("default", {
-        month: "short",
-        year: "numeric",
-      });
+      const key = (e.transaction?.transactionDate ?? e.createdAt).toLocaleString(
+        "default",
+        {
+          month: "short",
+          year: "numeric",
+        },
+      );
       if (data.has(key)) {
         const curr = data.get(key)!;
-        curr.expense += numericToNumber(e.expenseAmount);
+        curr.expense += numericToNumber(e.transaction?.amount);
       }
     });
 
     incomes.forEach((i) => {
-      const key = i.createdAt.toLocaleString("default", {
-        month: "short",
-        year: "numeric",
-      });
+      const key = (i.transaction?.transactionDate ?? i.createdAt).toLocaleString(
+        "default",
+        {
+          month: "short",
+          year: "numeric",
+        },
+      );
       if (data.has(key)) {
         const curr = data.get(key)!;
-        curr.income += numericToNumber(i.incomeAmount);
+        curr.income += numericToNumber(i.transaction?.amount);
       }
     });
 
@@ -386,7 +400,7 @@ export const dashboardRouter = createTRPCRouter({
         eq(dbSchema.expense.userId, user.id),
         eq(dbSchema.expense.isRecurring, true),
       ),
-      with: { category: true },
+      with: { category: true, transaction: true },
       orderBy: (expense, { desc }) => desc(expense.createdAt),
     });
   }),

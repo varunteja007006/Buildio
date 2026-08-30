@@ -234,11 +234,14 @@ export default function BudgetDetailPage() {
                   <div>
                     <p className="font-medium">{expense.name}</p>
                     <p className="text-muted-foreground text-xs">
-                      {new Date(expense.createdAt).toLocaleDateString()}
+                      {new Date(
+                        expense.transaction?.transactionDate ??
+                          expense.createdAt,
+                      ).toLocaleDateString()}
                     </p>
                   </div>
                   <span className="font-semibold">
-                    {Number(expense.expenseAmount).toFixed(2)}
+                    {Number(expense.transaction?.amount).toFixed(2)}
                   </span>
                 </div>
               ))}

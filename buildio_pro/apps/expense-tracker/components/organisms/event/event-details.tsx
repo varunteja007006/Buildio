@@ -169,7 +169,7 @@ export function EventDetails({ eventId }: EventDetailsProps) {
                           ee.expense.category?.name || "Uncategorized"
                         }
                         expenseName={ee.expense.name}
-                        expenseAmount={ee.expense.expenseAmount}
+                        expenseAmount={ee.expense.transaction?.amount}
                         eventId={eventId}
                         expenseId={ee.expense.id}
                       />
@@ -204,7 +204,7 @@ const ExpenseCard = ({
 }: {
   categoryName: string;
   expenseName: string;
-  expenseAmount: string;
+  expenseAmount: string | number | null | undefined;
   eventId: string;
   expenseId: string;
 }) => {

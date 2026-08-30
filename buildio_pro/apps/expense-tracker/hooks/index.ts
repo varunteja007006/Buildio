@@ -92,3 +92,13 @@ export {
   useStatementDownload,
 } from "./use-statement-queries";
 export type { StatementDocumentType } from "./use-statement-queries";
+
+// Financial transaction hooks
+export {
+  useTransactionList,
+  useTransactionDetails,
+  useTransactionAnalytics,
+  useStatementTransactions,
+  useRunTransactionEnrichment,
+} from "./use-transaction-queries";
+export type { TransactionDirection, TransactionType } from "./use-transaction-queries";
