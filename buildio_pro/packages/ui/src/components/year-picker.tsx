@@ -1,8 +1,8 @@
 "use client";
 
+import { CalendarIcon, Check } from "lucide-react";
 import * as React from "react";
 
-import { CalendarIcon, Check } from "lucide-react";
 
 import { Button } from "@workspace/ui/components/button";
 import {

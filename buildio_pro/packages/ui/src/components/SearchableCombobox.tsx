@@ -4,9 +4,7 @@ import React from "react";
 
 import { Control, FieldPath, FieldValues } from "react-hook-form";
 
-import Combobox, {
-  type ComboboxOption,
-} from "@workspace/ui/components/combobox";
+import { type ComboboxOption } from "@workspace/ui/components/combobox";
 import {
   FormControl,
   FormDescription,
@@ -15,6 +13,8 @@ import {
   FormLabel,
   FormMessage,
 } from "@workspace/ui/components/form";
+
+import { ComboboxSelect } from "@workspace/ui/components/combobox-select";
 
 /**
  * Form-integrated searchable combobox component for react-hook-form.
@@ -95,7 +95,7 @@ export default function SearchableCombobox<
             {required && <span className="text-red-500 ml-1">*</span>}
           </FormLabel>
           <FormControl>
-            <Combobox
+            <ComboboxSelect
               value={field.value || ""}
               onValueChange={(value) => {
                 field.onChange(value);

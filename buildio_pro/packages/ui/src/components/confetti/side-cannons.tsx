@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect } from "react";
 
 import confetti from "canvas-confetti";
 import { PartyPopper } from "lucide-react";
+import { useEffect } from "react";
 
 import { Button } from "@workspace/ui/components/button";
 import { cn } from "@workspace/ui/lib/utils";

@@ -1,8 +1,8 @@
 "use client";
 
-import Combobox, {
-  type ComboboxOption,
-} from "@workspace/ui/components/combobox";
+import { type ComboboxOption } from "@workspace/ui/components/combobox";
+
+import { ComboboxSelect } from "@workspace/ui/components/combobox-select";
 
 /**
  * Simple standalone searchable combobox wrapper.
@@ -41,10 +41,10 @@ export default function SimpleSearchableCombobox({
   };
 
   return (
-    <Combobox
+    <ComboboxSelect
+      options={options}
       value={value}
       onValueChange={handleSelect}
-      options={options}
       placeholder={placeholder}
       searchPlaceholder={searchPlaceholder}
       emptyMessage={emptyMessage}

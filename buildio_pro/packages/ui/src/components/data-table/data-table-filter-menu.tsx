@@ -1,6 +1,5 @@
 "use client";
 
-import * as React from "react";
 
 import type { Column, Table } from "@tanstack/react-table";
 import {
@@ -12,6 +11,7 @@ import {
   X,
 } from "lucide-react";
 import { useQueryState } from "nuqs";
+import * as React from "react";
 
 import { Button } from "@workspace/ui/components/button";
 import { Calendar } from "@workspace/ui/components/calendar";

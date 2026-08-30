@@ -1,6 +1,5 @@
 "use client";
 
-import * as React from "react";
 
 import type { ColumnSort, SortDirection, Table } from "@tanstack/react-table";
 import {
@@ -9,6 +8,7 @@ import {
   GripVertical,
   Trash2,
 } from "lucide-react";
+import * as React from "react";
 
 import { Badge } from "@workspace/ui/components/badge";
 import { Button } from "@workspace/ui/components/button";

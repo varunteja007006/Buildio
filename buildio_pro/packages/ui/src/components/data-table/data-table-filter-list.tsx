@@ -1,6 +1,5 @@
 "use client";
 
-import * as React from "react";
 
 import type { Column, ColumnMeta, Table } from "@tanstack/react-table";
 import {
@@ -12,6 +11,7 @@ import {
   Trash2,
 } from "lucide-react";
 import { parseAsStringEnum, useQueryState } from "nuqs";
+import * as React from "react";
 
 import { Badge } from "@workspace/ui/components/badge";
 import { Button } from "@workspace/ui/components/button";

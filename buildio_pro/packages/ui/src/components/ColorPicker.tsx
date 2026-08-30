@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
 
 import { Compact } from "@uiw/react-color";
 import { PaletteIcon } from "lucide-react";
+import { useState } from "react";
 import {
   Control,
   ControllerRenderProps,

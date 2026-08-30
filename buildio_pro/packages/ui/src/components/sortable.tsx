@@ -1,6 +1,5 @@
 "use client";
 
-import * as React from "react";
 
 import {
   type Announcements,
@@ -39,6 +38,7 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { Slot } from "@radix-ui/react-slot";
+import * as React from "react";
 import * as ReactDOM from "react-dom";
 
 import { useComposedRefs } from "@workspace/ui/lib/compose-refs";

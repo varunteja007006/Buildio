@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useMemo } from "react";
 
 import { countries } from "country-data-list";
 import { Check, ChevronsUpDown, Globe } from "lucide-react";
+import React, { useMemo } from "react";
 import { Control, FieldPath, FieldValues } from "react-hook-form";
 
 import { Button } from "@workspace/ui/components/button";
@@ -122,7 +122,7 @@ export default function CountryCombobox<
 
   // Memoize filtered countries list
   const countryOptions = useMemo(() => {
-    let list = customCountries || countries.all;
+    const list = customCountries || countries.all;
 
     return (list as Country[]).filter((country) => {
       if (country.status === "deleted" && !includeDeleted) return false;
