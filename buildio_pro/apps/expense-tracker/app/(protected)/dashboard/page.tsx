@@ -47,6 +47,16 @@
 //   useDashboardTopCategories,
 // } from "@/hooks";
 
+import { Metadata } from "next";
+
+import { appConfig } from "@/app/appConfig";
+
+export const metadata: Metadata = {
+  title: `Dashboard | ${appConfig.name}`,
+  description:
+    "Your expense, income, and budget overview at a glance.",
+};
+
 export default function DashboardPage() { return null
 //   const summaryQuery = useDashboardSummary();
 //   const budgetsQuery = useDashboardBudgets();

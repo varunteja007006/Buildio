@@ -1,4 +1,6 @@
 
+import { Metadata } from "next";
+
 import { Input } from "@workspace/ui/components/input";
 import {
   Select,
@@ -10,6 +12,14 @@ import {
   SelectValue,
 } from "@workspace/ui/components/select";
 import React from "react";
+
+import { appConfig } from "@/app/appConfig";
+
+export const metadata: Metadata = {
+  title: `Donate | ${appConfig.name}`,
+  description:
+    "Support the development of Expense Tracker with a donation. Every contribution helps.",
+};
 
 const DONATION_AMOUNTS = [5, 10, 20, 25, 50, 100, 250, 500, 750, 1000];
 

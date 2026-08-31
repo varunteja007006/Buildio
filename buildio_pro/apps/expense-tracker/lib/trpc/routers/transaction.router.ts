@@ -1,5 +1,15 @@
 import { TRPCError } from "@trpc/server";
-import { and, count, eq, gte, ilike, isNull, lte, or } from "drizzle-orm";
+import {
+  and,
+  count,
+  eq,
+  gte,
+  ilike,
+  inArray,
+  isNull,
+  lte,
+  or,
+} from "drizzle-orm";
 import z from "zod";
 
 import { runTransactionEnrichment } from "@/lib/transactions";
@@ -14,6 +24,10 @@ import {
 
 const transactionIdInput = z.object({
   transactionId: z.uuid(),
+});
+
+const bulkDeleteTransactionsInput = z.object({
+  transactionIds: z.array(z.uuid()).min(1).max(500),
 });
 
 const updateTransactionInput = z
@@ -629,6 +643,25 @@ export const transactionRouter = createTRPCRouter({
       }
 
       return { id: deleted.id };
+    }),
+
+  deleteTransactions: protectedProcedure
+    .input(bulkDeleteTransactionsInput)
+    .mutation(async ({ input, ctx }) => {
+      const { db, dbSchema, user } = ctx;
+      const { transactionIds } = input;
+
+      const deleted = await db
+        .delete(dbSchema.financialTransaction)
+        .where(
+          and(
+            inArray(dbSchema.financialTransaction.id, transactionIds),
+            eq(dbSchema.financialTransaction.userId, user.id),
+          ),
+        )
+        .returning({ id: dbSchema.financialTransaction.id });
+
+      return { deletedIds: deleted.map((transaction) => transaction.id) };
     }),
 
   confirmTransaction: protectedProcedure

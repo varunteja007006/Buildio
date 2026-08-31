@@ -3,7 +3,6 @@
 
 
 import { Button } from "@workspace/ui/components/button";
-import { Input } from "@workspace/ui/components/input";
 import {
   Select,
   SelectContent,
@@ -12,8 +11,10 @@ import {
   SelectValue,
 } from "@workspace/ui/components/select";
 import { cn } from "@workspace/ui/lib/utils";
-import { Search, X } from "lucide-react";
+import { X } from "lucide-react";
 import React from "react";
+
+import { SearchInput } from "@/components/atoms/search-input";
 
 interface FilterOption {
   label: string;
@@ -51,16 +52,12 @@ export function FilterBar({
     <div
       className={cn(`flex flex-col sm:flex-row gap-4 items-center`, className)}
     >
-      <div className="relative w-full sm:w-[300px]">
-        <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-        <Input
-          type="search"
-          placeholder="Search transactions..."
-          className="pl-9 w-full"
-          value={searchValue}
-          onChange={(e) => onSearchChange?.(e.target.value)}
-        />
-      </div>
+      <SearchInput
+        placeholder="Search transactions..."
+        className="w-full sm:w-[300px]"
+        value={searchValue}
+        onChange={(e) => onSearchChange?.(e.target.value)}
+      />
 
       <div className="flex items-center gap-2 w-full sm:w-auto overflow-x-auto pb-2 sm:pb-0">
         {categories && (

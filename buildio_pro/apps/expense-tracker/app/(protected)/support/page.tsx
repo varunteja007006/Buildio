@@ -1,3 +1,5 @@
+import { Metadata } from "next";
+
 import { Button } from "@workspace/ui/components/button";
 import { Input } from "@workspace/ui/components/input";
 import {
@@ -11,6 +13,14 @@ import {
 } from "@workspace/ui/components/select";
 import { Textarea } from "@workspace/ui/components/textarea";
 import React from "react";
+
+import { appConfig } from "@/app/appConfig";
+
+export const metadata: Metadata = {
+  title: `Support | ${appConfig.name}`,
+  description:
+    "Need help with Expense Tracker? Submit a support ticket and we'll get back to you soon.",
+};
 
 export default function Page() {
   return (

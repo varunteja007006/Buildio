@@ -166,6 +166,42 @@ export function useTransactionDelete(options?: {
   );
 }
 
+export function useTransactionBulkDelete(options?: {
+  onSuccess?: (data: { deletedIds: string[] }) => void;
+  onError?: (error: unknown) => void;
+}) {
+  const trpc = useTRPC();
+  const queryClient = useQueryClient();
+
+  return useMutation(
+    trpc.transaction.deleteTransactions.mutationOptions({
+      onSuccess: (data) => {
+        toast.success(
+          `${data.deletedIds.length} transaction${data.deletedIds.length === 1 ? "" : "s"} deleted.`,
+        );
+        queryClient.invalidateQueries({
+          queryKey: trpc.transaction.listTransactions.queryKey(),
+        });
+        queryClient.invalidateQueries({
+          queryKey: trpc.transaction.listByStatement.queryKey(),
+        });
+        queryClient.invalidateQueries({
+          queryKey: trpc.transaction.getAnalytics.queryKey(),
+        });
+        options?.onSuccess?.(data);
+      },
+      onError: (error) => {
+        toast.error(
+          error instanceof Error
+            ? error.message
+            : "Failed to delete transactions",
+        );
+        options?.onError?.(error);
+      },
+    }),
+  );
+}
+
 export function useTransactionUpdate(options?: {
   onSuccess?: () => void;
   onError?: (error: unknown) => void;

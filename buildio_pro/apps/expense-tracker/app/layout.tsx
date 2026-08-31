@@ -1,5 +1,8 @@
 
+import type { Metadata } from "next";
 import { DM_Sans, Space_Mono } from "next/font/google";
+
+import { appConfig } from "@/app/appConfig";
 
 const fontSans = DM_Sans({
   subsets: ["latin"],
@@ -22,6 +25,12 @@ import { Toaster } from "@workspace/ui/components/sonner";
 import { Providers } from "@/components/providers";
 
 import "./globals.css";
+
+export const metadata: Metadata = {
+  title: appConfig.name,
+  description:
+    "Track your expenses, income, and budgets with ease. Free forever, no credit card required.",
+};
 
 export default function RootLayout({
   children,

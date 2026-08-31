@@ -1,5 +1,23 @@
 "use client";
 
+import {
+  ActionBar,
+  ActionBarClose,
+  ActionBarGroup,
+  ActionBarItem,
+  ActionBarSelection,
+  ActionBarSeparator,
+} from "@workspace/ui/components/action-bar";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@workspace/ui/components/alert-dialog";
 import { Badge } from "@workspace/ui/components/badge";
 import { Button } from "@workspace/ui/components/button";
 import {
@@ -13,12 +31,22 @@ import { Checkbox } from "@workspace/ui/components/checkbox";
 import { Input } from "@workspace/ui/components/input";
 import { Label } from "@workspace/ui/components/label";
 import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@workspace/ui/components/popover";
+import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from "@workspace/ui/components/select";
+import {
+  ToggleGroup,
+  ToggleGroupItem,
+} from "@workspace/ui/components/toggle-group";
+import { Toggle } from "@workspace/ui/components/toggle";
 import {
   Table,
   TableBody,
@@ -29,17 +57,33 @@ import {
 } from "@workspace/ui/components/table";
 import { formatCurrency } from "@workspace/ui/lib/currency.utils";
 import { cn } from "@workspace/ui/lib/utils";
-import { Eye, Loader2, RotateCcw, Search } from "lucide-react";
+import {
+  ArrowDownRight,
+  ArrowUpRight,
+  CalendarRange,
+  CircleAlert,
+  Eye,
+  Loader2,
+  RotateCcw,
+  SlidersHorizontal,
+  Trash2,
+  X,
+} from "lucide-react";
 import { useSearchParams } from "next/navigation";
 import * as React from "react";
 
+import { SearchInput } from "@/components/atoms/search-input";
 import { TransactionDeleteDialog } from "@/components/organisms/transaction/transaction-delete-dialog";
-import { TransactionReviewDialog, type ReviewTransaction } from "@/components/organisms/transaction/transaction-review-dialog";
+import {
+  TransactionReviewDialog,
+  type ReviewTransaction,
+} from "@/components/organisms/transaction/transaction-review-dialog";
 import {
   useBankAccountList,
   useExpenseCategoryList,
   usePaymentMethodList,
   useStatementList,
+  useTransactionBulkDelete,
   useTransactionList,
   type TransactionDirection,
   type TransactionType,
@@ -101,7 +145,63 @@ function TransactionsPageContent() {
   const [limit, setLimit] = React.useState(20);
   const [page, setPage] = React.useState(1);
 
-  const [reviewing, setReviewing] = React.useState<ReviewTransaction | null>(null);
+  const [reviewing, setReviewing] = React.useState<ReviewTransaction | null>(
+    null,
+  );
+
+  const [selectedIds, setSelectedIds] = React.useState<Set<string>>(new Set());
+  const [bulkDeleteOpen, setBulkDeleteOpen] = React.useState(false);
+
+  const bulkDelete = useTransactionBulkDelete({
+    onSuccess: () => {
+      setBulkDeleteOpen(false);
+      setSelectedIds(new Set());
+    },
+  });
+
+  const toggleSelect = (id: string) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
+  };
+
+  const toggleSelectAll = () => {
+    const pageIds = transactions.map((transaction) => transaction.id);
+    const allSelected =
+      pageIds.length > 0 && pageIds.every((id) => selectedIds.has(id));
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (allSelected) {
+        pageIds.forEach((id) => next.delete(id));
+      } else {
+        pageIds.forEach((id) => next.add(id));
+      }
+      return next;
+    });
+  };
+
+  const filterKey = [
+    statementUploadId,
+    bankAccountId,
+    categoryId,
+    paymentMethodId,
+    transactionType,
+    direction,
+    search,
+    markForReviewOnly,
+    startDate,
+    endDate,
+  ].join("|");
+
+  React.useEffect(() => {
+    setSelectedIds(new Set());
+  }, [filterKey]);
 
   const { data, isLoading } = useTransactionList({
     limit,
@@ -119,7 +219,10 @@ function TransactionsPageContent() {
   });
 
   const { data: statementsData } = useStatementList({ limit: 100, page: 1 });
-  const { data: categoriesData } = useExpenseCategoryList({ limit: 200, page: 1 });
+  const { data: categoriesData } = useExpenseCategoryList({
+    limit: 200,
+    page: 1,
+  });
   const { data: paymentMethods } = usePaymentMethodList();
   const { data: bankAccounts } = useBankAccountList();
 
@@ -127,6 +230,18 @@ function TransactionsPageContent() {
   const meta = data?.meta;
   const totalPages = meta?.totalPages ?? 0;
   const currentPage = meta?.currentPage ?? 1;
+
+  const pageSelectedCount = transactions.filter((transaction) =>
+    selectedIds.has(transaction.id),
+  ).length;
+  const selectAllChecked: boolean | "indeterminate" =
+    transactions.length === 0
+      ? false
+      : pageSelectedCount === transactions.length
+        ? true
+        : pageSelectedCount > 0
+          ? "indeterminate"
+          : false;
 
   const hasActiveFilters =
     statementUploadId ||
@@ -158,225 +273,372 @@ function TransactionsPageContent() {
     setPage(nextPage);
   };
 
+  const selectedStatement = statementsData?.data.find(
+    (statement) => statement.id === statementUploadId,
+  );
+  const selectedAccount = bankAccounts?.find(
+    (account) => account.id === bankAccountId,
+  );
+  const selectedCategory = categoriesData?.data.find(
+    (category) => category.id === categoryId,
+  );
+  const selectedPaymentMethod = paymentMethods?.find(
+    (method) => method.id === paymentMethodId,
+  );
+
+  const activeFilterChips = [
+    search && {
+      key: "search",
+      label: search.length > 24 ? `${search.slice(0, 24)}…` : search,
+      onRemove: () => setSearch(""),
+    },
+    statementUploadId && {
+      key: "statement",
+      label: selectedStatement?.originalFilename ?? "Statement",
+      onRemove: () => setStatementUploadId(""),
+    },
+    bankAccountId && {
+      key: "account",
+      label: selectedAccount
+        ? `${selectedAccount.bankName}${selectedAccount.lastFour ? ` ••${selectedAccount.lastFour}` : ""}`
+        : "Account",
+      onRemove: () => setBankAccountId(""),
+    },
+    transactionType && {
+      key: "type",
+      label: transactionTypeLabels[transactionType as TransactionType],
+      onRemove: () => setTransactionType(""),
+    },
+    direction && {
+      key: "direction",
+      label: direction === "debit" ? "Debit" : "Credit",
+      onRemove: () => setDirection(""),
+    },
+    categoryId && {
+      key: "category",
+      label: selectedCategory?.name ?? "Category",
+      onRemove: () => setCategoryId(""),
+    },
+    paymentMethodId && {
+      key: "payment",
+      label: selectedPaymentMethod?.name ?? "Payment",
+      onRemove: () => setPaymentMethodId(""),
+    },
+    startDate && {
+      key: "startDate",
+      label: `From ${formatDate(startDate)}`,
+      onRemove: () => setStartDate(""),
+    },
+    endDate && {
+      key: "endDate",
+      label: `To ${formatDate(endDate)}`,
+      onRemove: () => setEndDate(""),
+    },
+    markForReviewOnly && {
+      key: "review",
+      label: "Needs review",
+      onRemove: () => setMarkForReviewOnly(false),
+    },
+  ].filter(Boolean) as {
+    key: string;
+    label: string;
+    onRemove: () => void;
+  }[];
+
+  const advancedFilterCount = activeFilterChips.filter(
+    (chip) => chip.key !== "search" && chip.key !== "direction",
+  ).length;
+
   return (
     <div className="space-y-6">
       <Card className="w-full">
-        <CardHeader>
-          <CardTitle>Transactions</CardTitle>
-          <CardDescription>
-            Review transactions extracted from your statements
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-wrap items-end gap-3">
-            <div className="relative w-full sm:w-64">
-              <Search className="absolute left-2.5 top-2.5 size-4 text-muted-foreground" />
-              <Input
-                type="search"
+        <CardContent className="space-y-3">
+          <div className="flex flex-col gap-3">
+            <div className="flex flex-wrap items-center gap-2">
+              <SearchInput
                 placeholder="Search merchant, description, ref..."
-                className="pl-9"
+                className="min-w-52 flex-1"
                 value={search}
                 onChange={(e) => {
                   setSearch(e.target.value);
                   setPage(1);
                 }}
               />
-            </div>
 
-            <div className="space-y-1.5">
-              <Label className="text-xs text-muted-foreground">Statement</Label>
-              <Select
-                value={statementUploadId}
+              <ToggleGroup
+                type="single"
+                variant="outline"
+                size="sm"
+                value={direction || "all"}
                 onValueChange={(value) => {
-                  setStatementUploadId(value);
+                  if (!value) return;
+                  setDirection(value === "all" ? "" : value);
                   setPage(1);
                 }}
               >
-                <SelectTrigger className="w-48">
-                  <SelectValue placeholder="All statements" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="">All statements</SelectItem>
-                  {statementsData?.data.map((statement) => (
-                    <SelectItem key={statement.id} value={statement.id}>
-                      {statement.originalFilename}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+                <ToggleGroupItem value="all">All</ToggleGroupItem>
+                <ToggleGroupItem
+                  value="debit"
+                  className="gap-1 data-[state=on]:text-red-600"
+                >
+                  <ArrowUpRight className="size-3.5" />
+                  Debit
+                </ToggleGroupItem>
+                <ToggleGroupItem
+                  value="credit"
+                  className="gap-1 data-[state=on]:text-green-600"
+                >
+                  <ArrowDownRight className="size-3.5" />
+                  Credit
+                </ToggleGroupItem>
+              </ToggleGroup>
 
-            <div className="space-y-1.5">
-              <Label className="text-xs text-muted-foreground">Account</Label>
-              <Select
-                value={bankAccountId}
-                onValueChange={(value) => {
-                  setBankAccountId(value);
+              <Toggle
+                variant="outline"
+                size="sm"
+                pressed={markForReviewOnly}
+                onPressedChange={(pressed) => {
+                  setMarkForReviewOnly(pressed);
                   setPage(1);
                 }}
+                className="gap-1.5 data-[state=on]:border-amber-500/60 data-[state=on]:bg-amber-500/10 data-[state=on]:text-amber-700 dark:data-[state=on]:text-amber-400"
               >
-                <SelectTrigger className="w-48">
-                  <SelectValue placeholder="All accounts" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="">All accounts</SelectItem>
-                  {bankAccounts?.map((account) => (
-                    <SelectItem key={account.id} value={account.id}>
-                      {account.bankName}
-                      {account.lastFour ? ` ••${account.lastFour}` : ""}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+                <CircleAlert className="size-3.5" />
+                Needs review
+              </Toggle>
 
-            <div className="space-y-1.5">
-              <Label className="text-xs text-muted-foreground">Type</Label>
-              <Select
-                value={transactionType}
-                onValueChange={(value) => {
-                  setTransactionType(value);
-                  setPage(1);
-                }}
-              >
-                <SelectTrigger className="w-40">
-                  <SelectValue placeholder="All types" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="">All types</SelectItem>
-                  {(Object.keys(transactionTypeLabels) as TransactionType[]).map(
-                    (type) => (
-                      <SelectItem key={type} value={type}>
-                        {transactionTypeLabels[type]}
-                      </SelectItem>
-                    ),
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" size="sm" className="gap-1.5">
+                    <SlidersHorizontal className="size-3.5" />
+                    Filters
+                    {advancedFilterCount > 0 && (
+                      <span className="inline-flex size-4.5 items-center justify-center rounded-full bg-primary text-[10px] font-semibold text-primary-foreground">
+                        {advancedFilterCount}
+                      </span>
+                    )}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent align="end" className="w-96 p-4">
+                  <div className="grid grid-cols-2 gap-x-3 gap-y-3">
+                    <div className="col-span-2 space-y-1.5">
+                      <Label className="text-xs text-muted-foreground">
+                        Statement
+                      </Label>
+                      <Select
+                        value={statementUploadId}
+                        onValueChange={(value) => {
+                          setStatementUploadId(value);
+                          setPage(1);
+                        }}
+                      >
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="All statements" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="">All statements</SelectItem>
+                          {statementsData?.data.map((statement) => (
+                            <SelectItem
+                              key={statement.id}
+                              value={statement.id}
+                            >
+                              {statement.originalFilename}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="col-span-2 space-y-1.5">
+                      <Label className="text-xs text-muted-foreground">
+                        Account
+                      </Label>
+                      <Select
+                        value={bankAccountId}
+                        onValueChange={(value) => {
+                          setBankAccountId(value);
+                          setPage(1);
+                        }}
+                      >
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="All accounts" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="">All accounts</SelectItem>
+                          {bankAccounts?.map((account) => (
+                            <SelectItem key={account.id} value={account.id}>
+                              {account.bankName}
+                              {account.lastFour ? ` ••${account.lastFour}` : ""}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <Label className="text-xs text-muted-foreground">
+                        Type
+                      </Label>
+                      <Select
+                        value={transactionType}
+                        onValueChange={(value) => {
+                          setTransactionType(value);
+                          setPage(1);
+                        }}
+                      >
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="All types" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="">All types</SelectItem>
+                          {(
+                            Object.keys(
+                              transactionTypeLabels,
+                            ) as TransactionType[]
+                          ).map((type) => (
+                            <SelectItem key={type} value={type}>
+                              {transactionTypeLabels[type]}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <Label className="text-xs text-muted-foreground">
+                        Category
+                      </Label>
+                      <Select
+                        value={categoryId}
+                        onValueChange={(value) => {
+                          setCategoryId(value);
+                          setPage(1);
+                        }}
+                      >
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="All categories" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="">All categories</SelectItem>
+                          {categoriesData?.data.map((category) => (
+                            <SelectItem key={category.id} value={category.id}>
+                              {category.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="col-span-2 space-y-1.5">
+                      <Label className="text-xs text-muted-foreground">
+                        Payment method
+                      </Label>
+                      <Select
+                        value={paymentMethodId}
+                        onValueChange={(value) => {
+                          setPaymentMethodId(value);
+                          setPage(1);
+                        }}
+                      >
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="All methods" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="">All methods</SelectItem>
+                          {paymentMethods?.map((method) => (
+                            <SelectItem key={method.id} value={method.id}>
+                              {method.name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="col-span-2 space-y-1.5">
+                      <Label className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                        <CalendarRange className="size-3.5" />
+                        Date range
+                      </Label>
+                      <div className="flex items-center gap-2">
+                        <Input
+                          type="date"
+                          className="w-full"
+                          value={startDate}
+                          onChange={(e) => {
+                            setStartDate(e.target.value);
+                            setPage(1);
+                          }}
+                        />
+                        <span className="text-xs text-muted-foreground">
+                          to
+                        </span>
+                        <Input
+                          type="date"
+                          className="w-full"
+                          value={endDate}
+                          onChange={(e) => {
+                            setEndDate(e.target.value);
+                            setPage(1);
+                          }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {hasActiveFilters && (
+                    <>
+                      <div className="my-3 border-t" />
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="w-full"
+                        onClick={resetFilters}
+                      >
+                        <RotateCcw className="size-3.5" />
+                        Reset all filters
+                      </Button>
+                    </>
                   )}
-                </SelectContent>
-              </Select>
+                </PopoverContent>
+              </Popover>
             </div>
 
-            <div className="space-y-1.5">
-              <Label className="text-xs text-muted-foreground">Direction</Label>
-              <Select
-                value={direction}
-                onValueChange={(value) => {
-                  setDirection(value);
-                  setPage(1);
-                }}
-              >
-                <SelectTrigger className="w-32">
-                  <SelectValue placeholder="Both" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="">Both</SelectItem>
-                  <SelectItem value="debit">Debit</SelectItem>
-                  <SelectItem value="credit">Credit</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-1.5">
-              <Label className="text-xs text-muted-foreground">Category</Label>
-              <Select
-                value={categoryId}
-                onValueChange={(value) => {
-                  setCategoryId(value);
-                  setPage(1);
-                }}
-              >
-                <SelectTrigger className="w-40">
-                  <SelectValue placeholder="All categories" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="">All categories</SelectItem>
-                  {categoriesData?.data.map((category) => (
-                    <SelectItem key={category.id} value={category.id}>
-                      {category.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-1.5">
-              <Label className="text-xs text-muted-foreground">Payment</Label>
-              <Select
-                value={paymentMethodId}
-                onValueChange={(value) => {
-                  setPaymentMethodId(value);
-                  setPage(1);
-                }}
-              >
-                <SelectTrigger className="w-32">
-                  <SelectValue placeholder="All methods" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="">All methods</SelectItem>
-                  {paymentMethods?.map((method) => (
-                    <SelectItem key={method.id} value={method.id}>
-                      {method.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-1.5">
-              <Label className="text-xs text-muted-foreground">From</Label>
-              <Input
-                type="date"
-                className="w-40"
-                value={startDate}
-                onChange={(e) => {
-                  setStartDate(e.target.value);
-                  setPage(1);
-                }}
-              />
-            </div>
-
-            <div className="space-y-1.5">
-              <Label className="text-xs text-muted-foreground">To</Label>
-              <Input
-                type="date"
-                className="w-40"
-                value={endDate}
-                onChange={(e) => {
-                  setEndDate(e.target.value);
-                  setPage(1);
-                }}
-              />
-            </div>
-
-            <div className="flex items-center gap-2 pb-2">
-              <Checkbox
-                id="needs-review"
-                checked={markForReviewOnly}
-                onCheckedChange={(checked) => {
-                  setMarkForReviewOnly(Boolean(checked));
-                  setPage(1);
-                }}
-              />
-              <Label htmlFor="needs-review" className="whitespace-nowrap">
-                Needs review only
-              </Label>
-            </div>
-
-            {hasActiveFilters && (
-              <Button variant="ghost" size="sm" onClick={resetFilters}>
-                <RotateCcw className="size-4" />
-                Reset
-              </Button>
+            {activeFilterChips.length > 0 && (
+              <div className="flex flex-wrap items-center gap-1.5">
+                {activeFilterChips.map((chip) => (
+                  <button
+                    key={chip.key}
+                    type="button"
+                    onClick={chip.onRemove}
+                    className="group inline-flex max-w-64 items-center gap-1.5 rounded-full border bg-muted/50 py-0.5 pr-1.5 pl-2.5 text-xs font-medium transition-colors hover:border-destructive/40 hover:bg-destructive/10"
+                    title="Remove filter"
+                  >
+                    <span className="truncate">{chip.label}</span>
+                    <X className="size-3 shrink-0 text-muted-foreground transition-colors group-hover:text-destructive" />
+                  </button>
+                ))}
+                <button
+                  type="button"
+                  onClick={resetFilters}
+                  className="ml-1 text-xs font-medium text-muted-foreground underline-offset-2 hover:text-foreground hover:underline"
+                >
+                  Clear all
+                </button>
+              </div>
             )}
           </div>
-        </CardContent>
-      </Card>
 
-      <Card className="w-full">
-        <CardContent className="pt-6">
           <div className="rounded-lg border overflow-hidden">
             <Table>
               <TableHeader>
                 <TableRow>
+                  <TableHead className="w-10">
+                    <Checkbox
+                      checked={selectAllChecked}
+                      onCheckedChange={toggleSelectAll}
+                      aria-label="Select all transactions"
+                    />
+                  </TableHead>
                   <TableHead>Date</TableHead>
                   <TableHead>Merchant / Description</TableHead>
                   <TableHead>Account</TableHead>
@@ -392,7 +654,7 @@ function TransactionsPageContent() {
                 {isLoading ? (
                   <TableRow>
                     <TableCell
-                      colSpan={9}
+                      colSpan={10}
                       className="py-8 text-center text-muted-foreground"
                     >
                       <Loader2 className="mx-auto size-5 animate-spin" />
@@ -401,7 +663,7 @@ function TransactionsPageContent() {
                 ) : transactions.length === 0 ? (
                   <TableRow>
                     <TableCell
-                      colSpan={9}
+                      colSpan={10}
                       className="py-8 text-center text-muted-foreground"
                     >
                       No transactions found. Extract a statement to get started.
@@ -416,6 +678,16 @@ function TransactionsPageContent() {
                         className="cursor-pointer"
                         onClick={() => setReviewing(transaction)}
                       >
+                        <TableCell
+                          className="w-10"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <Checkbox
+                            checked={selectedIds.has(transaction.id)}
+                            onCheckedChange={() => toggleSelect(transaction.id)}
+                            aria-label={`Select ${transaction.merchantName ?? "transaction"}`}
+                          />
+                        </TableCell>
                         <TableCell className="whitespace-nowrap">
                           {formatDate(transaction.transactionDate)}
                         </TableCell>
@@ -452,8 +724,9 @@ function TransactionsPageContent() {
                         </TableCell>
                         <TableCell>
                           <span className="text-sm">
-                            {transactionTypeLabels[transaction.transactionType] ??
-                              transaction.transactionType}
+                            {transactionTypeLabels[
+                              transaction.transactionType
+                            ] ?? transaction.transactionType}
                           </span>
                         </TableCell>
                         <TableCell className="text-right">
@@ -476,10 +749,7 @@ function TransactionsPageContent() {
                               Needs review
                             </Badge>
                           ) : (
-                            <Badge
-                              variant="secondary"
-                              className="font-normal"
-                            >
+                            <Badge variant="secondary" className="font-normal">
                               Reviewed
                             </Badge>
                           )}
@@ -565,6 +835,33 @@ function TransactionsPageContent() {
         </CardContent>
       </Card>
 
+      <ActionBar
+        open={selectedIds.size > 0}
+        onOpenChange={(open) => {
+          if (!open) setSelectedIds(new Set());
+        }}
+      >
+        <ActionBarSelection>{selectedIds.size} selected</ActionBarSelection>
+        <ActionBarSeparator />
+        <ActionBarGroup>
+          <ActionBarItem
+            variant="destructive"
+            disabled={bulkDelete.isPending}
+            onClick={() => setBulkDeleteOpen(true)}
+          >
+            {bulkDelete.isPending ? (
+              <Loader2 className="size-3.5 animate-spin" />
+            ) : (
+              <Trash2 className="size-3.5" />
+            )}
+            Delete selected
+          </ActionBarItem>
+        </ActionBarGroup>
+        <ActionBarClose>
+          <X className="size-3.5" />
+        </ActionBarClose>
+      </ActionBar>
+
       <TransactionReviewDialog
         transaction={reviewing}
         open={Boolean(reviewing)}
@@ -572,6 +869,37 @@ function TransactionsPageContent() {
           if (!open) setReviewing(null);
         }}
       />
+
+      <AlertDialog open={bulkDeleteOpen} onOpenChange={setBulkDeleteOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Transactions</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete {selectedIds.size} transaction
+              {selectedIds.size === 1 ? "" : "s"}? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={bulkDelete.isPending}>
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              variant="destructive"
+              disabled={bulkDelete.isPending}
+              onClick={() => {
+                bulkDelete.mutate({ transactionIds: Array.from(selectedIds) });
+              }}
+            >
+              {bulkDelete.isPending ? (
+                <Loader2 className="size-3.5 animate-spin" />
+              ) : (
+                <Trash2 className="size-3.5" />
+              )}
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

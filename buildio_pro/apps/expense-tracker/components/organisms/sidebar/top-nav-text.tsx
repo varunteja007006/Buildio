@@ -9,6 +9,18 @@ const pageHeader = {
     title: "Settings",
     description: "Manage your account settings and preferences",
   },
+  insights: {
+    title: "Insights",
+    description: "Per-account analytics built from your extracted statements",
+  },
+  statements: {
+    title: "Statements",
+    description: "Upload and manage your bank statements",
+  },
+  transactions: {
+    title: "Transactions",
+    description: "Review and manage your extracted transactions",
+  },
   "income-source": {
     title: "Income Sources",
     description:

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Metadata } from "next";
 import { redirect } from "next/navigation";
 
 import {
@@ -8,6 +9,8 @@ import {
   Sparkles,
   Wallet,
 } from "lucide-react";
+
+import { appConfig } from "@/app/appConfig";
 
 import { Donut } from "@/components/landing/donut";
 import { ModeToggle } from "@/components/mode-toggle";
@@ -84,6 +87,12 @@ function LoginPanel() {
     </aside>
   );
 }
+
+export const metadata: Metadata = {
+  title: `Log In | ${appConfig.name}`,
+  description:
+    "Sign in to your Expense Tracker account to track your expenses, income, and budgets.",
+};
 
 export default async function Page() {
   const session = await getAuthSession();
