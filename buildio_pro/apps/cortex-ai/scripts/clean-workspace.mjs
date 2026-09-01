@@ -1,7 +1,8 @@
 #!/usr/bin/env node
+/* global process */
 
-import path from "node:path";
 import { rm, readdir } from "node:fs/promises";
+import path from "node:path";
 
 /** Directories that are always caches (safe to remove anywhere, including node_modules) */
 const ALWAYS_CACHE_DIR_NAMES = new Set([
