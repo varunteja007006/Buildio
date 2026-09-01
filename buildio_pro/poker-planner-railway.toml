@@ -4,4 +4,4 @@ buildCommand = "cd packages/games-convex-backend && npx convex deploy && cd ../.
 
 [deploy]
 startCommand = "pnpm start:poker-planner"
-restartPolicyType = "never"
+restartPolicyType = "ON_FAILURE"
