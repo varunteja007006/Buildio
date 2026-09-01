@@ -50,7 +50,7 @@ export const useDeleteIncomeSource = (options?: {
         });
         options?.onSuccess?.();
       },
-      onError: (error: any) => {
+      onError: (error) => {
         toast.error(error.message || "Failed to delete income source");
         options?.onError?.(error);
       },
@@ -61,7 +61,7 @@ export const useDeleteIncomeSource = (options?: {
 // Create income source
 export function useCreateIncomeSource(options?: {
   onSuccess?: () => void;
-  onError?: (error: any) => void;
+  onError?: (error: unknown) => void;
 }) {
   const trpc = useTRPC();
   const queryClient = useQueryClient();
@@ -78,7 +78,7 @@ export function useCreateIncomeSource(options?: {
         });
         options?.onSuccess?.();
       },
-      onError: (error: any) => {
+      onError: (error) => {
         toast.error(error.message || "Failed to create income source");
         options?.onError?.(error);
       },
@@ -89,7 +89,7 @@ export function useCreateIncomeSource(options?: {
 // Update income source
 export function useUpdateIncomeSource(options?: {
   onSuccess?: () => void;
-  onError?: (error: any) => void;
+  onError?: (error: unknown) => void;
 }) {
   const trpc = useTRPC();
   const queryClient = useQueryClient();
@@ -111,7 +111,7 @@ export function useUpdateIncomeSource(options?: {
         });
         options?.onSuccess?.();
       },
-      onError: (error: any) => {
+      onError: (error) => {
         toast.error(error.message || "Failed to update income source");
         options?.onError?.(error);
       },
@@ -144,7 +144,7 @@ export const useDeleteMultipleIncomeSource = (options?: {
         });
         options?.onSuccess?.();
       },
-      onError: (error: any) => {
+      onError: (error) => {
         toast.error(error.message || "Failed to delete income source");
         options?.onError?.(error);
       },

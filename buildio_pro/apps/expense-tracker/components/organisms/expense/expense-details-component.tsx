@@ -18,7 +18,6 @@ import { useRouter } from "next/navigation";
 import * as React from "react";
 
 import { useGetExpenseByID } from "@/hooks";
-import { useTRPC } from "@/lib/trpc-client";
 
 interface ExpenseDetailsComponentProps {
   expenseId: string;
@@ -28,7 +27,6 @@ export function ExpenseDetailsComponent({
   expenseId,
 }: ExpenseDetailsComponentProps) {
   const router = useRouter();
-  const trpc = useTRPC();
 
   const { data: expense, isLoading } = useGetExpenseByID(expenseId);
 
@@ -97,8 +95,8 @@ export function ExpenseDetailsComponent({
           {/* Category */}
           <div>
             <p className="text-sm text-muted-foreground mb-2">Category</p>
-            {expense.category && (expense.category as any).name ? (
-              <Badge variant="outline">{(expense.category as any).name}</Badge>
+            {expense.category?.name ? (
+              <Badge variant="outline">{expense.category.name}</Badge>
             ) : (
               <p className="text-sm text-muted-foreground">
                 No category assigned

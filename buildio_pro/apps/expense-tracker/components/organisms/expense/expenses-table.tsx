@@ -124,8 +124,8 @@ const columns: ColumnDef<ExpenseRecord>[] = [
 ];
 
 export const ExpenseListTable = () => {
-  const [sortBy, setSortBy] = React.useState<"date" | "amount">("date");
-  const [sortOrder, setSortOrder] = React.useState<"asc" | "desc">("desc");
+  const [sortBy] = React.useState<"date" | "amount">("date");
+  const [sortOrder] = React.useState<"asc" | "desc">("desc");
   // Filter states
   const [search, setSearch] = React.useState("");
   const [selectedCategory, setSelectedCategory] = React.useState<
@@ -157,7 +157,6 @@ export const ExpenseListTable = () => {
   const expenses = data?.data || [];
   const meta = data?.meta;
   const totalPages = meta?.totalPages ?? 0;
-  const currentPage = meta?.currentPage ?? 1;
 
   // Map expenses to Transaction interface
   const transactions: ExpenseRecord[] = expenses.map((expense) => ({

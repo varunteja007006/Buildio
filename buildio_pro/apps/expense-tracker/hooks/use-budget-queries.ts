@@ -9,7 +9,6 @@ import { useTRPC } from "@/lib/trpc-client";
 const budgetKeys = {
   all: ["budget"] as const,
   lists: () => [...budgetKeys.all, "list"] as const,
-  list: (filters: any) => [...budgetKeys.lists(), filters] as const,
   details: () => [...budgetKeys.all, "detail"] as const,
   detail: (id: string) => [...budgetKeys.details(), id] as const,
   active: () => [...budgetKeys.all, "active"] as const,
@@ -40,7 +39,7 @@ export function useBudgetDetails(budgetId: string) {
 // Create budget
 export function useCreateBudget(options?: {
   onSuccess?: () => void;
-  onError?: (error: any) => void;
+  onError?: (error: unknown) => void;
 }) {
   const trpc = useTRPC();
   const queryClient = useQueryClient();
@@ -55,7 +54,7 @@ export function useCreateBudget(options?: {
         queryClient.invalidateQueries({ queryKey: ["dashboard"] });
         options?.onSuccess?.();
       },
-      onError: (error: any) => {
+      onError: (error) => {
         toast.error(error.message || "Failed to create budget");
         options?.onError?.(error);
       },
@@ -66,7 +65,7 @@ export function useCreateBudget(options?: {
 // Update budget
 export function useUpdateBudget(options?: {
   onSuccess?: () => void;
-  onError?: (error: any) => void;
+  onError?: (error: unknown) => void;
 }) {
   const trpc = useTRPC();
   const queryClient = useQueryClient();
@@ -85,7 +84,7 @@ export function useUpdateBudget(options?: {
         queryClient.invalidateQueries({ queryKey: ["dashboard"] });
         options?.onSuccess?.();
       },
-      onError: (error: any) => {
+      onError: (error) => {
         toast.error(error.message || "Failed to update budget");
         options?.onError?.(error);
       },
@@ -96,7 +95,7 @@ export function useUpdateBudget(options?: {
 // Delete budget
 export function useDeleteBudget(options?: {
   onSuccess?: () => void;
-  onError?: (error: any) => void;
+  onError?: (error: unknown) => void;
 }) {
   const trpc = useTRPC();
   const queryClient = useQueryClient();
@@ -111,7 +110,7 @@ export function useDeleteBudget(options?: {
         queryClient.invalidateQueries({ queryKey: ["dashboard"] });
         options?.onSuccess?.();
       },
-      onError: (error: any) => {
+      onError: (error) => {
         toast.error(error.message || "Failed to delete budget");
         options?.onError?.(error);
       },

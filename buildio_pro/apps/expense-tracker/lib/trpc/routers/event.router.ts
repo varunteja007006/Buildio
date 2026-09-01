@@ -149,8 +149,7 @@ export const eventRouter = createTRPCRouter({
 
       const eventsWithTotals = events.map((evt) => {
         const totalSpent = evt.expenses.reduce(
-          (sum: number, ee: any) =>
-            sum + numericToNumber(ee.expense.transaction?.amount),
+          (sum, ee) => sum + numericToNumber(ee.expense.transaction?.amount),
           0,
         );
         return {
@@ -201,8 +200,7 @@ export const eventRouter = createTRPCRouter({
       }
 
       const totalSpent = evt.expenses.reduce(
-        (sum: number, ee: any) =>
-          sum + numericToNumber(ee.expense.transaction?.amount),
+        (sum, ee) => sum + numericToNumber(ee.expense.transaction?.amount),
         0,
       );
 

@@ -27,7 +27,7 @@ export function useExpenseDetails(expenseId: string) {
 // Create expense
 export function useCreateExpense(options?: {
   onSuccess?: () => void;
-  onError?: (error: any) => void;
+  onError?: (error: unknown) => void;
 }) {
   const trpc = useTRPC();
   const queryClient = useQueryClient();
@@ -42,7 +42,7 @@ export function useCreateExpense(options?: {
         });
         options?.onSuccess?.();
       },
-      onError: (error: any) => {
+      onError: (error) => {
         toast.error(error.message || "Failed to create expense");
         options?.onError?.(error);
       },
@@ -53,14 +53,14 @@ export function useCreateExpense(options?: {
 // Update expense
 export function useUpdateExpense(options?: {
   onSuccess?: () => void;
-  onError?: (error: any) => void;
+  onError?: (error: unknown) => void;
 }) {
   const trpc = useTRPC();
   const queryClient = useQueryClient();
 
   return useMutation(
     trpc.expense.updateExpense.mutationOptions({
-      onSuccess: (data, variables) => {
+      onSuccess: () => {
         toast.success("Expense updated successfully!");
         // Invalidate expense queries
         queryClient.invalidateQueries({
@@ -68,7 +68,7 @@ export function useUpdateExpense(options?: {
         });
         options?.onSuccess?.();
       },
-      onError: (error: any) => {
+      onError: (error) => {
         toast.error(error.message || "Failed to update expense");
         options?.onError?.(error);
       },
@@ -79,7 +79,7 @@ export function useUpdateExpense(options?: {
 // Delete expense
 export function useDeleteExpense(options?: {
   onSuccess?: () => void;
-  onError?: (error: any) => void;
+  onError?: (error: unknown) => void;
 }) {
   const trpc = useTRPC();
   const queryClient = useQueryClient();
@@ -94,7 +94,7 @@ export function useDeleteExpense(options?: {
         });
         options?.onSuccess?.();
       },
-      onError: (error: any) => {
+      onError: (error) => {
         toast.error(error.message || "Failed to delete expense");
         options?.onError?.(error);
       },
@@ -105,7 +105,7 @@ export function useDeleteExpense(options?: {
 // Delete multiple expenses
 export function useDeleteExpenses(options?: {
   onSuccess?: () => void;
-  onError?: (error: any) => void;
+  onError?: (error: unknown) => void;
 }) {
   const trpc = useTRPC();
   const queryClient = useQueryClient();
@@ -120,7 +120,7 @@ export function useDeleteExpenses(options?: {
         });
         options?.onSuccess?.();
       },
-      onError: (error: any) => {
+      onError: (error) => {
         toast.error(error.message || "Failed to delete expense");
         options?.onError?.(error);
       },

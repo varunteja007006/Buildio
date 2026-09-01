@@ -26,7 +26,7 @@ export function useIncomeDetails(incomeId: string) {
 // Create income
 export function useCreateIncome(options?: {
   onSuccess?: () => void;
-  onError?: (error: any) => void;
+  onError?: (error: unknown) => void;
 }) {
   const trpc = useTRPC();
   const queryClient = useQueryClient();
@@ -45,7 +45,7 @@ export function useCreateIncome(options?: {
         });
         options?.onSuccess?.();
       },
-      onError: (error: any) => {
+      onError: (error) => {
         toast.error(error.message || "Failed to create income");
         options?.onError?.(error);
       },
@@ -56,14 +56,14 @@ export function useCreateIncome(options?: {
 // Update income
 export function useUpdateIncome(options?: {
   onSuccess?: () => void;
-  onError?: (error: any) => void;
+  onError?: (error: unknown) => void;
 }) {
   const trpc = useTRPC();
   const queryClient = useQueryClient();
 
   return useMutation(
     trpc.income.updateIncome.mutationOptions({
-      onSuccess: (data, variables) => {
+      onSuccess: () => {
         toast.success("Income updated successfully!");
         // Invalidate lists
         queryClient.invalidateQueries({
@@ -79,7 +79,7 @@ export function useUpdateIncome(options?: {
         });
         options?.onSuccess?.();
       },
-      onError: (error: any) => {
+      onError: (error) => {
         toast.error(error.message || "Failed to update income");
         options?.onError?.(error);
       },
@@ -90,7 +90,7 @@ export function useUpdateIncome(options?: {
 // Delete income
 export function useDeleteIncome(options?: {
   onSuccess?: () => void;
-  onError?: (error: any) => void;
+  onError?: (error: unknown) => void;
 }) {
   const trpc = useTRPC();
   const queryClient = useQueryClient();
@@ -109,7 +109,7 @@ export function useDeleteIncome(options?: {
         });
         options?.onSuccess?.();
       },
-      onError: (error: any) => {
+      onError: (error) => {
         toast.error(error.message || "Failed to delete income");
         options?.onError?.(error);
       },
@@ -120,7 +120,7 @@ export function useDeleteIncome(options?: {
 // delete incomes
 export function useDeleteIncomes(options?: {
   onSuccess?: () => void;
-  onError?: (error: any) => void;
+  onError?: (error: unknown) => void;
 }) {
   const trpc = useTRPC();
   const queryClient = useQueryClient();
@@ -139,7 +139,7 @@ export function useDeleteIncomes(options?: {
         });
         options?.onSuccess?.();
       },
-      onError: (error: any) => {
+      onError: (error) => {
         toast.error(error.message || "Failed to delete income");
         options?.onError?.(error);
       },

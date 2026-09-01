@@ -12,26 +12,17 @@ import {
   DialogTrigger,
 } from "@workspace/ui/components/dialog";
 import { Eye, Loader2 } from "lucide-react";
-import { useRouter } from "next/navigation";
 import * as React from "react";
 
 import { AuditDateBlock } from "@/components/atoms/audit-date-block";
-import { useDeleteIncomeSource, useIncomeSourceDetails } from "@/hooks";
+import { useIncomeSourceDetails } from "@/hooks";
 
 interface IncomeSourceDetailsProps {
   sourceId: string;
 }
 
 export function IncomeSourceDetails({ sourceId }: IncomeSourceDetailsProps) {
-  const router = useRouter();
-
   const { data: source, isLoading } = useIncomeSourceDetails(sourceId);
-
-  const deleteMutation = useDeleteIncomeSource({
-    onSuccess: () => {
-      router.push("/income-sources");
-    },
-  });
 
   const renderContent = () => {
     if (isLoading) {

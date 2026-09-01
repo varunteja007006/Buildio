@@ -20,7 +20,7 @@ interface Transaction {
   category?: { name: string };
   type: "income" | "expense";
   name: string;
-  meta?: any;
+  meta?: { label?: string };
 }
 
 interface RecentTransactionsProps {

@@ -75,7 +75,7 @@ export function BudgetFormComponent({
         toast.success("Budget created successfully!");
         router.push("/budgets");
       },
-      onError: (error: any) => {
+      onError: (error) => {
         toast.error(error.message || "Failed to create budget");
       },
     }),
@@ -87,7 +87,7 @@ export function BudgetFormComponent({
         toast.success("Budget updated successfully!");
         router.push(`/budgets/${budgetId}`);
       },
-      onError: (error: any) => {
+      onError: (error) => {
         toast.error(error.message || "Failed to update budget");
       },
     }),

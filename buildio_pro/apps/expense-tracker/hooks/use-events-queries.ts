@@ -59,7 +59,7 @@ export const useEventUpdate = (options?: {
         options?.onSuccess?.();
       },
       onError: (error) => {
-        toast.error((error as any).message || "Failed to update event");
+        toast.error(error.message || "Failed to update event");
         options?.onError?.(error);
       },
     }),
@@ -127,7 +127,7 @@ export const useRemoveLinkedExpense = (options?: {
         });
         options?.onSuccess?.();
       },
-      onError: (error: any) => {
+      onError: (error) => {
         toast.error(error.message || "Failed to remove expense");
         options?.onError?.(error);
       },
@@ -157,7 +157,7 @@ export const useLinkingExpenseToEvent = (options?: {
         });
         options?.onSuccess?.();
       },
-      onError: (error: any) => {
+      onError: (error) => {
         toast.error(error.message || "Failed to add expenses");
         options?.onError?.(error);
       },

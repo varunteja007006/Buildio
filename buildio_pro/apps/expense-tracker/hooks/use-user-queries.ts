@@ -19,7 +19,7 @@ export function useUserPreferencesQuery() {
 // Update user preferences
 export function useUpdateUserPreferences(options?: {
   onSuccess?: () => void;
-  onError?: (error: any) => void;
+  onError?: (error: unknown) => void;
 }) {
   const trpc = useTRPC();
   const queryClient = useQueryClient();
@@ -33,7 +33,7 @@ export function useUpdateUserPreferences(options?: {
         });
         options?.onSuccess?.();
       },
-      onError: (error: any) => {
+      onError: (error) => {
         toast.error(error.message || "Failed to update preferences");
         options?.onError?.(error);
       },
@@ -54,7 +54,7 @@ export function useUserProfileQuery() {
 // Update user profile
 export function useUpdateUserProfile(options?: {
   onSuccess?: () => void;
-  onError?: (error: any) => void;
+  onError?: (error: unknown) => void;
 }) {
   const trpc = useTRPC();
   const queryClient = useQueryClient();
@@ -68,7 +68,7 @@ export function useUpdateUserProfile(options?: {
         });
         options?.onSuccess?.();
       },
-      onError: (error: any) => {
+      onError: (error) => {
         toast.error(error.message || "Failed to update profile");
         options?.onError?.(error);
       },

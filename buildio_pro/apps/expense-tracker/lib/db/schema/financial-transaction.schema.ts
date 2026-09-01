@@ -1,5 +1,6 @@
 import { relations } from "drizzle-orm";
 import {
+  AnyPgColumn,
   boolean,
   index,
   integer,
@@ -86,7 +87,7 @@ export const financialTransaction = pgTable(
     international: boolean("international").default(false).notNull(),
     rewardPoints: numeric("reward_points", { precision: 19, scale: 4 }),
     linkedTransactionId: text("linked_transaction_id").references(
-      (): any => financialTransaction.id,
+      (): AnyPgColumn => financialTransaction.id,
       { onDelete: "set null" },
     ),
     extractionConfidence: numeric("extraction_confidence", {

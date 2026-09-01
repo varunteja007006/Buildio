@@ -1,6 +1,6 @@
 "use client";
 
-import { BarChart3, PieChart, Wallet } from "lucide-react";
+import { BarChart3, PieChart } from "lucide-react";
 
 export function GoofyLoader() {
   return (

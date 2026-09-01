@@ -141,7 +141,7 @@ export function IncomeForm({ mode, incomeId, initialValues }: IncomeFormProps) {
             <form.AppField name="sourceId">
               {(field) => (
                 <field.Select label="Income Source (Optional)">
-                  {sources.map((source: any) => (
+                  {sources.map((source) => (
                     <SelectItem key={source.id} value={source.id}>
                       {source.name}
                     </SelectItem>

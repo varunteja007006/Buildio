@@ -10,17 +10,10 @@ import {
   SidebarMenuItem,
 } from "@workspace/ui/components/sidebar";
 import {
-  CalendarDays,
   FileText,
-  HandHeart,
-  Landmark,
   LayoutDashboard,
-  LifeBuoy,
-  MessageSquareText,
-  PiggyBank,
   Receipt,
   Settings2,
-  Tags,
   TrendingUp,
   Wallet,
 } from "lucide-react";

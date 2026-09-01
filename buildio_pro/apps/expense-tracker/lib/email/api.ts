@@ -19,7 +19,7 @@ export const emailVerification = async ({
   subject: string;
   url: string;
 }) => {
-  const { data, error } = await resend.emails.send({
+  await resend.emails.send({
     from: "Acme <onboarding@resend.dev>",
     to: devEnv ? ["delivered@resend.dev"] : to,
     subject: subject,

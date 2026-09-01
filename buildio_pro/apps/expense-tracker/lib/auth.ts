@@ -61,20 +61,20 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: process.env.ALLOW_EMAIL_LOGIN === "true",
     requireEmailVerification: process.env.SEND_EMAIL_VERIFICATION == "true",
-    sendResetPassword: async ({ user, url, token }, request) => {
+    sendResetPassword: async ({ user, url }) => {
       await emailResetPassword({
         to: [user.email],
         subject: "Reset your password",
         url: `${url}`,
       });
     },
-    onPasswordReset: async ({ user }, request) => {
+    onPasswordReset: async ({ user }) => {
       console.log(`Password for user ${user.email} has been reset.`);
     },
   },
 
   emailVerification: {
-    sendVerificationEmail: async ({ user, url, token }, request) => {
+    sendVerificationEmail: async ({ user, url }) => {
       await emailVerification({
         to: [user.email],
         subject: "Verify your email address",

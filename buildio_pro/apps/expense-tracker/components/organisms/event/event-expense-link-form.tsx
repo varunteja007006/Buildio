@@ -76,7 +76,7 @@ export const EventExpenseLinkForm = ({ eventId }: { eventId: string }) => {
                 />
                 <div className="flex-1">
                   <p className="font-medium">
-                    {(expense as any).category?.name || "Uncategorized"}
+                    {expense.category?.name || "Uncategorized"}
                   </p>
                   <p className="text-sm text-muted-foreground">
                     {expense.name}

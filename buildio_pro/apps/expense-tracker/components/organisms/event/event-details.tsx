@@ -1,6 +1,5 @@
 "use client";
 
-import { useMutation } from "@tanstack/react-query";
 import { Badge } from "@workspace/ui/components/badge";
 import { Button } from "@workspace/ui/components/button";
 import {
@@ -22,11 +21,8 @@ import {
 import { cn } from "@workspace/ui/lib/utils";
 import { format } from "date-fns";
 import { Eye, Loader, X } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
 
 import { useGetEventById, useRemoveLinkedExpense } from "@/hooks";
-import { useTRPC } from "@/lib/trpc-client";
 
 import { EventExpenseLinkForm, EventSpendingHistoryChart } from ".";
 
@@ -35,9 +31,6 @@ interface EventDetailsProps {
 }
 
 export function EventDetails({ eventId }: EventDetailsProps) {
-  const router = useRouter();
-  const trpc = useTRPC();
-
   const { data: event } = useGetEventById(eventId);
 
   if (!event) {

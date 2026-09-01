@@ -1,6 +1,6 @@
 "use client";
 
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 import { useTRPC } from "@/lib/trpc-client";
@@ -25,18 +25,16 @@ export function useExpenseCategoryDetails(categoryId: string) {
 // Create expense category
 export function useCreateExpenseCategory(options?: {
   onSuccess?: () => void;
-  onError?: (error: any) => void;
+  onError?: (error: unknown) => void;
 }) {
   const trpc = useTRPC();
-  const queryClient = useQueryClient();
-
   return useMutation(
     trpc.expenseCategory.createCategory.mutationOptions({
       onSuccess: () => {
         toast.success("Expense category created successfully!");
         options?.onSuccess?.();
       },
-      onError: (error: any) => {
+      onError: (error) => {
         toast.error(error.message || "Failed to create expense category");
         options?.onError?.(error);
       },
@@ -47,18 +45,16 @@ export function useCreateExpenseCategory(options?: {
 // Update expense category
 export function useUpdateExpenseCategory(options?: {
   onSuccess?: () => void;
-  onError?: (error: any) => void;
+  onError?: (error: unknown) => void;
 }) {
   const trpc = useTRPC();
-  const queryClient = useQueryClient();
-
   return useMutation(
     trpc.expenseCategory.updateCategory.mutationOptions({
-      onSuccess: (data, variables) => {
+      onSuccess: () => {
         toast.success("Expense category updated successfully!");
         options?.onSuccess?.();
       },
-      onError: (error: any) => {
+      onError: (error) => {
         toast.error(error.message || "Failed to update expense category");
         options?.onError?.(error);
       },
@@ -69,11 +65,9 @@ export function useUpdateExpenseCategory(options?: {
 // Delete expense category
 export function useDeleteExpenseCategory(options?: {
   onSuccess?: () => void;
-  onError?: (error: any) => void;
+  onError?: (error: unknown) => void;
 }) {
   const trpc = useTRPC();
-  const queryClient = useQueryClient();
-
   return useMutation(
     trpc.expenseCategory.deleteCategory.mutationOptions({
       onSuccess: () => {
@@ -81,7 +75,7 @@ export function useDeleteExpenseCategory(options?: {
 
         options?.onSuccess?.();
       },
-      onError: (error: any) => {
+      onError: (error) => {
         toast.error(error.message || "Failed to delete expense category");
         options?.onError?.(error);
       },

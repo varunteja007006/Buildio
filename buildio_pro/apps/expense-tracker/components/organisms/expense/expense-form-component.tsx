@@ -15,7 +15,6 @@ import { FieldGroup } from "@workspace/ui/components/field";
 import { useAppForm } from "@workspace/ui/components/forms/hooks";
 import { SelectItem } from "@workspace/ui/components/select";
 import { Loader2 } from "lucide-react";
-import { useRouter } from "next/navigation";
 import * as React from "react";
 import * as z from "zod";
 
@@ -171,7 +170,7 @@ export function ExpenseFormComponent({
               <form.AppField name="categoryId">
                 {(field) => (
                   <field.Select label="Category (Optional)">
-                    {categories.map((category: any) => (
+                    {categories.map((category) => (
                       <SelectItem key={category.id} value={category.id}>
                         {category.name}
                       </SelectItem>
@@ -183,7 +182,7 @@ export function ExpenseFormComponent({
               <form.AppField name="budgetId">
                 {(field) => (
                   <field.Select label="Budget (Optional)">
-                    {budgets.map((budget: any) => (
+                    {budgets.map((budget) => (
                       <SelectItem key={budget.id} value={budget.id}>
                         {budget.name}
                       </SelectItem>

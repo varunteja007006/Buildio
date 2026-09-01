@@ -161,7 +161,7 @@ export const incomeSourceRouter = createTRPCRouter({
     .input(updateIncomeSourceInput)
     .mutation(async ({ input, ctx }) => {
       const { db, dbSchema } = ctx;
-      const { sourceId, ...updates } = input;
+      const { sourceId } = input;
 
       const existingSource = await db.query.incomeSource.findFirst({
         where: eq(dbSchema.incomeSource.id, sourceId),

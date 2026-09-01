@@ -111,7 +111,7 @@ export function ExpenseCategoryListComponent() {
                     </TableCell>
                   </TableRow>
                 ) : (
-                  categories.map((category: any) => (
+                  categories.map((category) => (
                     <TableRow key={category.id}>
                       <TableCell className="font-medium">
                         {category.name}

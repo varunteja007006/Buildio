@@ -12,6 +12,7 @@ import {
 import { Field, FieldGroup } from "@workspace/ui/components/field";
 import { useAppForm } from "@workspace/ui/components/forms/hooks";
 import { Loader2 } from "lucide-react";
+import Image from "next/image";
 import * as React from "react";
 
 import { useUpdateUserProfile, useUserProfileQuery } from "@/hooks";
@@ -105,9 +106,12 @@ export function UserProfileFormComponent() {
                   />
                   {hasValidImage && (
                     <div className="mt-3 flex items-center gap-4">
-                      <img
+                      <Image
                         src={form.state.values.image_url}
                         alt="Profile preview"
+                        width={64}
+                        height={64}
+                        unoptimized
                         className="h-16 w-16 rounded-full object-cover"
                         onError={() => {
                           setImageError(true);
