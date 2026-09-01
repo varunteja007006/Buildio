@@ -11,10 +11,7 @@ import {
   eventRelations,
   eventStatus,
 } from "./event.schema";
-import {
-  expense,
-  expenseRelations,
-} from "./expenses.schema";
+import { expense, expenseRelations } from "./expenses.schema";
 import {
   financialTransaction,
   financialTransactionRelations,
@@ -33,7 +30,12 @@ import {
   investmentTransactionRelations,
   investmentTypes,
 } from "./investment.schema";
-import { paymentMethods, paymentMethodsRelations, paymentProvider, paymentProviderRelations } from "./payment.schema";
+import {
+  paymentMethods,
+  paymentMethodsRelations,
+  paymentProvider,
+  paymentProviderRelations,
+} from "./payment.schema";
 import {
   statementDocumentType,
   statementUpload,

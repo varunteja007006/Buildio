@@ -7,8 +7,6 @@ import { cn } from "@workspace/ui/lib/utils";
 import { Search } from "lucide-react";
 import React from "react";
 
-
-
 export function SearchInput({
   className,
   ...props

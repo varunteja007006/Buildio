@@ -11,7 +11,6 @@ import {
 } from "@workspace/ui/components/alert-dialog";
 import React from "react";
 
-
 import { DeleteBtn } from "@/components/atoms/delete-btn";
 import { useEventDelete } from "@/hooks";
 

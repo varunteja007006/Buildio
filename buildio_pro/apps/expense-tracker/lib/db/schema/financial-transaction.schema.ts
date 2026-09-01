@@ -106,9 +106,7 @@ export const financialTransaction = pgTable(
       table.extractionVersion,
     ),
     index("idx_financial_transaction_user_id").on(table.userId),
-    index("idx_financial_transaction_bank_account_id").on(
-      table.bankAccountId,
-    ),
+    index("idx_financial_transaction_bank_account_id").on(table.bankAccountId),
     index("idx_financial_transaction_statement_upload_id").on(
       table.statementUploadId,
     ),

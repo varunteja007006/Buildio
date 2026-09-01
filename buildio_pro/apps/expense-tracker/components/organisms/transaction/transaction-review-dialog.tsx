@@ -107,7 +107,10 @@ export function TransactionReviewDialog({
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
-  const { data: categoriesData } = useExpenseCategoryList({ limit: 100, page: 1 });
+  const { data: categoriesData } = useExpenseCategoryList({
+    limit: 100,
+    page: 1,
+  });
   const { data: paymentMethods } = usePaymentMethodList();
   const confirmMutation = useTransactionConfirm({
     onSuccess: () => onOpenChange(false),
@@ -123,7 +126,8 @@ export function TransactionReviewDialog({
   const [counterparty, setCounterparty] = React.useState("");
   const [amount, setAmount] = React.useState("");
   const [date, setDate] = React.useState("");
-  const [direction, setDirection] = React.useState<TransactionDirection>("debit");
+  const [direction, setDirection] =
+    React.useState<TransactionDirection>("debit");
   const [transactionType, setTransactionType] =
     React.useState<TransactionType>("unknown");
   const [categoryId, setCategoryId] = React.useState(NO_SELECTION);
@@ -169,7 +173,8 @@ export function TransactionReviewDialog({
       direction,
       transactionType,
       categoryId: categoryId === NO_SELECTION ? null : categoryId,
-      paymentMethodId: paymentMethodId === NO_SELECTION ? null : paymentMethodId,
+      paymentMethodId:
+        paymentMethodId === NO_SELECTION ? null : paymentMethodId,
       referenceNumber: referenceNumber.trim() || null,
       balanceAfter:
         parsedBalance != null && Number.isFinite(parsedBalance)
@@ -190,9 +195,9 @@ export function TransactionReviewDialog({
     confirmMutation.mutate({ transactionId: transaction.id });
   };
 
-  const typeOptions = (Object.keys(transactionTypeLabels) as TransactionType[]).map(
-    (value) => ({ value, label: transactionTypeLabels[value] }),
-  );
+  const typeOptions = (
+    Object.keys(transactionTypeLabels) as TransactionType[]
+  ).map((value) => ({ value, label: transactionTypeLabels[value] }));
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -200,7 +205,8 @@ export function TransactionReviewDialog({
         <DialogHeader>
           <DialogTitle>Review transaction</DialogTitle>
           <DialogDescription>
-            {transaction?.statementUpload?.originalFilename ?? "Extracted transaction"}
+            {transaction?.statementUpload?.originalFilename ??
+              "Extracted transaction"}
           </DialogDescription>
         </DialogHeader>
 
@@ -213,7 +219,9 @@ export function TransactionReviewDialog({
                 </span>
                 <div className="flex items-center gap-2">
                   <Badge
-                    variant={transaction.needsReview ? "destructive" : "secondary"}
+                    variant={
+                      transaction.needsReview ? "destructive" : "secondary"
+                    }
                     className="font-normal"
                   >
                     {transaction.needsReview ? "Needs review" : "Reviewed"}
@@ -258,7 +266,12 @@ export function TransactionReviewDialog({
               </div>
               <div className="space-y-1.5">
                 <Label>Direction</Label>
-                <Select value={direction} onValueChange={(value) => setDirection(value as TransactionDirection)}>
+                <Select
+                  value={direction}
+                  onValueChange={(value) =>
+                    setDirection(value as TransactionDirection)
+                  }
+                >
                   <SelectTrigger className="w-full">
                     <SelectValue />
                   </SelectTrigger>
@@ -272,7 +285,9 @@ export function TransactionReviewDialog({
                 <Label>Type</Label>
                 <Select
                   value={transactionType}
-                  onValueChange={(value) => setTransactionType(value as TransactionType)}
+                  onValueChange={(value) =>
+                    setTransactionType(value as TransactionType)
+                  }
                 >
                   <SelectTrigger className="w-full">
                     <SelectValue />
@@ -304,7 +319,10 @@ export function TransactionReviewDialog({
               </div>
               <div className="space-y-1.5">
                 <Label>Payment method</Label>
-                <Select value={paymentMethodId} onValueChange={setPaymentMethodId}>
+                <Select
+                  value={paymentMethodId}
+                  onValueChange={setPaymentMethodId}
+                >
                   <SelectTrigger className="w-full">
                     <SelectValue placeholder="None" />
                   </SelectTrigger>
@@ -365,7 +383,9 @@ export function TransactionReviewDialog({
                   <Checkbox
                     id="txn-recurring"
                     checked={isRecurring}
-                    onCheckedChange={(checked) => setIsRecurring(Boolean(checked))}
+                    onCheckedChange={(checked) =>
+                      setIsRecurring(Boolean(checked))
+                    }
                   />
                   <Label htmlFor="txn-recurring">Recurring</Label>
                 </div>
@@ -373,7 +393,9 @@ export function TransactionReviewDialog({
                   <Checkbox
                     id="txn-transfer"
                     checked={isTransfer}
-                    onCheckedChange={(checked) => setIsTransfer(Boolean(checked))}
+                    onCheckedChange={(checked) =>
+                      setIsTransfer(Boolean(checked))
+                    }
                   />
                   <Label htmlFor="txn-transfer">Own-account transfer</Label>
                 </div>

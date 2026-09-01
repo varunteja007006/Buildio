@@ -1,7 +1,6 @@
 import { Copyright } from "lucide-react";
 import React from "react";
 
-
 import { appConfig } from "@/app/appConfig";
 
 export function Footer() {

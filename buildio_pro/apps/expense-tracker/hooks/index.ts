@@ -110,7 +110,10 @@ export {
   useTransactionDelete,
   useTransactionBulkDelete,
 } from "./use-transaction-queries";
-export type { TransactionDirection, TransactionType } from "./use-transaction-queries";
+export type {
+  TransactionDirection,
+  TransactionType,
+} from "./use-transaction-queries";
 export type { BankAccountListItem } from "./use-transaction-queries";
 
 // Analytics hooks

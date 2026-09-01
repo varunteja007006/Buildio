@@ -75,8 +75,11 @@ const numericToNumber = (value: string | number | null | undefined) => {
 type ExpenseRow = {
   expense: typeof import("../../db/schema/expenses.schema").expense.$inferSelect;
   transaction: typeof import("../../db/schema/financial-transaction.schema").financialTransaction.$inferSelect;
-  category: typeof import("../../db/schema/categories.schema").expenseCategory.$inferSelect | null;
-  budget: typeof import("../../db/schema/budget.schema").budget.$inferSelect | null;
+  category:
+    | typeof import("../../db/schema/categories.schema").expenseCategory.$inferSelect
+    | null;
+  budget:
+    typeof import("../../db/schema/budget.schema").budget.$inferSelect | null;
 };
 
 const toExpenseDto = (row: ExpenseRow) => ({
@@ -134,10 +137,7 @@ export const expenseRouter = createTRPCRouter({
         .from(dbSchema.expense)
         .innerJoin(
           dbSchema.financialTransaction,
-          eq(
-            dbSchema.expense.transactionId,
-            dbSchema.financialTransaction.id,
-          ),
+          eq(dbSchema.expense.transactionId, dbSchema.financialTransaction.id),
         )
         .leftJoin(
           dbSchema.expenseCategory,
@@ -266,10 +266,7 @@ export const expenseRouter = createTRPCRouter({
         .from(dbSchema.expense)
         .innerJoin(
           dbSchema.financialTransaction,
-          eq(
-            dbSchema.expense.transactionId,
-            dbSchema.financialTransaction.id,
-          ),
+          eq(dbSchema.expense.transactionId, dbSchema.financialTransaction.id),
         )
         .leftJoin(
           dbSchema.expenseCategory,
@@ -367,7 +364,10 @@ export const expenseRouter = createTRPCRouter({
           .from(dbSchema.expense)
           .innerJoin(
             dbSchema.financialTransaction,
-            eq(dbSchema.expense.transactionId, dbSchema.financialTransaction.id),
+            eq(
+              dbSchema.expense.transactionId,
+              dbSchema.financialTransaction.id,
+            ),
           )
           .leftJoin(
             dbSchema.expenseCategory,
@@ -483,7 +483,12 @@ export const expenseRouter = createTRPCRouter({
           await tx
             .update(dbSchema.financialTransaction)
             .set(transactionPayload)
-            .where(eq(dbSchema.financialTransaction.id, existingExpense.transactionId));
+            .where(
+              eq(
+                dbSchema.financialTransaction.id,
+                existingExpense.transactionId,
+              ),
+            );
         }
       });
 

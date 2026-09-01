@@ -1,7 +1,5 @@
 "use client";
 
-
-
 import { useQuery } from "@tanstack/react-query";
 import { Card, CardContent } from "@workspace/ui/components/card";
 import { Loader2 } from "lucide-react";

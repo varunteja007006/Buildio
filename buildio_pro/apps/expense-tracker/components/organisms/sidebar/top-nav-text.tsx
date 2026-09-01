@@ -3,7 +3,6 @@
 import { usePathname } from "next/navigation";
 import React from "react";
 
-
 const pageHeader = {
   settings: {
     title: "Settings",

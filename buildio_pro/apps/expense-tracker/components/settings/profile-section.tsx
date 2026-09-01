@@ -4,8 +4,6 @@ import { CircleCheck, CircleX } from "lucide-react";
 import Image from "next/image";
 import React from "react";
 
-
-
 import { useSession } from "@/lib/auth-client";
 
 import { MainCard } from "./main-card";

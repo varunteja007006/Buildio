@@ -64,7 +64,8 @@ const chartTheme = {
 } as ChartConfig;
 
 function formatCompactCurrency(amount: number | null | undefined): string {
-  if (amount === null || amount === undefined || Number.isNaN(amount)) return "0";
+  if (amount === null || amount === undefined || Number.isNaN(amount))
+    return "0";
   return new Intl.NumberFormat("en-IN", {
     style: "currency",
     currency: "INR",
@@ -182,9 +183,14 @@ function CashFlowCard() {
         ) : (
           <div className="space-y-6">
             {data.map((account) => (
-              <div key={account.bankAccountId} className="space-y-4 rounded-lg border p-4">
+              <div
+                key={account.bankAccountId}
+                className="space-y-4 rounded-lg border p-4"
+              >
                 <div className="flex flex-wrap items-center justify-between gap-2">
-                  <p className="font-medium">{account.accountName ?? "Account"}</p>
+                  <p className="font-medium">
+                    {account.accountName ?? "Account"}
+                  </p>
                   {account.runwayMonths !== null && (
                     <span
                       className={cn(
@@ -231,9 +237,7 @@ function CashFlowCard() {
                     icon={ShieldAlert}
                     label="Deficit months"
                     value={String(account.deficitMonths)}
-                    tone={
-                      account.deficitMonths > 0 ? "negative" : "default"
-                    }
+                    tone={account.deficitMonths > 0 ? "negative" : "default"}
                   />
                 </div>
 
@@ -247,10 +251,18 @@ function CashFlowCard() {
                       width={48}
                       tickFormatter={formatCompactCurrency}
                     />
-                    <ChartTooltip content={<ChartTooltipContent formatter={currencyTooltip} />} />
+                    <ChartTooltip
+                      content={
+                        <ChartTooltipContent formatter={currencyTooltip} />
+                      }
+                    />
                     <ChartLegend content={<ChartLegendContent />} />
                     <Bar dataKey="debit" fill="var(--color-debit)" radius={4} />
-                    <Bar dataKey="credit" fill="var(--color-credit)" radius={4} />
+                    <Bar
+                      dataKey="credit"
+                      fill="var(--color-credit)"
+                      radius={4}
+                    />
                   </BarChart>
                 </ChartContainer>
               </div>
@@ -265,9 +277,12 @@ function CashFlowCard() {
 function EmiSummaryCard() {
   const { data, isLoading } = useEmiSummary();
 
-  const grandMonthly = data?.reduce((sum, a) => sum + a.totalMonthlyInstallment, 0) ?? 0;
-  const grandOutstanding = data?.reduce((sum, a) => sum + a.totalOutstanding, 0) ?? 0;
-  const grandPending = data?.reduce((sum, a) => sum + a.totalPendingInstallments, 0) ?? 0;
+  const grandMonthly =
+    data?.reduce((sum, a) => sum + a.totalMonthlyInstallment, 0) ?? 0;
+  const grandOutstanding =
+    data?.reduce((sum, a) => sum + a.totalOutstanding, 0) ?? 0;
+  const grandPending =
+    data?.reduce((sum, a) => sum + a.totalPendingInstallments, 0) ?? 0;
   const emiCount = data?.reduce((sum, a) => sum + a.emis.length, 0) ?? 0;
 
   return (
@@ -308,9 +323,14 @@ function EmiSummaryCard() {
               />
             </div>
             {data.map((account) => (
-              <div key={account.bankAccountId} className="space-y-3 rounded-lg border p-4">
+              <div
+                key={account.bankAccountId}
+                className="space-y-3 rounded-lg border p-4"
+              >
                 <div className="flex flex-wrap items-center justify-between gap-2">
-                  <p className="font-medium">{account.accountName ?? "Account"}</p>
+                  <p className="font-medium">
+                    {account.accountName ?? "Account"}
+                  </p>
                   <span className="text-muted-foreground text-xs">
                     {formatCurrency(account.totalMonthlyInstallment)}/mo
                   </span>
@@ -319,7 +339,9 @@ function EmiSummaryCard() {
                   {account.emis.map((emi) => {
                     const total = emi.totalInstallments;
                     const paid =
-                      emi.installmentNumber !== null ? emi.installmentNumber : null;
+                      emi.installmentNumber !== null
+                        ? emi.installmentNumber
+                        : null;
                     const progress =
                       total && total > 0 && paid !== null
                         ? Math.min(100, Math.round((paid / total) * 100))
@@ -332,12 +354,17 @@ function EmiSummaryCard() {
                           </span>
                           <span className="text-muted-foreground">
                             {formatCurrency(emi.monthlyInstallment)}/mo ·{" "}
-                            {paid !== null ? `${paid}/${total ?? "?"}` : `${total ?? "?"} total`}
+                            {paid !== null
+                              ? `${paid}/${total ?? "?"}`
+                              : `${total ?? "?"} total`}
                             {emi.pendingInstallments > 0 && (
                               <>
                                 {" · "}
                                 <span className="text-foreground">
-                                  {formatCurrency(emi.monthlyInstallment * emi.pendingInstallments)}
+                                  {formatCurrency(
+                                    emi.monthlyInstallment *
+                                      emi.pendingInstallments,
+                                  )}
                                 </span>{" "}
                                 left
                               </>
@@ -371,7 +398,9 @@ function CardIntelligenceCard() {
         <CardTitle className="flex items-center gap-2">
           <CreditCard className="size-4" /> Credit cards
         </CardTitle>
-        <CardDescription>Utilization, dues and rewards from latest statements</CardDescription>
+        <CardDescription>
+          Utilization, dues and rewards from latest statements
+        </CardDescription>
       </CardHeader>
       <CardContent>
         {isLoading ? (
@@ -385,10 +414,14 @@ function CardIntelligenceCard() {
         ) : (
           <div className="space-y-3">
             {data.map((card) => {
-              const utilizationPct = card.utilization !== null ? card.utilization * 100 : null;
+              const utilizationPct =
+                card.utilization !== null ? card.utilization * 100 : null;
               const high = utilizationPct !== null && utilizationPct > 30;
               return (
-                <div key={card.bankAccountId} className="space-y-3 rounded-lg border p-4">
+                <div
+                  key={card.bankAccountId}
+                  className="space-y-3 rounded-lg border p-4"
+                >
                   <div className="flex flex-wrap items-center justify-between gap-2">
                     <p className="font-medium">{card.accountName ?? "Card"}</p>
                     <span className="text-muted-foreground text-xs">
@@ -400,7 +433,9 @@ function CardIntelligenceCard() {
                   {utilizationPct !== null && (
                     <div className="space-y-1.5">
                       <div className="flex items-center justify-between text-xs">
-                        <span className="text-muted-foreground">Utilization</span>
+                        <span className="text-muted-foreground">
+                          Utilization
+                        </span>
                         <span
                           className={cn(
                             "font-medium",
@@ -417,7 +452,8 @@ function CardIntelligenceCard() {
                       />
                       {high && (
                         <p className="text-xs text-destructive">
-                          Utilization above 30% — consider paying down this card.
+                          Utilization above 30% — consider paying down this
+                          card.
                         </p>
                       )}
                     </div>
@@ -427,7 +463,9 @@ function CardIntelligenceCard() {
                     <span>
                       Limit:{" "}
                       <span className="text-foreground">
-                        {card.creditLimit ? formatCurrency(card.creditLimit) : "-"}
+                        {card.creditLimit
+                          ? formatCurrency(card.creditLimit)
+                          : "-"}
                       </span>
                     </span>
                     <span>
@@ -441,7 +479,9 @@ function CardIntelligenceCard() {
                     <span>
                       Total due:{" "}
                       <span className="text-foreground">
-                        {card.totalAmountDue !== null ? formatCurrency(card.totalAmountDue) : "-"}
+                        {card.totalAmountDue !== null
+                          ? formatCurrency(card.totalAmountDue)
+                          : "-"}
                       </span>
                     </span>
                     <span>
@@ -453,7 +493,10 @@ function CardIntelligenceCard() {
                       </span>
                     </span>
                     <span>
-                      Due date: <span className="text-foreground">{card.paymentDueDate ?? "-"}</span>
+                      Due date:{" "}
+                      <span className="text-foreground">
+                        {card.paymentDueDate ?? "-"}
+                      </span>
                     </span>
                     {card.rewards?.earned != null && (
                       <span>
@@ -530,7 +573,9 @@ function SavingsRateCard() {
                   width={48}
                   tickFormatter={formatCompactCurrency}
                 />
-                <ChartTooltip content={<ChartTooltipContent formatter={currencyTooltip} />} />
+                <ChartTooltip
+                  content={<ChartTooltipContent formatter={currencyTooltip} />}
+                />
                 <ChartLegend content={<ChartLegendContent />} />
                 <Bar dataKey="income" fill="var(--color-income)" radius={4} />
                 <Bar dataKey="expense" fill="var(--color-expense)" radius={4} />
@@ -551,7 +596,9 @@ function CommitmentsCard() {
     <Card>
       <CardHeader>
         <CardTitle>Fixed vs discretionary</CardTitle>
-        <CardDescription>Committed outflow (EMIs, recurring, insurance)</CardDescription>
+        <CardDescription>
+          Committed outflow (EMIs, recurring, insurance)
+        </CardDescription>
       </CardHeader>
       <CardContent>
         {isLoading ? (
@@ -595,9 +642,18 @@ function CommitmentsCard() {
                     width={48}
                     tickFormatter={formatCompactCurrency}
                   />
-                  <ChartTooltip content={<ChartTooltipContent formatter={currencyTooltip} />} />
+                  <ChartTooltip
+                    content={
+                      <ChartTooltipContent formatter={currencyTooltip} />
+                    }
+                  />
                   <ChartLegend content={<ChartLegendContent />} />
-                  <Bar dataKey="committed" stackId="a" fill="var(--color-committed)" radius={0} />
+                  <Bar
+                    dataKey="committed"
+                    stackId="a"
+                    fill="var(--color-committed)"
+                    radius={0}
+                  />
                   <Bar
                     dataKey="discretionary"
                     stackId="a"
@@ -623,12 +679,15 @@ function LeakageCard() {
         <CardTitle className="flex items-center gap-2">
           <AlertTriangle className="size-4" /> Leakage & hygiene
         </CardTitle>
-        <CardDescription>Fees, interest, cash withdrawals and pending refunds</CardDescription>
+        <CardDescription>
+          Fees, interest, cash withdrawals and pending refunds
+        </CardDescription>
       </CardHeader>
       <CardContent>
         {isLoading ? (
           <CardSkeleton />
-        ) : !data || (data.leakage.total === 0 && data.pendingRefunds.length === 0) ? (
+        ) : !data ||
+          (data.leakage.total === 0 && data.pendingRefunds.length === 0) ? (
           <EmptyState
             icon={ShieldAlert}
             title="No leakage detected"
@@ -638,7 +697,12 @@ function LeakageCard() {
           <div className="space-y-4">
             {data.leakage.total > 0 && (
               <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-                <Stat icon={Receipt} label="Fees" value={formatCurrency(data.leakage.fee)} tone="negative" />
+                <Stat
+                  icon={Receipt}
+                  label="Fees"
+                  value={formatCurrency(data.leakage.fee)}
+                  tone="negative"
+                />
                 <Stat
                   icon={TrendingDown}
                   label="Interest paid"
@@ -661,7 +725,9 @@ function LeakageCard() {
             )}
             {data.leakage.total > 0 && (
               <div className="flex items-center justify-between gap-2 rounded-lg border p-4">
-                <span className="text-muted-foreground text-sm">Total leakage</span>
+                <span className="text-muted-foreground text-sm">
+                  Total leakage
+                </span>
                 <span className="text-destructive text-lg font-semibold">
                   {formatCurrency(data.leakage.total)}
                 </span>
@@ -678,7 +744,9 @@ function LeakageCard() {
                     key={index}
                     className="text-muted-foreground flex justify-between text-sm"
                   >
-                    <span className="text-foreground">{refund.merchant ?? "Unknown"}</span>
+                    <span className="text-foreground">
+                      {refund.merchant ?? "Unknown"}
+                    </span>
                     <span>{formatCurrency(refund.amount)}</span>
                   </div>
                 ))}

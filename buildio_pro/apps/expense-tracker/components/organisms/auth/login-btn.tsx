@@ -4,8 +4,6 @@ import { Button } from "@workspace/ui/components/button";
 import Link from "next/link";
 import React from "react";
 
-
-
 import { useSession } from "@/lib/auth-client";
 
 import SignOutBtn from "./sign-out-btn";

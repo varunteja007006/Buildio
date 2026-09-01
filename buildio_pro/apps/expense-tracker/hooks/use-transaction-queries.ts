@@ -126,7 +126,9 @@ export function useTransactionConfirm(options?: {
       },
       onError: (error) => {
         toast.error(
-          error instanceof Error ? error.message : "Failed to confirm transaction",
+          error instanceof Error
+            ? error.message
+            : "Failed to confirm transaction",
         );
         options?.onError?.(error);
       },
@@ -158,7 +160,9 @@ export function useTransactionDelete(options?: {
       },
       onError: (error) => {
         toast.error(
-          error instanceof Error ? error.message : "Failed to delete transaction",
+          error instanceof Error
+            ? error.message
+            : "Failed to delete transaction",
         );
         options?.onError?.(error);
       },
@@ -223,7 +227,9 @@ export function useTransactionUpdate(options?: {
       },
       onError: (error) => {
         toast.error(
-          error instanceof Error ? error.message : "Failed to update transaction",
+          error instanceof Error
+            ? error.message
+            : "Failed to update transaction",
         );
         options?.onError?.(error);
       },

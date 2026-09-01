@@ -2,8 +2,6 @@ import { Button } from "@workspace/ui/components/button";
 import { Edit2 } from "lucide-react";
 import React from "react";
 
-
-
 export function EditBtn({
   iconOnly,
   ...props

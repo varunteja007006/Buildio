@@ -1,7 +1,5 @@
 "use client";
 
-
-
 import { Button } from "@workspace/ui/components/button";
 import {
   Card,
@@ -58,7 +56,6 @@ export function UserProfileFormComponent() {
     }
   }, [profile, form]);
 
-
   const isSubmitting = updateMutation.isPending;
   const hasValidImage = form.state.values.image_url && !imageError;
 
@@ -66,9 +63,14 @@ export function UserProfileFormComponent() {
     <Card className="w-full max-w-lg">
       <CardHeader>
         <CardTitle>Profile</CardTitle>
-        <CardDescription className="flex gap-2">Update your profile information {isLoading && <span>
-          <Loader2 className="h-4 w-4 animate-spin" />
-        </span>}</CardDescription>
+        <CardDescription className="flex gap-2">
+          Update your profile information{" "}
+          {isLoading && (
+            <span>
+              <Loader2 className="h-4 w-4 animate-spin" />
+            </span>
+          )}
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <form

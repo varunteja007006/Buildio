@@ -1,6 +1,5 @@
 "use client";
 
-
 import { ThemeProvider as NextThemesProvider } from "next-themes";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import * as React from "react";

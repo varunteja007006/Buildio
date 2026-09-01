@@ -16,8 +16,6 @@ import { Loader2, Trash2 } from "lucide-react";
 import * as React from "react";
 import { useState } from "react";
 
-
-
 import { useDeleteBudget } from "@/hooks";
 
 interface BudgetDeleteDialogProps {

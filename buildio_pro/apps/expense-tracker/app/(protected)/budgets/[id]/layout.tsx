@@ -5,8 +5,7 @@ import { appConfig } from "@/app/appConfig";
 
 export const metadata: Metadata = {
   title: `Budget Details | ${appConfig.name}`,
-  description:
-    "View your budget progress, spending, and linked expenses.",
+  description: "View your budget progress, spending, and linked expenses.",
 };
 
 export default function BudgetDetailLayout({

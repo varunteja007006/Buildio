@@ -6,7 +6,6 @@ import {
 } from "@workspace/ui/components/tabs";
 import { Metadata } from "next";
 
-
 import { appConfig } from "@/app/appConfig";
 import ProfileSection from "@/components/settings/profile-section";
 import RegionalSettings from "@/components/settings/regional-section";

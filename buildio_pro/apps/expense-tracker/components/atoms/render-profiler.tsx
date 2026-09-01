@@ -17,7 +17,6 @@ function logRender(
   const color =
     phase === "mount" ? "#4ade80" : actualDuration > 16 ? "#f87171" : "#facc15";
 
-   
   console.info(
     `%c[Profiler] %c${id}`,
     "color:#818cf8;font-weight:bold",

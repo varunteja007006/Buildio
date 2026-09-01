@@ -4,7 +4,8 @@ import type { EnrichmentContext } from "./context";
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
-type Transaction = typeof import("@/lib/db/schema/financial-transaction.schema").financialTransaction.$inferSelect;
+type Transaction =
+  typeof import("@/lib/db/schema/financial-transaction.schema").financialTransaction.$inferSelect;
 
 function amountsEqual(a: string | number, b: string | number): boolean {
   return Math.abs(Number(a) - Number(b)) < 0.005;

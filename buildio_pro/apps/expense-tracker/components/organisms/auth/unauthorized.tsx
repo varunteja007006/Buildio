@@ -5,8 +5,6 @@ import { AlertTriangle } from "lucide-react";
 import Link from "next/link";
 import React from "react";
 
-
-
 export default function Unauthorized() {
   return (
     <div className="h-screen flex flex-col gap-10 items-center justify-center">

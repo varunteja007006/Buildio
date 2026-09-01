@@ -3,7 +3,6 @@
 import { Card, CardContent } from "@workspace/ui/components/card";
 import { CalendarDays, Loader2 } from "lucide-react";
 
-
 import { useEventsList } from "@/hooks";
 
 import { EventCard } from ".";

@@ -218,8 +218,7 @@ export const statementRouter = createTRPCRouter({
       if (records.length > 0) {
         const rows = await db
           .select({
-            statementUploadId:
-              dbSchema.financialTransaction.statementUploadId,
+            statementUploadId: dbSchema.financialTransaction.statementUploadId,
             count: count(),
           })
           .from(dbSchema.financialTransaction)
@@ -235,10 +234,7 @@ export const statementRouter = createTRPCRouter({
           .groupBy(dbSchema.financialTransaction.statementUploadId);
         for (const row of rows) {
           if (row.statementUploadId) {
-            supersededCounts.set(
-              row.statementUploadId,
-              Number(row.count),
-            );
+            supersededCounts.set(row.statementUploadId, Number(row.count));
           }
         }
       }
@@ -246,8 +242,7 @@ export const statementRouter = createTRPCRouter({
       return {
         data: records.map((record) => ({
           ...record,
-          supersededTransactionsCount:
-            supersededCounts.get(record.id) ?? 0,
+          supersededTransactionsCount: supersededCounts.get(record.id) ?? 0,
         })),
         meta: createPaginationMeta(input, totalItems),
       };
@@ -430,10 +425,7 @@ export const statementRouter = createTRPCRouter({
         .delete(dbSchema.financialTransaction)
         .where(
           and(
-            eq(
-              dbSchema.financialTransaction.statementUploadId,
-              input.uploadId,
-            ),
+            eq(dbSchema.financialTransaction.statementUploadId, input.uploadId),
             eq(dbSchema.financialTransaction.userId, user.id),
             isNotNull(dbSchema.financialTransaction.supersededAt),
           ),

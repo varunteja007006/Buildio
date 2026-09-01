@@ -2,8 +2,6 @@ import { Button } from "@workspace/ui/components/button";
 import { Trash2 } from "lucide-react";
 import React from "react";
 
-
-
 export function DeleteBtn({
   iconOnly,
   children,

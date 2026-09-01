@@ -13,10 +13,11 @@ import {
 export const transactionDirectionValues = transactionDirection.enumValues;
 export const transactionTypeValues = transactionType.enumValues;
 
-export const createFinancialTransactionSchema =
-  createInsertSchema(financialTransaction).omit({
-    userId: true,
-  });
+export const createFinancialTransactionSchema = createInsertSchema(
+  financialTransaction,
+).omit({
+  userId: true,
+});
 
 export const updateFinancialTransactionSchema = createUpdateSchema(
   financialTransaction,

@@ -25,17 +25,18 @@ export const TransactionDeleteDialog = ({
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <DeleteBtn
-          iconOnly
-          onClick={(e) => e.stopPropagation()}
-        />
+        <DeleteBtn iconOnly onClick={(e) => e.stopPropagation()} />
       </AlertDialogTrigger>
       <AlertDialogContent onClick={(e) => e.stopPropagation()}>
         <AlertDialogHeader>
           <AlertDialogTitle>Delete Transaction</AlertDialogTitle>
           <AlertDialogDescription>
             Are you sure you want to delete{" "}
-            {merchantName ? <span className="font-medium">{merchantName}</span> : "this transaction"}
+            {merchantName ? (
+              <span className="font-medium">{merchantName}</span>
+            ) : (
+              "this transaction"
+            )}
             ? This action cannot be undone.
           </AlertDialogDescription>
         </AlertDialogHeader>

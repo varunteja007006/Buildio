@@ -2,17 +2,12 @@ import { Button } from "@workspace/ui/components/button";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 
-
-
 export function Hero() {
   return (
     <section>
       <div className="mx-auto flex max-w-4xl flex-col items-center px-4 py-20 text-center md:py-28 gap-10">
         <h1 className="text-4xl font-extrabold leading-[1.05] tracking-tight sm:text-6xl lg:text-7xl">
-          Know where your{" "}
-          <span className="bg-clip-text">
-            money goes.
-          </span>
+          Know where your <span className="bg-clip-text">money goes.</span>
         </h1>
 
         <p className="max-w-xl text-lg leading-relaxed text-muted-foreground sm:text-xl">

@@ -4,8 +4,6 @@ import { LoaderCircle } from "lucide-react";
 import { useLinkStatus } from "next/link";
 import React from "react";
 
-
-
 export function LinkStatus() {
   const { pending } = useLinkStatus();
 

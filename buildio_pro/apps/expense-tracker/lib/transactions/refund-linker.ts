@@ -4,13 +4,7 @@ import type { EnrichmentContext } from "./context";
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
-const REFUND_KEYWORDS = [
-  "refund",
-  "rfd",
-  "reversal",
-  "reimburse",
-  "cashback",
-];
+const REFUND_KEYWORDS = ["refund", "rfd", "reversal", "reimburse", "cashback"];
 
 function looksLikeRefund(transaction: {
   rawDescription: string | null;

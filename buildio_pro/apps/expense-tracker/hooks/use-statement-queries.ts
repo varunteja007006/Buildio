@@ -147,7 +147,9 @@ export function useStatementDeleteSuperseded(options?: {
         options?.onSuccess?.();
       },
       onError: (error) => {
-        toast.error(error.message || "Failed to delete superseded transactions");
+        toast.error(
+          error.message || "Failed to delete superseded transactions",
+        );
         options?.onError?.(error);
       },
     }),
@@ -212,12 +214,16 @@ export function useStatementProcess(options?: {
       },
       onError: (error) => {
         toast.error(
-          error instanceof Error ? error.message : "Failed to process statement",
+          error instanceof Error
+            ? error.message
+            : "Failed to process statement",
         );
         queryClient.invalidateQueries({
           queryKey: trpc.statement.listStatements.queryKey(),
         });
-        options?.onError?.(error instanceof Error ? error : new Error(String(error)));
+        options?.onError?.(
+          error instanceof Error ? error : new Error(String(error)),
+        );
       },
     }),
   );

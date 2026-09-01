@@ -756,7 +756,9 @@ export function StatementsPage() {
                                         </AlertDialogTitle>
                                         <AlertDialogDescription>
                                           This will permanently delete{" "}
-                                          {statement.supersededTransactionsCount}{" "}
+                                          {
+                                            statement.supersededTransactionsCount
+                                          }{" "}
                                           superseded{" "}
                                           {statement.supersededTransactionsCount ===
                                           1

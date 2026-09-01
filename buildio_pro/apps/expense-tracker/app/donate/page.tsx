@@ -1,5 +1,3 @@
-
-
 import { Input } from "@workspace/ui/components/input";
 import {
   Select,
@@ -50,7 +48,10 @@ export default function Page() {
         <div className="flex items-center gap-4 flex-wrap">
           {DONATION_AMOUNTS.map((item) => {
             return (
-              <div key={item} className="border-primary/80 border-2 min-w-20 text-center hover:cursor-pointer hover:bg-green-500/20 rounded-full p-2">
+              <div
+                key={item}
+                className="border-primary/80 border-2 min-w-20 text-center hover:cursor-pointer hover:bg-green-500/20 rounded-full p-2"
+              >
                 {item}
               </div>
             );

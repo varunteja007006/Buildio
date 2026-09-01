@@ -35,5 +35,6 @@ export const createInvestmentTransactionSchema = createInsertSchema(
   userId: true,
 });
 
-export const selectInvestmentTransactionSchema =
-  createSelectSchema(investmentTransaction);
+export const selectInvestmentTransactionSchema = createSelectSchema(
+  investmentTransaction,
+);

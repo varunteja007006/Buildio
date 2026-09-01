@@ -123,7 +123,13 @@ export const analyticsRouter = createTRPCRouter({
 
     const byAccount = new Map<
       string,
-      { accountName: string | null; byMonth: Map<string, { debit: number; credit: number; lastBalance: number | null }> }
+      {
+        accountName: string | null;
+        byMonth: Map<
+          string,
+          { debit: number; credit: number; lastBalance: number | null }
+        >;
+      }
     >();
 
     for (const transaction of transactions) {
@@ -131,11 +137,18 @@ export const analyticsRouter = createTRPCRouter({
       const accountId = transaction.bankAccountId ?? "unknown";
       let account = byAccount.get(accountId);
       if (!account) {
-        account = { accountName: transaction.bankAccount?.name ?? null, byMonth: new Map() };
+        account = {
+          accountName: transaction.bankAccount?.name ?? null,
+          byMonth: new Map(),
+        };
         byAccount.set(accountId, account);
       }
       const key = monthKey(new Date(transaction.transactionDate));
-      const month = account.byMonth.get(key) ?? { debit: 0, credit: 0, lastBalance: null };
+      const month = account.byMonth.get(key) ?? {
+        debit: 0,
+        credit: 0,
+        lastBalance: null,
+      };
       const amount = numericToNumber(transaction.amount);
       if (transaction.direction === "debit") {
         month.debit += amount;
@@ -165,8 +178,7 @@ export const analyticsRouter = createTRPCRouter({
         debitMonths.length > 0
           ? debitMonths.reduce((a, b) => a + b, 0) / debitMonths.length
           : 0;
-      const currentBalance =
-        months[months.length - 1]?.closingBalance ?? null;
+      const currentBalance = months[months.length - 1]?.closingBalance ?? null;
       const runwayMonths =
         currentBalance !== null && avgMonthlyBurn > 0
           ? currentBalance / avgMonthlyBurn
@@ -198,7 +210,7 @@ export const analyticsRouter = createTRPCRouter({
 
     const byAccount = new Map<
       string,
-      { latest: typeof statements[number]; statements: typeof statements }
+      { latest: (typeof statements)[number]; statements: typeof statements }
     >();
 
     for (const statement of statements) {
@@ -216,8 +228,12 @@ export const analyticsRouter = createTRPCRouter({
         statements: [],
       };
       entry.statements.push(statement);
-      const currentDate = (entry.latest.statementMetadata as StatementMetadata | null)?.statementDate;
-      const candidateDate = (statement.statementMetadata as StatementMetadata | null)?.statementDate;
+      const currentDate = (
+        entry.latest.statementMetadata as StatementMetadata | null
+      )?.statementDate;
+      const candidateDate = (
+        statement.statementMetadata as StatementMetadata | null
+      )?.statementDate;
       if (candidateDate && (!currentDate || candidateDate > currentDate)) {
         entry.latest = statement;
       }
@@ -269,7 +285,10 @@ export const analyticsRouter = createTRPCRouter({
 
     const heatmap = new Map<string, Map<string, number>>();
     const categoryTotals = new Map<string, number>();
-    const merchantTotals = new Map<string, { amount: number; count: number; recurring: boolean }>();
+    const merchantTotals = new Map<
+      string,
+      { amount: number; count: number; recurring: boolean }
+    >();
 
     for (const transaction of transactions) {
       const amount = numericToNumber(transaction.amount);
@@ -281,7 +300,10 @@ export const analyticsRouter = createTRPCRouter({
         heatmap.set(key, monthRow);
       }
       monthRow.set(categoryName, (monthRow.get(categoryName) || 0) + amount);
-      categoryTotals.set(categoryName, (categoryTotals.get(categoryName) || 0) + amount);
+      categoryTotals.set(
+        categoryName,
+        (categoryTotals.get(categoryName) || 0) + amount,
+      );
 
       if (transaction.merchantName) {
         const merchant = merchantTotals.get(transaction.merchantName) ?? {
@@ -326,13 +348,20 @@ export const analyticsRouter = createTRPCRouter({
       ),
     });
 
-    const byMonth = new Map<string, { committed: number; discretionary: number; total: number }>();
+    const byMonth = new Map<
+      string,
+      { committed: number; discretionary: number; total: number }
+    >();
 
     for (const transaction of transactions) {
       if (transaction.direction !== "debit") continue;
       const amount = numericToNumber(transaction.amount);
       const key = monthKey(new Date(transaction.transactionDate));
-      const month = byMonth.get(key) ?? { committed: 0, discretionary: 0, total: 0 };
+      const month = byMonth.get(key) ?? {
+        committed: 0,
+        discretionary: 0,
+        total: 0,
+      };
       month.total += amount;
       const isCommitted =
         transaction.isEmi ||
@@ -381,7 +410,10 @@ export const analyticsRouter = createTRPCRouter({
       const key = monthKey(new Date(transaction.transactionDate));
       const month = byMonth.get(key) ?? { income: 0, expense: 0 };
       const amount = numericToNumber(transaction.amount);
-      if (transaction.direction === "credit" && transaction.transactionType === "income") {
+      if (
+        transaction.direction === "credit" &&
+        transaction.transactionType === "income"
+      ) {
         month.income += amount;
       } else if (transaction.direction === "debit") {
         month.expense += amount;
@@ -406,9 +438,10 @@ export const analyticsRouter = createTRPCRouter({
           expense: m.expense,
           savingsRate: m.income > 0 ? (m.income - m.expense) / m.income : 0,
         })),
-      incomeStreams: Array.from(sources.entries()).map(
-        ([source, count]) => ({ source, count }),
-      ),
+      incomeStreams: Array.from(sources.entries()).map(([source, count]) => ({
+        source,
+        count,
+      })),
     };
   }),
 
@@ -424,20 +457,33 @@ export const analyticsRouter = createTRPCRouter({
       with: { linkedTransaction: true },
     });
 
-    const leakage = { fee: 0, interest: 0, cashWithdrawal: 0, roundUp: 0, total: 0 };
-    const pendingRefunds: Array<{ merchant: string | null; amount: number }> = [];
+    const leakage = {
+      fee: 0,
+      interest: 0,
+      cashWithdrawal: 0,
+      roundUp: 0,
+      total: 0,
+    };
+    const pendingRefunds: Array<{ merchant: string | null; amount: number }> =
+      [];
 
     for (const transaction of transactions) {
       const amount = numericToNumber(transaction.amount);
       if (transaction.transactionType === "fee") leakage.fee += amount;
-      if (transaction.transactionType === "interest") leakage.interest += amount;
-      if (transaction.transactionType === "cash_withdrawal") leakage.cashWithdrawal += amount;
+      if (transaction.transactionType === "interest")
+        leakage.interest += amount;
+      if (transaction.transactionType === "cash_withdrawal")
+        leakage.cashWithdrawal += amount;
       if (transaction.transactionType === "round_up") leakage.roundUp += amount;
-      if (transaction.transactionType === "refund" && !transaction.linkedTransaction) {
+      if (
+        transaction.transactionType === "refund" &&
+        !transaction.linkedTransaction
+      ) {
         pendingRefunds.push({ merchant: transaction.merchantName, amount });
       }
     }
-    leakage.total = leakage.fee + leakage.interest + leakage.cashWithdrawal + leakage.roundUp;
+    leakage.total =
+      leakage.fee + leakage.interest + leakage.cashWithdrawal + leakage.roundUp;
 
     return { leakage, pendingRefunds };
   }),
@@ -455,7 +501,9 @@ export const analyticsRouter = createTRPCRouter({
     for (const investment of investments) {
       const transaction = investment.transaction;
       const amount = numericToNumber(transaction.amount);
-      const value = numericToNumber(investment.units) * numericToNumber(investment.unitPrice);
+      const value =
+        numericToNumber(investment.units) *
+        numericToNumber(investment.unitPrice);
       const key = monthKey(new Date(transaction.transactionDate));
       const month = byMonth.get(key) ?? { invested: 0, value: 0 };
       month.invested += amount;
@@ -472,7 +520,10 @@ export const analyticsRouter = createTRPCRouter({
           invested: m.invested,
           value: m.value,
         })),
-      totalInvested: Array.from(byMonth.values()).reduce((a, m) => a + m.invested, 0),
+      totalInvested: Array.from(byMonth.values()).reduce(
+        (a, m) => a + m.invested,
+        0,
+      ),
       totalValue: Array.from(byMonth.values()).reduce((a, m) => a + m.value, 0),
     };
   }),
@@ -498,8 +549,14 @@ export const analyticsRouter = createTRPCRouter({
     const typeCounts = new Map<string, number>();
     for (const transaction of transactions) {
       const key = monthKey(new Date(transaction.transactionDate));
-      if (transaction.direction === "debit" && transaction.transactionType !== "transfer") {
-        monthlySpend.set(key, (monthlySpend.get(key) || 0) + numericToNumber(transaction.amount));
+      if (
+        transaction.direction === "debit" &&
+        transaction.transactionType !== "transfer"
+      ) {
+        monthlySpend.set(
+          key,
+          (monthlySpend.get(key) || 0) + numericToNumber(transaction.amount),
+        );
       }
       typeCounts.set(
         transaction.transactionType,
@@ -524,18 +581,23 @@ export const analyticsRouter = createTRPCRouter({
       budgets: budgets.map((budget) => ({
         ...budget,
         budgetAmount: numericToNumber(budget.budgetAmount),
-        actualSpend: monthlySpend.get(monthKey(new Date(budget.startMonth))) ?? 0,
+        actualSpend:
+          monthlySpend.get(monthKey(new Date(budget.startMonth))) ?? 0,
       })),
       monthlySpend: Array.from(monthlySpend.entries())
         .sort((a, b) => a[0].localeCompare(b[0]))
-        .map(([rawDate, amount]) => ({ month: monthLabel(rawDate), rawDate, amount })),
+        .map(([rawDate, amount]) => ({
+          month: monthLabel(rawDate),
+          rawDate,
+          amount,
+        })),
       dataQuality: {
         statements: statements.length,
         byModel: Array.from(
           new Map(
             statements.map((s) => [
               s.extractionModel ?? "unknown",
-              (s.extractionModel ?? "unknown"),
+              s.extractionModel ?? "unknown",
             ]),
           ).keys(),
         ).map((model) => ({
@@ -545,8 +607,12 @@ export const analyticsRouter = createTRPCRouter({
         reviewCount,
         reviewRate: transactions.length ? reviewCount / transactions.length : 0,
       },
-      duplicateCount: Array.from(duplicatesByHash.values()).filter((n) => n > 1).length,
-      typeCounts: Array.from(typeCounts.entries()).map(([type, count]) => ({ type, count })),
+      duplicateCount: Array.from(duplicatesByHash.values()).filter((n) => n > 1)
+        .length,
+      typeCounts: Array.from(typeCounts.entries()).map(([type, count]) => ({
+        type,
+        count,
+      })),
     };
   }),
 });

@@ -1,7 +1,4 @@
-import {
-  createInsertSchema,
-  createSelectSchema,
-} from "drizzle-zod";
+import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 
 import { statementUpload } from "../schema/statement.schema";
 

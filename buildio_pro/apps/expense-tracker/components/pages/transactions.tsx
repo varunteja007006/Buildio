@@ -438,10 +438,7 @@ function TransactionsPageContent() {
                         <SelectContent>
                           <SelectItem value="">All statements</SelectItem>
                           {statementsData?.data.map((statement) => (
-                            <SelectItem
-                              key={statement.id}
-                              value={statement.id}
-                            >
+                            <SelectItem key={statement.id} value={statement.id}>
                               {statement.originalFilename}
                             </SelectItem>
                           ))}

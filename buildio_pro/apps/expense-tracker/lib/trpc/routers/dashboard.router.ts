@@ -24,10 +24,7 @@ export const dashboardRouter = createTRPCRouter({
     const incomesThisMonth = await db
       .select({ amount: incomeTx.amount })
       .from(dbSchema.income)
-      .innerJoin(
-        incomeTx,
-        eq(dbSchema.income.transactionId, incomeTx.id),
-      )
+      .innerJoin(incomeTx, eq(dbSchema.income.transactionId, incomeTx.id))
       .where(
         and(
           eq(dbSchema.income.userId, user.id),
@@ -39,10 +36,7 @@ export const dashboardRouter = createTRPCRouter({
     const expensesThisMonth = await db
       .select({ amount: expenseTx.amount })
       .from(dbSchema.expense)
-      .innerJoin(
-        expenseTx,
-        eq(dbSchema.expense.transactionId, expenseTx.id),
-      )
+      .innerJoin(expenseTx, eq(dbSchema.expense.transactionId, expenseTx.id))
       .where(
         and(
           eq(dbSchema.expense.userId, user.id),
@@ -360,13 +354,12 @@ export const dashboardRouter = createTRPCRouter({
     }
 
     expenses.forEach((e) => {
-      const key = (e.transaction?.transactionDate ?? e.createdAt).toLocaleString(
-        "default",
-        {
-          month: "short",
-          year: "numeric",
-        },
-      );
+      const key = (
+        e.transaction?.transactionDate ?? e.createdAt
+      ).toLocaleString("default", {
+        month: "short",
+        year: "numeric",
+      });
       if (data.has(key)) {
         const curr = data.get(key)!;
         curr.expense += numericToNumber(e.transaction?.amount);
@@ -374,13 +367,12 @@ export const dashboardRouter = createTRPCRouter({
     });
 
     incomes.forEach((i) => {
-      const key = (i.transaction?.transactionDate ?? i.createdAt).toLocaleString(
-        "default",
-        {
-          month: "short",
-          year: "numeric",
-        },
-      );
+      const key = (
+        i.transaction?.transactionDate ?? i.createdAt
+      ).toLocaleString("default", {
+        month: "short",
+        year: "numeric",
+      });
       if (data.has(key)) {
         const curr = data.get(key)!;
         curr.income += numericToNumber(i.transaction?.amount);

@@ -146,19 +146,21 @@ export const transactionRouter = createTRPCRouter({
         );
       }
       if (input.direction) {
-        filters.push(eq(dbSchema.financialTransaction.direction, input.direction));
+        filters.push(
+          eq(dbSchema.financialTransaction.direction, input.direction),
+        );
       }
       if (input.transactionType) {
         filters.push(
-          eq(dbSchema.financialTransaction.transactionType, input.transactionType),
+          eq(
+            dbSchema.financialTransaction.transactionType,
+            input.transactionType,
+          ),
         );
       }
       if (input.startDate) {
         filters.push(
-          gte(
-            dbSchema.financialTransaction.transactionDate,
-            input.startDate,
-          ),
+          gte(dbSchema.financialTransaction.transactionDate, input.startDate),
         );
       }
       if (input.endDate) {
@@ -187,8 +189,7 @@ export const transactionRouter = createTRPCRouter({
         );
       }
 
-      const whereClause =
-        filters.length === 1 ? filters[0] : and(...filters);
+      const whereClause = filters.length === 1 ? filters[0] : and(...filters);
 
       const [total] = await db
         .select({ count: count() })
@@ -209,8 +210,7 @@ export const transactionRouter = createTRPCRouter({
           paymentMethod: true,
           linkedTransaction: true,
         },
-        orderBy: (transaction, { desc }) =>
-          desc(transaction.transactionDate),
+        orderBy: (transaction, { desc }) => desc(transaction.transactionDate),
       });
 
       return {
@@ -223,7 +223,10 @@ export const transactionRouter = createTRPCRouter({
           extractionConfidence: transaction.extractionConfidence
             ? numericToNumber(transaction.extractionConfidence)
             : null,
-          needsReview: needsReview(transaction.extractionConfidence, transaction.reviewedAt),
+          needsReview: needsReview(
+            transaction.extractionConfidence,
+            transaction.reviewedAt,
+          ),
         })),
         meta: createPaginationMeta(input, totalItems),
       };
@@ -265,7 +268,10 @@ export const transactionRouter = createTRPCRouter({
         extractionConfidence: transaction.extractionConfidence
           ? numericToNumber(transaction.extractionConfidence)
           : null,
-        needsReview: needsReview(transaction.extractionConfidence, transaction.reviewedAt),
+        needsReview: needsReview(
+          transaction.extractionConfidence,
+          transaction.reviewedAt,
+        ),
       };
     }),
 
@@ -287,7 +293,10 @@ export const transactionRouter = createTRPCRouter({
     const categoryMap = new Map<string, number>();
     const monthMap = new Map<string, number>();
     // bankAccountId -> "YYYY-MM" -> { debit, credit }
-    const accountMonthMap = new Map<string, Map<string, { debit: number; credit: number }>>();
+    const accountMonthMap = new Map<
+      string,
+      Map<string, { debit: number; credit: number }>
+    >();
     const accountSet = new Set<string>();
     let totalDebit = 0;
     let totalCredit = 0;
@@ -300,7 +309,9 @@ export const transactionRouter = createTRPCRouter({
       } else {
         totalCredit += amount;
       }
-      if (needsReview(transaction.extractionConfidence, transaction.reviewedAt)) {
+      if (
+        needsReview(transaction.extractionConfidence, transaction.reviewedAt)
+      ) {
         reviewCount += 1;
       }
 
@@ -309,8 +320,7 @@ export const transactionRouter = createTRPCRouter({
         (typeMap.get(transaction.transactionType) || 0) + amount,
       );
 
-      const categoryName =
-        transaction.categoryId ?? "uncategorized";
+      const categoryName = transaction.categoryId ?? "uncategorized";
       categoryMap.set(
         categoryName,
         (categoryMap.get(categoryName) || 0) + amount,
@@ -446,14 +456,16 @@ export const transactionRouter = createTRPCRouter({
           ),
           isNull(dbSchema.financialTransaction.supersededAt),
         ),
-        orderBy: (transaction, { desc }) =>
-          desc(transaction.transactionDate),
+        orderBy: (transaction, { desc }) => desc(transaction.transactionDate),
       });
 
       return transactions.map((transaction) => ({
         ...transaction,
         amount: numericToNumber(transaction.amount),
-        needsReview: needsReview(transaction.extractionConfidence, transaction.reviewedAt),
+        needsReview: needsReview(
+          transaction.extractionConfidence,
+          transaction.reviewedAt,
+        ),
       }));
     }),
 
@@ -578,15 +590,11 @@ export const transactionRouter = createTRPCRouter({
       }
       if (fields.rewardPoints !== undefined) {
         payload.rewardPoints =
-          fields.rewardPoints === null
-            ? null
-            : fields.rewardPoints.toFixed(4);
+          fields.rewardPoints === null ? null : fields.rewardPoints.toFixed(4);
       }
       if (fields.balanceAfter !== undefined) {
         payload.balanceAfter =
-          fields.balanceAfter === null
-            ? null
-            : fields.balanceAfter.toFixed(4);
+          fields.balanceAfter === null ? null : fields.balanceAfter.toFixed(4);
       }
 
       const [updated] = await db

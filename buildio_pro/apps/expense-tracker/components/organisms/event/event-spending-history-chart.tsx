@@ -12,7 +12,6 @@ import {
 import React from "react";
 import { BarChart, CartesianGrid, XAxis } from "recharts";
 
-
 import { useEventSpendingHistory } from "@/hooks";
 
 export function EventSpendingHistoryChart({ eventId }: { eventId: string }) {

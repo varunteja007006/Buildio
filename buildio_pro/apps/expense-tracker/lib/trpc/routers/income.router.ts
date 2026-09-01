@@ -64,7 +64,9 @@ const numericToNumber = (value: string | number | null | undefined) => {
 type IncomeRow = {
   income: typeof import("../../db/schema/income.schema").income.$inferSelect;
   transaction: typeof import("../../db/schema/financial-transaction.schema").financialTransaction.$inferSelect;
-  source: typeof import("../../db/schema/income.schema").incomeSource.$inferSelect | null;
+  source:
+    | typeof import("../../db/schema/income.schema").incomeSource.$inferSelect
+    | null;
 };
 
 const toIncomeDto = (row: IncomeRow) => ({
@@ -155,10 +157,7 @@ export const incomeRouter = createTRPCRouter({
       )
       .where(eq(dbSchema.expense.userId, user.id));
 
-    const totalIncome = allIncomes.reduce(
-      (sum, item) => sum + item.amount,
-      0,
-    );
+    const totalIncome = allIncomes.reduce((sum, item) => sum + item.amount, 0);
 
     const totalExpenses = expenseRows.reduce(
       (sum, item) => sum + numericToNumber(item.transaction.amount),
@@ -450,10 +449,7 @@ export const incomeRouter = createTRPCRouter({
         await tx
           .delete(dbSchema.financialTransaction)
           .where(
-            eq(
-              dbSchema.financialTransaction.id,
-              incomeExists.transactionId,
-            ),
+            eq(dbSchema.financialTransaction.id, incomeExists.transactionId),
           );
       });
 
@@ -476,7 +472,9 @@ export const incomeRouter = createTRPCRouter({
       const existingIncomeIds = new Set(
         existingIncomes.map((income) => income.id),
       );
-      const transactionIds = existingIncomes.map((income) => income.transactionId);
+      const transactionIds = existingIncomes.map(
+        (income) => income.transactionId,
+      );
 
       const missingIds = incomeIds.filter((id) => !existingIncomeIds.has(id));
 
