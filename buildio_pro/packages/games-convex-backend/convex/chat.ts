@@ -145,7 +145,10 @@ export const createTeamReaction = mutation({
   },
   returns: v.null(),
   handler: async (ctx, args) => {
-    if (args.reaction.length === 0 || args.reaction.length > MAX_REACTION_LENGTH) {
+    if (
+      args.reaction.length === 0 ||
+      args.reaction.length > MAX_REACTION_LENGTH
+    ) {
       throw new Error(
         `Reaction must be between 1 and ${MAX_REACTION_LENGTH} characters`,
       );

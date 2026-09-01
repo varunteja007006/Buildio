@@ -289,10 +289,7 @@ export const updateGameSettings = mutation({
     if (args.rounds < 1 || args.rounds > MAX_ROUNDS) {
       throw new Error(`Rounds must be between 1 and ${MAX_ROUNDS}`);
     }
-    if (
-      args.timer < MIN_TIMER_SECONDS ||
-      args.timer > MAX_TIMER_SECONDS
-    ) {
+    if (args.timer < MIN_TIMER_SECONDS || args.timer > MAX_TIMER_SECONDS) {
       throw new Error(
         `Timer must be between ${MIN_TIMER_SECONDS} and ${MAX_TIMER_SECONDS} seconds`,
       );
