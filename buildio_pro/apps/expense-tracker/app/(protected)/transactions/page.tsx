@@ -1,7 +1,6 @@
 import { Metadata } from "next";
 
 import { appConfig } from "@/app/appConfig";
-
 import { TransactionsPage } from "@/components/pages/transactions";
 
 export const metadata: Metadata = {

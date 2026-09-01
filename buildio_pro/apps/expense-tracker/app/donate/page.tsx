@@ -1,5 +1,4 @@
 
-import { Metadata } from "next";
 
 import { Input } from "@workspace/ui/components/input";
 import {
@@ -11,6 +10,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@workspace/ui/components/select";
+import { Metadata } from "next";
 import React from "react";
 
 import { appConfig } from "@/app/appConfig";

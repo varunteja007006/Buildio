@@ -1,7 +1,6 @@
 import { Metadata } from "next";
 
 import { appConfig } from "@/app/appConfig";
-
 import { StatementsPage } from "@/components/pages/statements";
 
 export const metadata: Metadata = {

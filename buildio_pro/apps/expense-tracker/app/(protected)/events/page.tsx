@@ -1,7 +1,6 @@
 import { Metadata } from "next";
 
 import { appConfig } from "@/app/appConfig";
-
 import { EventList } from "@/components/organisms/event/event-list";
 
 export const metadata: Metadata = {

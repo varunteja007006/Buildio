@@ -1,7 +1,6 @@
 import { Metadata } from "next";
 
 import { appConfig } from "@/app/appConfig";
-
 import { IncomeList } from "@/components/organisms/income";
 
 export const metadata: Metadata = {

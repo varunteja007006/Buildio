@@ -1,5 +1,5 @@
-import type { ReactNode } from "react";
 import { Metadata } from "next";
+import type { ReactNode } from "react";
 
 import { appConfig } from "@/app/appConfig";
 

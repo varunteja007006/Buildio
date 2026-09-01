@@ -1,4 +1,3 @@
-import { Metadata } from "next";
 
 import { Button } from "@workspace/ui/components/button";
 import { Input } from "@workspace/ui/components/input";
@@ -12,6 +11,7 @@ import {
   SelectValue,
 } from "@workspace/ui/components/select";
 import { Textarea } from "@workspace/ui/components/textarea";
+import { Metadata } from "next";
 import React from "react";
 
 import { appConfig } from "@/app/appConfig";

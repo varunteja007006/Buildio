@@ -1,7 +1,3 @@
-import Link from "next/link";
-import { Metadata } from "next";
-import { redirect } from "next/navigation";
-
 import {
   ArrowLeft,
   ArrowUpRight,
@@ -9,9 +5,11 @@ import {
   Sparkles,
   Wallet,
 } from "lucide-react";
+import { Metadata } from "next";
+import Link from "next/link";
+import { redirect } from "next/navigation";
 
 import { appConfig } from "@/app/appConfig";
-
 import { Donut } from "@/components/landing/donut";
 import { ModeToggle } from "@/components/mode-toggle";
 import { GoogleLoginBtn } from "@/components/organisms/auth/google-login-btn";

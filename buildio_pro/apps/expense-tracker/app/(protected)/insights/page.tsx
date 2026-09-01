@@ -1,7 +1,6 @@
 import { Metadata } from "next";
 
 import { appConfig } from "@/app/appConfig";
-
 import { InsightsPage } from "@/components/organisms/insights/insights-page";
 
 export const metadata: Metadata = {

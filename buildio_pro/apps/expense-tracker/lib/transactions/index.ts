@@ -1,7 +1,6 @@
 import type { EnrichmentContext } from "./context";
-
-import { linkRefunds } from "./refund-linker";
 import { detectRecurring } from "./recurring-detector";
+import { linkRefunds } from "./refund-linker";
 import { matchTransfers } from "./transfer-matcher";
 
 export type { EnrichmentContext } from "./context";
