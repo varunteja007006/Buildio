@@ -1,7 +1,5 @@
 "use client";
 
-
-
 import usePresence from "@convex-dev/presence/react";
 import { api } from "@workspace/games-convex-backend/convex/_generated/api";
 import { useQuery } from "convex/react";

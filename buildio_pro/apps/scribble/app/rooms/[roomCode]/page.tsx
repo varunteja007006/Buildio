@@ -6,7 +6,6 @@ import dynamic from "next/dynamic";
 import { useParams } from "next/navigation";
 import { useEffect } from "react";
 
-
 import { ChatBox } from "@/components/chat-box";
 import { Participants } from "@/components/participants";
 import { RoomHeader } from "@/components/room-header";

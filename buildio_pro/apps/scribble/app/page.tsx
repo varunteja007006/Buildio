@@ -5,7 +5,6 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
-
 import { UserRegistration } from "@/components/user-registration";
 import { useUserStore } from "@/lib/store/user.store";
 

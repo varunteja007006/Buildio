@@ -9,7 +9,6 @@ import {
 } from "@workspace/ui/components/alert-dialog";
 import React from "react";
 
-
 import { UserRegistration } from "@/components/user-registration";
 
 export function UserRegistrationDialog({

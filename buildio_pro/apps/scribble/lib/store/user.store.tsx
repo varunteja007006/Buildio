@@ -4,8 +4,6 @@ import { api } from "@workspace/games-convex-backend/convex/_generated/api";
 import { useQuery } from "convex/react";
 import React from "react";
 
-
-
 export type User = ReturnType<typeof useQuery<typeof api.user.getUserByToken>>;
 
 const userStore = React.createContext<{

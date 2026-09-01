@@ -2,8 +2,6 @@ import { Button } from "@workspace/ui/components/button";
 import Link from "next/link";
 import React from "react";
 
-
-
 export default function LeaveBtn() {
   return (
     <Link href={"/rooms"}>

@@ -9,7 +9,6 @@ import {
 import { Copy } from "lucide-react";
 import { toast } from "sonner";
 
-
 type CopyBtnProps = {
   text: string;
   tooltipText?: string;
