@@ -1,6 +1,5 @@
 "use client";
 
-
 import confetti from "canvas-confetti";
 import { PartyPopper } from "lucide-react";
 import { useEffect } from "react";

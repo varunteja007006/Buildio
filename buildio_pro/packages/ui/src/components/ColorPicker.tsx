@@ -1,6 +1,5 @@
 "use client";
 
-
 import { Compact } from "@uiw/react-color";
 import { PaletteIcon } from "lucide-react";
 import { useState } from "react";
