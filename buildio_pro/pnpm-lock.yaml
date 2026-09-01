@@ -24,6 +24,9 @@ catalogs:
     convex:
       specifier: ^1.45.0
       version: 1.45.0
+    eslint:
+      specifier: ^9.39.5
+      version: 9.39.5
     eslint-plugin-import-x:
       specifier: ^4.17.1
       version: 4.17.1
@@ -428,6 +431,9 @@ importers:
       drizzle-kit:
         specifier: ^0.31.10
         version: 0.31.10
+      eslint:
+        specifier: 'catalog:'
+        version: 9.39.5(jiti@2.7.0)
       tailwindcss:
         specifier: 'catalog:'
         version: 4.3.3
@@ -477,6 +483,9 @@ importers:
       '@workspace/typescript-config':
         specifier: workspace:*
         version: link:../../packages/typescript-config
+      eslint:
+        specifier: 'catalog:'
+        version: 9.39.5(jiti@2.7.0)
       typescript:
         specifier: 'catalog:'
         version: 5.9.3
@@ -547,6 +556,9 @@ importers:
       '@workspace/typescript-config':
         specifier: workspace:*
         version: link:../../packages/typescript-config
+      eslint:
+        specifier: 'catalog:'
+        version: 9.39.5(jiti@2.7.0)
       typescript:
         specifier: 'catalog:'
         version: 5.9.3
@@ -617,6 +629,9 @@ importers:
       '@workspace/typescript-config':
         specifier: workspace:*
         version: link:../../packages/typescript-config
+      eslint:
+        specifier: 'catalog:'
+        version: 9.39.5(jiti@2.7.0)
       tailwindcss:
         specifier: 'catalog:'
         version: 4.3.3
@@ -660,6 +675,9 @@ importers:
       '@workspace/typescript-config':
         specifier: workspace:*
         version: link:../../packages/typescript-config
+      eslint:
+        specifier: 'catalog:'
+        version: 9.39.5(jiti@2.7.0)
       typescript:
         specifier: 'catalog:'
         version: 5.9.3

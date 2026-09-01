@@ -23,6 +23,11 @@ export const config = [
     },
   },
   {
+    rules: {
+      "max-lines": ["error", { max: 250, skipComments: true, skipBlankLines: true }],
+    },
+  },
+  {
     plugins: {
       import: importX,
     },
@@ -51,6 +56,6 @@ export const config = [
     },
   },
   {
-    ignores: ["dist/**"],
+    ignores: ["dist/**", ".next/**", "node_modules/**"],
   },
 ]
