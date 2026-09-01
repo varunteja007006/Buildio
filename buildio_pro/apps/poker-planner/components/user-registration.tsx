@@ -73,10 +73,10 @@ export function UserRegistration({
   };
 
   React.useEffect(() => {
-    if (userToken) {
-      redirectFromHome();
+    if (userToken && pathname === "/") {
+      router.push("/room");
     }
-  }, [userToken]);
+  }, [userToken, pathname, router]);
 
   return (
     <Form {...form}>

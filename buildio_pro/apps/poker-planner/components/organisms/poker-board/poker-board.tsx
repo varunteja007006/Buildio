@@ -21,12 +21,13 @@ export function PokerBoard() {
   const { userToken, user } = useUserStore();
   const { joinRoom } = useJoinRoom();
   const [storyId, setStoryId] = React.useState<Id<"stories"> | null>(null);
-  const prevStartedStoryRef = React.useRef<any>(undefined);
 
   const startedStory = useQuery(api.stories.getStartedStory, {
     userToken,
     roomCode: roomCode as string,
   });
+
+  const prevStartedStoryRef = React.useRef<typeof startedStory>(undefined);
 
   const createMutation = useMutation(api.stories.createStory);
   const completeMutation = useMutation(api.stories.completeStory);
@@ -60,7 +61,7 @@ export function PokerBoard() {
     if (roomCode) {
       joinRoom(roomCode);
     }
-  }, [roomCode]);
+  }, [roomCode, joinRoom]);
 
   const handleClick = async () => {
     if (!userToken || !roomCode || startedStory === undefined) return;

@@ -1,9 +1,8 @@
 "use client";
 
+import { TooltipProvider } from "@workspace/ui/components/tooltip";
 import { ThemeProvider as NextThemesProvider } from "next-themes";
 import * as React from "react";
-
-import { TooltipProvider } from "@workspace/ui/components/tooltip";
 
 import { UserStoreProvider } from "@/lib/store/user.store";
 
