@@ -3,7 +3,6 @@
 import { api } from "@workspace/games-convex-backend/convex/_generated/api";
 import { useQuery } from "convex/react";
 
-
 import { useUserStore } from "@/lib/store/user.store";
 
 import { RoomListItem } from "./room-list-item";

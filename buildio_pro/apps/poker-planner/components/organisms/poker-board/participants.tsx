@@ -1,5 +1,3 @@
-
-
 import usePresence from "@convex-dev/presence/react";
 import { api } from "@workspace/games-convex-backend/convex/_generated/api";
 import type { Id } from "@workspace/games-convex-backend/convex/_generated/dataModel";

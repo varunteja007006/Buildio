@@ -1,7 +1,6 @@
 import { Kanban } from "lucide-react";
 import Link from "next/link";
 
-
 import { LogoutBtn } from "@/components/logout-btn";
 import { ModeToggle } from "@/components/mode-toggle";
 import { UserCard } from "@/components/user-card";

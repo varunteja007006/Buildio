@@ -5,7 +5,6 @@ import { Copy } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 
-
 import { CopyBtn } from "@/components/atoms/copy-btn";
 import { useUserStore } from "@/lib/store/user.store";
 

@@ -1,5 +1,3 @@
-
-
 import { api } from "@workspace/games-convex-backend/convex/_generated/api";
 import type { Id } from "@workspace/games-convex-backend/convex/_generated/dataModel";
 import { useQuery } from "convex/react";

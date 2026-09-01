@@ -1,5 +1,3 @@
-
-
 import { api } from "@workspace/games-convex-backend/convex/_generated/api";
 import { ConfettiSideCannonsBtn } from "@workspace/ui/components/confetti/side-cannons";
 import { useMutation, useQuery } from "convex/react";

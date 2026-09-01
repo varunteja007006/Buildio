@@ -7,7 +7,6 @@ import {
 import type { ComponentProps } from "react";
 import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
 
-
 const chartConfig = {
   value: {
     label: "Votes",
