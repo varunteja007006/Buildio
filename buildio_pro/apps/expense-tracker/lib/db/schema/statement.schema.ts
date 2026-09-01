@@ -45,6 +45,7 @@ export const statementUpload = pgTable(
     status: statementUploadStatus("status").default("pending").notNull(),
     uploadedAt: timestamp("uploaded_at"),
     processedTransactionsCount: integer("processed_transactions_count"),
+    extractionVersion: integer("extraction_version").notNull().default(0),
     processingError: text("processing_error"),
     extractionModel: text("extraction_model"),
     statementMetadata: jsonb("statement_metadata"),

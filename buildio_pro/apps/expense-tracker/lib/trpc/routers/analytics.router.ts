@@ -1,4 +1,4 @@
-import { and, desc, eq, isNotNull } from "drizzle-orm";
+import { and, desc, eq, isNotNull, isNull } from "drizzle-orm";
 
 import { createTRPCRouter, protectedProcedure } from "../init";
 
@@ -36,6 +36,7 @@ export const analyticsRouter = createTRPCRouter({
       where: and(
         eq(dbSchema.financialTransaction.userId, user.id),
         eq(dbSchema.financialTransaction.isEmi, true),
+        isNull(dbSchema.financialTransaction.supersededAt),
       ),
       with: { bankAccount: true },
     });
@@ -112,7 +113,10 @@ export const analyticsRouter = createTRPCRouter({
     const { db, dbSchema, user } = ctx;
 
     const transactions = await db.query.financialTransaction.findMany({
-      where: eq(dbSchema.financialTransaction.userId, user.id),
+      where: and(
+        eq(dbSchema.financialTransaction.userId, user.id),
+        isNull(dbSchema.financialTransaction.supersededAt),
+      ),
       with: { bankAccount: true },
       orderBy: (t, { asc }) => asc(t.transactionDate),
     });
@@ -202,6 +206,7 @@ export const analyticsRouter = createTRPCRouter({
         where: and(
           eq(dbSchema.financialTransaction.userId, user.id),
           eq(dbSchema.financialTransaction.statementUploadId, statement.id),
+          isNull(dbSchema.financialTransaction.supersededAt),
         ),
       });
 
@@ -257,6 +262,7 @@ export const analyticsRouter = createTRPCRouter({
         eq(dbSchema.financialTransaction.userId, user.id),
         eq(dbSchema.financialTransaction.direction, "debit"),
         isNotNull(dbSchema.financialTransaction.categoryId),
+        isNull(dbSchema.financialTransaction.supersededAt),
       ),
       with: { category: { with: { parent: true } } },
     });
@@ -314,7 +320,10 @@ export const analyticsRouter = createTRPCRouter({
     const { db, dbSchema, user } = ctx;
 
     const transactions = await db.query.financialTransaction.findMany({
-      where: eq(dbSchema.financialTransaction.userId, user.id),
+      where: and(
+        eq(dbSchema.financialTransaction.userId, user.id),
+        isNull(dbSchema.financialTransaction.supersededAt),
+      ),
     });
 
     const byMonth = new Map<string, { committed: number; discretionary: number; total: number }>();
@@ -354,7 +363,10 @@ export const analyticsRouter = createTRPCRouter({
     const { db, dbSchema, user } = ctx;
 
     const transactions = await db.query.financialTransaction.findMany({
-      where: eq(dbSchema.financialTransaction.userId, user.id),
+      where: and(
+        eq(dbSchema.financialTransaction.userId, user.id),
+        isNull(dbSchema.financialTransaction.supersededAt),
+      ),
     });
     const incomes = await db.query.income.findMany({
       where: eq(dbSchema.income.userId, user.id),
@@ -407,6 +419,7 @@ export const analyticsRouter = createTRPCRouter({
       where: and(
         eq(dbSchema.financialTransaction.userId, user.id),
         eq(dbSchema.financialTransaction.direction, "debit"),
+        isNull(dbSchema.financialTransaction.supersededAt),
       ),
       with: { linkedTransaction: true },
     });
@@ -472,7 +485,10 @@ export const analyticsRouter = createTRPCRouter({
     });
 
     const transactions = await db.query.financialTransaction.findMany({
-      where: eq(dbSchema.financialTransaction.userId, user.id),
+      where: and(
+        eq(dbSchema.financialTransaction.userId, user.id),
+        isNull(dbSchema.financialTransaction.supersededAt),
+      ),
     });
     const statements = await db.query.statementUpload.findMany({
       where: eq(dbSchema.statementUpload.userId, user.id),

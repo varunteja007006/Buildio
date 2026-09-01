@@ -120,6 +120,40 @@ export function useStatementDelete(options?: {
   );
 }
 
+export function useStatementDeleteSuperseded(options?: {
+  onSuccess?: () => void;
+  onError?: (error: unknown) => void;
+}) {
+  const trpc = useTRPC();
+  const queryClient = useQueryClient();
+
+  return useMutation(
+    trpc.statement.deleteSupersededTransactions.mutationOptions({
+      onSuccess: (data) => {
+        toast.success(
+          data.deletedCount > 0
+            ? `Deleted ${data.deletedCount} superseded transaction(s).`
+            : "No superseded transactions to delete.",
+        );
+        queryClient.invalidateQueries({
+          queryKey: trpc.statement.listStatements.queryKey(),
+        });
+        queryClient.invalidateQueries({
+          queryKey: trpc.transaction.listTransactions.queryKey(),
+        });
+        queryClient.invalidateQueries({
+          queryKey: trpc.transaction.getAnalytics.queryKey(),
+        });
+        options?.onSuccess?.();
+      },
+      onError: (error) => {
+        toast.error(error.message || "Failed to delete superseded transactions");
+        options?.onError?.(error);
+      },
+    }),
+  );
+}
+
 export function useStatementDownload() {
   const trpcClient = useTRPCClient();
 
@@ -144,6 +178,8 @@ export function useStatementProcess(options?: {
     extractedCount: number;
     insertedCount: number;
     skippedCount: number;
+    supersededCount: number;
+    extractionVersion: number;
   }) => void;
   onError?: (error: Error) => void;
 }) {
@@ -158,9 +194,11 @@ export function useStatementProcess(options?: {
         });
       },
       onSuccess: (data) => {
-        toast.success(
-          `Extracted ${data.extractedCount} transactions (${data.insertedCount} new) from ${data.model}.`,
-        );
+        const message =
+          data.supersededCount > 0
+            ? `Extracted ${data.extractedCount} transactions from ${data.model} (v${data.extractionVersion}) — superseded ${data.supersededCount} old, ${data.insertedCount} new.`
+            : `Extracted ${data.extractedCount} transactions (${data.insertedCount} new) from ${data.model}.`;
+        toast.success(message);
         queryClient.invalidateQueries({
           queryKey: trpc.statement.listStatements.queryKey(),
         });

@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto";
 
-import { and, eq, isNull } from "drizzle-orm";
+import { and, count, eq, isNull } from "drizzle-orm";
 import "server-only";
 import { z } from "zod/v4";
 
@@ -416,6 +416,8 @@ export type IngestStatementInput = {
   userId: string;
   statementUploadId: string;
   extractionModel: string;
+  /** Version of the previous successful extraction for this upload (0 = none). */
+  currentExtractionVersion?: number;
   extraction: StatementExtraction;
 };
 
@@ -423,6 +425,9 @@ export type IngestStatementResult = {
   extractedCount: number;
   insertedCount: number;
   skippedCount: number;
+  extractionVersion: number;
+  supersededCount: number;
+  currentCount: number;
   bankAccountId: string | null;
   enrichment: {
     transfersCreated: number;
@@ -435,12 +440,24 @@ export type IngestStatementResult = {
  * Persists AI-extracted transactions for a statement upload, deduplicating
  * against previously-inserted transactions, then runs enrichment (transfer
  * matching, refund linking, recurring detection).
+ *
+ * Every successful extraction is stamped with a monotonically increasing
+ * version. Rows produced by an earlier extraction for the same upload are
+ * soft-deprecated (supersededAt set) so they remain queryable as history but
+ * are excluded from all "current" reads.
  */
 export async function ingestStatementExtraction(
   input: IngestStatementInput,
 ): Promise<IngestStatementResult> {
-  const { userId, statementUploadId, extractionModel, extraction } = input;
+  const {
+    userId,
+    statementUploadId,
+    extractionModel,
+    extraction,
+    currentExtractionVersion = 0,
+  } = input;
   const resolver = new ReferenceResolver(userId);
+  const extractionVersion = currentExtractionVersion + 1;
 
   const currencyId = await resolver.currency(
     extraction.statement.currency?.trim() || "INR",
@@ -492,6 +509,7 @@ export async function ingestStatementExtraction(
       userId,
       bankAccountId,
       statementUploadId,
+      extractionVersion,
       transactionDate: new Date(`${date}T12:00:00`),
       amount: amount.toFixed(4),
       currencyId,
@@ -524,13 +542,68 @@ export async function ingestStatementExtraction(
     });
   }
 
-  const inserted = rows.length
-    ? await db
-        .insert(dbSchema.financialTransaction)
-        .values(rows)
-        .onConflictDoNothing()
-        .returning({ id: dbSchema.financialTransaction.id })
-    : [];
+  const { insertedCount, currentCount, supersededCount } = await db.transaction(
+    async (tx) => {
+      const inserted = rows.length
+        ? await tx
+            .insert(dbSchema.financialTransaction)
+            .values(rows)
+            .onConflictDoNothing()
+            .returning({ id: dbSchema.financialTransaction.id })
+        : [];
+
+      const superseded = await tx
+        .update(dbSchema.financialTransaction)
+        .set({ supersededAt: new Date(), updatedAt: new Date() })
+        .where(
+          and(
+            eq(
+              dbSchema.financialTransaction.statementUploadId,
+              statementUploadId,
+            ),
+            eq(dbSchema.financialTransaction.userId, userId),
+            isNull(dbSchema.financialTransaction.supersededAt),
+          ),
+        )
+        .returning({ id: dbSchema.financialTransaction.id });
+
+      const [countRow] = await tx
+        .select({ count: count() })
+        .from(dbSchema.financialTransaction)
+        .where(
+          and(
+            eq(
+              dbSchema.financialTransaction.statementUploadId,
+              statementUploadId,
+            ),
+            eq(dbSchema.financialTransaction.userId, userId),
+            isNull(dbSchema.financialTransaction.supersededAt),
+          ),
+        );
+
+      await tx
+        .update(dbSchema.statementUpload)
+        .set({
+          status: "processed",
+          processedTransactionsCount: Number(countRow?.count ?? 0),
+          extractionVersion,
+          extractionModel,
+          statementMetadata: {
+            ...extraction.statement,
+            emiSummary: extraction.emiSummary,
+          },
+          processingError: null,
+          updatedAt: new Date(),
+        })
+        .where(eq(dbSchema.statementUpload.id, statementUploadId));
+
+      return {
+        insertedCount: inserted.length,
+        currentCount: Number(countRow?.count ?? 0),
+        supersededCount: superseded.length,
+      };
+    },
+  );
 
   const enrichment = await runTransactionEnrichment({
     db,
@@ -538,25 +611,13 @@ export async function ingestStatementExtraction(
     userId,
   });
 
-  await db
-    .update(dbSchema.statementUpload)
-    .set({
-      status: "processed",
-      processedTransactionsCount: inserted.length,
-      extractionModel,
-      statementMetadata: {
-        ...extraction.statement,
-        emiSummary: extraction.emiSummary,
-      },
-      processingError: null,
-      updatedAt: new Date(),
-    })
-    .where(eq(dbSchema.statementUpload.id, statementUploadId));
-
   return {
     extractedCount: extraction.transactions.length,
-    insertedCount: inserted.length,
-    skippedCount: extraction.transactions.length - inserted.length,
+    insertedCount,
+    skippedCount: extraction.transactions.length - insertedCount,
+    extractionVersion,
+    supersededCount,
+    currentCount,
     bankAccountId,
     enrichment,
   };

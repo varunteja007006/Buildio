@@ -1,4 +1,3 @@
-import { promises as fs } from "node:fs";
 import path from "node:path";
 
 import { and, eq } from "drizzle-orm";
@@ -71,8 +70,25 @@ export async function POST() {
           continue;
         }
 
-        // 3. Read file content
-        const content = await fs.readFile(doc.filepath, "utf-8");
+        // 3. Read file content — filepath is an UploadThing CDN URL
+        if (!doc.filepath.startsWith("https://")) {
+          results.push({
+            filename: doc.filename,
+            success: false,
+            error: "Document has no downloadable file URL",
+          });
+          continue;
+        }
+        const fileResponse = await fetch(doc.filepath);
+        if (!fileResponse.ok) {
+          results.push({
+            filename: doc.filename,
+            success: false,
+            error: `Failed to fetch file: HTTP ${fileResponse.status}`,
+          });
+          continue;
+        }
+        const content = await fileResponse.text();
 
         // 3. Insert resource
         const [resource] = await db

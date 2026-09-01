@@ -14,6 +14,10 @@ export const heartbeat = mutation({
     sessionId: v.string(),
     interval: v.number(),
   },
+  returns: v.object({
+    roomToken: v.string(),
+    sessionToken: v.string(),
+  }),
   handler: async (ctx, { roomId, userId, sessionId, interval }) => {
     if (!userId) {
       throw new Error("Id not valid");
@@ -25,9 +29,20 @@ export const heartbeat = mutation({
 
 export const list = query({
   args: { roomToken: v.string() },
+  returns: v.array(
+    v.object({
+      userId: v.string(),
+      online: v.boolean(),
+      lastDisconnected: v.number(),
+      name: v.string(),
+    }),
+  ),
   handler: async (ctx, { roomToken }) => {
     const peeps = await presence.list(ctx, roomToken);
 
+    // Per-user reads here are required to resolve display names; the
+    // @convex-dev/presence React hook only re-subscribes on join/leave,
+    // not on every heartbeat.
     const peepsWithNames = await Promise.all(
       peeps.map(async (p) => {
         if (!p.userId) {
@@ -40,7 +55,9 @@ export const list = query({
         }
 
         return {
-          ...p,
+          userId: p.userId,
+          online: p.online,
+          lastDisconnected: p.lastDisconnected,
           name: user.username ?? "Unknown",
         };
       }),
@@ -52,6 +69,7 @@ export const list = query({
 
 export const disconnect = mutation({
   args: { sessionToken: v.string() },
+  returns: v.null(),
   handler: async (ctx, { sessionToken }) => {
     // Can't check auth here because it's called over http from sendBeacon.
     return await presence.disconnect(ctx, sessionToken);

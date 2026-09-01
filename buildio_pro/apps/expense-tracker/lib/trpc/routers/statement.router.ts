@@ -1,5 +1,5 @@
 import { TRPCError } from "@trpc/server";
-import { and, count, eq } from "drizzle-orm";
+import { and, count, eq, inArray, isNotNull } from "drizzle-orm";
 import z from "zod";
 
 import {
@@ -214,8 +214,41 @@ export const statementRouter = createTRPCRouter({
         orderBy: (table, { desc }) => desc(table.createdAt),
       });
 
+      const supersededCounts = new Map<string, number>();
+      if (records.length > 0) {
+        const rows = await db
+          .select({
+            statementUploadId:
+              dbSchema.financialTransaction.statementUploadId,
+            count: count(),
+          })
+          .from(dbSchema.financialTransaction)
+          .where(
+            and(
+              inArray(
+                dbSchema.financialTransaction.statementUploadId,
+                records.map((record) => record.id),
+              ),
+              isNotNull(dbSchema.financialTransaction.supersededAt),
+            ),
+          )
+          .groupBy(dbSchema.financialTransaction.statementUploadId);
+        for (const row of rows) {
+          if (row.statementUploadId) {
+            supersededCounts.set(
+              row.statementUploadId,
+              Number(row.count),
+            );
+          }
+        }
+      }
+
       return {
-        data: records,
+        data: records.map((record) => ({
+          ...record,
+          supersededTransactionsCount:
+            supersededCounts.get(record.id) ?? 0,
+        })),
         meta: createPaginationMeta(input, totalItems),
       };
     }),
@@ -316,6 +349,7 @@ export const statementRouter = createTRPCRouter({
         const result = await ingestStatementExtraction({
           userId: user.id,
           statementUploadId: input.uploadId,
+          currentExtractionVersion: record.extractionVersion,
           extractionModel: model,
           extraction,
         });
@@ -371,5 +405,41 @@ export const statementRouter = createTRPCRouter({
         .where(eq(dbSchema.statementUpload.id, input.uploadId));
 
       return { success: true };
+    }),
+
+  deleteSupersededTransactions: protectedProcedure
+    .input(uploadIdInput)
+    .mutation(async ({ input, ctx }) => {
+      const { db, dbSchema, user } = ctx;
+
+      const record = await db.query.statementUpload.findFirst({
+        where: and(
+          eq(dbSchema.statementUpload.id, input.uploadId),
+          eq(dbSchema.statementUpload.userId, user.id),
+        ),
+      });
+
+      if (!record) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Upload record not found",
+        });
+      }
+
+      const deleted = await db
+        .delete(dbSchema.financialTransaction)
+        .where(
+          and(
+            eq(
+              dbSchema.financialTransaction.statementUploadId,
+              input.uploadId,
+            ),
+            eq(dbSchema.financialTransaction.userId, user.id),
+            isNotNull(dbSchema.financialTransaction.supersededAt),
+          ),
+        )
+        .returning({ id: dbSchema.financialTransaction.id });
+
+      return { deletedCount: deleted.length };
     }),
 });

@@ -47,6 +47,7 @@ import {
   TableRow,
 } from "@workspace/ui/components/table";
 import {
+  ArchiveX,
   Banknote,
   Check,
   CreditCard,
@@ -67,6 +68,7 @@ import * as React from "react";
 
 import {
   useStatementDelete,
+  useStatementDeleteSuperseded,
   useStatementDownload,
   useStatementList,
   useStatementModels,
@@ -294,7 +296,8 @@ function ExtractStatementDialog({
             </Select>
             <p className="text-xs text-muted-foreground">
               Changing the type re-extracts with that document type&apos;s
-              prompt. Previously extracted transactions are kept.
+              prompt. Each extraction is versioned — the previous version is
+              kept as superseded and can be deleted from the statement list.
             </p>
           </div>
           <div className="space-y-2">
@@ -399,6 +402,7 @@ export function StatementsPage() {
   }, [hasProcessing, refetch]);
   const uploadMutation = useStatementUpload();
   const deleteMutation = useStatementDelete();
+  const purgeMutation = useStatementDeleteSuperseded();
   const downloadMutation = useStatementDownload();
   const router = useRouter();
 
@@ -647,6 +651,13 @@ export function StatementsPage() {
                                 >
                                   {statement.status}
                                 </Badge>
+                                {typeof statement.extractionVersion ===
+                                  "number" &&
+                                  statement.extractionVersion > 0 && (
+                                    <Badge variant="outline">
+                                      v{statement.extractionVersion}
+                                    </Badge>
+                                  )}
                                 {statement.status === "processing" && (
                                   <Loader2 className="size-3.5 animate-spin text-muted-foreground" />
                                 )}
@@ -662,6 +673,18 @@ export function StatementsPage() {
                                     </span>
                                   )}
                               </div>
+                              {typeof statement.supersededTransactionsCount ===
+                                "number" &&
+                                statement.supersededTransactionsCount > 0 && (
+                                  <span className="text-xs text-muted-foreground">
+                                    {statement.supersededTransactionsCount}{" "}
+                                    superseded{" "}
+                                    {statement.supersededTransactionsCount === 1
+                                      ? "transaction"
+                                      : "transactions"}{" "}
+                                    from older extractions
+                                  </span>
+                                )}
                               {statement.status === "failed" &&
                                 statement.processingError && (
                                   <span className="max-w-56 truncate text-xs text-destructive">
@@ -712,6 +735,58 @@ export function StatementsPage() {
                               >
                                 <Sparkles className="size-4" />
                               </Button>
+
+                              {typeof statement.supersededTransactionsCount ===
+                                "number" &&
+                                statement.supersededTransactionsCount > 0 && (
+                                  <AlertDialog>
+                                    <AlertDialogTrigger asChild>
+                                      <Button
+                                        variant="outline"
+                                        size="icon"
+                                        title="Delete superseded transactions from older extractions"
+                                      >
+                                        <ArchiveX className="size-4" />
+                                      </Button>
+                                    </AlertDialogTrigger>
+                                    <AlertDialogContent>
+                                      <AlertDialogHeader>
+                                        <AlertDialogTitle>
+                                          Delete old extraction versions?
+                                        </AlertDialogTitle>
+                                        <AlertDialogDescription>
+                                          This will permanently delete{" "}
+                                          {statement.supersededTransactionsCount}{" "}
+                                          superseded{" "}
+                                          {statement.supersededTransactionsCount ===
+                                          1
+                                            ? "transaction"
+                                            : "transactions"}{" "}
+                                          from previous extractions of{" "}
+                                          {statement.originalFilename}. The
+                                          current extraction is kept. This
+                                          action cannot be undone.
+                                        </AlertDialogDescription>
+                                      </AlertDialogHeader>
+                                      <AlertDialogFooter>
+                                        <AlertDialogCancel>
+                                          Cancel
+                                        </AlertDialogCancel>
+                                        <Button
+                                          variant="destructive"
+                                          disabled={purgeMutation.isPending}
+                                          onClick={() =>
+                                            purgeMutation.mutate({
+                                              uploadId: statement.id,
+                                            })
+                                          }
+                                        >
+                                          Delete old versions
+                                        </Button>
+                                      </AlertDialogFooter>
+                                    </AlertDialogContent>
+                                  </AlertDialog>
+                                )}
 
                               <Button
                                 variant="outline"

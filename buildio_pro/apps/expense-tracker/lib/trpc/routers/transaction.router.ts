@@ -114,7 +114,10 @@ export const transactionRouter = createTRPCRouter({
     .query(async ({ input, ctx }) => {
       const { db, dbSchema, user } = ctx;
 
-      const filters = [eq(dbSchema.financialTransaction.userId, user.id)];
+      const filters = [
+        eq(dbSchema.financialTransaction.userId, user.id),
+        isNull(dbSchema.financialTransaction.supersededAt),
+      ];
 
       if (input.bankAccountId) {
         filters.push(
@@ -270,7 +273,10 @@ export const transactionRouter = createTRPCRouter({
     const { db, dbSchema, user } = ctx;
 
     const transactions = await db.query.financialTransaction.findMany({
-      where: eq(dbSchema.financialTransaction.userId, user.id),
+      where: and(
+        eq(dbSchema.financialTransaction.userId, user.id),
+        isNull(dbSchema.financialTransaction.supersededAt),
+      ),
       with: {
         statementUpload: true,
         bankAccount: true,
@@ -438,6 +444,7 @@ export const transactionRouter = createTRPCRouter({
             dbSchema.financialTransaction.statementUploadId,
             input.statementUploadId,
           ),
+          isNull(dbSchema.financialTransaction.supersededAt),
         ),
         orderBy: (transaction, { desc }) =>
           desc(transaction.transactionDate),

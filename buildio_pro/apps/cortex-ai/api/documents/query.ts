@@ -1,9 +1,9 @@
 "use client";
 
-import { useMutation, useQuery, useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useInfiniteQuery } from "@tanstack/react-query";
 
 import { getDocuments } from "./api";
-import type { DocumentsResponse, DocumentsQuery, ScanResponse } from "./types";
+import type { DocumentsResponse, DocumentsQuery } from "./types";
 
 /** Query key factory for documents domain */
 export const documentKeys = {
@@ -33,18 +33,5 @@ export function useInfiniteDocuments(
     initialPageParam: 1,
     getNextPageParam: (lastPage) =>
       lastPage.page < lastPage.pageCount ? lastPage.page + 1 : undefined,
-  });
-}
-
-/** @deprecated Local dir scan removed — stub for obsolete components (scan-docs-button, documents-table) */
-export function useScanDocuments() {
-  const queryClient = useQueryClient();
-  return useMutation<ScanResponse, Error, void>({
-    mutationFn: async () => {
-      throw new Error("Local dir scan removed — use UploadThing instead");
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: documentKeys.all });
-    },
   });
 }

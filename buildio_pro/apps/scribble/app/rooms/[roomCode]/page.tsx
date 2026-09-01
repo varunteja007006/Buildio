@@ -4,7 +4,7 @@ import { api } from "@workspace/games-convex-backend/convex/_generated/api";
 import { useMutation, useQuery } from "convex/react";
 import dynamic from "next/dynamic";
 import { useParams } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 
 import { ChatBox } from "@/components/chat-box";
@@ -28,8 +28,6 @@ export default function RoomPage() {
   const { user, userToken } = useUserStore();
   const params = useParams();
   const roomCode = params.roomCode as string;
-  const [container, setContainer] = useState<HTMLDivElement | null>(null);
-  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
 
   const roomDetails = useQuery(api.rooms.getRoomDetails, {
     userToken,
@@ -49,27 +47,6 @@ export default function RoomPage() {
     }
   }, [isOwner, userToken, roomCode]);
 
-  useEffect(() => {
-    if (!container) return;
-
-    const updateDimensions = () => {
-      setDimensions({
-        width: container.offsetWidth,
-        height: container.offsetHeight,
-      });
-    };
-
-    updateDimensions();
-
-    const resizeObserver = new ResizeObserver(() => {
-      updateDimensions();
-    });
-
-    resizeObserver.observe(container);
-
-    return () => resizeObserver.disconnect();
-  }, [container]);
-
   if (!user?.id) {
     return (
       <div className="flex min-h-[calc(100vh-10rem)] items-center justify-center">
@@ -79,29 +56,20 @@ export default function RoomPage() {
   }
 
   return (
-    <div className="w-full flex flex-col gap-1 md:flex-row p-1 md:px-2 md:py-4 h-[calc(100vh-10rem)]">
-      <div className="flex flex-col min-w-0 gap-1 h-[50%] md:h-full md:flex-1">
+    <div className="w-full flex flex-col md:flex-row gap-1 md:gap-2 p-1 md:px-2 md:py-4 h-[calc(100vh-10rem)] overflow-hidden">
+      <div className="flex flex-col min-w-0 min-h-0 flex-1 gap-1">
         <RoomHeader />
 
-        <div
-          ref={setContainer}
-          className="flex-1 w-full bg-muted/20 rounded-md border overflow-hidden relative"
-        >
-          {dimensions.width > 0 && dimensions.height > 0 ? (
-            <Canvas width={dimensions.width} height={dimensions.height} />
-          ) : (
-            <div className="flex items-center justify-center h-full text-muted-foreground">
-              Initializing Canvas...
-            </div>
-          )}
+        <div className="flex-1 min-h-0 w-full bg-muted/20 rounded-md border overflow-hidden">
+          <Canvas />
         </div>
       </div>
 
-      <div className="flex flex-row md:flex-col gap-1">
-        <div>
+      <div className="flex flex-row md:flex-col gap-1 h-56 md:h-full md:w-60 shrink-0">
+        <div className="w-36 md:w-full min-h-0 overflow-y-auto">
           <Participants />
         </div>
-        <div>
+        <div className="flex-1 min-w-0 min-h-0">
           <ChatBox roomCode={roomCode} />
         </div>
       </div>

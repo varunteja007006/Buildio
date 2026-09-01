@@ -149,6 +149,20 @@ function TransactionsPageContent() {
     null,
   );
 
+  // When the review dialog is dismissed by clicking outside, the modal overlay
+  // closes it on `pointerdown`, but the resulting `click` can land on the row
+  // underneath (the overlay unmounts before `pointerup`), re-triggering
+  // `setReviewing` and instantly reopening the dialog. Swallow those clicks.
+  const lastReviewDialogClosedAtRef = React.useRef(0);
+
+  const openReviewDialog = React.useCallback(
+    (transaction: ReviewTransaction) => {
+      if (Date.now() - lastReviewDialogClosedAtRef.current < 400) return;
+      setReviewing(transaction);
+    },
+    [],
+  );
+
   const [selectedIds, setSelectedIds] = React.useState<Set<string>>(new Set());
   const [bulkDeleteOpen, setBulkDeleteOpen] = React.useState(false);
 
@@ -676,7 +690,7 @@ function TransactionsPageContent() {
                       <TableRow
                         key={transaction.id}
                         className="cursor-pointer"
-                        onClick={() => setReviewing(transaction)}
+                        onClick={() => openReviewDialog(transaction)}
                       >
                         <TableCell
                           className="w-10"
@@ -761,7 +775,7 @@ function TransactionsPageContent() {
                               size="sm"
                               onClick={(e) => {
                                 e.stopPropagation();
-                                setReviewing(transaction);
+                                openReviewDialog(transaction);
                               }}
                             >
                               <Eye className="size-3.5" />
@@ -866,7 +880,10 @@ function TransactionsPageContent() {
         transaction={reviewing}
         open={Boolean(reviewing)}
         onOpenChange={(open) => {
-          if (!open) setReviewing(null);
+          if (!open) {
+            lastReviewDialogClosedAtRef.current = Date.now();
+            setReviewing(null);
+          }
         }}
       />
 

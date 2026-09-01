@@ -58,6 +58,7 @@ export async function matchTransfers(
     where: and(
       eq(dbSchema.financialTransaction.userId, userId),
       isNull(dbSchema.financialTransaction.linkedTransactionId),
+      isNull(dbSchema.financialTransaction.supersededAt),
     ),
   });
 

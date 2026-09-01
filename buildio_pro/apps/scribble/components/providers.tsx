@@ -3,6 +3,7 @@
 import { ThemeProvider as NextThemesProvider } from "next-themes";
 import * as React from "react";
 
+import { TooltipProvider } from "@workspace/ui/components/tooltip";
 
 import { UserStoreProvider } from "@/lib/store/user.store";
 
@@ -18,7 +19,9 @@ export function Providers({ children }: { children: React.ReactNode }) {
       enableColorScheme
     >
       <ConvexClientProvider>
-        <UserStoreProvider>{children}</UserStoreProvider>
+        <UserStoreProvider>
+          <TooltipProvider>{children}</TooltipProvider>
+        </UserStoreProvider>
       </ConvexClientProvider>
     </NextThemesProvider>
   );

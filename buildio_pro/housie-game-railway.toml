@@ -4,4 +4,4 @@ buildCommand = "pnpm build:housie-game"
 
 [deploy]
 startCommand = "pnpm start:housie-game"
-restartPolicyType = "never"
+restartPolicyType = "ON_FAILURE"

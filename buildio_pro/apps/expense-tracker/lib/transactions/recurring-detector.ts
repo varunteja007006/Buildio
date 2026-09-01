@@ -1,4 +1,4 @@
-import { and, asc, eq } from "drizzle-orm";
+import { and, asc, eq, isNull } from "drizzle-orm";
 
 import type { EnrichmentContext } from "./context";
 
@@ -35,6 +35,7 @@ export async function detectRecurring(
     where: and(
       eq(dbSchema.financialTransaction.userId, userId),
       eq(dbSchema.financialTransaction.direction, "debit"),
+      isNull(dbSchema.financialTransaction.supersededAt),
     ),
     orderBy: (transaction, { asc }) => asc(transaction.transactionDate),
   });

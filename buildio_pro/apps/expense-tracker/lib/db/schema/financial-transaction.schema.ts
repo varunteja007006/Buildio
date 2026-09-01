@@ -94,13 +94,16 @@ export const financialTransaction = pgTable(
       scale: 4,
     }),
     reviewedAt: timestamp("reviewed_at"),
+    extractionVersion: integer("extraction_version").notNull().default(1),
+    supersededAt: timestamp("superseded_at"),
     transactionHash: text("transaction_hash"),
     ...auditTimeFields,
   },
   (table) => [
-    uniqueIndex("financial_transaction_user_id_hash_uidx").on(
+    uniqueIndex("financial_transaction_user_id_hash_version_uidx").on(
       table.userId,
       table.transactionHash,
+      table.extractionVersion,
     ),
     index("idx_financial_transaction_user_id").on(table.userId),
     index("idx_financial_transaction_bank_account_id").on(

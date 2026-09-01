@@ -31,9 +31,11 @@ export default defineSchema({
     roomId: v.id("rooms"),
     userId: v.id("users"),
     reaction: v.string(), // e.g., "like", "dislike", "heart"
+    created_at: v.optional(v.number()), // set on insert; used by cleanup cutoffs
   })
     .index("by_room_and_user", ["roomId", "userId"])
-    .index("by_room", ["roomId"]),
+    .index("by_room", ["roomId"])
+    .index("by_created_at", ["created_at"]),
 
   stories: defineTable({
     title: v.string(),
@@ -64,28 +66,28 @@ export default defineSchema({
     message: v.string(),
     isGuess: v.optional(v.boolean()),
     created_at: v.number(),
-  }).index("by_room", ["roomId"]),
+  })
+    .index("by_room", ["roomId"])
+    .index("by_created_at", ["created_at"]),
 
+  // One document per stroke. Concurrent drawers upsert their own strokes by
+  // id, so nobody's save can clobber another player's drawing.
   scribble_lines: defineTable({
     roomId: v.id("rooms"),
     playerId: v.id("users"),
+    strokeId: v.string(), // client-generated stroke id, used for upserts
     tool: v.string(), // "pen" | "eraser"
-    lines: v.optional(
-      v.array(
-        v.object({
-          id: v.string(),
-          tool: v.string(),
-          points: v.array(v.number()),
-          strokeWidth: v.number(),
-          strokeColor: v.string(),
-        }),
-      ),
-    ),
+    points: v.array(v.number()), // flat [x0, y0, x1, y1, ...]
+    strokeWidth: v.number(),
+    strokeColor: v.string(),
     isComplete: v.boolean(), // false while drawing, true when mouse up
     // timestamps to allow cleanup of stale canvases
     created_at: v.optional(v.number()),
     updated_at: v.optional(v.number()),
-  }).index("by_room", ["roomId"]),
+  })
+    .index("by_room", ["roomId"])
+    .index("by_room_and_stroke", ["roomId", "strokeId"])
+    .index("by_created_at", ["created_at"]),
 
   scribble_games: defineTable({
     room_code: v.string(),

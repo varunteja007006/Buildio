@@ -89,6 +89,7 @@ export {
   useStatementUpload,
   useStatementRename,
   useStatementDelete,
+  useStatementDeleteSuperseded,
   useStatementDownload,
   useStatementModels,
   useStatementProcess,

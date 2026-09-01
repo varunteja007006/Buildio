@@ -44,6 +44,7 @@ export async function linkRefunds(
       eq(dbSchema.financialTransaction.userId, userId),
       eq(dbSchema.financialTransaction.direction, "credit"),
       isNull(dbSchema.financialTransaction.linkedTransactionId),
+      isNull(dbSchema.financialTransaction.supersededAt),
     ),
   });
 
@@ -52,6 +53,7 @@ export async function linkRefunds(
       eq(dbSchema.financialTransaction.userId, userId),
       eq(dbSchema.financialTransaction.direction, "debit"),
       isNull(dbSchema.financialTransaction.linkedTransactionId),
+      isNull(dbSchema.financialTransaction.supersededAt),
     ),
   });
 

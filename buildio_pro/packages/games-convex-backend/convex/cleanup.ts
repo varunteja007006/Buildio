@@ -1,54 +1,116 @@
-import { mutation } from "./_generated/server";
+import { v } from "convex/values";
 
-export const deleteStaleStories = mutation(async ({ db }) => {
-  const now = Date.now();
-  const cutoff = now - 60 * 60 * 1000; // 1 hour ago
+import { internalMutation } from "./_generated/server";
 
-  const stories = await db.query("stories").withIndex("created_at").collect();
+const HOUR_MS = 60 * 60 * 1000;
+const DAY_MS = 24 * HOUR_MS;
 
-  for (const story of stories) {
-    if (story.status === "started" && story.created_at < cutoff) {
+// Delete "started" stories older than 1 hour, along with their points
+// (previously orphaned).
+export const deleteStaleStories = internalMutation({
+  args: {},
+  returns: v.null(),
+  handler: async ({ db }) => {
+    const cutoff = Date.now() - HOUR_MS;
+
+    const staleStories = await db
+      .query("stories")
+      .withIndex("created_at", (q) => q.lt("created_at", cutoff))
+      .collect();
+
+    for (const story of staleStories) {
+      if (story.status !== "started") continue;
+      const points = await db
+        .query("storyPoints")
+        .withIndex("by_story", (q) => q.eq("storyId", story._id))
+        .collect();
+      for (const point of points) {
+        await db.delete(point._id);
+      }
       await db.delete(story._id);
     }
-  }
+  },
 });
 
-export const clearStoriesAndPoints = mutation(async ({ db }) => {
-  const stories = await db.query("stories").collect();
-  await Promise.all(stories.map((story) => db.delete(story._id)));
+// Delete stories (and their points) older than 21 days instead of wiping
+// every story in the database every 3 weeks.
+export const clearStoriesAndPoints = internalMutation({
+  args: {},
+  returns: v.null(),
+  handler: async ({ db }) => {
+    const cutoff = Date.now() - 21 * DAY_MS;
 
-  const storyPoints = await db.query("storyPoints").collect();
-  await Promise.all(storyPoints.map((point) => db.delete(point._id)));
+    const oldStories = await db
+      .query("stories")
+      .withIndex("created_at", (q) => q.lt("created_at", cutoff))
+      .collect();
+
+    for (const story of oldStories) {
+      const points = await db
+        .query("storyPoints")
+        .withIndex("by_story", (q) => q.eq("storyId", story._id))
+        .collect();
+      for (const point of points) {
+        await db.delete(point._id);
+      }
+      await db.delete(story._id);
+    }
+  },
 });
 
-export const deleteOldChats = mutation(async ({ db }) => {
-  const now = Date.now();
-  const cutoff = now - 24 * 60 * 60 * 1000; // 24 hours ago
+// Delete chats older than 24 hours via the by_created_at index.
+export const deleteOldChats = internalMutation({
+  args: {},
+  returns: v.null(),
+  handler: async ({ db }) => {
+    const cutoff = Date.now() - DAY_MS;
 
-  const chats = await db.query("chats").collect();
-  for (const chat of chats) {
-    if (chat.created_at && chat.created_at < cutoff) {
+    const oldChats = await db
+      .query("chats")
+      .withIndex("by_created_at", (q) => q.lt("created_at", cutoff))
+      .collect();
+    for (const chat of oldChats) {
       await db.delete(chat._id);
     }
-  }
+  },
 });
 
-export const deleteOldScribbleLines = mutation(async ({ db }) => {
-  const now = Date.now();
-  const cutoff = now - 24 * 60 * 60 * 1000; // 24 hours ago
+// Delete canvases not updated in 24 hours via the by_created_at index.
+// Canvases created before created_at existed are patched with one on their
+// next stroke, so they become eligible for cleanup after that.
+export const deleteOldScribbleLines = internalMutation({
+  args: {},
+  returns: v.null(),
+  handler: async ({ db }) => {
+    const cutoff = Date.now() - DAY_MS;
 
-  const lines = await db.query("scribble_lines").collect();
-  for (const line of lines) {
-    const ts = line.updated_at ?? line.created_at ?? 0;
-    if (ts && ts < cutoff) {
-      await db.delete(line._id);
+    const oldLines = await db
+      .query("scribble_lines")
+      .withIndex("by_created_at", (q) => q.lt("created_at", cutoff))
+      .collect();
+    for (const line of oldLines) {
+      const lastTouched = line.updated_at ?? line.created_at;
+      if (lastTouched !== undefined && lastTouched < cutoff) {
+        await db.delete(line._id);
+      }
     }
-  }
+  },
 });
 
-export const deleteAllTeamReactions = mutation(async ({ db }) => {
-  const reactions = await db.query("team_reactions").collect();
-  for (const reaction of reactions) {
-    await db.delete(reaction._id);
-  }
+// Delete team reactions older than 24 hours (previously deleted ALL
+// reactions every hour).
+export const deleteOldTeamReactions = internalMutation({
+  args: {},
+  returns: v.null(),
+  handler: async ({ db }) => {
+    const cutoff = Date.now() - DAY_MS;
+
+    const oldReactions = await db
+      .query("team_reactions")
+      .withIndex("by_created_at", (q) => q.lt("created_at", cutoff))
+      .collect();
+    for (const reaction of oldReactions) {
+      await db.delete(reaction._id);
+    }
+  },
 });
