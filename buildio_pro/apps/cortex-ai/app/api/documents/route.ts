@@ -33,15 +33,24 @@ export async function GET(request: NextRequest) {
 
     const workspace = await getActiveWorkspace(user.id);
     if (!workspace) {
-      return NextResponse.json({ documents: [], total: 0, page: 1, pageSize: 10, pageCount: 1 });
+      return NextResponse.json({
+        documents: [],
+        total: 0,
+        page: 1,
+        pageSize: 10,
+        pageCount: 1,
+      });
     }
 
     const searchParams = request.nextUrl.searchParams;
 
     // Pagination
     const rawPage = Number(searchParams.get("page") ?? "1");
-    const rawPageSize = Number(searchParams.get("pageSize") ?? String(DEFAULT_PAGE_SIZE));
-    const page = Number.isFinite(rawPage) && rawPage > 0 ? Math.floor(rawPage) : 1;
+    const rawPageSize = Number(
+      searchParams.get("pageSize") ?? String(DEFAULT_PAGE_SIZE),
+    );
+    const page =
+      Number.isFinite(rawPage) && rawPage > 0 ? Math.floor(rawPage) : 1;
     const pageSize =
       Number.isFinite(rawPageSize) && rawPageSize > 0
         ? Math.min(Math.floor(rawPageSize), MAX_PAGE_SIZE)
@@ -51,8 +60,11 @@ export async function GET(request: NextRequest) {
     const sort = searchParams.get("sort") ?? "createdAt";
     const sortDir = searchParams.get("sortDir") ?? "desc";
     const sortableColumn =
-      sort in SORTABLE_COLUMNS ? SORTABLE_COLUMNS[sort as SortColumn] : documents.createdAt;
-    const order = sortDir === "asc" ? asc(sortableColumn) : desc(sortableColumn);
+      sort in SORTABLE_COLUMNS
+        ? SORTABLE_COLUMNS[sort as SortColumn]
+        : documents.createdAt;
+    const order =
+      sortDir === "asc" ? asc(sortableColumn) : desc(sortableColumn);
 
     // Filters
     const conditions: SQL[] = [eq(documents.workspaceId, workspace.id)];

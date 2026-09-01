@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import {
   Sidebar,
@@ -6,17 +6,15 @@ import {
   SidebarFooter,
   SidebarHeader,
   SidebarRail,
-} from "@workspace/ui/components/sidebar"
-import { Skeleton } from "@workspace/ui/components/skeleton"
-import { MessageSquareIcon, FileTextIcon, BotIcon } from "lucide-react"
-import * as React from "react"
+} from "@workspace/ui/components/sidebar";
+import { Skeleton } from "@workspace/ui/components/skeleton";
+import { MessageSquareIcon, FileTextIcon, BotIcon } from "lucide-react";
+import * as React from "react";
 
-import { useSession } from "@/api/auth/query"
-import { NavMain } from "@/components/nav-main"
-import { NavUser } from "@/components/nav-user"
-import { WorkspaceSwitcher } from "@/components/workspace-switcher"
-
-
+import { useSession } from "@/api/auth/query";
+import { NavMain } from "@/components/nav-main";
+import { NavUser } from "@/components/nav-user";
+import { WorkspaceSwitcher } from "@/components/workspace-switcher";
 
 const navMain = [
   {
@@ -47,10 +45,10 @@ const navMain = [
       { title: "Connectors", url: "/dashboard/agent/connectors" },
     ],
   },
-]
+];
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const { data: session, isLoading } = useSession()
+  const { data: session, isLoading } = useSession();
 
   return (
     <Sidebar collapsible="icon" {...props}>
@@ -75,5 +73,5 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>
-  )
+  );
 }

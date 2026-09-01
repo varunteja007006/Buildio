@@ -39,7 +39,11 @@ export async function GET(_request: NextRequest, { params }: Params) {
     }
 
     return NextResponse.json({
-      workspace: { ...workspace, role: membership.role, isActive: membership.isActive },
+      workspace: {
+        ...workspace,
+        role: membership.role,
+        isActive: membership.isActive,
+      },
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown error";

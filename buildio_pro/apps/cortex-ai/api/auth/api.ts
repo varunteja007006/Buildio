@@ -10,8 +10,12 @@ export async function signIn(input: SignInInput): Promise<SessionResponse> {
 
   // The session is set via cookie; fetch it to get the full SessionResponse
   const sessionResult = await authClient.getSession();
-  if (sessionResult.error) throw new Error(sessionResult.error.message ?? sessionResult.error.statusText);
-  if (!sessionResult.data) throw new Error("Sign in failed: no session created");
+  if (sessionResult.error)
+    throw new Error(
+      sessionResult.error.message ?? sessionResult.error.statusText,
+    );
+  if (!sessionResult.data)
+    throw new Error("Sign in failed: no session created");
 
   return sessionResult.data as unknown as SessionResponse;
 }
@@ -24,8 +28,12 @@ export async function signUp(input: SignUpInput): Promise<SessionResponse> {
 
   // The session is set via cookie; fetch it to get the full SessionResponse
   const sessionResult = await authClient.getSession();
-  if (sessionResult.error) throw new Error(sessionResult.error.message ?? sessionResult.error.statusText);
-  if (!sessionResult.data) throw new Error("Sign up failed: no session created");
+  if (sessionResult.error)
+    throw new Error(
+      sessionResult.error.message ?? sessionResult.error.statusText,
+    );
+  if (!sessionResult.data)
+    throw new Error("Sign up failed: no session created");
 
   return sessionResult.data as unknown as SessionResponse;
 }
@@ -50,7 +58,7 @@ export async function getUser(): Promise<User | null> {
 
 /** Update user profile */
 export async function updateUser(
-  input: Partial<Pick<User, "name" | "image">>
+  input: Partial<Pick<User, "name" | "image">>,
 ): Promise<void> {
   const { error } = await authClient.updateUser(input);
   if (error) throw new Error(error.message ?? error.statusText);

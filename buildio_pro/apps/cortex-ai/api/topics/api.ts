@@ -15,7 +15,9 @@ export async function getTopics(): Promise<TopicsResponse> {
 }
 
 /** Create a new topic */
-export async function createTopic(input: CreateTopicInput): Promise<TopicResponse> {
+export async function createTopic(
+  input: CreateTopicInput,
+): Promise<TopicResponse> {
   const { data } = await apiClient.post<TopicResponse>("/topics", input);
   return data;
 }

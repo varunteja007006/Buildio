@@ -1,6 +1,6 @@
-import { BadgeCheckIcon } from "lucide-react"
+import { BadgeCheckIcon } from "lucide-react";
 
-import { AppBreadcrumb } from "@/components/app-breadcrumb"
+import { AppBreadcrumb } from "@/components/app-breadcrumb";
 
 export default function AccountPage() {
   return (
@@ -21,5 +21,5 @@ export default function AccountPage() {
         </div>
       </div>
     </>
-  )
+  );
 }

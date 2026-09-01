@@ -13,4 +13,5 @@ import type { OurFileRouter } from "@/app/api/uploadthing/core";
  * });
  * await startUpload(files, { folderId: "..." });
  */
-export const { useUploadThing, uploadFiles } = generateReactHelpers<OurFileRouter>();
+export const { useUploadThing, uploadFiles } =
+  generateReactHelpers<OurFileRouter>();

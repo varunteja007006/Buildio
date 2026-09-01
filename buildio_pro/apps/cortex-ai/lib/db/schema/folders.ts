@@ -44,6 +44,9 @@ export const folders = pgTable(
     workspaceIdx: index("folders_workspace_idx").on(table.workspaceId),
     topicIdx: index("folders_topic_idx").on(table.topicId),
     parentIdx: index("folders_parent_idx").on(table.parentFolderId),
-    depthCheck: check("folders_depth_check", sql`${table.depth} BETWEEN 0 AND 5`),
+    depthCheck: check(
+      "folders_depth_check",
+      sql`${table.depth} BETWEEN 0 AND 5`,
+    ),
   }),
 );

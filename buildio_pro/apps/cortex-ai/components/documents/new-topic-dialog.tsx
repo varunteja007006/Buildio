@@ -1,7 +1,6 @@
-"use client"
+"use client";
 
-
-import { Button } from "@workspace/ui/components/button"
+import { Button } from "@workspace/ui/components/button";
 import {
   Dialog,
   DialogContent,
@@ -9,37 +8,37 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@workspace/ui/components/dialog"
-import { Input } from "@workspace/ui/components/input"
-import { Label } from "@workspace/ui/components/label"
-import { useState } from "react"
+} from "@workspace/ui/components/dialog";
+import { Input } from "@workspace/ui/components/input";
+import { Label } from "@workspace/ui/components/label";
+import { useState } from "react";
 
-import { useCreateTopic } from "@/api/topics/query"
-import { cn } from "@/lib/utils"
+import { useCreateTopic } from "@/api/topics/query";
+import { cn } from "@/lib/utils";
 
-const MAX_NAME_LENGTH = 150
+const MAX_NAME_LENGTH = 150;
 
 interface NewTopicDialogProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
 }
 
 export function NewTopicDialog({ open, onOpenChange }: NewTopicDialogProps) {
-  const [name, setName] = useState("")
-  const createTopic = useCreateTopic()
+  const [name, setName] = useState("");
+  const createTopic = useCreateTopic();
 
   const handleSubmit = () => {
-    if (!name.trim()) return
+    if (!name.trim()) return;
     createTopic.mutate(
       { name: name.trim() },
       {
         onSuccess: () => {
-          setName("")
-          onOpenChange(false)
+          setName("");
+          onOpenChange(false);
         },
       },
-    )
-  }
+    );
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -47,8 +46,7 @@ export function NewTopicDialog({ open, onOpenChange }: NewTopicDialogProps) {
         <DialogHeader>
           <DialogTitle>New topic</DialogTitle>
           <DialogDescription>
-            Topics are top-level categories that organize folders and
-            documents.
+            Topics are top-level categories that organize folders and documents.
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-2">
@@ -86,5 +84,5 @@ export function NewTopicDialog({ open, onOpenChange }: NewTopicDialogProps) {
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

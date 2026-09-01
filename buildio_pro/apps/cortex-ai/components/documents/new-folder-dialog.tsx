@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import { Button } from "@workspace/ui/components/button"
+import { Button } from "@workspace/ui/components/button";
 import {
   Dialog,
   DialogContent,
@@ -8,33 +8,33 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@workspace/ui/components/dialog"
-import { Input } from "@workspace/ui/components/input"
-import { Label } from "@workspace/ui/components/label"
+} from "@workspace/ui/components/dialog";
+import { Input } from "@workspace/ui/components/input";
+import { Label } from "@workspace/ui/components/label";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@workspace/ui/components/select"
-import { useState } from "react"
+} from "@workspace/ui/components/select";
+import { useState } from "react";
 
-import { useCreateFolder } from "@/api/folders/query"
-import type { Folder } from "@/api/folders/types"
-import type { Topic } from "@/api/topics/types"
-import { cn } from "@/lib/utils"
+import { useCreateFolder } from "@/api/folders/query";
+import type { Folder } from "@/api/folders/types";
+import type { Topic } from "@/api/topics/types";
+import { cn } from "@/lib/utils";
 
-const MAX_NAME_LENGTH = 150
+const MAX_NAME_LENGTH = 150;
 
 interface NewFolderDialogProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  topics: Topic[]
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  topics: Topic[];
   /** When set, the folder is created inside this parent (topic is inherited) */
-  parentFolder?: Folder | null
+  parentFolder?: Folder | null;
   /** Preselect a topic when creating a top-level folder (e.g. from a topic row) */
-  defaultTopicId?: string | null
+  defaultTopicId?: string | null;
 }
 
 export function NewFolderDialog({
@@ -46,12 +46,12 @@ export function NewFolderDialog({
 }: NewFolderDialogProps) {
   const [topicId, setTopicId] = useState(
     parentFolder?.topicId ?? defaultTopicId ?? "",
-  )
-  const [name, setName] = useState("")
-  const createFolder = useCreateFolder()
+  );
+  const [name, setName] = useState("");
+  const createFolder = useCreateFolder();
 
   const handleSubmit = () => {
-    if (!name.trim() || !topicId) return
+    if (!name.trim() || !topicId) return;
     createFolder.mutate(
       {
         topicId,
@@ -61,8 +61,8 @@ export function NewFolderDialog({
       {
         onSuccess: () => onOpenChange(false),
       },
-    )
-  }
+    );
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -87,10 +87,7 @@ export function NewFolderDialog({
           ) : (
             <>
               <Label htmlFor="folder-topic">Topic</Label>
-              <Select
-                value={topicId}
-                onValueChange={setTopicId}
-              >
+              <Select value={topicId} onValueChange={setTopicId}>
                 <SelectTrigger id="folder-topic" className="w-full">
                   <SelectValue placeholder="Select a topic" />
                 </SelectTrigger>
@@ -138,5 +135,5 @@ export function NewFolderDialog({
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

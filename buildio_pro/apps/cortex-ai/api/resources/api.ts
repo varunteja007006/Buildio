@@ -9,7 +9,9 @@ export async function getResources(): Promise<Resource[]> {
 }
 
 /** Create a new resource (chunk + embed + store) */
-export async function createResource(input: CreateResourceInput): Promise<Resource> {
+export async function createResource(
+  input: CreateResourceInput,
+): Promise<Resource> {
   const { data } = await apiClient.post<Resource>("/resources", input);
   return data;
 }

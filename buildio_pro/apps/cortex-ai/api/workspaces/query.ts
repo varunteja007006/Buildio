@@ -1,10 +1,6 @@
 "use client";
 
-import {
-  useQuery,
-  useMutation,
-  useQueryClient,
-} from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 import {
   activateWorkspace,
@@ -56,8 +52,12 @@ export function useCreateWorkspace() {
       queryClient.invalidateQueries({ queryKey: workspaceKeys.all });
       queryClient.invalidateQueries({ queryKey: workspaceScopedKeys.topics });
       queryClient.invalidateQueries({ queryKey: workspaceScopedKeys.folders });
-      queryClient.invalidateQueries({ queryKey: workspaceScopedKeys.documents });
-      queryClient.invalidateQueries({ queryKey: workspaceScopedKeys.chatThreads });
+      queryClient.invalidateQueries({
+        queryKey: workspaceScopedKeys.documents,
+      });
+      queryClient.invalidateQueries({
+        queryKey: workspaceScopedKeys.chatThreads,
+      });
     },
   });
 }
@@ -85,8 +85,12 @@ export function useDeleteWorkspace() {
       queryClient.invalidateQueries({ queryKey: workspaceKeys.all });
       queryClient.invalidateQueries({ queryKey: workspaceScopedKeys.topics });
       queryClient.invalidateQueries({ queryKey: workspaceScopedKeys.folders });
-      queryClient.invalidateQueries({ queryKey: workspaceScopedKeys.documents });
-      queryClient.invalidateQueries({ queryKey: workspaceScopedKeys.chatThreads });
+      queryClient.invalidateQueries({
+        queryKey: workspaceScopedKeys.documents,
+      });
+      queryClient.invalidateQueries({
+        queryKey: workspaceScopedKeys.chatThreads,
+      });
     },
   });
 }
@@ -113,8 +117,12 @@ export function useActivateWorkspace() {
       queryClient.invalidateQueries({ queryKey: workspaceKeys.all });
       queryClient.invalidateQueries({ queryKey: workspaceScopedKeys.topics });
       queryClient.invalidateQueries({ queryKey: workspaceScopedKeys.folders });
-      queryClient.invalidateQueries({ queryKey: workspaceScopedKeys.documents });
-      queryClient.invalidateQueries({ queryKey: workspaceScopedKeys.chatThreads });
+      queryClient.invalidateQueries({
+        queryKey: workspaceScopedKeys.documents,
+      });
+      queryClient.invalidateQueries({
+        queryKey: workspaceScopedKeys.chatThreads,
+      });
     },
   });
 }

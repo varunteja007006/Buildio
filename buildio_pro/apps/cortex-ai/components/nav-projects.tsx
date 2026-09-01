@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import {
   DropdownMenu,
@@ -6,7 +6,7 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@workspace/ui/components/dropdown-menu"
+} from "@workspace/ui/components/dropdown-menu";
 import {
   SidebarGroup,
   SidebarGroupLabel,
@@ -15,19 +15,24 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
-} from "@workspace/ui/components/sidebar"
-import { MoreHorizontalIcon, FolderIcon, ArrowRightIcon, Trash2Icon } from "lucide-react"
+} from "@workspace/ui/components/sidebar";
+import {
+  MoreHorizontalIcon,
+  FolderIcon,
+  ArrowRightIcon,
+  Trash2Icon,
+} from "lucide-react";
 
 export function NavProjects({
   projects,
 }: {
   projects: {
-    name: string
-    url: string
-    icon: React.ReactNode
-  }[]
+    name: string;
+    url: string;
+    icon: React.ReactNode;
+  }[];
 }) {
-  const { isMobile } = useSidebar()
+  const { isMobile } = useSidebar();
   return (
     <SidebarGroup className="group-data-[collapsible=icon]:hidden">
       <SidebarGroupLabel>Projects</SidebarGroupLabel>
@@ -56,19 +61,16 @@ export function NavProjects({
                 align={isMobile ? "end" : "start"}
               >
                 <DropdownMenuItem>
-                  <FolderIcon
-                  />
+                  <FolderIcon />
                   <span>View Project</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem>
-                  <ArrowRightIcon
-                  />
+                  <ArrowRightIcon />
                   <span>Share Project</span>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem variant="destructive">
-                  <Trash2Icon
-                  />
+                  <Trash2Icon />
                   <span>Delete Project</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
@@ -83,5 +85,5 @@ export function NavProjects({
         </SidebarMenuItem>
       </SidebarMenu>
     </SidebarGroup>
-  )
+  );
 }

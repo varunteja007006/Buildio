@@ -1,20 +1,19 @@
-"use client"
+"use client";
 
-
-import { Button } from "@workspace/ui/components/button"
+import { Button } from "@workspace/ui/components/button";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-} from "@workspace/ui/components/tooltip"
-import type { LucideIcon } from "lucide-react"
+} from "@workspace/ui/components/tooltip";
+import type { LucideIcon } from "lucide-react";
 
 interface ActionButtonProps {
-  label: string
-  icon: LucideIcon
-  onClick: () => void
-  variant?: "ghost" | "destructive"
-  disabled?: boolean
+  label: string;
+  icon: LucideIcon;
+  onClick: () => void;
+  variant?: "ghost" | "destructive";
+  disabled?: boolean;
 }
 
 export function ActionButton({
@@ -39,5 +38,5 @@ export function ActionButton({
       </TooltipTrigger>
       <TooltipContent>{label}</TooltipContent>
     </Tooltip>
-  )
+  );
 }

@@ -1,6 +1,6 @@
-import { CreditCardIcon } from "lucide-react"
+import { CreditCardIcon } from "lucide-react";
 
-import { AppBreadcrumb } from "@/components/app-breadcrumb"
+import { AppBreadcrumb } from "@/components/app-breadcrumb";
 
 export default function BillingPage() {
   return (
@@ -21,5 +21,5 @@ export default function BillingPage() {
         </div>
       </div>
     </>
-  )
+  );
 }

@@ -127,7 +127,12 @@ export default function ChatPage() {
               }}
             />
             {isStreaming ? (
-              <Button type="button" size="icon" variant="outline" onClick={stop}>
+              <Button
+                type="button"
+                size="icon"
+                variant="outline"
+                onClick={stop}
+              >
                 <Square className="h-4 w-4" />
               </Button>
             ) : (

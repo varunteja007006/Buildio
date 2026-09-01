@@ -1,6 +1,6 @@
-import { FileTextIcon } from "lucide-react"
+import { FileTextIcon } from "lucide-react";
 
-import { AppBreadcrumb } from "@/components/app-breadcrumb"
+import { AppBreadcrumb } from "@/components/app-breadcrumb";
 
 export default function ScanDocsPage() {
   return (
@@ -15,11 +15,9 @@ export default function ScanDocsPage() {
         <FileTextIcon className="size-12 text-muted-foreground" />
         <div>
           <h2 className="text-lg font-semibold">Scan Docs</h2>
-          <p className="text-sm text-muted-foreground">
-            Scan documents here.
-          </p>
+          <p className="text-sm text-muted-foreground">Scan documents here.</p>
         </div>
       </div>
     </>
-  )
+  );
 }

@@ -5,7 +5,11 @@ export const CHUNK_SIZE = 1000;
 export const CHUNK_OVERLAP = 200;
 
 /** Split text into overlapping chunks */
-export function chunkContent(text: string, size = CHUNK_SIZE, overlap = CHUNK_OVERLAP): string[] {
+export function chunkContent(
+  text: string,
+  size = CHUNK_SIZE,
+  overlap = CHUNK_OVERLAP,
+): string[] {
   const chunks: string[] = [];
   let start = 0;
 

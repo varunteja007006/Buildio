@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import {
   flexRender,
@@ -6,9 +6,9 @@ import {
   useReactTable,
   type ColumnDef,
   type SortingState,
-} from "@tanstack/react-table"
-import { Badge } from "@workspace/ui/components/badge"
-import { Button } from "@workspace/ui/components/button"
+} from "@tanstack/react-table";
+import { Badge } from "@workspace/ui/components/badge";
+import { Button } from "@workspace/ui/components/button";
 import {
   Table,
   TableBody,
@@ -16,17 +16,17 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@workspace/ui/components/table"
-import { FileText, Loader2 } from "lucide-react"
-import { parseAsString, useQueryState } from "nuqs"
-import * as React from "react"
+} from "@workspace/ui/components/table";
+import { FileText, Loader2 } from "lucide-react";
+import { parseAsString, useQueryState } from "nuqs";
+import * as React from "react";
 
-import { formatDate, truncateHash } from "@/api/documents/helpers"
-import { useInfiniteDocuments } from "@/api/documents/query"
-import type { Document } from "@/api/documents/types"
-import { DataTableColumnHeader } from "@/components/data-table/data-table-column-header"
-import { DataTableSearch } from "@/components/data-table/data-table-search"
-import { cn } from "@/lib/utils"
+import { formatDate, truncateHash } from "@/api/documents/helpers";
+import { useInfiniteDocuments } from "@/api/documents/query";
+import type { Document } from "@/api/documents/types";
+import { DataTableColumnHeader } from "@/components/data-table/data-table-column-header";
+import { DataTableSearch } from "@/components/data-table/data-table-search";
+import { cn } from "@/lib/utils";
 
 const columns: ColumnDef<Document>[] = [
   {
@@ -42,7 +42,7 @@ const columns: ColumnDef<Document>[] = [
           <FileText className="size-4 shrink-0 text-muted-foreground" />
           <span className="font-medium">{row.original.filename}</span>
         </div>
-      )
+      );
     },
   },
   {
@@ -76,12 +76,12 @@ const columns: ColumnDef<Document>[] = [
     header: "Status",
     enableSorting: true,
     cell: ({ row }) => {
-      const ingested = row.original.ingested
+      const ingested = row.original.ingested;
       return (
         <Badge variant={ingested ? "default" : "secondary"}>
           {ingested ? "Ingested" : "Pending"}
         </Badge>
-      )
+      );
     },
   },
   {
@@ -97,22 +97,22 @@ const columns: ColumnDef<Document>[] = [
       </span>
     ),
   },
-]
+];
 
-const PAGE_SIZE = 20
-const DEFAULT_SORT = "createdAt"
-const DEFAULT_SORT_DIR = "desc"
+const PAGE_SIZE = 20;
+const DEFAULT_SORT = "createdAt";
+const DEFAULT_SORT_DIR = "desc";
 
 export function DocumentsDataTable() {
-  const [search] = useQueryState("search", parseAsString.withDefault(""))
+  const [search] = useQueryState("search", parseAsString.withDefault(""));
   const [sort, setSort] = useQueryState(
     "sort",
-    parseAsString.withDefault(DEFAULT_SORT)
-  )
+    parseAsString.withDefault(DEFAULT_SORT),
+  );
   const [sortDir, setSortDir] = useQueryState(
     "sortDir",
-    parseAsString.withDefault(DEFAULT_SORT_DIR)
-  )
+    parseAsString.withDefault(DEFAULT_SORT_DIR),
+  );
 
   const {
     data,
@@ -126,37 +126,34 @@ export function DocumentsDataTable() {
     sort: sort as DocumentSort,
     sortDir: sortDir as "asc" | "desc",
     search: search || undefined,
-  })
+  });
 
   const flatData = React.useMemo(
     () => data?.pages.flatMap((p) => p.documents) ?? [],
-    [data]
-  )
-  const total = data?.pages[0]?.total ?? 0
+    [data],
+  );
+  const total = data?.pages[0]?.total ?? 0;
 
   // TanStack sorting state synced to URL
   const sorting = React.useMemo<SortingState>(
     () => (sort ? [{ id: sort, desc: sortDir === "desc" }] : []),
-    [sort, sortDir]
-  )
+    [sort, sortDir],
+  );
 
   const onSortingChange = React.useCallback(
-    (
-      updater: SortingState | ((old: SortingState) => SortingState)
-    ) => {
-      const next =
-        typeof updater === "function" ? updater(sorting) : updater
-      const first = next?.[0]
+    (updater: SortingState | ((old: SortingState) => SortingState)) => {
+      const next = typeof updater === "function" ? updater(sorting) : updater;
+      const first = next?.[0];
       if (first) {
-        setSort(first.id)
-        setSortDir(first.desc ? "desc" : "asc")
+        setSort(first.id);
+        setSortDir(first.desc ? "desc" : "asc");
       } else {
-        setSort(DEFAULT_SORT)
-        setSortDir(DEFAULT_SORT_DIR)
+        setSort(DEFAULT_SORT);
+        setSortDir(DEFAULT_SORT_DIR);
       }
     },
-    [sorting, setSort, setSortDir]
-  )
+    [sorting, setSort, setSortDir],
+  );
 
   const table = useReactTable({
     data: flatData,
@@ -166,29 +163,29 @@ export function DocumentsDataTable() {
     state: { sorting },
     onSortingChange,
     getRowId: (row) => row.id,
-  })
+  });
 
   // Infinite scroll sentinel
-  const sentinelRef = React.useRef<HTMLDivElement | null>(null)
+  const sentinelRef = React.useRef<HTMLDivElement | null>(null);
 
   React.useEffect(() => {
-    const el = sentinelRef.current
-    if (!el) return
-    if (!hasNextPage || isFetchingNextPage) return
+    const el = sentinelRef.current;
+    if (!el) return;
+    if (!hasNextPage || isFetchingNextPage) return;
 
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries[0].isIntersecting) {
-          void fetchNextPage()
+          void fetchNextPage();
         }
       },
-      { rootMargin: "400px", threshold: 0 }
-    )
-    observer.observe(el)
-    return () => observer.disconnect()
-  }, [hasNextPage, isFetchingNextPage, fetchNextPage, flatData.length])
+      { rootMargin: "400px", threshold: 0 },
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage, flatData.length]);
 
-  const visibleColumns = table.getVisibleLeafColumns().length
+  const visibleColumns = table.getVisibleLeafColumns().length;
 
   return (
     <div className={cn("flex w-full flex-col gap-2.5 overflow-hidden")}>
@@ -205,7 +202,7 @@ export function DocumentsDataTable() {
                       ? null
                       : flexRender(
                           header.column.columnDef.header,
-                          header.getContext()
+                          header.getContext(),
                         )}
                   </TableHead>
                 ))}
@@ -229,7 +226,7 @@ export function DocumentsDataTable() {
                     <TableCell key={cell.id}>
                       {flexRender(
                         cell.column.columnDef.cell,
-                        cell.getContext()
+                        cell.getContext(),
                       )}
                     </TableCell>
                   ))}
@@ -258,8 +255,7 @@ export function DocumentsDataTable() {
               <span className="font-medium text-foreground">
                 {flatData.length}
               </span>{" "}
-              of{" "}
-              <span className="font-medium text-foreground">{total}</span>
+              of <span className="font-medium text-foreground">{total}</span>
               {isFetching && !isFetchingNextPage ? " · updating…" : ""}
             </>
           ) : isLoading ? (
@@ -298,24 +294,19 @@ export function DocumentsDataTable() {
         ) : null}
       </div>
     </div>
-  )
+  );
 }
 
 function LoadingRows({ rows }: { rows: number }) {
-  const count = Math.min(Math.max(rows, 1), 6)
+  const count = Math.min(Math.max(rows, 1), 6);
   return (
     <div className="flex flex-col gap-2 px-2 py-3">
       {Array.from({ length: count }).map((_, i) => (
         <div key={i} className="h-6 w-full animate-pulse rounded bg-muted" />
       ))}
     </div>
-  )
+  );
 }
 
 type DocumentSort =
-  | "filename"
-  | "filepath"
-  | "fileHash"
-  | "ingested"
-  | "createdAt"
-  | "updatedAt"
+  "filename" | "filepath" | "fileHash" | "ingested" | "createdAt" | "updatedAt";

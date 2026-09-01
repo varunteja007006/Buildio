@@ -10,7 +10,9 @@ import type {
 } from "./types";
 
 /** Fetch folders for a topic, optionally filtered to a parent's children */
-export async function getFolders(query: FoldersQuery): Promise<FoldersResponse> {
+export async function getFolders(
+  query: FoldersQuery,
+): Promise<FoldersResponse> {
   const params = new URLSearchParams({ topicId: query.topicId });
   // Absent/"root" → top-level folders; otherwise children of parentFolderId
   params.set("parentFolderId", query.parentFolderId ?? "root");
@@ -25,7 +27,9 @@ export async function getAllFolders(): Promise<FoldersResponse> {
 }
 
 /** Create a folder (root or nested under a parent) */
-export async function createFolder(input: CreateFolderInput): Promise<FolderResponse> {
+export async function createFolder(
+  input: CreateFolderInput,
+): Promise<FolderResponse> {
   const { data } = await apiClient.post<FolderResponse>("/folders", input);
   return data;
 }
@@ -35,7 +39,10 @@ export async function renameFolder(
   id: string,
   input: RenameFolderInput,
 ): Promise<FolderResponse> {
-  const { data } = await apiClient.patch<FolderResponse>(`/folders/${id}`, input);
+  const { data } = await apiClient.patch<FolderResponse>(
+    `/folders/${id}`,
+    input,
+  );
   return data;
 }
 
@@ -47,7 +54,9 @@ export async function deleteFolder(id: string): Promise<DeleteResponse> {
 
 /** Restore a soft-deleted folder */
 export async function restoreFolder(id: string): Promise<FolderResponse> {
-  const { data } = await apiClient.post<FolderResponse>(`/folders/${id}/restore`);
+  const { data } = await apiClient.post<FolderResponse>(
+    `/folders/${id}/restore`,
+  );
   return data;
 }
 

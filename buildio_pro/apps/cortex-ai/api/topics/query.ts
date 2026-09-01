@@ -1,12 +1,15 @@
 "use client";
 
-import {
-  useQuery,
-  useMutation,
-  useQueryClient,
-} from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
-import { createTopic, deleteTopic, getTopics, hardDeleteTopic, renameTopic, restoreTopic } from "./api";
+import {
+  createTopic,
+  deleteTopic,
+  getTopics,
+  hardDeleteTopic,
+  renameTopic,
+  restoreTopic,
+} from "./api";
 import type { CreateTopicInput, RenameTopicInput, Topic } from "./types";
 
 /** Query key factory for topics domain */

@@ -36,10 +36,7 @@ export async function GET(request: NextRequest) {
         .select()
         .from(folders)
         .where(
-          and(
-            eq(folders.workspaceId, workspace.id),
-            isNull(folders.deletedAt),
-          ),
+          and(eq(folders.workspaceId, workspace.id), isNull(folders.deletedAt)),
         )
         .orderBy(
           asc(folders.topicId),
@@ -52,7 +49,8 @@ export async function GET(request: NextRequest) {
     }
 
     // Absent param or "root" means top-level folders of the topic
-    const parentId = parentFolderId && parentFolderId !== "root" ? parentFolderId : null;
+    const parentId =
+      parentFolderId && parentFolderId !== "root" ? parentFolderId : null;
 
     const folderList = await db
       .select()
@@ -62,7 +60,9 @@ export async function GET(request: NextRequest) {
           eq(folders.workspaceId, workspace.id),
           eq(folders.topicId, topicId),
           isNull(folders.deletedAt),
-          parentId ? eq(folders.parentFolderId, parentId) : isNull(folders.parentFolderId),
+          parentId
+            ? eq(folders.parentFolderId, parentId)
+            : isNull(folders.parentFolderId),
         ),
       )
       .orderBy(asc(folders.position), asc(folders.createdAt));
@@ -155,7 +155,10 @@ export async function POST(request: NextRequest) {
 
       if (parent.topicId !== topicId) {
         return NextResponse.json(
-          { success: false, error: "Parent folder does not belong to this topic" },
+          {
+            success: false,
+            error: "Parent folder does not belong to this topic",
+          },
           { status: 400 },
         );
       }
@@ -163,7 +166,10 @@ export async function POST(request: NextRequest) {
       depth = parent.depth + 1;
       if (depth > MAX_DEPTH) {
         return NextResponse.json(
-          { success: false, error: `Folders cannot nest deeper than ${MAX_DEPTH} levels` },
+          {
+            success: false,
+            error: `Folders cannot nest deeper than ${MAX_DEPTH} levels`,
+          },
           { status: 409 },
         );
       }

@@ -1,34 +1,39 @@
-"use client"
+"use client";
 
-import { Button } from "@workspace/ui/components/button"
-import { Input } from "@workspace/ui/components/input"
-import { Search, X } from "lucide-react"
-import { useQueryState, parseAsString } from "nuqs"
-import * as React from "react"
+import { Button } from "@workspace/ui/components/button";
+import { Input } from "@workspace/ui/components/input";
+import { Search, X } from "lucide-react";
+import { useQueryState, parseAsString } from "nuqs";
+import * as React from "react";
 
 interface DataTableSearchProps {
-  placeholder?: string
+  placeholder?: string;
 }
 
-export function DataTableSearch({ placeholder = "Search..." }: DataTableSearchProps) {
-  const [value, setValue] = useQueryState("search", parseAsString.withDefault(""))
-  const [draft, setDraft] = React.useState(value)
-  const [prevValue, setPrevValue] = React.useState(value)
-  const timer = React.useRef<ReturnType<typeof setTimeout> | null>(null)
+export function DataTableSearch({
+  placeholder = "Search...",
+}: DataTableSearchProps) {
+  const [value, setValue] = useQueryState(
+    "search",
+    parseAsString.withDefault(""),
+  );
+  const [draft, setDraft] = React.useState(value);
+  const [prevValue, setPrevValue] = React.useState(value);
+  const timer = React.useRef<ReturnType<typeof setTimeout> | null>(null);
 
   if (value !== prevValue) {
-    setPrevValue(value)
-    setDraft(value)
+    setPrevValue(value);
+    setDraft(value);
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const next = e.target.value
-    setDraft(next)
-    if (timer.current) clearTimeout(timer.current)
+    const next = e.target.value;
+    setDraft(next);
+    if (timer.current) clearTimeout(timer.current);
     timer.current = setTimeout(() => {
-      setValue(next || null)
-    }, 350)
-  }
+      setValue(next || null);
+    }, 350);
+  };
 
   return (
     <div className="relative w-full max-w-sm">
@@ -45,8 +50,8 @@ export function DataTableSearch({ placeholder = "Search..." }: DataTableSearchPr
           size="icon-sm"
           className="absolute top-1/2 right-1.5 -translate-y-1/2"
           onClick={() => {
-            setValue(null)
-            setDraft("")
+            setValue(null);
+            setDraft("");
           }}
         >
           <span className="sr-only">Clear search</span>
@@ -54,5 +59,5 @@ export function DataTableSearch({ placeholder = "Search..." }: DataTableSearchPr
         </Button>
       ) : null}
     </div>
-  )
+  );
 }

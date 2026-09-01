@@ -36,7 +36,10 @@ export async function getActiveWorkspace(userId: string) {
 /**
  * Returns the membership a user has in a given workspace, or null.
  */
-export async function getWorkspaceMembership(userId: string, workspaceId: string) {
+export async function getWorkspaceMembership(
+  userId: string,
+  workspaceId: string,
+) {
   const [membership] = await db
     .select()
     .from(workspaceMembers)

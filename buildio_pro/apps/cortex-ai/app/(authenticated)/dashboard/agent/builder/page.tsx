@@ -1,6 +1,6 @@
-import { BotIcon, SparklesIcon } from "lucide-react"
+import { BotIcon, SparklesIcon } from "lucide-react";
 
-import { AppBreadcrumb } from "@/components/app-breadcrumb"
+import { AppBreadcrumb } from "@/components/app-breadcrumb";
 
 export default function AgentBuilderPage() {
   return (
@@ -25,5 +25,5 @@ export default function AgentBuilderPage() {
         </div>
       </div>
     </>
-  )
+  );
 }

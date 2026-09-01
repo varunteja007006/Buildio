@@ -1,7 +1,6 @@
-"use client"
+"use client";
 
-
-import { Button } from "@workspace/ui/components/button"
+import { Button } from "@workspace/ui/components/button";
 import {
   Dialog,
   DialogContent,
@@ -9,24 +8,24 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@workspace/ui/components/dialog"
-import { Input } from "@workspace/ui/components/input"
-import { Label } from "@workspace/ui/components/label"
-import { useState } from "react"
+} from "@workspace/ui/components/dialog";
+import { Input } from "@workspace/ui/components/input";
+import { Label } from "@workspace/ui/components/label";
+import { useState } from "react";
 
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils";
 
-const MAX_NAME_LENGTH = 150
+const MAX_NAME_LENGTH = 150;
 
 interface RenameDialogProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  title: string
-  description?: string
-  initialName: string
-  isPending?: boolean
-  error?: string | null
-  onSubmit: (name: string) => void
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  title: string;
+  description?: string;
+  initialName: string;
+  isPending?: boolean;
+  error?: string | null;
+  onSubmit: (name: string) => void;
 }
 
 export function RenameDialog({
@@ -39,12 +38,12 @@ export function RenameDialog({
   error,
   onSubmit,
 }: RenameDialogProps) {
-  const [name, setName] = useState(initialName)
+  const [name, setName] = useState(initialName);
 
   const handleSubmit = () => {
-    if (!name.trim()) return
-    onSubmit(name.trim())
-  }
+    if (!name.trim()) return;
+    onSubmit(name.trim());
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -74,14 +73,11 @@ export function RenameDialog({
           {error && <p className="text-xs text-destructive">{error}</p>}
         </div>
         <DialogFooter>
-          <Button
-            onClick={handleSubmit}
-            disabled={!name.trim() || isPending}
-          >
+          <Button onClick={handleSubmit} disabled={!name.trim() || isPending}>
             {isPending ? "Renaming…" : "Rename"}
           </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

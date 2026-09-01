@@ -1,6 +1,6 @@
-import { FileTextIcon } from "lucide-react"
+import { FileTextIcon } from "lucide-react";
 
-import { AppBreadcrumb } from "@/components/app-breadcrumb"
+import { AppBreadcrumb } from "@/components/app-breadcrumb";
 
 export default function IngestDocsPage() {
   return (
@@ -21,5 +21,5 @@ export default function IngestDocsPage() {
         </div>
       </div>
     </>
-  )
+  );
 }

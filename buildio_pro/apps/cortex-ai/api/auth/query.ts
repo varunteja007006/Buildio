@@ -1,12 +1,15 @@
 "use client";
 
-import {
-  useQuery,
-  useMutation,
-  useQueryClient,
-} from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
-import { signIn, signUp, signOut, getSession, getUser, updateUser } from "./api";
+import {
+  signIn,
+  signUp,
+  signOut,
+  getSession,
+  getUser,
+  updateUser,
+} from "./api";
 import type { SignInInput, SignUpInput, SessionResponse, User } from "./types";
 
 /** Query key factory for auth domain */

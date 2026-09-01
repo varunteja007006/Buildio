@@ -1,17 +1,18 @@
-"use client"
+"use client";
 
-import type { Column } from "@tanstack/react-table"
-import { Button } from "@workspace/ui/components/button"
-import { ArrowDown, ArrowUp, ChevronsUpDown } from "lucide-react"
-import * as React from "react"
+import type { Column } from "@tanstack/react-table";
+import { Button } from "@workspace/ui/components/button";
+import { ArrowDown, ArrowUp, ChevronsUpDown } from "lucide-react";
+import * as React from "react";
 
-import { cn } from "@/lib/utils"
+import { cn } from "@/lib/utils";
 
-
-interface DataTableColumnHeaderProps<TData, TValue>
-  extends React.HTMLAttributes<HTMLDivElement> {
-  column: Column<TData, TValue>
-  title: string
+interface DataTableColumnHeaderProps<
+  TData,
+  TValue,
+> extends React.HTMLAttributes<HTMLDivElement> {
+  column: Column<TData, TValue>;
+  title: string;
 }
 
 export function DataTableColumnHeader<TData, TValue>({
@@ -20,21 +21,22 @@ export function DataTableColumnHeader<TData, TValue>({
   className,
 }: DataTableColumnHeaderProps<TData, TValue>) {
   if (!column.getCanSort()) {
-    return <div className={cn(className)}>{title}</div>
+    return <div className={cn(className)}>{title}</div>;
   }
 
-  const sorted = column.getIsSorted()
-  const sortState = sorted === "asc" ? "asc" : sorted === "desc" ? "desc" : "none"
+  const sorted = column.getIsSorted();
+  const sortState =
+    sorted === "asc" ? "asc" : sorted === "desc" ? "desc" : "none";
 
   const toggle = () => {
     if (sorted === false) {
-      column.toggleSorting(false)
+      column.toggleSorting(false);
     } else if (sorted === "asc") {
-      column.toggleSorting(true)
+      column.toggleSorting(true);
     } else {
-      column.clearSorting()
+      column.clearSorting();
     }
-  }
+  };
 
   return (
     <div className={cn("flex items-center", className)}>
@@ -54,5 +56,5 @@ export function DataTableColumnHeader<TData, TValue>({
         )}
       </Button>
     </div>
-  )
+  );
 }

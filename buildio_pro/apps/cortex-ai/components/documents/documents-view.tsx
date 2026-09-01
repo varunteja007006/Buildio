@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import { Button } from "@workspace/ui/components/button"
+import { Button } from "@workspace/ui/components/button";
 import {
   Empty,
   EmptyContent,
@@ -8,53 +8,55 @@ import {
   EmptyHeader,
   EmptyMedia,
   EmptyTitle,
-} from "@workspace/ui/components/empty"
-import { ToggleGroup, ToggleGroupItem } from "@workspace/ui/components/toggle-group"
+} from "@workspace/ui/components/empty";
+import {
+  ToggleGroup,
+  ToggleGroupItem,
+} from "@workspace/ui/components/toggle-group";
 import {
   FileText as FileTextIcon,
   ListTree,
   Loader2,
   Table2,
   Upload,
-} from "lucide-react"
-import { useState } from "react"
+} from "lucide-react";
+import { useState } from "react";
 
-import { useInfiniteDocuments } from "@/api/documents/query"
+import { useInfiniteDocuments } from "@/api/documents/query";
 import {
   useAllFolders,
   useDeleteFolder,
   useRenameFolder,
-} from "@/api/folders/query"
-import type { Folder } from "@/api/folders/types"
-import { useDeleteTopic, useRenameTopic, useTopics } from "@/api/topics/query"
-import type { Topic } from "@/api/topics/types"
-import { DeleteDialog } from "@/components/documents/delete-dialog"
-import { DocumentsTree } from "@/components/documents/documents-tree"
-import { NewFolderDialog } from "@/components/documents/new-folder-dialog"
-import { NewTopicDialog } from "@/components/documents/new-topic-dialog"
-import { RenameDialog } from "@/components/documents/rename-dialog"
-import { UploadDocumentDialog } from "@/components/documents/upload-dialog"
-import { DocumentsDataTable } from "@/components/documents-data-table"
+} from "@/api/folders/query";
+import type { Folder } from "@/api/folders/types";
+import { useDeleteTopic, useRenameTopic, useTopics } from "@/api/topics/query";
+import type { Topic } from "@/api/topics/types";
+import { DeleteDialog } from "@/components/documents/delete-dialog";
+import { DocumentsTree } from "@/components/documents/documents-tree";
+import { NewFolderDialog } from "@/components/documents/new-folder-dialog";
+import { NewTopicDialog } from "@/components/documents/new-topic-dialog";
+import { RenameDialog } from "@/components/documents/rename-dialog";
+import { UploadDocumentDialog } from "@/components/documents/upload-dialog";
+import { DocumentsDataTable } from "@/components/documents-data-table";
 
-
-type ViewMode = "tree" | "table"
+type ViewMode = "tree" | "table";
 
 type ActionTarget =
   | { kind: "topic"; id: string; name: string }
-  | { kind: "folder"; id: string; name: string }
+  | { kind: "folder"; id: string; name: string };
 
 export function DocumentsView() {
-  const [view, setView] = useState<ViewMode>("tree")
-  const [selectedFolderId, setSelectedFolderId] = useState<string | null>(null)
-  const [uploadOpen, setUploadOpen] = useState(false)
-  const [topicDialogOpen, setTopicDialogOpen] = useState(false)
-  const [folderDialogOpen, setFolderDialogOpen] = useState(false)
-  const [newFolderParent, setNewFolderParent] = useState<Folder | null>(null)
+  const [view, setView] = useState<ViewMode>("tree");
+  const [selectedFolderId, setSelectedFolderId] = useState<string | null>(null);
+  const [uploadOpen, setUploadOpen] = useState(false);
+  const [topicDialogOpen, setTopicDialogOpen] = useState(false);
+  const [folderDialogOpen, setFolderDialogOpen] = useState(false);
+  const [newFolderParent, setNewFolderParent] = useState<Folder | null>(null);
   const [newFolderDefaultTopicId, setNewFolderDefaultTopicId] = useState<
     string | null
-  >(null)
-  const [renameTarget, setRenameTarget] = useState<ActionTarget | null>(null)
-  const [deleteTarget, setDeleteTarget] = useState<ActionTarget | null>(null)
+  >(null);
+  const [renameTarget, setRenameTarget] = useState<ActionTarget | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<ActionTarget | null>(null);
 
   const {
     data: docsInfinite,
@@ -62,111 +64,110 @@ export function DocumentsView() {
     hasNextPage: docsHasNextPage,
     fetchNextPage: docsFetchNextPage,
     isFetchingNextPage: docsIsFetchingNextPage,
-  } = useInfiniteDocuments({ pageSize: 100 })
-  const docs = docsInfinite?.pages.flatMap((p) => p.documents) ?? []
-  const { data: topicsData, isLoading: topicsLoading } = useTopics()
-  const { data: foldersData, isLoading: foldersLoading } = useAllFolders()
+  } = useInfiniteDocuments({ pageSize: 100 });
+  const docs = docsInfinite?.pages.flatMap((p) => p.documents) ?? [];
+  const { data: topicsData, isLoading: topicsLoading } = useTopics();
+  const { data: foldersData, isLoading: foldersLoading } = useAllFolders();
 
-  const renameTopic = useRenameTopic()
-  const deleteTopic = useDeleteTopic()
-  const renameFolder = useRenameFolder()
-  const deleteFolder = useDeleteFolder()
+  const renameTopic = useRenameTopic();
+  const deleteTopic = useDeleteTopic();
+  const renameFolder = useRenameFolder();
+  const deleteFolder = useDeleteFolder();
 
-  const topics = topicsData?.topics ?? []
-  const folders = foldersData?.folders ?? []
+  const topics = topicsData?.topics ?? [];
+  const folders = foldersData?.folders ?? [];
 
-  const hasTopics = topics.length > 0
-  const isLoading = topicsLoading || foldersLoading || docsLoading
+  const hasTopics = topics.length > 0;
+  const isLoading = topicsLoading || foldersLoading || docsLoading;
 
-  const selectedFolder =
-    folders.find((f) => f.id === selectedFolderId) ?? null
+  const selectedFolder = folders.find((f) => f.id === selectedFolderId) ?? null;
 
   const handleUploadClick = () => {
     if (!selectedFolder) {
-      setView("tree")
-      return
+      setView("tree");
+      return;
     }
-    setUploadOpen(true)
-  }
+    setUploadOpen(true);
+  };
 
   const handleNewFolderClick = () => {
-    setNewFolderParent(null)
-    setNewFolderDefaultTopicId(null)
-    setFolderDialogOpen(true)
-  }
+    setNewFolderParent(null);
+    setNewFolderDefaultTopicId(null);
+    setFolderDialogOpen(true);
+  };
 
   const handleNewFileInFolder = (folder: Folder) => {
-    setSelectedFolderId(folder.id)
-    setUploadOpen(true)
-  }
+    setSelectedFolderId(folder.id);
+    setUploadOpen(true);
+  };
 
   const handleNewFolderInFolder = (parent: Folder) => {
-    setNewFolderParent(parent)
-    setNewFolderDefaultTopicId(null)
-    setFolderDialogOpen(true)
-  }
+    setNewFolderParent(parent);
+    setNewFolderDefaultTopicId(null);
+    setFolderDialogOpen(true);
+  };
 
   const handleNewFolderInTopic = (topic: Topic) => {
-    setNewFolderParent(null)
-    setNewFolderDefaultTopicId(topic.id)
-    setFolderDialogOpen(true)
-  }
+    setNewFolderParent(null);
+    setNewFolderDefaultTopicId(topic.id);
+    setFolderDialogOpen(true);
+  };
 
   const renamePending =
     renameTarget?.kind === "topic"
       ? renameTopic.isPending
       : renameTarget?.kind === "folder"
         ? renameFolder.isPending
-        : false
+        : false;
 
   const renameError =
     renameTarget?.kind === "topic"
       ? (renameTopic.error?.message ?? null)
       : renameTarget?.kind === "folder"
         ? (renameFolder.error?.message ?? null)
-        : null
+        : null;
 
   const handleRenameSubmit = (name: string) => {
-    if (!renameTarget) return
+    if (!renameTarget) return;
     if (renameTarget.kind === "topic") {
       renameTopic.mutate(
         { id: renameTarget.id, input: { name } },
         { onSuccess: () => setRenameTarget(null) },
-      )
+      );
     } else {
       renameFolder.mutate(
         { id: renameTarget.id, input: { name } },
         { onSuccess: () => setRenameTarget(null) },
-      )
+      );
     }
-  }
+  };
 
   const deletePending =
     deleteTarget?.kind === "topic"
       ? deleteTopic.isPending
       : deleteTarget?.kind === "folder"
         ? deleteFolder.isPending
-        : false
+        : false;
 
   const handleDeleteConfirm = () => {
-    if (!deleteTarget) return
+    if (!deleteTarget) return;
     if (deleteTarget.kind === "topic") {
       deleteTopic.mutate(deleteTarget.id, {
         onSuccess: () => setDeleteTarget(null),
-      })
+      });
     } else {
       deleteFolder.mutate(deleteTarget.id, {
         onSuccess: () => setDeleteTarget(null),
-      })
+      });
     }
-  }
+  };
 
   if (isLoading) {
     return (
       <div className="flex flex-1 items-center justify-center">
         <Loader2 className="size-5 animate-spin text-muted-foreground" />
       </div>
-    )
+    );
   }
 
   if (!hasTopics) {
@@ -179,8 +180,8 @@ export function DocumentsView() {
             </EmptyMedia>
             <EmptyTitle>Create a topic to get started</EmptyTitle>
             <EmptyDescription>
-              Documents are organized into topics and folders. Create your
-              first topic before uploading anything.
+              Documents are organized into topics and folders. Create your first
+              topic before uploading anything.
             </EmptyDescription>
           </EmptyHeader>
           <EmptyContent className="flex-row justify-center gap-2">
@@ -192,7 +193,7 @@ export function DocumentsView() {
           onOpenChange={setTopicDialogOpen}
         />
       </>
-    )
+    );
   }
 
   return (
@@ -286,17 +287,15 @@ export function DocumentsView() {
       <NewFolderDialog
         key={
           folderDialogOpen
-            ? (newFolderParent?.id ??
-              newFolderDefaultTopicId ??
-              "root")
+            ? (newFolderParent?.id ?? newFolderDefaultTopicId ?? "root")
             : "new-folder-closed"
         }
         open={folderDialogOpen}
         onOpenChange={(open) => {
-          setFolderDialogOpen(open)
+          setFolderDialogOpen(open);
           if (!open) {
-            setNewFolderParent(null)
-            setNewFolderDefaultTopicId(null)
+            setNewFolderParent(null);
+            setNewFolderDefaultTopicId(null);
           }
         }}
         topics={topics}
@@ -312,7 +311,9 @@ export function DocumentsView() {
         }
         open={renameTarget !== null}
         onOpenChange={(open) => !open && setRenameTarget(null)}
-        title={renameTarget?.kind === "topic" ? "Rename topic" : "Rename folder"}
+        title={
+          renameTarget?.kind === "topic" ? "Rename topic" : "Rename folder"
+        }
         initialName={renameTarget?.name ?? ""}
         isPending={renamePending}
         error={renameError}
@@ -334,5 +335,5 @@ export function DocumentsView() {
         onConfirm={handleDeleteConfirm}
       />
     </div>
-  )
+  );
 }

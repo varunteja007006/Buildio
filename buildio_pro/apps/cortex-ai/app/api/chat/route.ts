@@ -15,7 +15,6 @@ import { findRelevantContent } from "@/lib/ai/embedding";
 import { getCurrentUser } from "@/lib/session";
 import { getActiveWorkspace } from "@/lib/workspaces";
 
-
 // Allow streaming responses up to 30 seconds
 export const maxDuration = 30;
 

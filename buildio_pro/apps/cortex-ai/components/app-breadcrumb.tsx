@@ -5,27 +5,23 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from "@workspace/ui/components/breadcrumb"
-import { Fragment } from "react"
+} from "@workspace/ui/components/breadcrumb";
+import { Fragment } from "react";
 
 export type BreadcrumbSegment = {
-  label: string
+  label: string;
   /** Omit for the current (last) page — renders as plain text, not a link */
-  href?: string
-}
+  href?: string;
+};
 
-export function AppBreadcrumb({
-  segments,
-}: {
-  segments: BreadcrumbSegment[]
-}) {
-  if (segments.length === 0) return null
+export function AppBreadcrumb({ segments }: { segments: BreadcrumbSegment[] }) {
+  if (segments.length === 0) return null;
 
   return (
     <Breadcrumb>
       <BreadcrumbList>
         {segments.map((segment, index) => {
-          const isLast = index === segments.length - 1
+          const isLast = index === segments.length - 1;
           return (
             <Fragment key={index}>
               <BreadcrumbItem>
@@ -39,9 +35,9 @@ export function AppBreadcrumb({
               </BreadcrumbItem>
               {!isLast && <BreadcrumbSeparator />}
             </Fragment>
-          )
+          );
         })}
       </BreadcrumbList>
     </Breadcrumb>
-  )
+  );
 }

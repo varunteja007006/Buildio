@@ -1,6 +1,10 @@
-"use client"
+"use client";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@workspace/ui/components/avatar"
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "@workspace/ui/components/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -9,13 +13,13 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@workspace/ui/components/dropdown-menu"
+} from "@workspace/ui/components/dropdown-menu";
 import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
-} from "@workspace/ui/components/sidebar"
+} from "@workspace/ui/components/sidebar";
 import {
   ChevronsUpDownIcon,
   SparklesIcon,
@@ -23,21 +27,21 @@ import {
   CreditCardIcon,
   BellIcon,
   LogOutIcon,
-} from "lucide-react"
-import { useRouter } from "next/navigation"
+} from "lucide-react";
+import { useRouter } from "next/navigation";
 
-import { getUserInitials } from "@/api/auth/helpers"
-import type { User } from "@/api/auth/types"
-import { authClient } from "@/lib/auth-client"
+import { getUserInitials } from "@/api/auth/helpers";
+import type { User } from "@/api/auth/types";
+import { authClient } from "@/lib/auth-client";
 
 export function NavUser({ user }: { user: User }) {
-  const { isMobile } = useSidebar()
-  const router = useRouter()
+  const { isMobile } = useSidebar();
+  const router = useRouter();
 
   async function handleSignOut() {
-    await authClient.signOut()
-    router.push("/sign-in")
-    router.refresh()
+    await authClient.signOut();
+    router.push("/sign-in");
+    router.refresh();
   }
 
   return (
@@ -45,19 +49,16 @@ export function NavUser({ user }: { user: User }) {
       <SidebarMenuItem>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <SidebarMenuButton
-              size="lg"
-              className="data-[state=open]:bg-muted"
-            >
+            <SidebarMenuButton size="lg" className="data-[state=open]:bg-muted">
               <Avatar>
-              <AvatarImage src={user.image ?? undefined} alt={user.name} />
-              <AvatarFallback>{getUserInitials(user)}</AvatarFallback>
-            </Avatar>
-            <div className="grid flex-1 text-left text-sm leading-tight">
-              <span className="truncate font-medium">{user.name}</span>
-              <span className="truncate text-xs">{user.email}</span>
-            </div>
-            <ChevronsUpDownIcon className="ml-auto size-4" />
+                <AvatarImage src={user.image ?? undefined} alt={user.name} />
+                <AvatarFallback>{getUserInitials(user)}</AvatarFallback>
+              </Avatar>
+              <div className="grid flex-1 text-left text-sm leading-tight">
+                <span className="truncate font-medium">{user.name}</span>
+                <span className="truncate text-xs">{user.email}</span>
+              </div>
+              <ChevronsUpDownIcon className="ml-auto size-4" />
             </SidebarMenuButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent
@@ -70,7 +71,10 @@ export function NavUser({ user }: { user: User }) {
               <DropdownMenuLabel className="p-0 font-normal">
                 <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                   <Avatar>
-                    <AvatarImage src={user.image ?? undefined} alt={user.name} />
+                    <AvatarImage
+                      src={user.image ?? undefined}
+                      alt={user.name}
+                    />
                     <AvatarFallback>{getUserInitials(user)}</AvatarFallback>
                   </Avatar>
                   <div className="grid flex-1 text-left text-sm leading-tight">
@@ -97,7 +101,9 @@ export function NavUser({ user }: { user: User }) {
                 <CreditCardIcon />
                 Billing
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => router.push("/user/notifications")}>
+              <DropdownMenuItem
+                onClick={() => router.push("/user/notifications")}
+              >
                 <BellIcon />
                 Notifications
               </DropdownMenuItem>
@@ -111,5 +117,5 @@ export function NavUser({ user }: { user: User }) {
         </DropdownMenu>
       </SidebarMenuItem>
     </SidebarMenu>
-  )
+  );
 }

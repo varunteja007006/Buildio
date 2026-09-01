@@ -15,7 +15,8 @@ export function generateChunks(
 ): string[] {
   if (chunkSize <= 0) throw new Error("chunkSize must be positive");
   if (overlap < 0) throw new Error("overlap must be non-negative");
-  if (overlap >= chunkSize) throw new Error("overlap must be less than chunkSize");
+  if (overlap >= chunkSize)
+    throw new Error("overlap must be less than chunkSize");
 
   if (text.length <= chunkSize) return [text];
 
@@ -67,9 +68,7 @@ export async function generateEmbedding(text: string): Promise<number[]> {
 /**
  * Generates embedding vectors for multiple text strings (batched).
  */
-export async function generateEmbeddings(
-  texts: string[],
-): Promise<number[][]> {
+export async function generateEmbeddings(texts: string[]): Promise<number[][]> {
   const { embeddings: vectors } = await embedMany({
     model: embeddingModel,
     values: texts,
@@ -94,10 +93,8 @@ export async function findRelevantContent(
   const similarGuides = await db
     .select({ name: embeddings.content, similarity })
     .from(embeddings)
-    .where(
-      and(eq(embeddings.workspaceId, workspaceId), gt(similarity, 0.5)),
-    )
-    .orderBy(t => desc(t.similarity))
+    .where(and(eq(embeddings.workspaceId, workspaceId), gt(similarity, 0.5)))
+    .orderBy((t) => desc(t.similarity))
     .limit(4);
   return similarGuides;
 }

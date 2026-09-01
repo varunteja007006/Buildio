@@ -15,7 +15,13 @@ export type Document = {
 export type DocumentsQuery = {
   page?: number;
   pageSize?: number;
-  sort?: "filename" | "filepath" | "fileHash" | "ingested" | "createdAt" | "updatedAt";
+  sort?:
+    | "filename"
+    | "filepath"
+    | "fileHash"
+    | "ingested"
+    | "createdAt"
+    | "updatedAt";
   sortDir?: "asc" | "desc";
   search?: string;
   status?: "ingested" | "pending";

@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import { flexRender, type Table as TanstackTable } from "@tanstack/react-table"
+import { flexRender, type Table as TanstackTable } from "@tanstack/react-table";
 import {
   Table,
   TableBody,
@@ -8,17 +8,17 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@workspace/ui/components/table"
-import * as React from "react"
+} from "@workspace/ui/components/table";
+import * as React from "react";
 
-import { DataTablePagination } from "@/components/data-table/data-table-pagination"
-import { cn } from "@/lib/utils"
+import { DataTablePagination } from "@/components/data-table/data-table-pagination";
+import { cn } from "@/lib/utils";
 
 interface DataTableProps<TData> extends React.ComponentProps<"div"> {
-  table: TanstackTable<TData>
-  loading?: boolean
-  emptyState?: React.ReactNode
-  total?: number
+  table: TanstackTable<TData>;
+  loading?: boolean;
+  emptyState?: React.ReactNode;
+  total?: number;
 }
 
 export function DataTable<TData>({
@@ -30,7 +30,7 @@ export function DataTable<TData>({
   className,
   ...props
 }: DataTableProps<TData>) {
-  const visibleColumns = table.getVisibleLeafColumns().length
+  const visibleColumns = table.getVisibleLeafColumns().length;
 
   return (
     <div
@@ -47,7 +47,10 @@ export function DataTable<TData>({
                   <TableHead key={header.id} colSpan={header.colSpan}>
                     {header.isPlaceholder
                       ? null
-                      : flexRender(header.column.columnDef.header, header.getContext())}
+                      : flexRender(
+                          header.column.columnDef.header,
+                          header.getContext(),
+                        )}
                   </TableHead>
                 ))}
               </TableRow>
@@ -62,10 +65,16 @@ export function DataTable<TData>({
               </TableRow>
             ) : table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
-                <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
+                <TableRow
+                  key={row.id}
+                  data-state={row.getIsSelected() && "selected"}
+                >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id}>
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext(),
+                      )}
                     </TableCell>
                   ))}
                 </TableRow>
@@ -85,16 +94,16 @@ export function DataTable<TData>({
       </div>
       <DataTablePagination table={table} total={total} />
     </div>
-  )
+  );
 }
 
 function LoadingRows({ rows }: { rows: number }) {
-  const count = Math.min(Math.max(rows, 1), 6)
+  const count = Math.min(Math.max(rows, 1), 6);
   return (
     <div className="flex flex-col gap-2 px-2 py-3">
       {Array.from({ length: count }).map((_, i) => (
         <div key={i} className="h-6 w-full animate-pulse rounded bg-muted" />
       ))}
     </div>
-  )
+  );
 }

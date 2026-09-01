@@ -1,6 +1,6 @@
-import { SparklesIcon } from "lucide-react"
+import { SparklesIcon } from "lucide-react";
 
-import { AppBreadcrumb } from "@/components/app-breadcrumb"
+import { AppBreadcrumb } from "@/components/app-breadcrumb";
 
 export default function UpgradePage() {
   return (
@@ -21,5 +21,5 @@ export default function UpgradePage() {
         </div>
       </div>
     </>
-  )
+  );
 }

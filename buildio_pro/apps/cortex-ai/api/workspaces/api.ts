@@ -17,9 +17,8 @@ export async function getWorkspaces(): Promise<WorkspacesResponse> {
 
 /** Fetch the user's active workspace (or null) */
 export async function getActiveWorkspace(): Promise<ActiveWorkspaceResponse> {
-  const { data } = await apiClient.get<ActiveWorkspaceResponse>(
-    "/workspaces/active",
-  );
+  const { data } =
+    await apiClient.get<ActiveWorkspaceResponse>("/workspaces/active");
   return data;
 }
 
@@ -33,7 +32,10 @@ export async function getWorkspace(id: string): Promise<WorkspaceResponse> {
 export async function createWorkspace(
   input: CreateWorkspaceInput,
 ): Promise<WorkspaceResponse> {
-  const { data } = await apiClient.post<WorkspaceResponse>("/workspaces", input);
+  const { data } = await apiClient.post<WorkspaceResponse>(
+    "/workspaces",
+    input,
+  );
   return data;
 }
 

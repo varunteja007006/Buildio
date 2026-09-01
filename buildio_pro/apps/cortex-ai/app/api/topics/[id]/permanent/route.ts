@@ -33,7 +33,10 @@ export async function DELETE(_request: Request, { params }: Params) {
       );
     }
 
-    const membership = await getWorkspaceMembership(user.id, existing.workspaceId);
+    const membership = await getWorkspaceMembership(
+      user.id,
+      existing.workspaceId,
+    );
     if (!membership) {
       return NextResponse.json(
         { success: false, error: "Topic not found" },

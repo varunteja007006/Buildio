@@ -32,7 +32,10 @@ export async function POST(_request: Request, { params }: Params) {
       );
     }
 
-    const membership = await getWorkspaceMembership(user.id, deleted.workspaceId);
+    const membership = await getWorkspaceMembership(
+      user.id,
+      deleted.workspaceId,
+    );
     if (!membership) {
       return NextResponse.json(
         { success: false, error: "Folder not found" },

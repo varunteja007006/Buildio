@@ -22,7 +22,9 @@ export const embeddings = pgTable(
   (table) => ({
     workspaceIdx: index("embeddings_workspace_idx").on(table.workspaceId),
     resourceIdx: index("embeddings_resource_idx").on(table.resourceId),
-    hnswIndex: index("embeddings_hnsw_idx")
-      .using("hnsw", table.embedding.op("vector_cosine_ops")),
+    hnswIndex: index("embeddings_hnsw_idx").using(
+      "hnsw",
+      table.embedding.op("vector_cosine_ops"),
+    ),
   }),
 );

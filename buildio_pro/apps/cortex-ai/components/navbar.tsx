@@ -8,7 +8,6 @@ import { useSession } from "@/api/auth/query";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { authClient } from "@/lib/auth-client";
 
-
 export function Navbar() {
   const { data: session, isLoading } = useSession();
   const router = useRouter();

@@ -1,6 +1,6 @@
-import { BellIcon } from "lucide-react"
+import { BellIcon } from "lucide-react";
 
-import { AppBreadcrumb } from "@/components/app-breadcrumb"
+import { AppBreadcrumb } from "@/components/app-breadcrumb";
 
 export default function NotificationsPage() {
   return (
@@ -21,5 +21,5 @@ export default function NotificationsPage() {
         </div>
       </div>
     </>
-  )
+  );
 }

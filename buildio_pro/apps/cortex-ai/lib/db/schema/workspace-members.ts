@@ -24,7 +24,9 @@ export const workspaceMembers = pgTable(
     userId: text("user_id")
       .notNull()
       .references(() => user.id, { onDelete: "cascade" }),
-    role: text("role", { enum: ["owner", "member"] }).notNull().default("member"),
+    role: text("role", { enum: ["owner", "member"] })
+      .notNull()
+      .default("member"),
     /** The active workspace for this user. Only one membership per user is active. */
     isActive: boolean("is_active").notNull().default(false),
     position: integer("position").notNull().default(0),
@@ -38,7 +40,9 @@ export const workspaceMembers = pgTable(
   },
   (table) => ({
     userIdx: index("workspace_members_user_idx").on(table.userId),
-    workspaceIdx: index("workspace_members_workspace_idx").on(table.workspaceId),
+    workspaceIdx: index("workspace_members_workspace_idx").on(
+      table.workspaceId,
+    ),
     userWorkspaceUq: uniqueIndex("workspace_members_user_workspace_uq").on(
       table.userId,
       table.workspaceId,

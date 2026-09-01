@@ -1,10 +1,6 @@
 "use client";
 
-import {
-  useQuery,
-  useMutation,
-  useQueryClient,
-} from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { getResources, createResource, deleteResource } from "./api";
 import type { Resource, CreateResourceInput } from "./types";

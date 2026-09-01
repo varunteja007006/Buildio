@@ -6,9 +6,12 @@ import type { DocumentsQuery, DocumentsResponse } from "./types";
 function buildQueryString(params: DocumentsQuery = {}): string {
   const query = new URLSearchParams();
   if (params.page && params.page > 1) query.set("page", String(params.page));
-  if (params.pageSize && params.pageSize !== 10) query.set("pageSize", String(params.pageSize));
-  if (params.sort && params.sort !== "createdAt") query.set("sort", params.sort);
-  if (params.sortDir && params.sortDir !== "desc") query.set("sortDir", params.sortDir);
+  if (params.pageSize && params.pageSize !== 10)
+    query.set("pageSize", String(params.pageSize));
+  if (params.sort && params.sort !== "createdAt")
+    query.set("sort", params.sort);
+  if (params.sortDir && params.sortDir !== "desc")
+    query.set("sortDir", params.sortDir);
   if (params.search) query.set("search", params.search);
   if (params.status) query.set("status", params.status);
   if (params.folderId) query.set("folderId", params.folderId);

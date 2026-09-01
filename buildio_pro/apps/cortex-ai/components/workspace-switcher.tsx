@@ -1,7 +1,6 @@
-"use client"
+"use client";
 
-
-import { Button } from "@workspace/ui/components/button"
+import { Button } from "@workspace/ui/components/button";
 import {
   Dialog,
   DialogContent,
@@ -9,7 +8,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@workspace/ui/components/dialog"
+} from "@workspace/ui/components/dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,25 +17,30 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@workspace/ui/components/dropdown-menu"
-import { Input } from "@workspace/ui/components/input"
-import { Label } from "@workspace/ui/components/label"
+} from "@workspace/ui/components/dropdown-menu";
+import { Input } from "@workspace/ui/components/input";
+import { Label } from "@workspace/ui/components/label";
 import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
   useSidebar,
-} from "@workspace/ui/components/sidebar"
-import { Skeleton } from "@workspace/ui/components/skeleton"
-import { CheckIcon, ChevronsUpDownIcon, PlusIcon, SparklesIcon } from "lucide-react"
-import * as React from "react"
+} from "@workspace/ui/components/sidebar";
+import { Skeleton } from "@workspace/ui/components/skeleton";
+import {
+  CheckIcon,
+  ChevronsUpDownIcon,
+  PlusIcon,
+  SparklesIcon,
+} from "lucide-react";
+import * as React from "react";
 
 import {
   useActivateWorkspace,
   useCreateWorkspace,
   useWorkspaces,
-} from "@/api/workspaces/query"
-import { cn } from "@/lib/utils"
+} from "@/api/workspaces/query";
+import { cn } from "@/lib/utils";
 
 function getWorkspaceInitials(name: string): string {
   return name
@@ -44,37 +48,37 @@ function getWorkspaceInitials(name: string): string {
     .filter(Boolean)
     .slice(0, 2)
     .map((part) => part[0]?.toUpperCase())
-    .join("")
+    .join("");
 }
 
 export function WorkspaceSwitcher() {
-  const { isMobile } = useSidebar()
-  const { data, isLoading } = useWorkspaces()
-  const activate = useActivateWorkspace()
-  const create = useCreateWorkspace()
-  const [dialogOpen, setDialogOpen] = React.useState(false)
-  const [name, setName] = React.useState("")
-  const [description, setDescription] = React.useState("")
+  const { isMobile } = useSidebar();
+  const { data, isLoading } = useWorkspaces();
+  const activate = useActivateWorkspace();
+  const create = useCreateWorkspace();
+  const [dialogOpen, setDialogOpen] = React.useState(false);
+  const [name, setName] = React.useState("");
+  const [description, setDescription] = React.useState("");
 
-  const workspaces = (data?.workspaces ?? []).filter((w) => !w.deletedAt)
+  const workspaces = (data?.workspaces ?? []).filter((w) => !w.deletedAt);
   const activeWorkspace =
     workspaces.find((w) => w.id === data?.activeWorkspaceId) ??
     workspaces.find((w) => w.isActive) ??
-    workspaces[0]
+    workspaces[0];
 
   const handleCreate = () => {
-    if (!name.trim()) return
+    if (!name.trim()) return;
     create.mutate(
       { name: name.trim(), description: description.trim() || undefined },
       {
         onSuccess: () => {
-          setName("")
-          setDescription("")
-          setDialogOpen(false)
+          setName("");
+          setDescription("");
+          setDialogOpen(false);
         },
       },
-    )
-  }
+    );
+  };
 
   return (
     <SidebarMenu>
@@ -111,73 +115,76 @@ export function WorkspaceSwitcher() {
                 size="lg"
                 className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
               >
-              <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-                <SparklesIcon className="size-4" />
-              </div>
-              <div className="grid flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-medium">Cortex AI</span>
-                <span className="truncate text-xs text-muted-foreground">
-                  {activeWorkspace.name}
-                </span>
-              </div>
-              <ChevronsUpDownIcon className="ml-auto" />
-            </SidebarMenuButton>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent
-            className="w-fit min-w-52"
-            align="start"
-            side={isMobile ? "bottom" : "right"}
-            sideOffset={4}
-          >
-            <DropdownMenuGroup>
-              <DropdownMenuLabel className="text-xs text-muted-foreground">
-                Workspaces
-              </DropdownMenuLabel>
-              {workspaces.map((workspace) => {
-                const isActive = workspace.id === activeWorkspace?.id
-                return (
+                <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
+                  <SparklesIcon className="size-4" />
+                </div>
+                <div className="grid flex-1 text-left text-sm leading-tight">
+                  <span className="truncate font-medium">Cortex AI</span>
+                  <span className="truncate text-xs text-muted-foreground">
+                    {activeWorkspace.name}
+                  </span>
+                </div>
+                <ChevronsUpDownIcon className="ml-auto" />
+              </SidebarMenuButton>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent
+              className="w-fit min-w-52"
+              align="start"
+              side={isMobile ? "bottom" : "right"}
+              sideOffset={4}
+            >
+              <DropdownMenuGroup>
+                <DropdownMenuLabel className="text-xs text-muted-foreground">
+                  Workspaces
+                </DropdownMenuLabel>
+                {workspaces.map((workspace) => {
+                  const isActive = workspace.id === activeWorkspace?.id;
+                  return (
+                    <DropdownMenuItem
+                      key={workspace.id}
+                      onClick={() => !isActive && activate.mutate(workspace.id)}
+                      className="gap-2 p-2"
+                      disabled={activate.isPending}
+                    >
+                      <div className="flex size-6 shrink-0 items-center justify-center rounded-md border text-xs font-medium">
+                        {getWorkspaceInitials(workspace.name)}
+                      </div>
+                      <span className="min-w-0 flex-1 truncate">
+                        {workspace.name}
+                      </span>
+                      <CheckIcon
+                        className={cn(
+                          "size-4 shrink-0",
+                          isActive ? "opacity-100" : "opacity-0",
+                        )}
+                      />
+                    </DropdownMenuItem>
+                  );
+                })}
+                {workspaces.length === 0 && (
                   <DropdownMenuItem
-                    key={workspace.id}
-                    onClick={() => !isActive && activate.mutate(workspace.id)}
-                    className="gap-2 p-2"
-                    disabled={activate.isPending}
+                    disabled
+                    className="p-2 text-muted-foreground"
                   >
-                    <div className="flex size-6 shrink-0 items-center justify-center rounded-md border text-xs font-medium">
-                      {getWorkspaceInitials(workspace.name)}
-                    </div>
-                    <span className="min-w-0 flex-1 truncate">
-                      {workspace.name}
-                    </span>
-                    <CheckIcon
-                      className={cn(
-                        "size-4 shrink-0",
-                        isActive ? "opacity-100" : "opacity-0"
-                      )}
-                    />
+                    No workspaces yet
                   </DropdownMenuItem>
-                )
-              })}
-              {workspaces.length === 0 && (
-                <DropdownMenuItem disabled className="p-2 text-muted-foreground">
-                  No workspaces yet
+                )}
+              </DropdownMenuGroup>
+              <DropdownMenuSeparator />
+              <DropdownMenuGroup>
+                <DropdownMenuItem
+                  className="gap-2 p-2"
+                  onClick={() => setDialogOpen(true)}
+                >
+                  <div className="flex size-6 items-center justify-center rounded-md border bg-transparent">
+                    <PlusIcon className="size-4" />
+                  </div>
+                  <div className="font-medium text-muted-foreground">
+                    Create workspace
+                  </div>
                 </DropdownMenuItem>
-              )}
-            </DropdownMenuGroup>
-            <DropdownMenuSeparator />
-            <DropdownMenuGroup>
-              <DropdownMenuItem
-                className="gap-2 p-2"
-                onClick={() => setDialogOpen(true)}
-              >
-                <div className="flex size-6 items-center justify-center rounded-md border bg-transparent">
-                  <PlusIcon className="size-4" />
-                </div>
-                <div className="font-medium text-muted-foreground">
-                  Create workspace
-                </div>
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
-          </DropdownMenuContent>
+              </DropdownMenuGroup>
+            </DropdownMenuContent>
           </DropdownMenu>
         )}
       </SidebarMenuItem>
@@ -225,5 +232,5 @@ export function WorkspaceSwitcher() {
         </DialogContent>
       </Dialog>
     </SidebarMenu>
-  )
+  );
 }

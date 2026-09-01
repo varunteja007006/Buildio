@@ -1,5 +1,5 @@
-import { AppBreadcrumb } from "@/components/app-breadcrumb"
-import { DocumentsView } from "@/components/documents/documents-view"
+import { AppBreadcrumb } from "@/components/app-breadcrumb";
+import { DocumentsView } from "@/components/documents/documents-view";
 
 export default function DocumentsPage() {
   return (
@@ -14,5 +14,5 @@ export default function DocumentsPage() {
         <DocumentsView />
       </div>
     </>
-  )
+  );
 }

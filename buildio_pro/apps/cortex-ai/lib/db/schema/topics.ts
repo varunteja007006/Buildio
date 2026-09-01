@@ -1,5 +1,12 @@
 import { sql } from "drizzle-orm";
-import { text, timestamp, integer, pgTable, index, uniqueIndex } from "drizzle-orm/pg-core";
+import {
+  text,
+  timestamp,
+  integer,
+  pgTable,
+  index,
+  uniqueIndex,
+} from "drizzle-orm/pg-core";
 
 import { workspaces } from "./workspaces";
 

@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import {
   AlertDialog,
@@ -9,17 +9,16 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@workspace/ui/components/alert-dialog"
-import { Trash2 } from "lucide-react"
-
+} from "@workspace/ui/components/alert-dialog";
+import { Trash2 } from "lucide-react";
 
 interface DeleteDialogProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-  title: string
-  description: string
-  isPending?: boolean
-  onConfirm: () => void
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  title: string;
+  description: string;
+  isPending?: boolean;
+  onConfirm: () => void;
 }
 
 export function DeleteDialog({
@@ -52,5 +51,5 @@ export function DeleteDialog({
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
-  )
+  );
 }

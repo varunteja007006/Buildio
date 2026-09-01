@@ -1,21 +1,26 @@
-"use client"
+"use client";
 
-import type { Table } from "@tanstack/react-table"
-import { Button } from "@workspace/ui/components/button"
+import type { Table } from "@tanstack/react-table";
+import { Button } from "@workspace/ui/components/button";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@workspace/ui/components/select"
-import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from "lucide-react"
-import * as React from "react"
+} from "@workspace/ui/components/select";
+import {
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
+} from "lucide-react";
+import * as React from "react";
 
 interface DataTablePaginationProps<TData> {
-  table: Table<TData>
-  total?: number
-  pageSizeOptions?: number[]
+  table: Table<TData>;
+  total?: number;
+  pageSizeOptions?: number[];
 }
 
 export function DataTablePagination<TData>({
@@ -25,9 +30,9 @@ export function DataTablePagination<TData>({
 }: DataTablePaginationProps<TData>) {
   const {
     pagination: { pageIndex, pageSize },
-  } = table.getState()
-  const pageCount = Math.max(1, table.getPageCount())
-  const rowCount = total ?? table.getPrePaginationRowModel().rows.length
+  } = table.getState();
+  const pageCount = Math.max(1, table.getPageCount());
+  const rowCount = total ?? table.getPrePaginationRowModel().rows.length;
 
   return (
     <div className="flex flex-col gap-2.5 px-2 sm:flex-row sm:items-center sm:justify-between">
@@ -109,5 +114,5 @@ export function DataTablePagination<TData>({
         </div>
       </div>
     </div>
-  )
+  );
 }
