@@ -16,7 +16,7 @@ import {
 } from "@workspace/ui/components/select";
 import { useEffect, useState } from "react";
 
-interface VoiceOption extends SpeechSynthesisVoice {}
+type VoiceOption = SpeechSynthesisVoice;
 
 export default function HousieNumGenerator() {
   const [numbers, setNumbers] = useState<number[]>([]);

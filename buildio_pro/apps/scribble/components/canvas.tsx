@@ -1,20 +1,15 @@
 "use client";
 
 import { api } from "@workspace/games-convex-backend/convex/_generated/api";
-import { Button } from "@workspace/ui/components/button";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@workspace/ui/components/tooltip";
 import { useMutation, useQuery } from "convex/react";
 import { KonvaEventObject } from "konva/lib/Node";
-import { CircleX, Eraser, Pencil } from "lucide-react";
 import { useParams } from "next/navigation";
 import React, { useEffect, useRef, useState } from "react";
 import { Layer, Line, Stage } from "react-konva";
 
 import { useUserStore } from "@/lib/store/user.store";
+
+import { CanvasToolbar } from "./canvas-toolbar";
 
 interface LineData {
   id: string;
@@ -23,16 +18,6 @@ interface LineData {
   strokeWidth: number;
   strokeColor: string;
 }
-
-const colors = [
-  { label: "Red", value: "#ef4444" },
-  { label: "Orange", value: "#f97316" },
-  { label: "Yellow", value: "#eab308" },
-  { label: "Green", value: "#22c55e" },
-  { label: "Blue", value: "#3b82f6" },
-  { label: "Black", value: "#000000" },
-  { label: "White", value: "#ffffff" },
-];
 
 // How often the in-progress stroke is streamed to the server while drawing.
 // Final points are always sent on mouseup regardless of this throttle.
@@ -109,7 +94,7 @@ export function Canvas() {
     );
   };
 
-  const handleMouseDown = (e: KonvaEventObject<any>) => {
+  const handleMouseDown = (e: KonvaEventObject<Event>) => {
     isDrawing.current = true;
     const pos = e.target.getStage()?.getPointerPosition();
     if (!pos) return;
@@ -133,7 +118,7 @@ export function Canvas() {
     persistStroke(stroke, false);
   };
 
-  const handleMouseMove = (e: KonvaEventObject<any>) => {
+  const handleMouseMove = (e: KonvaEventObject<Event>) => {
     // no drawing - skipping
     if (!isDrawing.current) {
       return;
@@ -183,118 +168,15 @@ export function Canvas() {
     );
   };
 
-  const tools = [
-    {
-      label: "Pen",
-      action: () => setTool("pen"),
-      icon: Pencil,
-    },
-    {
-      label: "Eraser",
-      action: () => setTool("eraser"),
-      icon: Eraser,
-    },
-    {
-      label: "Clear",
-      action: handleClear,
-      icon: CircleX,
-    },
-  ];
-
-  const strokeWidths = [
-    {
-      label: "Thin",
-      action: () => setStrokeWidth(1),
-      child: <span className="size-1 bg-gray-500"></span>,
-    },
-    {
-      label: "Medium",
-      action: () => setStrokeWidth(3),
-      child: <span className="size-3 bg-gray-500"></span>,
-    },
-    {
-      label: "Thick",
-      action: () => setStrokeWidth(5),
-      child: <span className="size-5 bg-gray-500"></span>,
-    },
-  ];
-
-  const eraserWidths = [
-    {
-      label: "Small Eraser",
-      action: () => setEraserWidth(8),
-      child: <span className="size-2 bg-white"></span>,
-    },
-    {
-      label: "Medium Eraser",
-      action: () => setEraserWidth(14),
-      child: <span className="size-4 bg-white"></span>,
-    },
-    {
-      label: "Large Eraser",
-      action: () => setEraserWidth(20),
-      child: <span className="size-6 bg-white"></span>,
-    },
-  ];
-
   return (
     <div className="flex flex-col h-full w-full border rounded-md overflow-hidden bg-white">
-      <div className="flex flex-wrap items-center gap-1 p-1 border-b bg-background shrink-0">
-        {tools.map((tool) => (
-          <Tooltip key={tool.label}>
-            <TooltipTrigger asChild>
-              <Button
-                variant="secondary"
-                size={"icon-sm"}
-                onClick={tool.action}
-              >
-                {<tool.icon className="h-4 w-4" />}
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>{tool.label}</TooltipContent>
-          </Tooltip>
-        ))}
-
-        {colors.map((color) => (
-          <Tooltip key={color.value}>
-            <TooltipTrigger asChild>
-              <Button
-                variant="secondary"
-                size={"sm"}
-                onClick={() => setStrokeColor(color.value)}
-              >
-                <span
-                  className="size-4 rounded-full border border-slate-300"
-                  style={{ backgroundColor: color.value }}
-                ></span>
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>{color.label}</TooltipContent>
-          </Tooltip>
-        ))}
-
-        {strokeWidths.map((sw) => (
-          <Tooltip key={sw.label}>
-            <TooltipTrigger asChild>
-              <Button variant="secondary" size={"sm"} onClick={sw.action}>
-                {sw.child}
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>{sw.label}</TooltipContent>
-          </Tooltip>
-        ))}
-
-        {eraserWidths.map((ew) => (
-          <Tooltip key={ew.label}>
-            <TooltipTrigger asChild>
-              <Button variant="secondary" size={"sm"} onClick={ew.action}>
-                {ew.child}
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>{ew.label}</TooltipContent>
-          </Tooltip>
-        ))}
-      </div>
+      <CanvasToolbar
+        onSelectTool={(nextTool) => setTool(nextTool)}
+        onClear={handleClear}
+        onSelectColor={setStrokeColor}
+        onSelectStrokeWidth={setStrokeWidth}
+        onSelectEraserWidth={setEraserWidth}
+      />
 
       <div
         ref={stageAreaRef}

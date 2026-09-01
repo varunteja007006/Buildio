@@ -44,7 +44,7 @@ export default function RoomPage() {
     if (userToken && roomCode) {
       joinRoom({ roomCode, userToken }).catch(console.error);
     }
-  }, [isOwner, userToken, roomCode]);
+  }, [isOwner, userToken, roomCode, initializeSettings, joinRoom]);
 
   if (!user?.id) {
     return (
