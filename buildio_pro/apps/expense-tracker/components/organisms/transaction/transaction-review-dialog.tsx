@@ -107,7 +107,7 @@ export function TransactionReviewDialog({
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }) {
-  const { data: categoriesData } = useExpenseCategoryList({ limit: 200, page: 1 });
+  const { data: categoriesData } = useExpenseCategoryList({ limit: 100, page: 1 });
   const { data: paymentMethods } = usePaymentMethodList();
   const confirmMutation = useTransactionConfirm({
     onSuccess: () => onOpenChange(false),

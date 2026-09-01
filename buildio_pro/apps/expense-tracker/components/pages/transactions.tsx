@@ -43,11 +43,6 @@ import {
   SelectValue,
 } from "@workspace/ui/components/select";
 import {
-  ToggleGroup,
-  ToggleGroupItem,
-} from "@workspace/ui/components/toggle-group";
-import { Toggle } from "@workspace/ui/components/toggle";
-import {
   Table,
   TableBody,
   TableCell,
@@ -55,6 +50,11 @@ import {
   TableHeader,
   TableRow,
 } from "@workspace/ui/components/table";
+import { Toggle } from "@workspace/ui/components/toggle";
+import {
+  ToggleGroup,
+  ToggleGroupItem,
+} from "@workspace/ui/components/toggle-group";
 import { formatCurrency } from "@workspace/ui/lib/currency.utils";
 import { cn } from "@workspace/ui/lib/utils";
 import {
@@ -149,20 +149,6 @@ function TransactionsPageContent() {
     null,
   );
 
-  // When the review dialog is dismissed by clicking outside, the modal overlay
-  // closes it on `pointerdown`, but the resulting `click` can land on the row
-  // underneath (the overlay unmounts before `pointerup`), re-triggering
-  // `setReviewing` and instantly reopening the dialog. Swallow those clicks.
-  const lastReviewDialogClosedAtRef = React.useRef(0);
-
-  const openReviewDialog = React.useCallback(
-    (transaction: ReviewTransaction) => {
-      if (Date.now() - lastReviewDialogClosedAtRef.current < 400) return;
-      setReviewing(transaction);
-    },
-    [],
-  );
-
   const [selectedIds, setSelectedIds] = React.useState<Set<string>>(new Set());
   const [bulkDeleteOpen, setBulkDeleteOpen] = React.useState(false);
 
@@ -234,7 +220,7 @@ function TransactionsPageContent() {
 
   const { data: statementsData } = useStatementList({ limit: 100, page: 1 });
   const { data: categoriesData } = useExpenseCategoryList({
-    limit: 200,
+    limit: 100,
     page: 1,
   });
   const { data: paymentMethods } = usePaymentMethodList();
@@ -690,7 +676,7 @@ function TransactionsPageContent() {
                       <TableRow
                         key={transaction.id}
                         className="cursor-pointer"
-                        onClick={() => openReviewDialog(transaction)}
+                        onClick={() => setReviewing(transaction)}
                       >
                         <TableCell
                           className="w-10"
@@ -775,7 +761,7 @@ function TransactionsPageContent() {
                               size="sm"
                               onClick={(e) => {
                                 e.stopPropagation();
-                                openReviewDialog(transaction);
+                                setReviewing(transaction);
                               }}
                             >
                               <Eye className="size-3.5" />
@@ -881,7 +867,6 @@ function TransactionsPageContent() {
         open={Boolean(reviewing)}
         onOpenChange={(open) => {
           if (!open) {
-            lastReviewDialogClosedAtRef.current = Date.now();
             setReviewing(null);
           }
         }}
