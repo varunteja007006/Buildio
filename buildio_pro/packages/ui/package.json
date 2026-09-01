@@ -4,7 +4,7 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "lint": "eslint . --max-warnings 0",
+    "lint": "eslint .",
     "clean": "git clean -xdf .cache .turbo dist node_modules"
   },
   "dependencies": {
@@ -83,6 +83,7 @@
     "@types/react-dom": "catalog:react19",
     "@workspace/eslint-config": "workspace:*",
     "@workspace/typescript-config": "workspace:*",
+    "eslint": "catalog:",
     "tailwindcss": "catalog:",
     "typescript": "catalog:"
   },

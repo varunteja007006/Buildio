@@ -970,6 +970,9 @@ importers:
       '@workspace/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
+      eslint:
+        specifier: 'catalog:'
+        version: 9.39.5(jiti@2.7.0)
       tailwindcss:
         specifier: 'catalog:'
         version: 4.3.3
