@@ -1,8 +1,5 @@
 "use client";
 
-
-
-
 import { Badge } from "@workspace/ui/components/badge";
 import { Button } from "@workspace/ui/components/button";
 import {
@@ -65,7 +62,7 @@ export default function BudgetsPage() {
             </p>
           ) : (
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {activeBudgetsQuery.data?.map((budget: any) => (
+              {activeBudgetsQuery.data?.map((budget) => (
                 <Link
                   key={budget.id}
                   href={`/budgets/${budget.id}`}
@@ -135,7 +132,7 @@ export default function BudgetsPage() {
             </div>
           ) : (
             <div className="space-y-4">
-              {budgetListQuery.data?.data.map((budget: any) => {
+              {budgetListQuery.data?.data.map((budget) => {
                 const isActive =
                   new Date() >= new Date(budget.startMonth) &&
                   new Date() <= new Date(budget.endMonth);

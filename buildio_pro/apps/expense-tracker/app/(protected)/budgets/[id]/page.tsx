@@ -1,7 +1,5 @@
 "use client";
 
-
-
 import { useQuery } from "@tanstack/react-query";
 import { Badge } from "@workspace/ui/components/badge";
 import { Button } from "@workspace/ui/components/button";
@@ -226,7 +224,7 @@ export default function BudgetDetailPage() {
             </p>
           ) : (
             <div className="space-y-3">
-              {expenses.map((expense: any) => (
+              {expenses.map((expense) => (
                 <div
                   key={expense.id}
                   className="flex items-center justify-between p-3 rounded-lg border"

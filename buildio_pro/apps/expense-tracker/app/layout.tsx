@@ -1,8 +1,11 @@
-
+import { Toaster } from "@workspace/ui/components/sonner";
 import type { Metadata } from "next";
 import { DM_Sans, Space_Mono } from "next/font/google";
 
 import { appConfig } from "@/app/appConfig";
+import { Providers } from "@/components/providers";
+
+import "./globals.css";
 
 const fontSans = DM_Sans({
   subsets: ["latin"],
@@ -20,12 +23,6 @@ const fontMono = Space_Mono({
   weight: "400",
 });
 
-import { Toaster } from "@workspace/ui/components/sonner";
-
-import { Providers } from "@/components/providers";
-
-import "./globals.css";
-
 export const metadata: Metadata = {
   title: appConfig.name,
   description:
@@ -39,7 +36,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${fontSans.variable} ${fontSerif.variable} ${fontMono.variable} antialiased`}>
+      <body
+        className={`${fontSans.variable} ${fontSerif.variable} ${fontMono.variable} antialiased`}
+      >
         <Providers>{children}</Providers>
         <Toaster />
       </body>
