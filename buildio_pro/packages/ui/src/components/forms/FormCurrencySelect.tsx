@@ -8,23 +8,11 @@ import {
 import { useFieldContext } from "@workspace/ui/components/forms/hooks";
 
 interface FormCurrencySelectProps extends FormControlProps {
-  showCurrency?: boolean;
-  defaultCurrency?: string;
-  currencyName?: string;
   currencyPlaceholder?: string;
-  inputPlaceholder?: string;
-  className?: string;
-  showInput?: boolean;
 }
 
 export function FormCurrencySelect({
-  showCurrency = true,
-  showInput = true,
-  defaultCurrency = "USD",
-  currencyName,
   currencyPlaceholder = "Currency",
-  inputPlaceholder = "Amount",
-  className,
   ...props
 }: FormCurrencySelectProps) {
   const field = useFieldContext<string>();

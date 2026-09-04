@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  type ColumnFiltersState,
   type PaginationState,
   type RowSelectionState,
   type SortingState,
@@ -19,17 +18,13 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import {
-  type SingleParser,
   type UseQueryStateOptions,
-  parseAsArrayOf,
   parseAsInteger,
-  parseAsString,
   useQueryState,
-  useQueryStates,
 } from "nuqs";
 import * as React from "react";
 
-import { useDebouncedCallback } from "@workspace/ui/hooks/use-debounced-callback";
+import { useDataTableFilters } from "@workspace/ui/hooks/use-data-table-filters";
 import { getSortingStateParser } from "@workspace/ui/lib/parsers";
 import type {
   ExtendedColumnSort,
@@ -41,7 +36,6 @@ const PER_PAGE_KEY = "perPage";
 const SORT_KEY = "sort";
 const FILTERS_KEY = "filters";
 const JOIN_OPERATOR_KEY = "joinOperator";
-const ARRAY_SEPARATOR = ",";
 const DEBOUNCE_MS = 300;
 const THROTTLE_MS = 50;
 
@@ -179,97 +173,13 @@ export function useDataTable<TData>(props: UseDataTableProps<TData>) {
     [sorting, setSorting],
   );
 
-  const filterableColumns = React.useMemo(() => {
-    if (enableAdvancedFilter) return [];
-
-    return columns.filter((column) => column.enableColumnFilter);
-  }, [columns, enableAdvancedFilter]);
-
-  const filterParsers = React.useMemo(() => {
-    if (enableAdvancedFilter) return {};
-
-    return filterableColumns.reduce<
-      Record<string, SingleParser<string> | SingleParser<string[]>>
-    >((acc, column) => {
-      if (column.meta?.options) {
-        acc[column.id ?? ""] = parseAsArrayOf(
-          parseAsString,
-          ARRAY_SEPARATOR,
-        ).withOptions(queryStateOptions);
-      } else {
-        acc[column.id ?? ""] = parseAsString.withOptions(queryStateOptions);
-      }
-      return acc;
-    }, {});
-  }, [filterableColumns, queryStateOptions, enableAdvancedFilter]);
-
-  const [filterValues, setFilterValues] = useQueryStates(filterParsers);
-
-  const debouncedSetFilterValues = useDebouncedCallback(
-    (values: typeof filterValues) => {
-      void setPage(1);
-      void setFilterValues(values);
-    },
+  const { columnFilters, onColumnFiltersChange } = useDataTableFilters({
+    columns,
+    enableAdvancedFilter,
+    queryStateOptions,
     debounceMs,
-  );
-
-  const initialColumnFilters: ColumnFiltersState = React.useMemo(() => {
-    if (enableAdvancedFilter) return [];
-
-    return Object.entries(filterValues).reduce<ColumnFiltersState>(
-      (filters, [key, value]) => {
-        if (value !== null) {
-          const processedValue = Array.isArray(value)
-            ? value
-            : typeof value === "string" && /[^a-zA-Z0-9]/.test(value)
-              ? value.split(/[^a-zA-Z0-9]+/).filter(Boolean)
-              : [value];
-
-          filters.push({
-            id: key,
-            value: processedValue,
-          });
-        }
-        return filters;
-      },
-      [],
-    );
-  }, [filterValues, enableAdvancedFilter]);
-
-  const [columnFilters, setColumnFilters] =
-    React.useState<ColumnFiltersState>(initialColumnFilters);
-
-  const onColumnFiltersChange = React.useCallback(
-    (updaterOrValue: Updater<ColumnFiltersState>) => {
-      if (enableAdvancedFilter) return;
-
-      setColumnFilters((prev) => {
-        const next =
-          typeof updaterOrValue === "function"
-            ? updaterOrValue(prev)
-            : updaterOrValue;
-
-        const filterUpdates = next.reduce<
-          Record<string, string | string[] | null>
-        >((acc, filter) => {
-          if (filterableColumns.find((column) => column.id === filter.id)) {
-            acc[filter.id] = filter.value as string | string[];
-          }
-          return acc;
-        }, {});
-
-        for (const prevFilter of prev) {
-          if (!next.some((filter) => filter.id === prevFilter.id)) {
-            filterUpdates[prevFilter.id] = null;
-          }
-        }
-
-        debouncedSetFilterValues(filterUpdates);
-        return next;
-      });
-    },
-    [debouncedSetFilterValues, filterableColumns, enableAdvancedFilter],
-  );
+    setPage,
+  });
 
   const table = useReactTable({
     ...tableProps,

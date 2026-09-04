@@ -31,3 +31,36 @@ export function needsReview(
   if (reviewedAt) return false;
   return Number(confidence) < 0.8;
 }
+
+export type TransactionTypeLabel =
+  | "expense"
+  | "income"
+  | "transfer"
+  | "investment"
+  | "loan_payment"
+  | "insurance"
+  | "refund"
+  | "interest"
+  | "fee"
+  | "cash_withdrawal"
+  | "round_up"
+  | "unknown";
+
+export const transactionTypeLabels: Record<TransactionTypeLabel, string> = {
+  expense: "Expense",
+  income: "Income",
+  transfer: "Transfer",
+  investment: "Investment",
+  loan_payment: "Loan Payment",
+  insurance: "Insurance",
+  refund: "Refund",
+  interest: "Interest",
+  fee: "Fee",
+  cash_withdrawal: "Cash Withdrawal",
+  round_up: "Round-up",
+  unknown: "Unknown",
+};
+
+export const transactionTypeOptions = (
+  Object.keys(transactionTypeLabels) as TransactionTypeLabel[]
+).map((value) => ({ value, label: transactionTypeLabels[value] }));

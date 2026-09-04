@@ -1,127 +1,18 @@
-import { ColumnDef, Table } from "@tanstack/react-table";
-import { ActionBar } from "@workspace/ui/components/action-bar";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@workspace/ui/components/alert-dialog";
-import { Button } from "@workspace/ui/components/button";
 import { CardDescription, CardTitle } from "@workspace/ui/components/card";
-import { Checkbox } from "@workspace/ui/components/checkbox";
 import { DataTable } from "@workspace/ui/components/data-table/data-table";
 import { DataTableAdvancedToolbar } from "@workspace/ui/components/data-table/data-table-advanced-toolbar";
 import { useDataTable } from "@workspace/ui/hooks/use-data-table";
-import { Trash2 } from "lucide-react";
 import { useQueryState } from "nuqs";
 import React from "react";
 
 import { ErrorScreen } from "@/components/atoms/error-screen";
 import { FloatingLoader } from "@/components/atoms/loaders/floating-loader";
 import { FilterBar } from "@/components/transactions/filter-bar";
-import { useExpenseList } from "@/hooks";
-import { useBudgetList, useExpenseCategoryList } from "@/hooks";
-import { useDeleteExpenses } from "@/hooks";
+import { useBudgetList, useExpenseCategoryList, useExpenseList } from "@/hooks";
 
-import {
-  ExpenseDeleteDialog,
-  ExpenseDetailsComponent,
-  ExpenseFormComponent,
-} from ".";
-
-type ExpenseRecord = {
-  id: string;
-  name: string;
-  date: Date;
-  amount: number;
-  category?: { name: string; id: string };
-  budget?: { name: string; id: string };
-  isRecurring: boolean;
-};
-
-const columns: ColumnDef<ExpenseRecord>[] = [
-  {
-    id: "select",
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
-    size: 32,
-    enableSorting: false,
-    enableHiding: false,
-  },
-  {
-    accessorKey: "name",
-    header: "Name",
-  },
-  { accessorKey: "amount", header: "Amount" },
-  {
-    accessorKey: "category",
-    header: "Category",
-    cell: ({ row }) => {
-      return row.original.category?.name || "-";
-    },
-  },
-  {
-    accessorKey: "budget",
-    header: "Budget",
-    cell: ({ row }) => {
-      return row.original.budget?.name || "-";
-    },
-  },
-  {
-    accessorKey: "date",
-    header: "Transaction Date",
-    cell: ({ row }) => {
-      const val = row.original.date;
-      return new Date(val).toLocaleDateString();
-    },
-  },
-  {
-    id: "actions",
-    header: "Actions",
-    cell: ({ row }) => {
-      const expense = row.original;
-
-      return (
-        <div className="flex justify-start gap-2">
-          <ExpenseDetailsComponent expenseId={expense.id} />
-          <ExpenseFormComponent
-            mode="edit"
-            initialValues={{
-              name: expense.name,
-              amount: expense.amount.toString(),
-              categoryId: expense.category?.id,
-              budgetId: expense.budget?.id,
-              isRecurring: expense.isRecurring,
-            }}
-            expenseId={expense.id}
-          />
-          <ExpenseDeleteDialog expenseId={expense.id} />
-        </div>
-      );
-    },
-    enableSorting: false,
-  },
-];
+import type { ExpenseRecord } from "./expense-table-types";
+import { ExpenseTableActionBar } from "./expenses-table-action-bar";
+import { expenseColumns } from "./expenses-table-columns";
 
 export const ExpenseListTable = () => {
   const [sortBy] = React.useState<"date" | "amount">("date");
@@ -175,7 +66,7 @@ export const ExpenseListTable = () => {
 
   const { table } = useDataTable({
     data: transactions,
-    columns,
+    columns: expenseColumns,
     pageCount: totalPages,
   });
 
@@ -198,7 +89,10 @@ export const ExpenseListTable = () => {
         <CardTitle>Expenses</CardTitle>
         <CardDescription>Manage and track your expenses</CardDescription>
       </div>
-      <DataTable table={table} actionBar={<TableActionBar table={table} />}>
+      <DataTable
+        table={table}
+        actionBar={<ExpenseTableActionBar table={table} />}
+      >
         <DataTableAdvancedToolbar table={table}>
           <FilterBar
             searchValue={search}
@@ -228,66 +122,3 @@ export const ExpenseListTable = () => {
     </>
   );
 };
-
-function TableActionBar({ table }: { table: Table<ExpenseRecord> }) {
-  const rows = table.getFilteredSelectedRowModel().rows;
-  const onOpenChange = React.useCallback(
-    (open: boolean) => {
-      if (!open) {
-        table.toggleAllRowsSelected(false);
-      }
-    },
-    [table],
-  );
-
-  const deleteExpenses = useDeleteExpenses({
-    onSuccess: () => {
-      table.toggleAllRowsSelected(false);
-    },
-  });
-
-  return (
-    <ActionBar open={rows.length > 0} onOpenChange={onOpenChange}>
-      {/* Add your custom actions here */}
-      <p className="text-sm">Delete {rows.length} selected items</p>
-
-      <AlertDialog>
-        <AlertDialogTrigger asChild>
-          <Button variant="destructive" size="sm" disabled={rows.length === 0}>
-            <Trash2 className="h-4 w-4" />
-          </Button>
-        </AlertDialogTrigger>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete your
-              account and remove your data from our servers.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel asChild>
-              <Button variant="outline" size="sm">
-                Cancel
-              </Button>
-            </AlertDialogCancel>
-            <AlertDialogAction asChild>
-              <Button
-                variant="destructive"
-                size="sm"
-                onClick={() => {
-                  deleteExpenses.mutate({
-                    expenseIds: rows.map((item) => item.original.id),
-                  });
-                }}
-              >
-                <Trash2 className="h-4 w-4 mr-2" />
-                Delete {rows.length} items
-              </Button>
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-    </ActionBar>
-  );
-}

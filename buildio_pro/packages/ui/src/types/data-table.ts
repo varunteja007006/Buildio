@@ -4,12 +4,12 @@ import type { DataTableConfig } from "@workspace/ui/config/data-table";
 import type { FilterItemSchema } from "@workspace/ui/lib/parsers";
 
 declare module "@tanstack/react-table" {
-  // biome-ignore lint/correctness/noUnusedVariables: TData is used in the TableMeta interface
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- TData must match @tanstack/react-table's generic declaration for interface merging
   interface TableMeta<TData extends RowData> {
     queryKeys?: QueryKeys;
   }
 
-  // biome-ignore lint/correctness/noUnusedVariables: TData and TValue are used in the ColumnMeta interface
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars -- TData/TValue must match @tanstack/react-table's generic declaration for interface merging
   interface ColumnMeta<TData extends RowData, TValue> {
     label?: string;
     placeholder?: string;
