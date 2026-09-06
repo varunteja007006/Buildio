@@ -9,9 +9,12 @@ import {
 
 import {
   createOrGetEmptyThread,
+  getChatModels,
+  getChatPreferences,
   getChatThread,
   getChatThreads,
   renameChatThread,
+  updateChatPreferences,
 } from "./api";
 import type { RenameChatThreadInput } from "./types";
 
@@ -21,6 +24,8 @@ export const chatKeys = {
   threads: () => ["chat", "threads"] as const,
   threadList: () => ["chat", "threads", "list"] as const,
   thread: (id: string) => ["chat", "threads", id] as const,
+  models: () => ["chat", "models"] as const,
+  preferences: () => ["chat", "preferences"] as const,
 };
 
 const PAGE_SIZE = 20;
@@ -68,6 +73,34 @@ export function useRenameChatThread() {
       renameChatThread(id, input),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: chatKeys.threads() });
+    },
+  });
+}
+
+/** Fetch the chat model catalog */
+export function useChatModels() {
+  return useQuery({
+    queryKey: chatKeys.models(),
+    queryFn: getChatModels,
+  });
+}
+
+/** Fetch the user's default chat model */
+export function useChatPreferences() {
+  return useQuery({
+    queryKey: chatKeys.preferences(),
+    queryFn: getChatPreferences,
+  });
+}
+
+/** Update the user's default chat model */
+export function useUpdateChatPreferences() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: updateChatPreferences,
+    onSuccess: (data) => {
+      queryClient.setQueryData(chatKeys.preferences(), data);
     },
   });
 }

@@ -2,11 +2,14 @@ import apiClient from "@/api/client";
 import { endpoints } from "@/api/endpoints";
 
 import type {
+  ChatModelsResponse,
+  ChatPreferencesResponse,
   ChatRequest,
   ChatThreadDetailResponse,
   ChatThreadResponse,
   ChatThreadsResponse,
   RenameChatThreadInput,
+  UpdateChatPreferencesInput,
 } from "./types";
 
 /**
@@ -72,6 +75,33 @@ export async function renameChatThread(
 ): Promise<ChatThreadResponse> {
   const { data } = await apiClient.patch<ChatThreadResponse>(
     endpoints.chat.thread(id),
+    input,
+  );
+  return data;
+}
+
+/** Fetch the models available for chat */
+export async function getChatModels(): Promise<ChatModelsResponse> {
+  const { data } = await apiClient.get<ChatModelsResponse>(
+    endpoints.chat.models,
+  );
+  return data;
+}
+
+/** Fetch the user's default chat model */
+export async function getChatPreferences(): Promise<ChatPreferencesResponse> {
+  const { data } = await apiClient.get<ChatPreferencesResponse>(
+    endpoints.chat.preferences,
+  );
+  return data;
+}
+
+/** Update the user's default chat model */
+export async function updateChatPreferences(
+  input: UpdateChatPreferencesInput,
+): Promise<ChatPreferencesResponse> {
+  const { data } = await apiClient.patch<ChatPreferencesResponse>(
+    endpoints.chat.preferences,
     input,
   );
   return data;

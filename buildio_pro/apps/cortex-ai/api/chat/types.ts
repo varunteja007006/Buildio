@@ -1,12 +1,34 @@
+import type { ChatModelOption } from "@/lib/chat/models";
+
+export type { ChatModelOption };
+
 /** A minimal message shape sent to the chat API */
 export type ChatMessage = {
   role: "user" | "assistant" | "system";
   content: string;
 };
 
+/** Response from GET /api/chat/models */
+export type ChatModelsResponse = {
+  models: ChatModelOption[];
+  defaultModel: string;
+};
+
+/** Response from GET/PATCH /api/chat/preferences */
+export type ChatPreferencesResponse = {
+  defaultModel: string;
+};
+
+/** Input for updating the user's default chat model */
+export type UpdateChatPreferencesInput = {
+  defaultModel: string;
+};
+
 /** Payload sent to the chat API */
 export type ChatRequest = {
   messages: ChatMessage[];
+  model?: string;
+  threadId?: string;
 };
 
 /** A single chat thread (conversation) */

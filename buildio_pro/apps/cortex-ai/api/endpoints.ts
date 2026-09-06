@@ -3,6 +3,8 @@ export const endpoints = {
     stream: "/chat",
     threads: "/chat/threads",
     thread: (id: string) => `/chat/threads/${id}`,
+    models: "/chat/models",
+    preferences: "/chat/preferences",
   },
   workspaces: {
     list: "/workspaces",
