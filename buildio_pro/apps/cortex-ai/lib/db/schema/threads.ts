@@ -17,6 +17,8 @@ export const chatThreads = pgTable(
       .notNull()
       .references(() => user.id, { onDelete: "cascade" }),
     title: text("title"),
+    /** Model pinned to this conversation; falls back to the user default. */
+    model: text("model"),
     createdAt: timestamp("created_at", { withTimezone: true })
       .default(sql`now()`)
       .notNull(),

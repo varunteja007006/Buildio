@@ -6,5 +6,6 @@ export * as topics from "./topics";
 export * as folders from "./folders";
 export * as threads from "./threads";
 export * as messages from "./messages";
+export * as chatPreferences from "./chat-preferences";
 export * as workspaces from "./workspaces";
 export * as workspaceMembers from "./workspace-members";

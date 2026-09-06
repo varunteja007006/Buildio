@@ -7,11 +7,19 @@ import {
   type UIMessage,
   isStepCount,
 } from "ai";
+import { and, eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { createResource } from "@/lib/actions/resources";
 import { findRelevantContent } from "@/lib/ai/embedding";
+import {
+  DEFAULT_CHAT_MODEL_ID,
+  isWellFormedChatModelId,
+} from "@/lib/chat/models";
+import { getOrCreateChatPreferences } from "@/lib/chat/preferences";
+import { db } from "@/lib/db";
+import { chatThreads } from "@/lib/db/schema/threads";
 import { getCurrentUser } from "@/lib/session";
 import { getActiveWorkspace } from "@/lib/workspaces";
 
@@ -35,10 +43,46 @@ export async function POST(req: Request) {
     );
   }
 
-  const { messages }: { messages: UIMessage[] } = await req.json();
+  const { messages, model, threadId }: {
+    messages: UIMessage[];
+    model?: string;
+    threadId?: string;
+  } = await req.json();
+
+  let resolvedModel = DEFAULT_CHAT_MODEL_ID;
+
+  if (model != null) {
+    if (!isWellFormedChatModelId(model)) {
+      return NextResponse.json(
+        { success: false, error: "Invalid model" },
+        { status: 400 },
+      );
+    }
+    resolvedModel = model;
+  } else if (typeof threadId === "string" && threadId) {
+    const [thread] = await db
+      .select({ model: chatThreads.model })
+      .from(chatThreads)
+      .where(
+        and(
+          eq(chatThreads.id, threadId),
+          eq(chatThreads.userId, user.id),
+          eq(chatThreads.workspaceId, workspace.id),
+        ),
+      );
+    if (thread?.model) {
+      resolvedModel = thread.model;
+    } else {
+      const preferences = await getOrCreateChatPreferences(user.id);
+      resolvedModel = preferences.defaultModel;
+    }
+  } else {
+    const preferences = await getOrCreateChatPreferences(user.id);
+    resolvedModel = preferences.defaultModel;
+  }
 
   const result = streamText({
-    model: "openai/gpt-4o",
+    model: resolvedModel,
     system: `You are a helpful assistant. Check your knowledge base before answering any questions.
 Only respond to questions using information from tool calls.
 If no relevant information is found in the tool calls, respond, "Sorry, I don't know."`,
