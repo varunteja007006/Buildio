@@ -1,6 +1,7 @@
-import { and, desc, eq, sql } from "drizzle-orm";
+import { and, desc, eq, isNotNull, isNull, sql } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 
+import { getOrCreateEmptyThread } from "@/lib/chat/threads";
 import { db } from "@/lib/db";
 import { chatMessages } from "@/lib/db/schema/messages";
 import { chatThreads } from "@/lib/db/schema/threads";
@@ -39,12 +40,15 @@ export async function GET(request: NextRequest) {
       MAX_PAGE_SIZE,
     );
 
+    const showDeleted = searchParams.get("deleted") === "true";
+
     const rows = await db
       .select({
         id: chatThreads.id,
         title: chatThreads.title,
         createdAt: chatThreads.createdAt,
         updatedAt: chatThreads.updatedAt,
+        deletedAt: chatThreads.deletedAt,
         messageCount: sql<number>`(
           SELECT count(*) FROM ${chatMessages}
           WHERE ${chatMessages.threadId} = ${chatThreads.id}
@@ -61,6 +65,9 @@ export async function GET(request: NextRequest) {
         and(
           eq(chatThreads.userId, user.id),
           eq(chatThreads.workspaceId, workspace.id),
+          showDeleted
+            ? isNotNull(chatThreads.deletedAt)
+            : isNull(chatThreads.deletedAt),
         ),
       )
       .orderBy(desc(chatThreads.updatedAt))
@@ -101,38 +108,11 @@ export async function POST() {
       );
     }
 
-    // Reuse an existing thread that has no messages yet, if one exists.
-    const [existing] = await db
-      .select()
-      .from(chatThreads)
-      .where(
-        and(
-          eq(chatThreads.userId, user.id),
-          eq(chatThreads.workspaceId, workspace.id),
-          sql`NOT EXISTS (
-            SELECT 1 FROM ${chatMessages}
-            WHERE ${chatMessages.threadId} = ${chatThreads.id}
-          )`,
-        ),
-      )
-      .orderBy(desc(chatThreads.createdAt))
-      .limit(1);
+    const thread = await getOrCreateEmptyThread(user.id, workspace.id);
 
-    if (existing) {
-      return NextResponse.json({
-        thread: { ...existing, messageCount: 0, lastMessage: null },
-      });
-    }
-
-    const [thread] = await db
-      .insert(chatThreads)
-      .values({ userId: user.id, workspaceId: workspace.id })
-      .returning();
-
-    return NextResponse.json(
-      { thread: { ...thread, messageCount: 0, lastMessage: null } },
-      { status: 201 },
-    );
+    return NextResponse.json({
+      thread: { ...thread, messageCount: 0, lastMessage: null },
+    });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown error";
     return NextResponse.json(

@@ -14,6 +14,10 @@ declare namespace NodeJS {
     OPENAI_API_KEY?: string;
     VERCEL_OIDC_TOKEN?: string;
 
+    // Chat guardrail (defaults to enabled)
+    CHAT_GUARDRAIL_ENABLED?: string;
+    CHAT_GUARDRAIL_MODEL?: string;
+
     // Better Auth
     BETTER_AUTH_SECRET: string;
     BETTER_AUTH_URL: string;

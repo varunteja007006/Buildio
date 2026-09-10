@@ -19,6 +19,7 @@ export const chatThreads = pgTable(
     title: text("title"),
     /** Model pinned to this conversation; falls back to the user default. */
     model: text("model"),
+    deletedAt: timestamp("deleted_at", { withTimezone: true }),
     createdAt: timestamp("created_at", { withTimezone: true })
       .default(sql`now()`)
       .notNull(),

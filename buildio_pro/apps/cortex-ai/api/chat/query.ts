@@ -9,11 +9,13 @@ import {
 
 import {
   createOrGetEmptyThread,
+  deleteChatThread,
   getChatModels,
   getChatPreferences,
   getChatThread,
   getChatThreads,
   renameChatThread,
+  restoreChatThread,
   updateChatPreferences,
 } from "./api";
 import type { RenameChatThreadInput } from "./types";
@@ -23,6 +25,7 @@ export const chatKeys = {
   all: ["chat"] as const,
   threads: () => ["chat", "threads"] as const,
   threadList: () => ["chat", "threads", "list"] as const,
+  deletedThreadList: () => ["chat", "threads", "list", "deleted"] as const,
   thread: (id: string) => ["chat", "threads", id] as const,
   models: () => ["chat", "models"] as const,
   preferences: () => ["chat", "preferences"] as const,
@@ -31,10 +34,12 @@ export const chatKeys = {
 const PAGE_SIZE = 20;
 
 /** Fetch chat threads with infinite pagination (20 per page) */
-export function useChatThreads(pageSize = PAGE_SIZE) {
+export function useChatThreads(pageSize = PAGE_SIZE, deleted = false) {
   return useInfiniteQuery({
-    queryKey: chatKeys.threadList(),
-    queryFn: ({ pageParam }) => getChatThreads(pageParam, pageSize),
+    queryKey: deleted
+      ? chatKeys.deletedThreadList()
+      : chatKeys.threadList(),
+    queryFn: ({ pageParam }) => getChatThreads(pageParam, pageSize, deleted),
     initialPageParam: 0,
     getNextPageParam: (lastPage) => lastPage.nextOffset,
   });
@@ -61,6 +66,8 @@ export function useChatThread(id: string) {
     queryKey: chatKeys.thread(id),
     queryFn: () => getChatThread(id),
     enabled: !!id,
+    // A missing/deleted thread 404s; don't retry, surface it immediately.
+    retry: false,
   });
 }
 
@@ -71,6 +78,31 @@ export function useRenameChatThread() {
   return useMutation({
     mutationFn: ({ id, input }: { id: string; input: RenameChatThreadInput }) =>
       renameChatThread(id, input),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: chatKeys.threads() });
+    },
+  });
+}
+
+/** Soft-delete a thread */
+export function useDeleteChatThread() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: deleteChatThread,
+    onSuccess: () => {
+      // Covers both the thread list and the thread detail query.
+      queryClient.invalidateQueries({ queryKey: chatKeys.all });
+    },
+  });
+}
+
+/** Restore a soft-deleted thread */
+export function useRestoreChatThread() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: restoreChatThread,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: chatKeys.threads() });
     },

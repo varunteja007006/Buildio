@@ -15,6 +15,27 @@
       "when": 1788701981777,
       "tag": "0001_supreme_ikaris",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1789060438795,
+      "tag": "0002_next_thena",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1789062309513,
+      "tag": "0003_small_the_order",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1789062803592,
+      "tag": "0004_bored_martin_li",
+      "breakpoints": true
     }
   ]
 }

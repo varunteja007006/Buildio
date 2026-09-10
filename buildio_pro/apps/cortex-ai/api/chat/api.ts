@@ -8,6 +8,7 @@ import type {
   ChatThreadDetailResponse,
   ChatThreadResponse,
   ChatThreadsResponse,
+  DeleteResponse,
   RenameChatThreadInput,
   UpdateChatPreferencesInput,
 } from "./types";
@@ -34,14 +35,18 @@ export async function sendChatMessage(
   });
 }
 
-/** Fetch a page of chat threads (ordered by most recently updated) */
+/**
+ * Fetch a page of chat threads (ordered by most recently updated).
+ * Pass `deleted` to list soft-deleted threads instead.
+ */
 export async function getChatThreads(
   offset = 0,
   limit = 20,
+  deleted = false,
 ): Promise<ChatThreadsResponse> {
   const { data } = await apiClient.get<ChatThreadsResponse>(
     endpoints.chat.threads,
-    { params: { offset, limit } },
+    { params: { offset, limit, deleted: deleted ? "true" : undefined } },
   );
   return data;
 }
@@ -76,6 +81,24 @@ export async function renameChatThread(
   const { data } = await apiClient.patch<ChatThreadResponse>(
     endpoints.chat.thread(id),
     input,
+  );
+  return data;
+}
+
+/** Soft-delete a thread (recoverable) */
+export async function deleteChatThread(id: string): Promise<DeleteResponse> {
+  const { data } = await apiClient.delete<DeleteResponse>(
+    endpoints.chat.thread(id),
+  );
+  return data;
+}
+
+/** Restore a soft-deleted thread */
+export async function restoreChatThread(
+  id: string,
+): Promise<ChatThreadResponse> {
+  const { data } = await apiClient.post<ChatThreadResponse>(
+    endpoints.chat.threadRestore(id),
   );
   return data;
 }

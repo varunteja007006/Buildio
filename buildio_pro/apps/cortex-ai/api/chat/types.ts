@@ -37,6 +37,7 @@ export type ChatThread = {
   title: string | null;
   createdAt: string;
   updatedAt: string;
+  deletedAt?: string | null;
   messageCount?: number;
   lastMessage?: string | null;
 };
@@ -71,6 +72,12 @@ export type ChatThreadDetailResponse = {
 /** Input for renaming a thread */
 export type RenameChatThreadInput = {
   title: string;
+};
+
+/** Response from DELETE routes that only confirm removal */
+export type DeleteResponse = {
+  success: true;
+  id: string;
 };
 
 /** Error response shape used across chat routes */

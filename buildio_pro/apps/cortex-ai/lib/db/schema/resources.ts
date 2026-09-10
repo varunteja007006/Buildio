@@ -13,6 +13,7 @@ export const resources = pgTable(
       .notNull()
       .references(() => workspaces.id, { onDelete: "cascade" }),
     content: text("content").notNull(),
+    deletedAt: timestamp("deleted_at", { withTimezone: true }),
     createdAt: timestamp("created_at", { withTimezone: true })
       .default(sql`now()`)
       .notNull(),
