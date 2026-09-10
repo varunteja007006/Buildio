@@ -1,9 +1,10 @@
 import { embed, embedMany } from "ai";
-import { and, cosineDistance, desc, eq, gt, sql } from "drizzle-orm";
+import { and, cosineDistance, desc, eq, gt, isNull, sql } from "drizzle-orm";
 
 import { embeddingModel } from "@/lib/ai";
 import { db } from "@/lib/db";
 import { embeddings } from "@/lib/db/schema/embeddings";
+import { resources } from "@/lib/db/schema/resources";
 
 /**
  * Splits text into overlapping chunks of roughly `chunkSize` characters.
@@ -93,7 +94,14 @@ export async function findRelevantContent(
   const similarGuides = await db
     .select({ name: embeddings.content, similarity })
     .from(embeddings)
-    .where(and(eq(embeddings.workspaceId, workspaceId), gt(similarity, 0.5)))
+    .innerJoin(resources, eq(embeddings.resourceId, resources.id))
+    .where(
+      and(
+        eq(embeddings.workspaceId, workspaceId),
+        isNull(resources.deletedAt),
+        gt(similarity, 0.5),
+      ),
+    )
     .orderBy((t) => desc(t.similarity))
     .limit(4);
   return similarGuides;
