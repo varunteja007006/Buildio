@@ -8,25 +8,25 @@ import {
   SidebarRail,
 } from "@workspace/ui/components/sidebar";
 import { Skeleton } from "@workspace/ui/components/skeleton";
-import { MessageSquareIcon, FileTextIcon, BotIcon } from "lucide-react";
+import { FileTextIcon, BotIcon } from "lucide-react";
 import * as React from "react";
 
 import { useSession } from "@/api/auth/query";
+import { NavChats } from "@/components/nav-chats";
 import { NavMain } from "@/components/nav-main";
 import { NavUser } from "@/components/nav-user";
 import { WorkspaceSwitcher } from "@/components/workspace-switcher";
 
 const navMain = [
-  {
-    title: "Chat",
-    url: "/dashboard/chat",
-    icon: <MessageSquareIcon />,
-    isActive: true,
-    items: [
-      { title: "New Chat", url: "/dashboard/chat" },
-      { title: "History", url: "/dashboard/chat" },
-    ],
-  },
+  // {
+  //   title: "Chat",
+  //   url: "/dashboard/chat",
+  //   icon: <MessageSquareIcon />,
+  //   isActive: true,
+  //   items: [
+  //     { title: "New Chat", url: "/dashboard/chat" },
+  //   ],
+  // },
   {
     title: "Documents",
     url: "/dashboard/documents",
@@ -57,6 +57,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={navMain} />
+        <NavChats />
       </SidebarContent>
       <SidebarFooter>
         {isLoading ? (
