@@ -1,0 +1,96 @@
+:root {
+  --hljs-keyword: oklch(0.5 0.2 300);
+  --hljs-string: oklch(0.48 0.14 150);
+  --hljs-number: oklch(0.55 0.16 55);
+  --hljs-type: oklch(0.5 0.1 200);
+  --hljs-function: oklch(0.5 0.16 255);
+  --hljs-attr: oklch(0.55 0.16 35);
+  --hljs-meta: oklch(0.52 0.14 330);
+}
+
+.dark {
+  --hljs-keyword: oklch(0.78 0.14 300);
+  --hljs-string: oklch(0.8 0.13 150);
+  --hljs-number: oklch(0.82 0.13 70);
+  --hljs-type: oklch(0.78 0.1 200);
+  --hljs-function: oklch(0.78 0.12 255);
+  --hljs-attr: oklch(0.8 0.13 45);
+  --hljs-meta: oklch(0.78 0.12 330);
+}
+
+.hljs {
+  color: var(--foreground);
+  background: transparent;
+}
+
+.hljs-comment,
+.hljs-quote {
+  color: var(--muted-foreground);
+  font-style: italic;
+}
+
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-literal,
+.hljs-name,
+.hljs-doctag,
+.hljs-strong {
+  color: var(--hljs-keyword);
+  font-weight: 600;
+}
+
+.hljs-string,
+.hljs-regexp,
+.hljs-addition,
+.hljs-attribute,
+.hljs-meta .hljs-string {
+  color: var(--hljs-string);
+}
+
+.hljs-number,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-variable,
+.hljs-template-variable,
+.hljs-selector-attr,
+.hljs-selector-pseudo,
+.hljs-link {
+  color: var(--hljs-number);
+}
+
+.hljs-built_in,
+.hljs-type,
+.hljs-class .hljs-title,
+.hljs-title.class_ {
+  color: var(--hljs-type);
+}
+
+.hljs-title,
+.hljs-title.function_,
+.hljs-section,
+.hljs-selector-id {
+  color: var(--hljs-function);
+}
+
+.hljs-attr,
+.hljs-property,
+.hljs-params {
+  color: var(--hljs-attr);
+}
+
+.hljs-meta,
+.hljs-tag {
+  color: var(--hljs-meta);
+}
+
+.hljs-emphasis {
+  font-style: italic;
+}
+
+.hljs-deletion {
+  color: var(--destructive);
+}
+
+.hljs-subst {
+  color: var(--foreground);
+}
