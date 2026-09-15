@@ -31,6 +31,23 @@ declare namespace NodeJS {
     // UploadThing
     UPLOADTHING_TOKEN: string;
 
+    // MinIO (S3-compatible object storage, connector file uploads)
+    S3_ENDPOINT?: string;
+    S3_ACCESS_KEY?: string;
+    S3_SECRET_KEY?: string;
+    S3_BUCKET?: string;
+    S3_USE_SSL?: string;
+
+    // Connector dev servers (docker-compose defaults apply)
+    CONNECTOR_POSTGRES_USER?: string;
+    CONNECTOR_POSTGRES_PASSWORD?: string;
+    CONNECTOR_POSTGRES_DB?: string;
+    MONGO_USER?: string;
+    MONGO_PASSWORD?: string;
+    MYSQL_USER?: string;
+    MYSQL_PASSWORD?: string;
+    MYSQL_ROOT_PASSWORD?: string;
+
     // Next.js
     NODE_ENV: "development" | "production" | "test";
   }
