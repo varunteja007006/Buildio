@@ -21,6 +21,12 @@ export const endpoints = {
   auditLogs: {
     list: "/audit-logs",
   },
+  extractionTemplates: {
+    list: "/extraction-templates",
+    detail: (id: string) => `/extraction-templates/${id}`,
+    restore: (id: string) => `/extraction-templates/${id}/restore`,
+    permanent: (id: string) => `/extraction-templates/${id}/permanent`,
+  },
   dashboard: {
     stats: "/dashboard",
   },

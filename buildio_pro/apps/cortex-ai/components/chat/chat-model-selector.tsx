@@ -13,14 +13,18 @@ import {
 } from "@workspace/ui/components/combobox";
 import { Bot, Loader2 } from "lucide-react";
 import { useMemo } from "react";
+import type { RefObject } from "react";
 
 import type { ChatModelOption } from "@/lib/chat/models";
+import { cn } from "@/lib/utils";
 
 type ChatModelSelectorProps = {
   models: ChatModelOption[];
   value?: string;
   loading?: boolean;
   saving?: boolean;
+  className?: string;
+  container?: RefObject<HTMLElement | null>;
   onSelect?: (modelId: string) => void;
 };
 
@@ -30,6 +34,8 @@ export function ChatModelSelector({
   value,
   loading = false,
   saving = false,
+  className,
+  container,
   onSelect,
 }: ChatModelSelectorProps) {
   const options = useMemo<ComboboxOption[]>(
@@ -63,7 +69,10 @@ export function ChatModelSelector({
         type="button"
         variant="outline"
         size="sm"
-        className="h-8 w-64 justify-between gap-1.5 text-muted-foreground"
+        className={cn(
+          "h-8 w-64 justify-start gap-1.5 text-muted-foreground",
+          className,
+        )}
         disabled
       >
         <Loader2 className="size-4 animate-spin" />
@@ -89,7 +98,10 @@ export function ChatModelSelector({
             type="button"
             variant="outline"
             size="sm"
-            className="h-8 w-64 justify-between gap-1.5 text-muted-foreground"
+            className={cn(
+              "h-8 w-64 justify-start gap-1.5 text-muted-foreground",
+              className,
+            )}
           />
         }
       >
@@ -98,11 +110,11 @@ export function ChatModelSelector({
         ) : (
           <Bot className="size-4 shrink-0" />
         )}
-        <span className="truncate font-medium text-foreground">
+        <span className="flex-1 truncate text-left font-medium text-foreground">
           {displayLabel}
         </span>
       </ComboboxTrigger>
-      <ComboboxContent>
+      <ComboboxContent container={container}>
         <ComboboxInput
           placeholder="Search models…"
           showTrigger={false}

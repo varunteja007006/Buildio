@@ -10,3 +10,4 @@ export * as chatPreferences from "./chat-preferences";
 export * as chatAuditLogs from "./chat-audit-logs";
 export * as workspaces from "./workspaces";
 export * as workspaceMembers from "./workspace-members";
+export * as extractionTemplates from "./extraction-templates";

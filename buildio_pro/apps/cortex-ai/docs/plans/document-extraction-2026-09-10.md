@@ -1,7 +1,7 @@
 # Document Extraction + Ingestion — cortex-ai
 
 **Date:** 2026-09-10
-**Status:** 0% — not started
+**Status:** 14% — extraction template CRUD complete; extraction pipeline not started
 **Target route:** `/dashboard/documents`
 
 ## Goal
@@ -32,7 +32,7 @@ Extraction is a new step. Ingestion already exists on the server (`POST /api/ing
 
 ## A. Data model (Drizzle schema + migration)
 
-- [ ] A1 `extraction_templates` — workspaceId, name, description, instructions, outputSchema (jsonb, nullable), defaultModel (nullable), createdBy, `deletedAt`, timestamps. Unique partial index on (workspaceId, name) `WHERE deleted_at IS NULL` (mirrors topics slug index, `topics.ts:37`)
+- [x] A1 `extraction_templates` — workspaceId, name, description, instructions, outputSchema (jsonb, nullable), defaultModel (nullable), createdBy, `deletedAt`, timestamps. Unique partial index on (workspaceId, name) `WHERE deleted_at IS NULL` (mirrors topics slug index, `topics.ts:37`)
 - [ ] A2 `extractions` — documentId, templateId, templateSnapshot (jsonb), model, provider, status, rawOutput, currentContent, structuredOutput (jsonb), error, usage (jsonb), autoIngest, resourceId, `deletedAt`, timestamps
 - [ ] A3 `extraction_versions` — extractionId, version (int), source (`ai` | `user`), content, structuredOutput (jsonb), createdBy, createdAt (append-only, no `deletedAt`)
 - [ ] A4 `document_audit_logs` — userId, workspaceId, action, documentIds (jsonb), extractionId, templateSnapshot (jsonb), instructionsSnapshot, rawAiOutput, finalOutput, model, provider, usage (jsonb), status, error, createdAt (immutable, no `deletedAt`)
@@ -45,15 +45,15 @@ Extraction is a new step. Ingestion already exists on the server (`POST /api/ing
 
 ## B. Extraction templates
 
-- [ ] B1 `GET`/`POST /api/extraction-templates` (GET excludes soft-deleted)
-- [ ] B2 `PATCH`/`DELETE /api/extraction-templates/[id]` — DELETE sets `deletedAt = now()`, guarded by `isNull(deletedAt)`
-- [ ] B3 `POST /api/extraction-templates/[id]/restore` (mirror folders)
-- [ ] B4 `DELETE /api/extraction-templates/[id]/permanent` (hard delete; workspace `owner` role only, see `workspace-members.ts:27`)
-- [ ] B5 `api/extraction-templates/{api,query,types}.ts`
-- [ ] B6 Templates page `/dashboard/documents/extraction-templates`
-- [ ] B7 Create/edit dialog (name, instructions, output format, default model)
-- [ ] B8 Template list + soft-delete confirm + "Show deleted" / restore affordance
-- [ ] B9 Sidebar link under Documents
+- [x] B1 `GET`/`POST /api/extraction-templates` (GET excludes soft-deleted)
+- [x] B2 `PATCH`/`DELETE /api/extraction-templates/[id]` — DELETE sets `deletedAt = now()`, guarded by `isNull(deletedAt)`
+- [x] B3 `POST /api/extraction-templates/[id]/restore` (mirror folders)
+- [x] B4 `DELETE /api/extraction-templates/[id]/permanent` (hard delete; workspace `owner` role only, see `workspace-members.ts:27`)
+- [x] B5 `api/extraction-templates/{api,query,types}.ts`
+- [x] B6 Templates page `/dashboard/documents/extraction-templates`
+- [x] B7 Create/edit dialog (name, instructions, output format, default model)
+- [ ] B8 Template list + soft-delete confirm + "Show deleted" / restore affordance (deleted view and restore exist; confirmation remains)
+- [x] B9 Sidebar link under Documents
 - [ ] B10 Seed 2–3 starter templates (invoice, receipt, generic summary)
 
 ## C. Run extraction
