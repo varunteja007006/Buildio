@@ -18,6 +18,12 @@ export const auth = betterAuth({
   }),
   baseURL: process.env.BETTER_AUTH_URL!,
   secret: process.env.BETTER_AUTH_SECRET!,
+  trustedOrigins: [
+    process.env.BETTER_AUTH_URL,
+    ...(process.env.TRUSTED_ORIGINS?.split(",") ?? []),
+  ]
+    .map((origin) => origin?.trim())
+    .filter((origin): origin is string => Boolean(origin)),
   plugins: [nextCookies()],
   emailAndPassword: {
     enabled: true,

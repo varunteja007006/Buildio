@@ -22,6 +22,7 @@ declare namespace NodeJS {
     BETTER_AUTH_SECRET: string;
     BETTER_AUTH_URL: string;
     NEXT_PUBLIC_APP_URL: string;
+    TRUSTED_ORIGINS?: string;
 
     // Google OAuth
     GOOGLE_CLIENT_ID: string;
