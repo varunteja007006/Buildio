@@ -22,13 +22,7 @@ import {
 import { DefaultChatTransport, type UIMessage } from "ai";
 import { MessageSquareIcon } from "lucide-react";
 import Link from "next/link";
-import {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import {
   chatKeys,
@@ -37,7 +31,7 @@ import {
   useChatThread,
   useUpdateChatPreferences,
 } from "@/api/chat/query";
-import type { ChatMessageRecord } from "@/api/chat/types";
+import type { ChatMessageMetadata, ChatMessageRecord } from "@/api/chat/types";
 import { endpoints } from "@/api/endpoints";
 import { AppBreadcrumb } from "@/components/app-breadcrumb";
 import { ChatComposer } from "@/components/chat/chat-composer";
@@ -45,10 +39,13 @@ import { ChatMessage } from "@/components/chat/chat-message";
 import { ChatModelSelector } from "@/components/chat/chat-model-selector";
 
 /** Convert persisted message rows into AI SDK UI messages. */
-function toUIMessages(records: ChatMessageRecord[]): UIMessage[] {
+function toUIMessages(
+  records: ChatMessageRecord[],
+): UIMessage<ChatMessageMetadata>[] {
   return records.map((record) => ({
     id: record.id,
     role: record.role,
+    metadata: { createdAt: record.createdAt },
     parts: [{ type: "text", text: record.content }],
   }));
 }
@@ -96,11 +93,29 @@ export function ChatThreadPage({ threadId }: { threadId: string }) {
     queryClient.invalidateQueries({ queryKey: chatKeys.threads() });
   }, [queryClient, threadId]);
 
-  const { messages, setMessages, sendMessage, status, stop } = useChat({
+  const { messages, setMessages, sendMessage, status, stop } = useChat<
+    UIMessage<ChatMessageMetadata>
+  >({
     id: threadId,
     transport,
     onFinish,
   });
+
+  // Live messages have no server timestamp yet, so stamp them when first seen.
+  const timestampsRef = useRef<Map<string, string>>(new Map());
+  const messagesWithTime = useMemo<UIMessage<ChatMessageMetadata>[]>(
+    () =>
+      messages.map((message) => {
+        if (message.metadata?.createdAt) return message;
+        let createdAt = timestampsRef.current.get(message.id);
+        if (!createdAt) {
+          createdAt = new Date().toISOString();
+          timestampsRef.current.set(message.id, createdAt);
+        }
+        return { ...message, metadata: { ...message.metadata, createdAt } };
+      }),
+    [messages],
+  );
 
   // Seed the chat with persisted history once it loads.
   const hydratedRef = useRef(false);
@@ -214,7 +229,7 @@ export function ChatThreadPage({ threadId }: { threadId: string }) {
                   </div>
                 )}
 
-                {messages.map((m, index) => (
+                {messagesWithTime.map((m, index) => (
                   <ChatMessage
                     key={m.id}
                     message={m}

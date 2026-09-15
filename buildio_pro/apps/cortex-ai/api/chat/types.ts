@@ -52,6 +52,11 @@ export type ChatMessageRecord = {
   updatedAt: string;
 };
 
+/** Client-side metadata carried on UI messages. */
+export type ChatMessageMetadata = {
+  createdAt?: string;
+};
+
 /** Response from GET /api/chat/threads */
 export type ChatThreadsResponse = {
   threads: ChatThread[];
