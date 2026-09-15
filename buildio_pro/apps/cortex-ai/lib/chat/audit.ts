@@ -28,6 +28,10 @@ function guardrailColumns(guardrail?: GuardrailResult) {
   };
 }
 
+function roundMilliseconds(value: number | undefined): number | null {
+  return value == null ? null : Math.round(value);
+}
+
 /** Extract the text of the most recent user message. */
 export function getLastUserQuery(messages: UIMessage[]): string {
   for (let i = messages.length - 1; i >= 0; i--) {
@@ -71,9 +75,9 @@ export async function recordChatAudit(input: ChatAuditInput): Promise<void> {
     cacheWriteTokens: usage?.inputTokenDetails?.cacheWriteTokens ?? null,
     reasoningTokens: usage?.outputTokenDetails?.reasoningTokens ?? null,
     textTokens: usage?.outputTokenDetails?.textTokens ?? null,
-    timeToFirstOutputMs: performance?.timeToFirstOutputMs ?? null,
-    stepTimeMs: performance?.stepTimeMs ?? null,
-    responseTimeMs: performance?.responseTimeMs ?? null,
+    timeToFirstOutputMs: roundMilliseconds(performance?.timeToFirstOutputMs),
+    stepTimeMs: roundMilliseconds(performance?.stepTimeMs),
+    responseTimeMs: roundMilliseconds(performance?.responseTimeMs),
     performance: performance ?? null,
     usage: usage ?? null,
     toolCalls: event.toolCalls ?? null,

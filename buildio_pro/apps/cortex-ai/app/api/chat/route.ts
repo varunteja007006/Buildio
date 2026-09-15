@@ -2,6 +2,7 @@ import {
   convertToModelMessages,
   createUIMessageStream,
   createUIMessageStreamResponse,
+  generateId,
   isStepCount,
   streamText,
   tool,
@@ -201,6 +202,7 @@ If the user provides a random piece of knowledge unprompted, use this tool witho
     stream: toUIMessageStream({
       stream: result.stream,
       originalMessages: messages,
+      generateMessageId: generateId,
       onEnd: async ({ responseMessage }) => {
         if (!thread) return;
         const content = getMessageText(responseMessage);
