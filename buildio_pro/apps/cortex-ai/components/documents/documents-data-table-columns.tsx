@@ -7,6 +7,7 @@ import { FileText } from "lucide-react";
 import { formatDate, truncateHash } from "@/api/documents/helpers";
 import type { Document } from "@/api/documents/types";
 import { DataTableColumnHeader } from "@/components/data-table/data-table-column-header";
+import { DocumentRowActions } from "@/components/documents/document-delete-button";
 
 export const documentsColumns: ColumnDef<Document>[] = [
   {
@@ -75,6 +76,16 @@ export const documentsColumns: ColumnDef<Document>[] = [
       <span className="text-muted-foreground">
         {formatDate(row.original.createdAt)}
       </span>
+    ),
+  },
+  {
+    id: "actions",
+    header: "",
+    enableSorting: false,
+    cell: ({ row }) => (
+      <div className="flex justify-end">
+        <DocumentRowActions document={row.original} />
+      </div>
     ),
   },
 ];

@@ -6,6 +6,7 @@ import { FileText, Loader2 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 import type { Document } from "@/api/documents/types";
+import { DocumentDeleteButton } from "@/components/documents/document-delete-button";
 
 const FOLDER_PAGE_SIZE = 25;
 
@@ -113,19 +114,22 @@ function FileRow({ doc, depth }: { doc: Document; depth: number }) {
   return (
     <li>
       <div
-        className="flex items-center gap-2 rounded-md px-2 py-1.5 text-sm hover:bg-muted"
+        className="group/file-row flex items-center gap-2 rounded-md px-2 py-1.5 text-sm hover:bg-muted"
         style={{ paddingLeft: `${depth * 1.25 + 0.5}rem` }}
       >
         <span className="w-4" />
         <FileText className="size-4 shrink-0 text-muted-foreground" />
         <span className="truncate">{doc.filename}</span>
-        <span className="ml-auto shrink-0">
+        <span className="ml-auto flex shrink-0 items-center gap-1">
           <Badge
             variant={doc.ingested ? "default" : "secondary"}
             className="text-xs"
           >
             {doc.ingested ? "Ingested" : "Pending"}
           </Badge>
+          <span className="opacity-0 transition-opacity group-hover/file-row:opacity-100 focus-within:opacity-100">
+            <DocumentDeleteButton documentId={doc.id} filename={doc.filename} />
+          </span>
         </span>
       </div>
     </li>

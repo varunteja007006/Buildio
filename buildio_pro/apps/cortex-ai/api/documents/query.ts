@@ -1,8 +1,13 @@
 "use client";
 
-import { useQuery, useInfiniteQuery } from "@tanstack/react-query";
+import {
+  useMutation,
+  useQuery,
+  useQueryClient,
+  useInfiniteQuery,
+} from "@tanstack/react-query";
 
-import { getDocuments } from "./api";
+import { deleteDocument, getDocuments, restoreDocument } from "./api";
 import type { DocumentsResponse, DocumentsQuery } from "./types";
 
 /** Query key factory for documents domain */
@@ -33,5 +38,27 @@ export function useInfiniteDocuments(
     initialPageParam: 1,
     getNextPageParam: (lastPage) =>
       lastPage.page < lastPage.pageCount ? lastPage.page + 1 : undefined,
+  });
+}
+
+/** Soft-delete a document (moves it to trash) and refresh document lists */
+export function useDeleteDocument() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => deleteDocument(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: documentKeys.all });
+    },
+  });
+}
+
+/** Restore a soft-deleted document and refresh document lists */
+export function useRestoreDocument() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => restoreDocument(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: documentKeys.all });
+    },
   });
 }

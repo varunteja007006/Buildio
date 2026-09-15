@@ -43,6 +43,13 @@
       "when": 1789457657180,
       "tag": "0005_tidy_reavers",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1789459380759,
+      "tag": "0006_equal_spitfire",
+      "breakpoints": true
     }
   ]
 }

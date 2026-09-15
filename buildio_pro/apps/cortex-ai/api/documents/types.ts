@@ -7,9 +7,16 @@ export type Document = {
   ingested: boolean;
   topicId: string | null;
   folderId: string | null;
+  deletedAt: string | null;
   createdAt: string;
   updatedAt: string;
 };
+
+/** Response from POST /api/documents/[id]/restore */
+export type DocumentResponse = { document: Document };
+
+/** Response from DELETE /api/documents/[id] */
+export type DeleteResponse = { success: boolean; id: string };
 
 /** Query params for paginated GET /api/documents */
 export type DocumentsQuery = {
@@ -24,7 +31,7 @@ export type DocumentsQuery = {
     | "updatedAt";
   sortDir?: "asc" | "desc";
   search?: string;
-  status?: "ingested" | "pending";
+  status?: "ingested" | "pending" | "deleted";
   folderId?: string | null;
   topicId?: string | null;
 };
@@ -36,4 +43,6 @@ export type DocumentsResponse = {
   page: number;
   pageSize: number;
   pageCount: number;
+  /** True when the response is the trash view (status=deleted) */
+  trashed: boolean;
 };

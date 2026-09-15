@@ -7,6 +7,7 @@ import {
   type SortingState,
 } from "@tanstack/react-table";
 import { Button } from "@workspace/ui/components/button";
+import { Switch } from "@workspace/ui/components/switch";
 import {
   Table,
   TableBody,
@@ -15,8 +16,8 @@ import {
   TableHeader,
   TableRow,
 } from "@workspace/ui/components/table";
-import { Loader2 } from "lucide-react";
-import { parseAsString, useQueryState } from "nuqs";
+import { Loader2, Trash2 } from "lucide-react";
+import { parseAsBoolean, parseAsString, useQueryState } from "nuqs";
 import * as React from "react";
 
 import { useInfiniteDocuments } from "@/api/documents/query";
@@ -38,6 +39,10 @@ export function DocumentsDataTable() {
     "sortDir",
     parseAsString.withDefault(DEFAULT_SORT_DIR),
   );
+  const [showDeleted, setShowDeleted] = useQueryState(
+    "deleted",
+    parseAsBoolean.withDefault(false),
+  );
 
   const {
     data,
@@ -51,6 +56,7 @@ export function DocumentsDataTable() {
     sort: sort as DocumentSort,
     sortDir: sortDir as "asc" | "desc",
     search: search || undefined,
+    status: showDeleted ? "deleted" : undefined,
   });
 
   const flatData = React.useMemo(
@@ -114,7 +120,19 @@ export function DocumentsDataTable() {
 
   return (
     <div className={cn("flex w-full flex-col gap-2.5 overflow-hidden")}>
-      <DataTableSearch placeholder="Search documents…" />
+      <div className="flex flex-wrap items-center gap-3">
+        <DataTableSearch placeholder="Search documents…" />
+        <label className="ml-auto flex cursor-pointer items-center gap-2 text-sm text-muted-foreground">
+          <Trash2 className="size-4" />
+          Deleted only
+          <Switch
+            checked={showDeleted}
+            onCheckedChange={(checked) => {
+              void setShowDeleted(checked || null);
+            }}
+          />
+        </label>
+      </div>
 
       <div className="overflow-hidden rounded-lg border">
         <Table>
@@ -163,7 +181,9 @@ export function DocumentsDataTable() {
                   colSpan={visibleColumns}
                   className="h-24 text-center text-muted-foreground"
                 >
-                  No documents found.
+                  {showDeleted
+                    ? "No deleted documents."
+                    : "No documents found."}
                 </TableCell>
               </TableRow>
             )}

@@ -18,6 +18,7 @@ export const documents = pgTable(
     filepath: text("filepath").notNull(),
     fileHash: text("file_hash").notNull(),
     ingested: boolean("ingested").default(false).notNull(),
+    deletedAt: timestamp("deleted_at", { withTimezone: true }),
     topicId: text("topic_id").references(() => topics.id, {
       onDelete: "set null",
     }),

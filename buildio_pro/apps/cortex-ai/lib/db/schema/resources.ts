@@ -1,6 +1,7 @@
 import { sql } from "drizzle-orm";
 import { text, timestamp, pgTable, index } from "drizzle-orm/pg-core";
 
+import { documents } from "./documents";
 import { workspaces } from "./workspaces";
 
 export const resources = pgTable(
@@ -13,6 +14,9 @@ export const resources = pgTable(
       .notNull()
       .references(() => workspaces.id, { onDelete: "cascade" }),
     content: text("content").notNull(),
+    documentId: text("document_id").references(() => documents.id, {
+      onDelete: "set null",
+    }),
     deletedAt: timestamp("deleted_at", { withTimezone: true }),
     createdAt: timestamp("created_at", { withTimezone: true })
       .default(sql`now()`)
@@ -24,5 +28,6 @@ export const resources = pgTable(
   },
   (table) => ({
     workspaceIdx: index("resources_workspace_idx").on(table.workspaceId),
+    documentIdx: index("resources_document_idx").on(table.documentId),
   }),
 );

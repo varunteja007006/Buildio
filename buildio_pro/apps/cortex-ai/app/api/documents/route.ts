@@ -1,4 +1,4 @@
-import { and, asc, count, desc, eq, ilike, or } from "drizzle-orm";
+import { and, asc, count, desc, eq, ilike, isNotNull, isNull, or } from "drizzle-orm";
 import type { SQL } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -39,6 +39,7 @@ export async function GET(request: NextRequest) {
         page: 1,
         pageSize: 10,
         pageCount: 1,
+        trashed: false,
       });
     }
 
@@ -67,7 +68,12 @@ export async function GET(request: NextRequest) {
       sortDir === "asc" ? asc(sortableColumn) : desc(sortableColumn);
 
     // Filters
-    const conditions: SQL[] = [eq(documents.workspaceId, workspace.id)];
+    const status = searchParams.get("status");
+    const trashed = status === "deleted";
+    const conditions: SQL[] = [
+      eq(documents.workspaceId, workspace.id),
+      trashed ? isNotNull(documents.deletedAt) : isNull(documents.deletedAt),
+    ];
 
     const search = searchParams.get("search")?.trim();
     if (search) {
@@ -80,11 +86,12 @@ export async function GET(request: NextRequest) {
       if (searchCondition) conditions.push(searchCondition);
     }
 
-    const status = searchParams.get("status");
-    if (status === "ingested") {
-      conditions.push(eq(documents.ingested, true));
-    } else if (status === "pending") {
-      conditions.push(eq(documents.ingested, false));
+    if (!trashed) {
+      if (status === "ingested") {
+        conditions.push(eq(documents.ingested, true));
+      } else if (status === "pending") {
+        conditions.push(eq(documents.ingested, false));
+      }
     }
 
     const folderId = searchParams.get("folderId");
@@ -121,6 +128,7 @@ export async function GET(request: NextRequest) {
       page,
       pageSize,
       pageCount,
+      trashed,
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown error";

@@ -27,6 +27,14 @@ export const endpoints = {
     restore: (id: string) => `/extraction-templates/${id}/restore`,
     permanent: (id: string) => `/extraction-templates/${id}/permanent`,
   },
+  extractions: {
+    list: "/extraction",
+  },
+  documents: {
+    list: "/documents",
+    detail: (id: string) => `/documents/${id}`,
+    restore: (id: string) => `/documents/${id}/restore`,
+  },
   dashboard: {
     stats: "/dashboard",
   },

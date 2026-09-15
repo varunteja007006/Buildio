@@ -158,9 +158,11 @@ export function DocumentsView() {
         >
           <ToggleGroupItem value="tree" aria-label="Tree view">
             <ListTree className="size-4" />
+            Tree
           </ToggleGroupItem>
           <ToggleGroupItem value="table" aria-label="Table view">
             <Table2 className="size-4" />
+            Table
           </ToggleGroupItem>
         </ToggleGroup>
 

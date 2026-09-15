@@ -11,3 +11,6 @@ export * as chatAuditLogs from "./chat-audit-logs";
 export * as workspaces from "./workspaces";
 export * as workspaceMembers from "./workspace-members";
 export * as extractionTemplates from "./extraction-templates";
+export * as extractions from "./extractions";
+export * as extractionVersions from "./extraction-versions";
+export * as documentAuditLogs from "./document-audit-logs";

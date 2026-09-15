@@ -3,6 +3,7 @@ import { and, cosineDistance, desc, eq, gt, isNull, sql } from "drizzle-orm";
 
 import { embeddingModel } from "@/lib/ai";
 import { db } from "@/lib/db";
+import { documents } from "@/lib/db/schema/documents";
 import { embeddings } from "@/lib/db/schema/embeddings";
 import { resources } from "@/lib/db/schema/resources";
 
@@ -95,10 +96,13 @@ export async function findRelevantContent(
     .select({ name: embeddings.content, similarity })
     .from(embeddings)
     .innerJoin(resources, eq(embeddings.resourceId, resources.id))
+    .leftJoin(documents, eq(resources.documentId, documents.id))
     .where(
       and(
         eq(embeddings.workspaceId, workspaceId),
+        isNull(embeddings.deletedAt),
         isNull(resources.deletedAt),
+        isNull(documents.deletedAt),
         gt(similarity, 0.5),
       ),
     )

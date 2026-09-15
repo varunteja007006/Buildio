@@ -1,4 +1,4 @@
-import { text, pgTable, index } from "drizzle-orm/pg-core";
+import { text, pgTable, index, timestamp } from "drizzle-orm/pg-core";
 import { vector } from "drizzle-orm/pg-core";
 
 import { resources } from "./resources";
@@ -18,6 +18,7 @@ export const embeddings = pgTable(
       .references(() => resources.id, { onDelete: "cascade" }),
     content: text("content").notNull(),
     embedding: vector("embedding", { dimensions: 1536 }).notNull(),
+    deletedAt: timestamp("deleted_at", { withTimezone: true }),
   },
   (table) => ({
     workspaceIdx: index("embeddings_workspace_idx").on(table.workspaceId),

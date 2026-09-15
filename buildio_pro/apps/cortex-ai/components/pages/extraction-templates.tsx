@@ -19,6 +19,7 @@ import type {
 } from "@/api/extraction-templates/types";
 import { AppBreadcrumb } from "@/components/app-breadcrumb";
 import { DataTable } from "@/components/data-table";
+import { DeleteDialog } from "@/components/documents/delete-dialog";
 import { getTemplateColumns } from "@/components/extraction-templates/template-columns";
 import {
   emptyForm,
@@ -29,6 +30,10 @@ import {
 
 const PAGE_SIZE = 10;
 
+type ConfirmAction =
+  | { kind: "delete"; template: ExtractionTemplate }
+  | { kind: "permanent"; template: ExtractionTemplate };
+
 export function ExtractionTemplatesPage() {
   const [page, setPage] = useState(1);
   const [status, setStatus] = useState<"active" | "deleted">("active");
@@ -37,6 +42,7 @@ export function ExtractionTemplatesPage() {
   );
   const [form, setForm] = useState<FormState>(emptyForm);
   const [error, setError] = useState<string | null>(null);
+  const [confirm, setConfirm] = useState<ConfirmAction | null>(null);
   const { data, isLoading } = useExtractionTemplates(page, PAGE_SIZE, status);
   const { data: modelsData, isLoading: modelsLoading } = useChatModels();
   const create = useCreateExtractionTemplate();
@@ -97,12 +103,25 @@ export function ExtractionTemplatesPage() {
   const columns = getTemplateColumns({
     status,
     onEdit: openEdit,
-    onDelete: (id) => remove.mutate(id),
+    onDelete: (template) =>
+      setConfirm({ kind: "delete", template }),
     onRestore: (id) => restore.mutate(id),
-    onPermanentDelete: (id) => permanent.mutate(id),
+    onPermanentDelete: (template) =>
+      setConfirm({ kind: "permanent", template }),
     deletePending: remove.isPending,
     permanentDeletePending: permanent.isPending,
   });
+
+  const confirmDelete = async () => {
+    if (!confirm) return;
+    try {
+      if (confirm.kind === "delete") await remove.mutateAsync(confirm.template.id);
+      else await permanent.mutateAsync(confirm.template.id);
+      setConfirm(null);
+    } catch {
+      // Error surfaced by mutation state; keep dialog open for retry.
+    }
+  };
 
   return (
     <>
@@ -194,6 +213,30 @@ export function ExtractionTemplatesPage() {
         onChange={setField}
         onSave={save}
         onClose={closeDialog}
+      />
+      <DeleteDialog
+        open={confirm !== null}
+        onOpenChange={(open) => {
+          if (!open) setConfirm(null);
+        }}
+        title={
+          confirm?.kind === "permanent"
+            ? "Delete template permanently?"
+            : "Move template to trash?"
+        }
+        description={
+          confirm?.kind === "permanent"
+            ? `This permanently deletes "${confirm.template.name}". This cannot be undone.`
+            : confirm
+              ? `"${confirm.template.name}" moves to trash and can be restored from the Deleted tab.`
+              : ""
+        }
+        isPending={
+          confirm?.kind === "permanent"
+            ? permanent.isPending
+            : remove.isPending
+        }
+        onConfirm={confirmDelete}
       />
     </>
   );

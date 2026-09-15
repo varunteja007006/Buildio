@@ -7,9 +7,9 @@ import type { Column } from "@/components/data-table";
 type ColumnActions = {
   status: "active" | "deleted";
   onEdit: (template: ExtractionTemplate) => void;
-  onDelete: (id: string) => void;
+  onDelete: (template: ExtractionTemplate) => void;
   onRestore: (id: string) => void;
-  onPermanentDelete: (id: string) => void;
+  onPermanentDelete: (template: ExtractionTemplate) => void;
   deletePending: boolean;
   permanentDeletePending: boolean;
 };
@@ -67,7 +67,7 @@ export function getTemplateColumns({
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => onDelete(template.id)}
+              onClick={() => onDelete(template)}
               disabled={deletePending}
             >
               Delete
@@ -84,7 +84,7 @@ export function getTemplateColumns({
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => onPermanentDelete(template.id)}
+                onClick={() => onPermanentDelete(template)}
                 disabled={permanentDeletePending}
               >
                 Delete permanently
