@@ -1,4 +1,4 @@
-import { and, eq, inArray, isNull } from "drizzle-orm";
+import { and, desc, eq, inArray, isNull } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 
 import { db } from "@/lib/db";
@@ -7,6 +7,58 @@ import { extractionTemplates } from "@/lib/db/schema/extraction-templates";
 import { extractions } from "@/lib/db/schema/extractions";
 import { getCurrentUser } from "@/lib/session";
 import { getActiveWorkspace } from "@/lib/workspaces";
+
+const MAX_PAGE_SIZE = 200;
+
+/** List extractions for the workspace, optionally scoped to documents. */
+export async function GET(request: NextRequest) {
+  try {
+    const user = await getCurrentUser();
+    if (!user)
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const workspace = await getActiveWorkspace(user.id);
+    if (!workspace)
+      return NextResponse.json({ extractions: [] });
+
+    const documentIds = request.nextUrl.searchParams
+      .getAll("documentId")
+      .filter(Boolean);
+    const limit = Math.min(
+      MAX_PAGE_SIZE,
+      Math.max(1, Number(request.nextUrl.searchParams.get("limit")) || MAX_PAGE_SIZE),
+    );
+
+    const conditions = [
+      eq(documents.workspaceId, workspace.id),
+      isNull(extractions.deletedAt),
+    ];
+    if (documentIds.length) {
+      conditions.push(inArray(extractions.documentId, documentIds));
+    }
+
+    const rows = await db
+      .select({
+        id: extractions.id,
+        documentId: extractions.documentId,
+        status: extractions.status,
+        error: extractions.error,
+        autoIngest: extractions.autoIngest,
+        approved: extractions.approved,
+        createdAt: extractions.createdAt,
+        updatedAt: extractions.updatedAt,
+      })
+      .from(extractions)
+      .innerJoin(documents, eq(extractions.documentId, documents.id))
+      .where(and(...conditions))
+      .orderBy(desc(extractions.createdAt))
+      .limit(limit);
+
+    return NextResponse.json({ extractions: rows });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Unknown error";
+    return NextResponse.json({ error: message }, { status: 500 });
+  }
+}
 
 export async function POST(request: NextRequest) {
   try {

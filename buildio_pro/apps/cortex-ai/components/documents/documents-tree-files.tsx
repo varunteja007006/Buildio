@@ -2,23 +2,30 @@
 
 import { Badge } from "@workspace/ui/components/badge";
 import { Button } from "@workspace/ui/components/button";
+import { Checkbox } from "@workspace/ui/components/checkbox";
 import { FileText, Loader2 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 import type { Document } from "@/api/documents/types";
 import { DocumentDeleteButton } from "@/components/documents/document-delete-button";
+import { DocumentExtractionBadge } from "@/components/documents/document-extraction-badge";
+import { cn } from "@/lib/utils";
 
 const FOLDER_PAGE_SIZE = 25;
 
 export function PaginatedFileList({
   docs,
   depth,
+  selectedDocIds,
+  onToggleDocSelect,
   hasNextPage,
   isFetchingNextPage,
   fetchNextPage,
 }: {
   docs: Document[];
   depth: number;
+  selectedDocIds: ReadonlySet<string>;
+  onToggleDocSelect: (documentId: string) => void;
   hasNextPage?: boolean;
   isFetchingNextPage?: boolean;
   fetchNextPage?: () => void;
@@ -70,7 +77,13 @@ export function PaginatedFileList({
   return (
     <>
       {visibleDocs.map((doc) => (
-        <FileRow key={doc.id} doc={doc} depth={depth} />
+        <FileRow
+          key={doc.id}
+          doc={doc}
+          depth={depth}
+          selected={selectedDocIds.has(doc.id)}
+          onToggleSelect={() => onToggleDocSelect(doc.id)}
+        />
       ))}
       {(canShowMoreLocal || canFetchMoreGlobal) && (
         <li
@@ -110,17 +123,36 @@ export function PaginatedFileList({
   );
 }
 
-function FileRow({ doc, depth }: { doc: Document; depth: number }) {
+function FileRow({
+  doc,
+  depth,
+  selected,
+  onToggleSelect,
+}: {
+  doc: Document;
+  depth: number;
+  selected: boolean;
+  onToggleSelect: () => void;
+}) {
   return (
     <li>
       <div
-        className="group/file-row flex items-center gap-2 rounded-md px-2 py-1.5 text-sm hover:bg-muted"
+        className={cn(
+          "group/file-row flex items-center gap-2 rounded-md px-2 py-1.5 text-sm hover:bg-muted",
+          selected && "bg-muted",
+        )}
         style={{ paddingLeft: `${depth * 1.25 + 0.5}rem` }}
       >
-        <span className="w-4" />
+        <Checkbox
+          checked={selected}
+          onCheckedChange={onToggleSelect}
+          aria-label={`Select ${doc.filename}`}
+          className="shrink-0"
+        />
         <FileText className="size-4 shrink-0 text-muted-foreground" />
         <span className="truncate">{doc.filename}</span>
         <span className="ml-auto flex shrink-0 items-center gap-1">
+          <DocumentExtractionBadge documentId={doc.id} />
           <Badge
             variant={doc.ingested ? "default" : "secondary"}
             className="text-xs"

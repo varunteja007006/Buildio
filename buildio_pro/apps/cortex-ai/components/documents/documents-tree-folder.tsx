@@ -130,6 +130,8 @@ export function FolderRow({
                   <PaginatedFileList
                     docs={folderDocs}
                     depth={depth + 1}
+                    selectedDocIds={props.selectedDocIds}
+                    onToggleDocSelect={props.onToggleDocSelect}
                     hasNextPage={folderHasNext}
                     isFetchingNextPage={folderFetching}
                     fetchNextPage={folderFetchNext}

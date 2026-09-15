@@ -108,6 +108,8 @@ export function TopicRow({
               <PaginatedFileList
                 docs={node.documents}
                 depth={1}
+                selectedDocIds={props.selectedDocIds}
+                onToggleDocSelect={props.onToggleDocSelect}
                 hasNextPage={props.hasNextPage}
                 isFetchingNextPage={props.isFetchingNextPage}
                 fetchNextPage={props.fetchNextPage}

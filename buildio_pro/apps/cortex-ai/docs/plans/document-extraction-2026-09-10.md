@@ -1,7 +1,7 @@
 # Document Extraction + Ingestion — cortex-ai
 
 **Date:** 2026-09-10
-**Status:** 48% — template CRUD + data model + `POST /api/extraction` + document soft delete/restore/trash filter done; extraction runner, review UI, and trash page not started
+**Status:** 80% — extraction pipeline + extract UI (C1–C8) and review/edit/diff UI (D1–D7) are done; remaining: ingestion wiring (C9, E), audit logs (F), trash page + cascades (H3, H5–H8, H11–H12)
 **Target route:** `/dashboard/documents`
 
 ## Goal
@@ -58,25 +58,26 @@ Extraction is a new step. Ingestion already exists on the server (`POST /api/ing
 
 ## C. Run extraction
 
-- [ ] C1 Checkbox row selection + bulk action bar in documents table/tree
-- [ ] C2 "Extract" bulk action → `ExtractDocumentsDialog`
-- [ ] C3 Dialog: template select, model combobox (reuse `/api/chat/models`), "auto-run ingestion" toggle
+- [x] C1 Checkbox row selection + bulk action bar in documents table/tree (TanStack `rowSelection` in the table; `selectedDocIds` threaded through `RowSharedProps` in the tree; shared `DocumentsBulkBar` with count/Clear/Extract)
+- [x] C2 "Extract" bulk action → `ExtractDocumentsDialog` (`components/documents/extract-dialog.tsx`; queues via `useCreateExtractions`, then runs jobs in a bounded concurrent pool via `runExtractionsConcurrently` — 3 at a time, badges poll for progress)
+- [x] C3 Dialog: template select, model combobox (reuse `/api/chat/models`), "auto-run ingestion" toggle (model empty = template default; toggle maps to `autoIngest`)
 - [x] C4 `POST /api/extraction` → create rows with status `pending` (validates documents + template ownership/workspace; snapshots template; client: `api/extractions/{types,api,query}.ts` + `useCreateExtractions`)
-- [ ] C5 `lib/extraction/extract-text.ts` — fetch file; txt/md/csv text; PDF as multimodal file part
-- [ ] C6 `lib/extraction/run-extraction.ts` — build prompt from template, call `generateText`, capture usage/raw
-- [ ] C7 Status polling hook (3s) while any extraction runs
-- [ ] C8 Extraction status badges in table + tree
+- [x] C5 `lib/extraction/extract-text.ts` — fetch file; txt/md/csv text; PDF as multimodal file part
+- [x] C6 `lib/extraction/run-extraction.ts` — build prompt from template, call `generateText`, capture usage/raw (schema templates attempt JSON parse; failure keeps raw + flags error)
+- [x] C7 Status polling hook (3s) while any extraction runs (`useExtractionStatuses` in `api/extractions/query.ts`)
+- [x] C8 Extraction status badges in table + tree (`DocumentExtractionBadge`)
+- [x] C5b `POST /api/extraction/[id]/run` — runs a job: pending→processing→completed/failed, appends an `ai` extraction version, re-runs create next version (part of D3)
 - [ ] C9 Wire orphaned `useIngestDocuments` into the extraction/ingestion flow
 
 ## D. Review / edit / diff
 
-- [ ] D1 Extraction review dialog (document + AI output)
-- [ ] D2 Editable output + Save (creates a `user` version)
-- [ ] D3 Re-run extraction (creates a new `ai` version)
-- [ ] D4 Version history list per extraction
-- [ ] D5 Diff view: AI version vs current
-- [ ] D6 "Approved" flag gating ingestion
-- [ ] D7 Soft-delete an extraction (`deletedAt`) + restore route; versions stay intact for audit
+- [x] D1 Extraction review dialog (document + AI output) — click the extraction badge in the table/tree → `components/documents/extraction-review-dialog.tsx` (filename, template, model, editable content, structured-output collapsible, failed error display, live updates while running)
+- [x] D2 Editable output + Save (creates a `user` version) — `PATCH /api/extraction/[id]` appends a `user` `extraction_versions` row and updates `currentContent`
+- [x] D3 Re-run extraction (creates a new `ai` version) — Re-run button calls the existing run route; a new AI version also clears a stale approval
+- [x] D4 Version history list per extraction — `GET /api/extraction/[id]/versions` + `ExtractionVersionHistory` (v#, AI/User badge, date)
+- [x] D5 Diff view: version vs current — "Diff vs current" toggle renders an LCS line diff (`lib/line-diff.ts`), +/− colored lines with change count
+- [x] D6 "Approved" flag gating ingestion — `extractions.approved` column (migration `0007_flippant_callisto`, applied), PATCH-toggled in the dialog (completed only, cleared on content change); E2 ingest must consume the latest approved version
+- [x] D7 Soft-delete an extraction (`deletedAt`) + restore route; versions stay intact — `DELETE`/`POST /api/extraction/[id]/restore`; restore UI lands with the trash page (H7)
 
 ## E. Ingestion UI + auto-run
 

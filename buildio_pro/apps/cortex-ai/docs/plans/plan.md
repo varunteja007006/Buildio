@@ -2,4 +2,4 @@
 
 | filename | short desc | status |
 | --- | --- | --- |
-| document-extraction-2026-09-10.md | Document extraction + ingestion UI, templates, review/diff, audit logs | 16% |
+| document-extraction-2026-09-10.md | Document extraction + ingestion UI, templates, review/diff, audit logs | 80% |

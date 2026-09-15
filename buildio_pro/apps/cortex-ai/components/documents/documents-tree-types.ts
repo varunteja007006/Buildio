@@ -18,7 +18,10 @@ export interface RowSharedProps {
   expanded: Set<string>;
   expandedFolders: Set<string>;
   selectedFolderId: string | null;
+  /** Document ids selected via checkboxes (for the bulk Extract action) */
+  selectedDocIds: ReadonlySet<string>;
   onSelectFolder: (folderId: string) => void;
+  onToggleDocSelect: (documentId: string) => void;
   onRenameTopic: (topic: Topic) => void;
   onDeleteTopic: (topic: Topic) => void;
   onRenameFolder: (folder: Folder) => void;

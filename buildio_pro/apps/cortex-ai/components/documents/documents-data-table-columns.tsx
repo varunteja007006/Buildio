@@ -2,14 +2,38 @@
 
 import type { ColumnDef } from "@tanstack/react-table";
 import { Badge } from "@workspace/ui/components/badge";
+import { Checkbox } from "@workspace/ui/components/checkbox";
 import { FileText } from "lucide-react";
 
 import { formatDate, truncateHash } from "@/api/documents/helpers";
 import type { Document } from "@/api/documents/types";
 import { DataTableColumnHeader } from "@/components/data-table/data-table-column-header";
 import { DocumentRowActions } from "@/components/documents/document-delete-button";
+import { DocumentExtractionBadge } from "@/components/documents/document-extraction-badge";
 
 export const documentsColumns: ColumnDef<Document>[] = [
+  {
+    id: "select",
+    header: ({ table }) => (
+      <Checkbox
+        checked={
+          table.getIsAllPageRowsSelected() ||
+          (table.getIsSomePageRowsSelected() && "indeterminate")
+        }
+        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+        aria-label="Select all documents"
+      />
+    ),
+    cell: ({ row }) => (
+      <Checkbox
+        checked={row.getIsSelected()}
+        onCheckedChange={(value) => row.toggleSelected(!!value)}
+        aria-label={`Select ${row.original.filename}`}
+      />
+    ),
+    enableSorting: false,
+    enableHiding: false,
+  },
   {
     id: "filename",
     accessorKey: "filename",
@@ -59,9 +83,12 @@ export const documentsColumns: ColumnDef<Document>[] = [
     cell: ({ row }) => {
       const ingested = row.original.ingested;
       return (
-        <Badge variant={ingested ? "default" : "secondary"}>
-          {ingested ? "Ingested" : "Pending"}
-        </Badge>
+        <div className="flex flex-wrap items-center gap-1.5">
+          <Badge variant={ingested ? "default" : "secondary"}>
+            {ingested ? "Ingested" : "Pending"}
+          </Badge>
+          <DocumentExtractionBadge documentId={row.original.id} />
+        </div>
       );
     },
   },

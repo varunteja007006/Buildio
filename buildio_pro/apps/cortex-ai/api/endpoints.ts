@@ -29,6 +29,10 @@ export const endpoints = {
   },
   extractions: {
     list: "/extraction",
+    detail: (id: string) => `/extraction/${id}`,
+    run: (id: string) => `/extraction/${id}/run`,
+    versions: (id: string) => `/extraction/${id}/versions`,
+    restore: (id: string) => `/extraction/${id}/restore`,
   },
   documents: {
     list: "/documents",

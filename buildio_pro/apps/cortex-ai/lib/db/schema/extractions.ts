@@ -35,6 +35,8 @@ export const extractions = pgTable(
     error: text("error"),
     usage: jsonb("usage"),
     autoIngest: boolean("auto_ingest").notNull().default(false),
+    /** Set by the reviewer; ingestion (E2) consumes the latest approved version */
+    approved: boolean("approved").notNull().default(false),
     resourceId: text("resource_id").references(() => resources.id, {
       onDelete: "set null",
     }),

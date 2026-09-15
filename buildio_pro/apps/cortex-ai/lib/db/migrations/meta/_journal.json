@@ -50,6 +50,13 @@
       "when": 1789459380759,
       "tag": "0006_equal_spitfire",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1789464033415,
+      "tag": "0007_flippant_callisto",
+      "breakpoints": true
     }
   ]
 }

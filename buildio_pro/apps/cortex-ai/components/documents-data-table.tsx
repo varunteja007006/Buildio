@@ -4,10 +4,9 @@ import {
   flexRender,
   getCoreRowModel,
   useReactTable,
+  type RowSelectionState,
   type SortingState,
 } from "@tanstack/react-table";
-import { Button } from "@workspace/ui/components/button";
-import { Switch } from "@workspace/ui/components/switch";
 import {
   Table,
   TableBody,
@@ -16,13 +15,17 @@ import {
   TableHeader,
   TableRow,
 } from "@workspace/ui/components/table";
-import { Loader2, Trash2 } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import { parseAsBoolean, parseAsString, useQueryState } from "nuqs";
 import * as React from "react";
 
 import { useInfiniteDocuments } from "@/api/documents/query";
+import { CortexSwitch } from "@/components/cortex-switch";
 import { DataTableSearch } from "@/components/data-table/data-table-search";
+import { DocumentsBulkBar } from "@/components/documents/documents-bulk-bar";
 import { documentsColumns } from "@/components/documents/documents-data-table-columns";
+import { DocumentsTableFooter } from "@/components/documents/documents-table-footer";
+import { ExtractDocumentsDialog } from "@/components/documents/extract-dialog";
 import { cn } from "@/lib/utils";
 
 const PAGE_SIZE = 20;
@@ -43,6 +46,8 @@ export function DocumentsDataTable() {
     "deleted",
     parseAsBoolean.withDefault(false),
   );
+  const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({});
+  const [extractOpen, setExtractOpen] = React.useState(false);
 
   const {
     data,
@@ -64,6 +69,14 @@ export function DocumentsDataTable() {
     [data],
   );
   const total = data?.pages[0]?.total ?? 0;
+
+  // Selection is keyed by row id; intersect with loaded rows so stale keys
+  // (e.g. after filtering or switching to the deleted view) don't count.
+  const selectedDocIds = React.useMemo(
+    () => flatData.filter((doc) => rowSelection[doc.id]).map((doc) => doc.id),
+    [flatData, rowSelection],
+  );
+  const clearSelection = React.useCallback(() => setRowSelection({}), []);
 
   // TanStack sorting state synced to URL
   const sorting = React.useMemo<SortingState>(
@@ -91,7 +104,9 @@ export function DocumentsDataTable() {
     columns: documentsColumns,
     getCoreRowModel: getCoreRowModel(),
     manualSorting: true,
-    state: { sorting },
+    enableRowSelection: true,
+    state: { sorting, rowSelection },
+    onRowSelectionChange: setRowSelection,
     onSortingChange,
     getRowId: (row) => row.id,
   });
@@ -120,12 +135,19 @@ export function DocumentsDataTable() {
 
   return (
     <div className={cn("flex w-full flex-col gap-2.5 overflow-hidden")}>
+      {selectedDocIds.length > 0 && (
+        <DocumentsBulkBar
+          selectedCount={selectedDocIds.length}
+          onClear={clearSelection}
+          onExtract={() => setExtractOpen(true)}
+        />
+      )}
       <div className="flex flex-wrap items-center gap-3">
         <DataTableSearch placeholder="Search documents…" />
         <label className="ml-auto flex cursor-pointer items-center gap-2 text-sm text-muted-foreground">
           <Trash2 className="size-4" />
           Deleted only
-          <Switch
+          <CortexSwitch
             checked={showDeleted}
             onCheckedChange={(checked) => {
               void setShowDeleted(checked || null);
@@ -191,53 +213,23 @@ export function DocumentsDataTable() {
         </Table>
       </div>
 
-      {/* Footer: count + infinite status */}
-      <div className="flex flex-col gap-2.5 px-2 sm:flex-row sm:items-center sm:justify-between">
-        <div className="text-xs text-muted-foreground">
-          {total > 0 ? (
-            <>
-              Showing{" "}
-              <span className="font-medium text-foreground">
-                {flatData.length}
-              </span>{" "}
-              of <span className="font-medium text-foreground">{total}</span>
-              {isFetching && !isFetchingNextPage ? " · updating…" : ""}
-            </>
-          ) : isLoading ? (
-            "Loading…"
-          ) : (
-            "0 results"
-          )}
-        </div>
-        <div className="text-xs text-muted-foreground">
-          {hasNextPage ? `${total - flatData.length} more` : "All loaded"}
-        </div>
-      </div>
+      <DocumentsTableFooter
+        total={total}
+        loadedCount={flatData.length}
+        isLoading={isLoading}
+        isFetching={isFetching}
+        isFetchingNextPage={isFetchingNextPage}
+        hasNextPage={hasNextPage}
+        sentinelRef={sentinelRef}
+        onLoadMore={() => void fetchNextPage()}
+      />
 
-      {/* Sentinel + manual fallback */}
-      <div ref={sentinelRef} className="h-1 w-full" aria-hidden />
-
-      <div className="flex justify-center py-2">
-        {isFetchingNextPage ? (
-          <span className="inline-flex items-center gap-2 text-sm text-muted-foreground">
-            <Loader2 className="size-4 animate-spin" />
-            Loading more…
-          </span>
-        ) : hasNextPage ? (
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => void fetchNextPage()}
-            disabled={isFetchingNextPage}
-          >
-            Load more
-          </Button>
-        ) : flatData.length > 0 ? (
-          <span className="text-xs text-muted-foreground">
-            You&apos;ve reached the end
-          </span>
-        ) : null}
-      </div>
+      <ExtractDocumentsDialog
+        open={extractOpen}
+        onOpenChange={setExtractOpen}
+        documentIds={selectedDocIds}
+        onQueued={clearSelection}
+      />
     </div>
   );
 }

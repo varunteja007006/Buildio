@@ -7,11 +7,13 @@ import { useEffect, useState } from "react";
 import type { Document } from "@/api/documents/types";
 import type { Folder } from "@/api/folders/types";
 import type { Topic } from "@/api/topics/types";
+import { DocumentsBulkBar } from "@/components/documents/documents-bulk-bar";
 import { TopicRow } from "@/components/documents/documents-tree-row";
 import {
   buildFolderNodes,
   type TopicNode,
 } from "@/components/documents/documents-tree-types";
+import { ExtractDocumentsDialog } from "@/components/documents/extract-dialog";
 
 interface DocumentsTreeProps {
   topics: Topic[];
@@ -53,6 +55,20 @@ export function DocumentsTree({
     new Set(),
   );
   const [expandedTopics, setExpandedTopics] = useState<Set<string>>(new Set());
+  const [selectedDocIds, setSelectedDocIds] = useState<Set<string>>(new Set());
+  const [extractOpen, setExtractOpen] = useState(false);
+
+  const toggleDocSelect = (documentId: string) =>
+    setSelectedDocIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(documentId)) {
+        next.delete(documentId);
+      } else {
+        next.add(documentId);
+      }
+      return next;
+    });
+  const clearDocSelection = () => setSelectedDocIds(new Set());
 
   const folderNodes = buildFolderNodes(folders);
 
@@ -131,7 +147,9 @@ export function DocumentsTree({
     expanded: expandedTopics,
     expandedFolders,
     selectedFolderId,
+    selectedDocIds,
     onSelectFolder,
+    onToggleDocSelect: toggleDocSelect,
     onRenameTopic,
     onDeleteTopic,
     onRenameFolder,
@@ -145,8 +163,16 @@ export function DocumentsTree({
   };
 
   return (
-    <div className="w-full rounded-lg border">
-      <ul className="p-2">
+    <>
+      {selectedDocIds.size > 0 && (
+        <DocumentsBulkBar
+          selectedCount={selectedDocIds.size}
+          onClear={clearDocSelection}
+          onExtract={() => setExtractOpen(true)}
+        />
+      )}
+      <div className="w-full rounded-lg border">
+        <ul className="p-2">
         {topicNodes.map((node) => (
           <TopicRow
             key={node.topic!.id}
@@ -198,6 +224,13 @@ export function DocumentsTree({
           </Button>
         </div>
       )}
-    </div>
+      </div>
+      <ExtractDocumentsDialog
+        open={extractOpen}
+        onOpenChange={setExtractOpen}
+        documentIds={[...selectedDocIds]}
+        onQueued={clearDocSelection}
+      />
+    </>
   );
 }
