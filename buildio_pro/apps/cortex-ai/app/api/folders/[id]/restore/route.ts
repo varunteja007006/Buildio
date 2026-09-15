@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 
 import { db } from "@/lib/db";
 import { folders } from "@/lib/db/schema/folders";
+import { restoreFolderCascade } from "@/lib/documents/container-cascade";
 import { getCurrentUser } from "@/lib/session";
 import { getWorkspaceMembership } from "@/lib/workspaces";
 
@@ -43,11 +44,12 @@ export async function POST(_request: Request, { params }: Params) {
       );
     }
 
-    const [folder] = await db
-      .update(folders)
-      .set({ deletedAt: null })
-      .where(eq(folders.id, id))
-      .returning();
+    // H12: restore the folder subtree plus the batch of documents and
+    // children trashed together with it (H11's deletedBatchId)
+    const [folder] = await db.transaction(async (tx) => {
+      await restoreFolderCascade(tx, id);
+      return tx.select().from(folders).where(eq(folders.id, id)).limit(1);
+    });
 
     return NextResponse.json({ folder });
   } catch (error) {

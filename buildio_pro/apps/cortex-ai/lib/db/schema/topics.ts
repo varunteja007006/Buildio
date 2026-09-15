@@ -24,6 +24,8 @@ export const topics = pgTable(
     description: text("description"),
     position: integer("position").notNull().default(0),
     deletedAt: timestamp("deleted_at", { withTimezone: true }),
+    /** Cascade batch tag: set when the topic (and its tree) is deleted */
+    deletedBatchId: text("deleted_batch_id"),
     createdAt: timestamp("created_at", { withTimezone: true })
       .default(sql`now()`)
       .notNull(),

@@ -5,6 +5,8 @@ export type Document = {
   filepath: string;
   fileHash: string;
   ingested: boolean;
+  /** Last ingestion failure message; null when the last ingest succeeded */
+  lastIngestError: string | null;
   topicId: string | null;
   folderId: string | null;
   deletedAt: string | null;
@@ -17,6 +19,9 @@ export type DocumentResponse = { document: Document };
 
 /** Response from DELETE /api/documents/[id] */
 export type DeleteResponse = { success: boolean; id: string };
+
+/** Response from DELETE /api/documents/trash (empty trash) */
+export type EmptyTrashResponse = { success: boolean; deleted: number };
 
 /** Query params for paginated GET /api/documents */
 export type DocumentsQuery = {

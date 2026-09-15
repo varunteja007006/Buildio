@@ -1,9 +1,9 @@
 import { and, eq, isNull } from "drizzle-orm";
-import { sql } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 
 import { db } from "@/lib/db";
 import { folders } from "@/lib/db/schema/folders";
+import { softDeleteFolderCascade } from "@/lib/documents/container-cascade";
 import { getCurrentUser } from "@/lib/session";
 import { getWorkspaceMembership } from "@/lib/workspaces";
 
@@ -114,18 +114,9 @@ export async function DELETE(_request: NextRequest, { params }: Params) {
       );
     }
 
-    const [folder] = await db
-      .update(folders)
-      .set({ deletedAt: sql`now()` })
-      .where(and(eq(folders.id, id), isNull(folders.deletedAt)))
-      .returning();
-
-    if (!folder) {
-      return NextResponse.json(
-        { success: false, error: "Folder not found" },
-        { status: 404 },
-      );
-    }
+    // H11: soft-delete the folder subtree and every document inside it,
+    // tagged with one deletedBatchId so restore can undo exactly that batch
+    await db.transaction(async (tx) => softDeleteFolderCascade(tx, id));
 
     return NextResponse.json({ success: true, id });
   } catch (error) {

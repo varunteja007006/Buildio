@@ -2,7 +2,7 @@
 
 import { Badge } from "@workspace/ui/components/badge";
 import { Loader2 } from "lucide-react";
-import { useState } from "react";
+import { parseAsString, useQueryState } from "nuqs";
 
 import { useExtractionStatuses } from "@/api/extractions/query";
 import type { ExtractionStatus } from "@/api/extractions/types";
@@ -32,18 +32,24 @@ const VARIANTS: Record<
  */
 export function DocumentExtractionBadge({ documentId }: { documentId: string }) {
   const { data } = useExtractionStatuses();
-  const [open, setOpen] = useState(false);
+  // `?extraction=<id>` deep link (e.g. from the audit log detail dialog)
+  // opens the matching row's review dialog.
+  const [extractionParam, setExtractionParam] = useQueryState(
+    "extraction",
+    parseAsString,
+  );
   const row = data?.extractions.find((e) => e.documentId === documentId);
   if (!row) return null;
 
   const running = row.status === "pending" || row.status === "processing";
+  const open = extractionParam === row.id;
 
   return (
     <>
       <button
         type="button"
         className="cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-sm"
-        onClick={() => setOpen(true)}
+        onClick={() => void setExtractionParam(row.id)}
         aria-label="Review extraction"
       >
         <Badge variant={VARIANTS[row.status]} className="gap-1 text-xs">
@@ -55,7 +61,9 @@ export function DocumentExtractionBadge({ documentId }: { documentId: string }) 
         <ExtractionReviewDialog
           extractionId={row.id}
           open={open}
-          onOpenChange={setOpen}
+          onOpenChange={(next) => {
+            if (!next) void setExtractionParam(null);
+          }}
         />
       )}
     </>

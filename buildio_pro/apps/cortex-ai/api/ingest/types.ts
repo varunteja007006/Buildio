@@ -1,7 +1,10 @@
 export interface IngestResultItem {
+  documentId: string;
   filename: string;
   success: boolean;
   chunksCount?: number;
+  /** Where the ingested content came from */
+  source?: "extraction" | "file";
   error?: string;
 }
 

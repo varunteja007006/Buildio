@@ -1,6 +1,7 @@
 import { and, asc, count, eq, isNotNull, isNull } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 
+import { recordDocumentAudit } from "@/lib/audit/document-audit";
 import { db } from "@/lib/db";
 import { extractionTemplates } from "@/lib/db/schema/extraction-templates";
 import { getCurrentUser } from "@/lib/session";
@@ -128,6 +129,22 @@ export async function POST(request: NextRequest) {
         createdBy: user.id,
       })
       .returning();
+
+    // F6: audit the template creation
+    void recordDocumentAudit({
+      userId: user.id,
+      workspaceId: workspace.id,
+      action: "template_create",
+      templateSnapshot: {
+        id: template.id,
+        name: template.name,
+        instructions: template.instructions,
+        outputSchema: template.outputSchema,
+        defaultModel: template.defaultModel,
+      },
+      status: "created",
+    }).catch(console.error);
+
     return NextResponse.json({ template }, { status: 201 });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown error";

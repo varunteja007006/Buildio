@@ -1,7 +1,7 @@
 import { embed, embedMany } from "ai";
 import { and, cosineDistance, desc, eq, gt, isNull, sql } from "drizzle-orm";
 
-import { embeddingModel } from "@/lib/ai";
+import { embeddingModel, embeddingProviderOptions } from "@/lib/ai";
 import { db } from "@/lib/db";
 import { documents } from "@/lib/db/schema/documents";
 import { embeddings } from "@/lib/db/schema/embeddings";
@@ -50,7 +50,14 @@ export function generateChunks(
     }
 
     chunks.push(text.slice(start, breakPoint).trim());
-    start = breakPoint - overlap;
+
+    // The final chunk can be shorter than `overlap`, and whitespace-heavy
+    // text can put the chosen break within `overlap` of `start` — either
+    // would make `start` stall or regress and loop forever. In that case
+    // continue just past the break point.
+    if (breakPoint >= text.length) break;
+    const nextStart = breakPoint - overlap;
+    start = nextStart > start ? nextStart : breakPoint + 1;
   }
 
   return chunks.filter((chunk) => chunk.length > 0);
@@ -63,20 +70,25 @@ export async function generateEmbedding(text: string): Promise<number[]> {
   const { embedding } = await embed({
     model: embeddingModel,
     value: text,
+    providerOptions: embeddingProviderOptions,
   });
   return embedding;
 }
 
 /**
  * Generates embedding vectors for multiple text strings (batched).
+ * Also returns the embedding token usage reported by the provider.
  */
-export async function generateEmbeddings(texts: string[]): Promise<number[][]> {
-  const { embeddings: vectors } = await embedMany({
+export async function generateEmbeddings(
+  texts: string[],
+): Promise<{ vectors: number[][]; tokens: number | null }> {
+  const { embeddings: vectors, usage } = await embedMany({
     model: embeddingModel,
     values: texts,
     maxParallelCalls: 5,
+    providerOptions: embeddingProviderOptions,
   });
-  return vectors;
+  return { vectors, tokens: usage?.tokens ?? null };
 }
 
 /**

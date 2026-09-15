@@ -10,6 +10,7 @@ import type { Document } from "@/api/documents/types";
 import { DataTableColumnHeader } from "@/components/data-table/data-table-column-header";
 import { DocumentRowActions } from "@/components/documents/document-delete-button";
 import { DocumentExtractionBadge } from "@/components/documents/document-extraction-badge";
+import { DocumentIngestErrorBadge } from "@/components/documents/document-ingest-error-badge";
 
 export const documentsColumns: ColumnDef<Document>[] = [
   {
@@ -81,12 +82,19 @@ export const documentsColumns: ColumnDef<Document>[] = [
     header: "Status",
     enableSorting: true,
     cell: ({ row }) => {
-      const ingested = row.original.ingested;
+      const doc = row.original;
       return (
         <div className="flex flex-wrap items-center gap-1.5">
-          <Badge variant={ingested ? "default" : "secondary"}>
-            {ingested ? "Ingested" : "Pending"}
+          <Badge variant={doc.ingested ? "default" : "secondary"}>
+            {doc.ingested ? "Ingested" : "Pending"}
           </Badge>
+          {!doc.ingested && doc.lastIngestError && (
+            <DocumentIngestErrorBadge
+              documentId={doc.id}
+              filename={doc.filename}
+              error={doc.lastIngestError}
+            />
+          )}
           <DocumentExtractionBadge documentId={row.original.id} />
         </div>
       );
@@ -110,7 +118,7 @@ export const documentsColumns: ColumnDef<Document>[] = [
     header: "",
     enableSorting: false,
     cell: ({ row }) => (
-      <div className="flex justify-end">
+      <div className="flex justify-end gap-0.5">
         <DocumentRowActions document={row.original} />
       </div>
     ),

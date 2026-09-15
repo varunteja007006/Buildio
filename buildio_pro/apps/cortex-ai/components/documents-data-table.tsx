@@ -20,6 +20,7 @@ import { parseAsBoolean, parseAsString, useQueryState } from "nuqs";
 import * as React from "react";
 
 import { useInfiniteDocuments } from "@/api/documents/query";
+import { useIngestDocuments } from "@/api/ingest/query";
 import { CortexSwitch } from "@/components/cortex-switch";
 import { DataTableSearch } from "@/components/data-table/data-table-search";
 import { DocumentsBulkBar } from "@/components/documents/documents-bulk-bar";
@@ -48,6 +49,7 @@ export function DocumentsDataTable() {
   );
   const [rowSelection, setRowSelection] = React.useState<RowSelectionState>({});
   const [extractOpen, setExtractOpen] = React.useState(false);
+  const ingestDocuments = useIngestDocuments();
 
   const {
     data,
@@ -140,6 +142,11 @@ export function DocumentsDataTable() {
           selectedCount={selectedDocIds.length}
           onClear={clearSelection}
           onExtract={() => setExtractOpen(true)}
+          onIngest={() => {
+            ingestDocuments.mutate({ documentIds: selectedDocIds });
+            clearSelection();
+          }}
+          ingestPending={ingestDocuments.isPending}
         />
       )}
       <div className="flex flex-wrap items-center gap-3">

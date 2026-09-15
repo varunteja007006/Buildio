@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 
 import type { Document } from "@/api/documents/types";
 import type { Folder } from "@/api/folders/types";
+import { useIngestDocuments } from "@/api/ingest/query";
 import type { Topic } from "@/api/topics/types";
 import { DocumentsBulkBar } from "@/components/documents/documents-bulk-bar";
 import { TopicRow } from "@/components/documents/documents-tree-row";
@@ -57,6 +58,7 @@ export function DocumentsTree({
   const [expandedTopics, setExpandedTopics] = useState<Set<string>>(new Set());
   const [selectedDocIds, setSelectedDocIds] = useState<Set<string>>(new Set());
   const [extractOpen, setExtractOpen] = useState(false);
+  const ingestDocuments = useIngestDocuments();
 
   const toggleDocSelect = (documentId: string) =>
     setSelectedDocIds((prev) => {
@@ -169,6 +171,11 @@ export function DocumentsTree({
           selectedCount={selectedDocIds.size}
           onClear={clearDocSelection}
           onExtract={() => setExtractOpen(true)}
+          onIngest={() => {
+            ingestDocuments.mutate({ documentIds: [...selectedDocIds] });
+            clearDocSelection();
+          }}
+          ingestPending={ingestDocuments.isPending}
         />
       )}
       <div className="w-full rounded-lg border">

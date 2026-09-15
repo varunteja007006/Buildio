@@ -8,7 +8,10 @@ import { useEffect, useRef, useState } from "react";
 
 import type { Document } from "@/api/documents/types";
 import { DocumentDeleteButton } from "@/components/documents/document-delete-button";
+import { DocumentExtractButton } from "@/components/documents/document-extract-button";
 import { DocumentExtractionBadge } from "@/components/documents/document-extraction-badge";
+import { DocumentIngestButton } from "@/components/documents/document-ingest-button";
+import { DocumentIngestErrorBadge } from "@/components/documents/document-ingest-error-badge";
 import { cn } from "@/lib/utils";
 
 const FOLDER_PAGE_SIZE = 25;
@@ -159,9 +162,18 @@ function FileRow({
           >
             {doc.ingested ? "Ingested" : "Pending"}
           </Badge>
-          <span className="opacity-0 transition-opacity group-hover/file-row:opacity-100 focus-within:opacity-100">
-            <DocumentDeleteButton documentId={doc.id} filename={doc.filename} />
-          </span>
+          {!doc.ingested && doc.lastIngestError && (
+            <DocumentIngestErrorBadge
+              documentId={doc.id}
+              filename={doc.filename}
+              error={doc.lastIngestError}
+            />
+          )}
+        </span>
+        <span className="flex shrink-0 items-center gap-0.5 opacity-0 transition-opacity group-hover/file-row:opacity-100 focus-within:opacity-100">
+          <DocumentExtractButton documentId={doc.id} filename={doc.filename} />
+          <DocumentIngestButton documentId={doc.id} />
+          <DocumentDeleteButton documentId={doc.id} filename={doc.filename} />
         </span>
       </div>
     </li>

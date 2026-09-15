@@ -7,7 +7,15 @@ import {
   useInfiniteQuery,
 } from "@tanstack/react-query";
 
-import { deleteDocument, getDocuments, restoreDocument } from "./api";
+import { extractionKeys } from "@/api/extractions/query";
+
+import {
+  deleteDocument,
+  emptyTrash,
+  getDocuments,
+  permanentlyDeleteDocument,
+  restoreDocument,
+} from "./api";
 import type { DocumentsResponse, DocumentsQuery } from "./types";
 
 /** Query key factory for documents domain */
@@ -61,4 +69,37 @@ export function useRestoreDocument() {
       queryClient.invalidateQueries({ queryKey: documentKeys.all });
     },
   });
+}
+
+/** Permanently delete a trashed document (owner only) and refresh lists */
+export function usePermanentlyDeleteDocument() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => permanentlyDeleteDocument(id),
+    onSuccess: () => {
+      void invalidateDocumentScope(queryClient);
+    },
+  });
+}
+
+/** Empty the trash: permanently delete every trashed document (owner only) */
+export function useEmptyTrash() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: emptyTrash,
+    onSuccess: () => {
+      void invalidateDocumentScope(queryClient);
+    },
+  });
+}
+
+/** Purges touch documents, resources, and extraction state */
+function invalidateDocumentScope(
+  queryClient: ReturnType<typeof useQueryClient>,
+) {
+  return Promise.all([
+    queryClient.invalidateQueries({ queryKey: documentKeys.all }),
+    queryClient.invalidateQueries({ queryKey: ["resources"] }),
+    queryClient.invalidateQueries({ queryKey: extractionKeys.all }),
+  ]);
 }

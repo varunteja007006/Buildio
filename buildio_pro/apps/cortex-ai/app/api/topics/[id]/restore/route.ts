@@ -1,8 +1,9 @@
-import { and, count, eq, isNotNull, isNull } from "drizzle-orm";
+import { and, count, eq, isNull } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
 import { db } from "@/lib/db";
 import { topics } from "@/lib/db/schema/topics";
+import { restoreTopicCascade } from "@/lib/documents/container-cascade";
 import { getCurrentUser } from "@/lib/session";
 import { getWorkspaceMembership } from "@/lib/workspaces";
 
@@ -21,9 +22,12 @@ export async function POST(_request: Request, { params }: Params) {
     const { id } = await params;
 
     const [deleted] = await db
-      .select()
+      .select({
+        workspaceId: topics.workspaceId,
+        slug: topics.slug,
+      })
       .from(topics)
-      .where(and(eq(topics.id, id), isNotNull(topics.deletedAt)));
+      .where(eq(topics.id, id));
 
     if (!deleted) {
       return NextResponse.json(
@@ -62,11 +66,12 @@ export async function POST(_request: Request, { params }: Params) {
       );
     }
 
-    const [topic] = await db
-      .update(topics)
-      .set({ deletedAt: null })
-      .where(eq(topics.id, id))
-      .returning();
+    // H12: restore the topic, its folder tree, and the batch of documents
+    // and children trashed together with it (H11's deletedBatchId)
+    const [topic] = await db.transaction(async (tx) => {
+      await restoreTopicCascade(tx, id);
+      return tx.select().from(topics).where(eq(topics.id, id)).limit(1);
+    });
 
     return NextResponse.json({ topic });
   } catch (error) {

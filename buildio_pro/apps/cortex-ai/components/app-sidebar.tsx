@@ -35,6 +35,7 @@ const navMain = [
       { title: "All Documents", url: "/dashboard/documents" },
       { title: "Extraction", url: "/dashboard/documents/extraction-templates" },
       { title: "Audit Logs", url: "/dashboard/documents/audit-logs" },
+      { title: "Trash", url: "/dashboard/documents/trash" },
     ],
   },
   {

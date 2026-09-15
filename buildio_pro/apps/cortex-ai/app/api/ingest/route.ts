@@ -1,19 +1,24 @@
-import path from "node:path";
-
-import { and, eq } from "drizzle-orm";
+import { and, eq, inArray, isNull } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
-import { generateChunks, generateEmbeddings } from "@/lib/ai/embedding";
+import { recordDocumentAudit } from "@/lib/audit/document-audit";
 import { db } from "@/lib/db";
 import { documents } from "@/lib/db/schema/documents";
-import { embeddings } from "@/lib/db/schema/embeddings";
-import { resources } from "@/lib/db/schema/resources";
+import { ingestDocument } from "@/lib/ingest/ingest-document";
 import { getCurrentUser } from "@/lib/session";
 import { getActiveWorkspace } from "@/lib/workspaces";
 
-const SUPPORTED_EXTENSIONS = new Set([".txt", ".md", ".mdx", ".csv"]);
-
-export async function POST() {
+/**
+ * Ingest documents (chunk → embed → store).
+ *
+ * Body (optional): `{ documentIds?: string[] }` — ingest only those
+ * documents. Omitted → ingest every uningested document in the workspace.
+ *
+ * Per document, the latest approved extraction's content is consumed
+ * (falling back to the raw file); re-ingestion soft-deletes the document's
+ * previous resources so the new one supersedes them.
+ */
+export async function POST(request: Request) {
   try {
     const user = await getCurrentUser();
     if (!user) {
@@ -31,107 +36,126 @@ export async function POST() {
       );
     }
 
-    // 1. Find all uningested documents in the active workspace
-    const uningested = await db
-      .select()
-      .from(documents)
-      .where(
-        and(
-          eq(documents.workspaceId, workspace.id),
-          eq(documents.ingested, false),
-        ),
-      );
+    const body = (await request.json().catch(() => null)) as {
+      documentIds?: unknown;
+    } | null;
+    const requestedIds = Array.isArray(body?.documentIds)
+      ? body.documentIds.filter(
+          (id: unknown): id is string =>
+            typeof id === "string" && id.length > 0,
+        )
+      : [];
 
-    if (uningested.length === 0) {
+    // Resolve the target documents (workspace-scoped, active only)
+    let targets: { id: string; filename: string; filepath: string }[];
+    if (requestedIds.length > 0) {
+      targets = await db
+        .select({
+          id: documents.id,
+          filename: documents.filename,
+          filepath: documents.filepath,
+        })
+        .from(documents)
+        .where(
+          and(
+            inArray(documents.id, requestedIds),
+            eq(documents.workspaceId, workspace.id),
+            isNull(documents.deletedAt),
+          ),
+        );
+      if (targets.length !== new Set(requestedIds).size) {
+        return NextResponse.json(
+          {
+            success: false,
+            error: "Some documents were not found in this workspace",
+          },
+          { status: 404 },
+        );
+      }
+    } else {
+      targets = await db
+        .select({
+          id: documents.id,
+          filename: documents.filename,
+          filepath: documents.filepath,
+        })
+        .from(documents)
+        .where(
+          and(
+            eq(documents.workspaceId, workspace.id),
+            eq(documents.ingested, false),
+            isNull(documents.deletedAt),
+          ),
+        );
+    }
+
+    if (targets.length === 0) {
       return NextResponse.json({
         success: true,
         message: "No documents to ingest",
         ingested: 0,
+        failed: 0,
+        results: [],
       });
     }
 
     const results: {
+      documentId: string;
       filename: string;
       success: boolean;
       chunksCount?: number;
+      source?: "extraction" | "file";
       error?: string;
     }[] = [];
 
-    for (const doc of uningested) {
+    for (const doc of targets) {
+      const docStartedAt = Date.now();
+      let outcome: Awaited<ReturnType<typeof ingestDocument>>;
       try {
-        // 2. Check file extension (skip unsupported formats)
-        const ext = path.extname(doc.filename).toLowerCase();
-        if (!SUPPORTED_EXTENSIONS.has(ext)) {
-          results.push({
-            filename: doc.filename,
-            success: false,
-            error: `Unsupported file format: ${ext}. Supported: ${[...SUPPORTED_EXTENSIONS].join(", ")}. PDF/text extraction not yet implemented.`,
-          });
-          continue;
-        }
-
-        // 3. Read file content — filepath is an UploadThing CDN URL
-        if (!doc.filepath.startsWith("https://")) {
-          results.push({
-            filename: doc.filename,
-            success: false,
-            error: "Document has no downloadable file URL",
-          });
-          continue;
-        }
-        const fileResponse = await fetch(doc.filepath);
-        if (!fileResponse.ok) {
-          results.push({
-            filename: doc.filename,
-            success: false,
-            error: `Failed to fetch file: HTTP ${fileResponse.status}`,
-          });
-          continue;
-        }
-        const content = await fileResponse.text();
-
-        // 3. Insert resource
-        const [resource] = await db
-          .insert(resources)
-          .values({ workspaceId: workspace.id, content })
-          .returning({ id: resources.id });
-
-        // 4. Chunk and embed
-        const chunks = generateChunks(content);
-        const vectors = await generateEmbeddings(chunks);
-
-        // 5. Store embeddings
-        if (chunks.length > 0) {
-          await db.insert(embeddings).values(
-            chunks.map((chunk, i) => ({
-              workspaceId: workspace.id,
-              resourceId: resource.id,
-              content: chunk,
-              embedding: vectors[i],
-            })),
-          );
-        }
-
-        // 6. Mark document as ingested
-        await db
-          .update(documents)
-          .set({ ingested: true })
-          .where(eq(documents.id, doc.id));
-
-        results.push({
-          filename: doc.filename,
-          success: true,
-          chunksCount: chunks.length,
-        });
+        outcome = await ingestDocument(doc, workspace.id);
       } catch (error) {
-        const message =
-          error instanceof Error ? error.message : "Unknown error";
-        results.push({
-          filename: doc.filename,
+        outcome = {
           success: false,
-          error: message,
-        });
+          error: error instanceof Error ? error.message : "Unknown error",
+        };
       }
+
+      results.push(
+        outcome.success
+          ? {
+              documentId: doc.id,
+              filename: doc.filename,
+              success: true,
+              chunksCount: outcome.chunksCount,
+              source: outcome.source,
+            }
+          : {
+              documentId: doc.id,
+              filename: doc.filename,
+              success: false,
+              error: outcome.error,
+            },
+      );
+
+      // F2: audit the ingestion (chunk counts + resource id + embedding
+      // tokens in `usage`)
+      void recordDocumentAudit({
+        userId: user.id,
+        workspaceId: workspace.id,
+        action: "ingest",
+        documentIds: [doc.id],
+        usage: outcome.success
+          ? {
+              chunksCount: outcome.chunksCount,
+              resourceId: outcome.resourceId,
+              source: outcome.source,
+              embeddingTokens: outcome.embeddingTokens,
+            }
+          : null,
+        durationMs: Date.now() - docStartedAt,
+        status: outcome.success ? "completed" : "failed",
+        error: outcome.success ? null : outcome.error,
+      }).catch(console.error);
     }
 
     return NextResponse.json({

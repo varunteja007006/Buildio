@@ -18,6 +18,8 @@ export const resources = pgTable(
       onDelete: "set null",
     }),
     deletedAt: timestamp("deleted_at", { withTimezone: true }),
+    /** Cascade batch tag: set when deleted alone or with its document */
+    deletedBatchId: text("deleted_batch_id"),
     createdAt: timestamp("created_at", { withTimezone: true })
       .default(sql`now()`)
       .notNull(),

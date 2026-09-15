@@ -32,6 +32,8 @@ export const folders = pgTable(
     depth: integer("depth").notNull().default(0),
     position: integer("position").notNull().default(0),
     deletedAt: timestamp("deleted_at", { withTimezone: true }),
+    /** Cascade batch tag: set when deleted alone or with its topic */
+    deletedBatchId: text("deleted_batch_id"),
     createdAt: timestamp("created_at", { withTimezone: true })
       .default(sql`now()`)
       .notNull(),

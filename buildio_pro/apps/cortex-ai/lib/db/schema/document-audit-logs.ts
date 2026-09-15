@@ -1,9 +1,15 @@
 import { sql } from "drizzle-orm";
-import { index, jsonb, pgTable, text, timestamp } from "drizzle-orm/pg-core";
+import {
+  index,
+  integer,
+  jsonb,
+  pgTable,
+  text,
+  timestamp,
+} from "drizzle-orm/pg-core";
 
 import { user } from "./auth";
 import { extractions } from "./extractions";
-import { workspaces } from "./workspaces";
 
 /** Immutable audit log — rows are never updated or deleted. */
 export const documentAuditLogs = pgTable(
@@ -15,9 +21,9 @@ export const documentAuditLogs = pgTable(
     userId: text("user_id").references(() => user.id, {
       onDelete: "set null",
     }),
-    workspaceId: text("workspace_id")
-      .notNull()
-      .references(() => workspaces.id, { onDelete: "cascade" }),
+    // Deliberately no FK: audit rows must survive workspace (and user)
+    // deletion — deleting a workspace must never wipe its audit history.
+    workspaceId: text("workspace_id").notNull(),
     /** extract | ingest | delete | restore | permanent_delete | template_create | template_update | template_delete */
     action: text("action").notNull(),
     documentIds: jsonb("document_ids"),
@@ -31,6 +37,8 @@ export const documentAuditLogs = pgTable(
     model: text("model"),
     provider: text("provider"),
     usage: jsonb("usage"),
+    /** Wall-clock duration of the audited operation, in milliseconds. */
+    durationMs: integer("duration_ms"),
     status: text("status"),
     error: text("error"),
     createdAt: timestamp("created_at", { withTimezone: true })

@@ -18,7 +18,11 @@ export const documents = pgTable(
     filepath: text("filepath").notNull(),
     fileHash: text("file_hash").notNull(),
     ingested: boolean("ingested").default(false).notNull(),
+    /** Last ingestion failure message; cleared on a successful ingest */
+    lastIngestError: text("last_ingest_error"),
     deletedAt: timestamp("deleted_at", { withTimezone: true }),
+    /** Cascade batch tag: set when this row is deleted (alone or with a container) */
+    deletedBatchId: text("deleted_batch_id"),
     topicId: text("topic_id").references(() => topics.id, {
       onDelete: "set null",
     }),

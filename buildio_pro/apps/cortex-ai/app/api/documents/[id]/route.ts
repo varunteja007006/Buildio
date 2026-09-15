@@ -1,9 +1,11 @@
-import { and, eq, inArray, isNull, sql } from "drizzle-orm";
+import { and, eq, inArray, isNull } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
+import { recordDocumentAudit } from "@/lib/audit/document-audit";
 import { db } from "@/lib/db";
 import { documents } from "@/lib/db/schema/documents";
 import { extractions } from "@/lib/db/schema/extractions";
+import { softDeleteDocumentChildren } from "@/lib/documents/document-cascade";
 import { getCurrentUser } from "@/lib/session";
 import { getActiveWorkspace } from "@/lib/workspaces";
 
@@ -41,22 +43,40 @@ export async function DELETE(_request: Request, { params }: Params) {
         { status: 409 },
       );
 
-    const [document] = await db
-      .update(documents)
-      .set({ deletedAt: sql`now()` })
-      .where(
-        and(
-          eq(documents.id, id),
-          eq(documents.workspaceId, workspace.id),
-          isNull(documents.deletedAt),
-        ),
-      )
-      .returning({ id: documents.id });
+    // H5: soft delete the document and cascade to its extractions,
+    // resources, and embeddings — one batch tag for a clean restore (H6)
+    const batchId = crypto.randomUUID();
+    const document = await db.transaction(async (tx) => {
+      const [row] = await tx
+        .update(documents)
+        .set({ deletedAt: new Date(), deletedBatchId: batchId })
+        .where(
+          and(
+            eq(documents.id, id),
+            eq(documents.workspaceId, workspace.id),
+            isNull(documents.deletedAt),
+          ),
+        )
+        .returning({ id: documents.id });
+      if (!row) return null;
+      await softDeleteDocumentChildren(tx, [id], batchId);
+      return row;
+    });
     if (!document)
       return NextResponse.json(
         { error: "Document not found" },
         { status: 404 },
       );
+
+    // F6: audit the soft delete
+    void recordDocumentAudit({
+      userId: user.id,
+      workspaceId: workspace.id,
+      action: "delete",
+      documentIds: [id],
+      status: "deleted",
+    }).catch(console.error);
+
     return NextResponse.json({ success: true, id });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown error";

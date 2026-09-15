@@ -1,12 +1,18 @@
+import apiClient from "@/api/client";
+import { endpoints } from "@/api/endpoints";
+
 import type { IngestResponse } from "./types";
 
-export async function ingestDocuments(): Promise<IngestResponse> {
-  const response = await fetch("/api/ingest", { method: "POST" });
-  if (!response.ok) {
-    const error = await response
-      .json()
-      .catch(() => ({ error: "Request failed" }));
-    throw new Error(error.error ?? `HTTP ${response.status}`);
-  }
-  return response.json();
+/**
+ * Ingest documents (chunk → embed → store). With `documentIds`, ingests
+ * exactly those documents (latest approved extraction content, falling back
+ * to the raw file); without, ingests every uningested workspace document.
+ */
+export async function ingestDocuments(
+  documentIds?: string[],
+): Promise<IngestResponse> {
+  const response = await apiClient.post<IngestResponse>(endpoints.ingest.run, {
+    documentIds,
+  });
+  return response.data;
 }

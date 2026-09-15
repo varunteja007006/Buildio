@@ -35,7 +35,7 @@ export async function createResource(
     const chunks = generateChunks(content);
 
     // 3. Generate embeddings for all chunks
-    const vectors = await generateEmbeddings(chunks);
+    const { vectors } = await generateEmbeddings(chunks);
 
     // 4. Store embeddings
     if (chunks.length > 0) {

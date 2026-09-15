@@ -1,6 +1,7 @@
 import { and, eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
+import { recordDocumentAudit } from "@/lib/audit/document-audit";
 import { db } from "@/lib/db";
 import { extractionTemplates } from "@/lib/db/schema/extraction-templates";
 import { getCurrentUser } from "@/lib/session";
@@ -15,7 +16,10 @@ export async function DELETE(_request: Request, { params }: Params) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     const { id } = await params;
     const [existing] = await db
-      .select({ workspaceId: extractionTemplates.workspaceId })
+      .select({
+        workspaceId: extractionTemplates.workspaceId,
+        name: extractionTemplates.name,
+      })
       .from(extractionTemplates)
       .where(eq(extractionTemplates.id, id))
       .limit(1);
@@ -47,6 +51,17 @@ export async function DELETE(_request: Request, { params }: Params) {
         { error: "Template not found" },
         { status: 404 },
       );
+
+    // F6: audit the permanent (hard) delete — the template row is gone,
+    // so the audit row keeps its name for traceability
+    void recordDocumentAudit({
+      userId: user.id,
+      workspaceId: existing.workspaceId,
+      action: "permanent_delete",
+      templateSnapshot: { id, name: existing.name },
+      status: "permanent_deleted",
+    }).catch(console.error);
+
     return NextResponse.json({ success: true, id });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown error";

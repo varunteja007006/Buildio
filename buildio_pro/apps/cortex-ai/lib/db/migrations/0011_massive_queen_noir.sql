@@ -1,0 +1,1 @@
+ALTER TABLE "document_audit_logs" ADD COLUMN "duration_ms" integer;

@@ -1,9 +1,9 @@
-import { and, count, eq, isNull } from "drizzle-orm";
-import { sql } from "drizzle-orm";
+import { and, count, eq, isNull, sql } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 
 import { db } from "@/lib/db";
 import { topics } from "@/lib/db/schema/topics";
+import { softDeleteTopicCascade } from "@/lib/documents/container-cascade";
 import { getCurrentUser } from "@/lib/session";
 import { slugify } from "@/lib/slug";
 import { getActiveWorkspace } from "@/lib/workspaces";
@@ -128,24 +128,10 @@ export async function DELETE(_request: NextRequest, { params }: Params) {
 
     const { id } = await params;
 
-    const [topic] = await db
-      .update(topics)
-      .set({ deletedAt: sql`now()` })
-      .where(
-        and(
-          eq(topics.id, id),
-          eq(topics.workspaceId, workspace.id),
-          isNull(topics.deletedAt),
-        ),
-      )
-      .returning();
-
-    if (!topic) {
-      return NextResponse.json(
-        { success: false, error: "Topic not found" },
-        { status: 404 },
-      );
-    }
+    // H11: soft-delete the topic, its folder trees, and all of its
+    // documents (with their extractions/resources/embeddings), tagged with
+    // one deletedBatchId so restore can undo exactly that batch
+    await db.transaction(async (tx) => softDeleteTopicCascade(tx, id));
 
     return NextResponse.json({ success: true, id });
   } catch (error) {

@@ -8,12 +8,14 @@ import {
   ActionBarSeparator,
   ActionBarItem,
 } from "@workspace/ui/components/action-bar";
-import { Sparkles, X } from "lucide-react";
+import { DatabaseZap, Sparkles, X } from "lucide-react";
 
 type DocumentsBulkBarProps = {
   selectedCount: number;
   onClear: () => void;
   onExtract: () => void;
+  onIngest: () => void;
+  ingestPending?: boolean;
 };
 
 /**
@@ -24,6 +26,8 @@ export function DocumentsBulkBar({
   selectedCount,
   onClear,
   onExtract,
+  onIngest,
+  ingestPending,
 }: DocumentsBulkBarProps) {
   return (
     <ActionBar
@@ -43,6 +47,15 @@ export function DocumentsBulkBar({
         >
           <Sparkles className="size-3.5" />
           Extract
+        </ActionBarItem>
+        <ActionBarItem
+          variant="default"
+          onSelect={(event) => event.preventDefault()}
+          onClick={onIngest}
+          disabled={ingestPending}
+        >
+          <DatabaseZap className="size-3.5" />
+          Ingest
         </ActionBarItem>
       </ActionBarGroup>
       <ActionBarClose aria-label="Clear selection">

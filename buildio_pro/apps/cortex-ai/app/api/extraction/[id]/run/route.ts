@@ -1,6 +1,7 @@
 import { and, eq, isNull, sql } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
+import { recordDocumentAudit } from "@/lib/audit/document-audit";
 import { db } from "@/lib/db";
 import { documents } from "@/lib/db/schema/documents";
 import { extractionVersions } from "@/lib/db/schema/extraction-versions";
@@ -9,6 +10,7 @@ import {
   runExtraction,
   type TemplateSnapshot,
 } from "@/lib/extraction/run-extraction";
+import { ingestDocument } from "@/lib/ingest/ingest-document";
 import { getCurrentUser } from "@/lib/session";
 import { getActiveWorkspace } from "@/lib/workspaces";
 
@@ -68,8 +70,9 @@ export async function POST(_request: Request, { params }: Params) {
       `[extraction] start id=${id} model=${processing.model ?? "default"}`,
     );
 
+    const template = (extraction.templateSnapshot ?? {}) as TemplateSnapshot;
+
     try {
-      const template = (extraction.templateSnapshot ?? {}) as TemplateSnapshot;
       if (!template.instructions)
         throw new Error("Extraction has no template instructions");
 
@@ -118,7 +121,66 @@ export async function POST(_request: Request, { params }: Params) {
           (Date.now() - startedAt) / 1000
         ).toFixed(1)}s`,
       );
-      return NextResponse.json({ extraction: completed });
+
+      // F1: audit the extraction (immutable log — never blocks the response)
+      void recordDocumentAudit({
+        userId: user.id,
+        workspaceId: workspace.id,
+        action: "extract",
+        documentIds: [extraction.documentId],
+        extractionId: id,
+        templateSnapshot: extraction.templateSnapshot,
+        instructionsSnapshot: template.instructions,
+        rawAiOutput: result.rawOutput,
+        finalOutput: completed.currentContent,
+        model: result.model,
+        provider: result.provider,
+        usage: result.usage,
+        durationMs: Date.now() - startedAt,
+        status: "completed",
+      }).catch(console.error);
+
+      // E4: auto-ingest when the extraction was queued with the toggle on.
+      // A failure here does not fail the (already completed) extraction.
+      let ingestion: Awaited<ReturnType<typeof ingestDocument>> | null = null;
+      if (extraction.autoIngest) {
+        const ingestStartedAt = Date.now();
+        let outcome: Awaited<ReturnType<typeof ingestDocument>>;
+        try {
+          outcome = await ingestDocument(
+            { id: extraction.documentId, filename, filepath },
+            workspace.id,
+          );
+        } catch (error) {
+          outcome = {
+            success: false,
+            error:
+              error instanceof Error ? error.message : "Unknown ingest error",
+          };
+        }
+        ingestion = outcome;
+
+        // F2: audit the auto-triggered ingestion
+        void recordDocumentAudit({
+          userId: user.id,
+          workspaceId: workspace.id,
+          action: "ingest",
+          documentIds: [extraction.documentId],
+          usage: outcome.success
+            ? {
+                chunksCount: outcome.chunksCount,
+                resourceId: outcome.resourceId,
+                source: outcome.source,
+                embeddingTokens: outcome.embeddingTokens,
+              }
+            : null,
+          durationMs: Date.now() - ingestStartedAt,
+          status: outcome.success ? "completed" : "failed",
+          error: outcome.success ? null : outcome.error,
+        }).catch(console.error);
+      }
+
+      return NextResponse.json({ extraction: completed, ingestion });
     } catch (error) {
       const message =
         error instanceof Error ? error.message : "Unknown extraction error";
@@ -127,6 +189,22 @@ export async function POST(_request: Request, { params }: Params) {
         .set({ status: "failed", error: message })
         .where(eq(extractions.id, id))
         .returning();
+
+      // F1: audit the failed extraction
+      void recordDocumentAudit({
+        userId: user.id,
+        workspaceId: workspace.id,
+        action: "extract",
+        documentIds: [extraction.documentId],
+        extractionId: id,
+        templateSnapshot: extraction.templateSnapshot,
+        instructionsSnapshot: template.instructions,
+        model: processing.model,
+        durationMs: Date.now() - startedAt,
+        status: "failed",
+        error: message,
+      }).catch(console.error);
+
       console.log(
         `[extraction] done id=${id} status=failed in ${(
           (Date.now() - startedAt) / 1000

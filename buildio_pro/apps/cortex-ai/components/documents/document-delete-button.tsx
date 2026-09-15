@@ -6,6 +6,8 @@ import { useState } from "react";
 import { useDeleteDocument, useRestoreDocument } from "@/api/documents/query";
 import { ActionButton } from "@/components/documents/action-button";
 import { DeleteDialog } from "@/components/documents/delete-dialog";
+import { DocumentExtractButton } from "@/components/documents/document-extract-button";
+import { DocumentIngestButton } from "@/components/documents/document-ingest-button";
 
 /** Delete (move to trash) action with confirmation, for an active document. */
 export function DocumentDeleteButton({
@@ -67,6 +69,10 @@ export function DocumentRowActions({ document }: { document: {
   return document.deletedAt ? (
     <DocumentRestoreButton documentId={document.id} />
   ) : (
-    <DocumentDeleteButton documentId={document.id} filename={document.filename} />
+    <>
+      <DocumentExtractButton documentId={document.id} filename={document.filename} />
+      <DocumentIngestButton documentId={document.id} />
+      <DocumentDeleteButton documentId={document.id} filename={document.filename} />
+    </>
   );
 }

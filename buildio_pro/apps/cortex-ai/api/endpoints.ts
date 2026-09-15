@@ -21,11 +21,17 @@ export const endpoints = {
   auditLogs: {
     list: "/audit-logs",
   },
+  documentAuditLogs: {
+    list: "/document-audit-logs",
+  },
   extractionTemplates: {
     list: "/extraction-templates",
     detail: (id: string) => `/extraction-templates/${id}`,
     restore: (id: string) => `/extraction-templates/${id}/restore`,
     permanent: (id: string) => `/extraction-templates/${id}/permanent`,
+  },
+  ingest: {
+    run: "/ingest",
   },
   extractions: {
     list: "/extraction",
@@ -38,6 +44,20 @@ export const endpoints = {
     list: "/documents",
     detail: (id: string) => `/documents/${id}`,
     restore: (id: string) => `/documents/${id}/restore`,
+    permanent: (id: string) => `/documents/${id}/permanent`,
+    trash: "/documents/trash",
+  },
+  folders: {
+    list: "/folders",
+    detail: (id: string) => `/folders/${id}`,
+    restore: (id: string) => `/folders/${id}/restore`,
+    permanent: (id: string) => `/folders/${id}/permanent`,
+  },
+  topics: {
+    list: "/topics",
+    detail: (id: string) => `/topics/${id}`,
+    restore: (id: string) => `/topics/${id}/restore`,
+    permanent: (id: string) => `/topics/${id}/permanent`,
   },
   dashboard: {
     stats: "/dashboard",

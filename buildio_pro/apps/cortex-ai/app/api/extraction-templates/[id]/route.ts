@@ -1,6 +1,7 @@
 import { and, eq, isNull, sql } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 
+import { recordDocumentAudit } from "@/lib/audit/document-audit";
 import { db } from "@/lib/db";
 import { extractionTemplates } from "@/lib/db/schema/extraction-templates";
 import { getCurrentUser } from "@/lib/session";
@@ -84,6 +85,22 @@ export async function PATCH(request: NextRequest, { params }: Params) {
         ),
       )
       .returning();
+
+    // F6: audit the template update
+    void recordDocumentAudit({
+      userId: user.id,
+      workspaceId: workspace.id,
+      action: "template_update",
+      templateSnapshot: {
+        id: template.id,
+        name: template.name,
+        instructions: template.instructions,
+        outputSchema: template.outputSchema,
+        defaultModel: template.defaultModel,
+      },
+      status: "updated",
+    }).catch(console.error);
+
     return NextResponse.json({ template });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown error";
@@ -113,12 +130,28 @@ export async function DELETE(_request: NextRequest, { params }: Params) {
           isNull(extractionTemplates.deletedAt),
         ),
       )
-      .returning({ id: extractionTemplates.id });
+      .returning();
     if (!template)
       return NextResponse.json(
         { error: "Template not found" },
         { status: 404 },
       );
+
+    // F6: audit the template soft delete
+    void recordDocumentAudit({
+      userId: user.id,
+      workspaceId: workspace.id,
+      action: "template_delete",
+      templateSnapshot: {
+        id: template.id,
+        name: template.name,
+        instructions: template.instructions,
+        outputSchema: template.outputSchema,
+        defaultModel: template.defaultModel,
+      },
+      status: "deleted",
+    }).catch(console.error);
+
     return NextResponse.json({ success: true, id });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown error";

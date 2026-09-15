@@ -6,6 +6,7 @@ import type {
   DocumentResponse,
   DocumentsQuery,
   DocumentsResponse,
+  EmptyTrashResponse,
 } from "./types";
 
 /** Build a query string from pagination/filter params, omitting defaults */
@@ -48,6 +49,24 @@ export async function deleteDocument(id: string): Promise<DeleteResponse> {
 export async function restoreDocument(id: string): Promise<DocumentResponse> {
   const { data } = await apiClient.post<DocumentResponse>(
     endpoints.documents.restore(id),
+  );
+  return data;
+}
+
+/** Permanently delete a trashed document (owner only, cannot be undone) */
+export async function permanentlyDeleteDocument(
+  id: string,
+): Promise<DeleteResponse> {
+  const { data } = await apiClient.delete<DeleteResponse>(
+    endpoints.documents.permanent(id),
+  );
+  return data;
+}
+
+/** Empty the trash: permanently delete every trashed document (owner only) */
+export async function emptyTrash(): Promise<EmptyTrashResponse> {
+  const { data } = await apiClient.delete<EmptyTrashResponse>(
+    endpoints.documents.trash,
   );
   return data;
 }

@@ -11,7 +11,6 @@ import {
 
 import { user } from "./auth";
 import { chatThreads } from "./threads";
-import { workspaces } from "./workspaces";
 
 export const chatAuditLogs = pgTable(
   "chat_audit_logs",
@@ -22,9 +21,9 @@ export const chatAuditLogs = pgTable(
     userId: text("user_id")
       .notNull()
       .references(() => user.id, { onDelete: "cascade" }),
-    workspaceId: text("workspace_id")
-      .notNull()
-      .references(() => workspaces.id, { onDelete: "cascade" }),
+    // Deliberately no FK: audit rows must survive workspace deletion —
+    // deleting a workspace must never wipe its audit history.
+    workspaceId: text("workspace_id").notNull(),
     threadId: text("thread_id").references(() => chatThreads.id, {
       onDelete: "set null",
     }),

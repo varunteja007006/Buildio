@@ -1,20 +1,17 @@
-import { createOpenAI } from "@ai-sdk/openai";
+import { gateway } from "ai";
 
 /**
- * OpenAI-compatible provider configured for Vercel AI Gateway.
+ * Embedding model for RAG ingestion + retrieval, via the Vercel AI Gateway
+ * (one key for all providers). Auth: `AI_GATEWAY_API_KEY` env var, or
+ * automatic Vercel OIDC when deployed on Vercel.
  *
- * Uses the `AI_GATEWAY_API_KEY` env var (a Vercel API key starting with `vck_`).
- * Falls back to `OPENAI_API_KEY` if the gateway key is not set.
- *
- * For local dev you may also need to set `OPENAI_BASE_URL` to your
- * Vercel AI Gateway endpoint, e.g.:
- *   https://gateway.ai.vercel.com/v1/{teamId}/openai
- *
- * When deployed on Vercel, the gateway routing is automatic.
+ * `outputDimensionality` is pinned to 1536 via `embeddingProviderOptions`
+ * to match the `embeddings.embedding` vector(1536) column —
+ * google/gemini-embedding-2 defaults to 3072 dimensions.
  */
-export const openai = createOpenAI({
-  apiKey:
-    process.env.AI_GATEWAY_API_KEY ?? process.env.OPENAI_API_KEY ?? undefined,
-});
+export const embeddingModel = gateway.embedding("google/gemini-embedding-2");
 
-export const embeddingModel = openai.embedding("text-embedding-3-small");
+/** Pins gemini-embedding-2 output to the DB's vector(1536) column. */
+export const embeddingProviderOptions = {
+  google: { outputDimensionality: 1536 },
+} as const;

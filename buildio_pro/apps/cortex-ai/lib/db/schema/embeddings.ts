@@ -19,6 +19,8 @@ export const embeddings = pgTable(
     content: text("content").notNull(),
     embedding: vector("embedding", { dimensions: 1536 }).notNull(),
     deletedAt: timestamp("deleted_at", { withTimezone: true }),
+    /** Cascade batch tag: set when deleted with its resource/document */
+    deletedBatchId: text("deleted_batch_id"),
   },
   (table) => ({
     workspaceIdx: index("embeddings_workspace_idx").on(table.workspaceId),

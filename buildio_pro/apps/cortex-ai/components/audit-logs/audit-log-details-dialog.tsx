@@ -15,9 +15,13 @@ import {
   formatDateTime,
   formatMs,
   formatNumber,
-  prettyJson,
 } from "@/api/audit-logs/helpers";
 import type { ChatAuditLog } from "@/api/audit-logs/types";
+import {
+  DetailRow,
+  JsonBlock,
+  TextBlock,
+} from "@/components/audit-logs/detail-primitives";
 import { RiskBadge } from "@/components/audit-logs/risk-badge";
 
 type Props = {
@@ -25,26 +29,6 @@ type Props = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 };
-
-function DetailRow({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="flex flex-col gap-0.5">
-      <span className="text-xs text-muted-foreground">{label}</span>
-      <span className="text-sm break-words">{value}</span>
-    </div>
-  );
-}
-
-function JsonBlock({ title, value }: { title: string; value: unknown }) {
-  return (
-    <div className="flex flex-col gap-1">
-      <span className="text-xs font-medium text-muted-foreground">{title}</span>
-      <pre className="max-h-64 overflow-auto rounded-md border bg-muted/40 p-3 font-mono text-xs whitespace-pre-wrap">
-        {prettyJson(value)}
-      </pre>
-    </div>
-  );
-}
 
 export function AuditLogDetailsDialog({ log, open, onOpenChange }: Props) {
   const toolCallCount = Array.isArray(log?.toolCalls)
@@ -113,7 +97,10 @@ export function AuditLogDetailsDialog({ log, open, onOpenChange }: Props) {
                   <span className="text-xs font-medium text-muted-foreground">
                     Error
                   </span>
-                  <Badge variant="destructive" className="w-fit">
+                  <Badge
+                    variant="destructive"
+                    className="h-auto w-fit py-1 whitespace-normal break-words"
+                  >
                     {log.error}
                   </Badge>
                 </div>
@@ -158,23 +145,8 @@ export function AuditLogDetailsDialog({ log, open, onOpenChange }: Props) {
 
               <Separator />
 
-              <div className="flex flex-col gap-1">
-                <span className="text-xs font-medium text-muted-foreground">
-                  User query
-                </span>
-                <p className="rounded-md border bg-muted/40 p-3 text-sm whitespace-pre-wrap">
-                  {log.userQuery ?? "—"}
-                </p>
-              </div>
-
-              <div className="flex flex-col gap-1">
-                <span className="text-xs font-medium text-muted-foreground">
-                  Response
-                </span>
-                <p className="rounded-md border bg-muted/40 p-3 text-sm whitespace-pre-wrap">
-                  {log.responseText ?? "—"}
-                </p>
-              </div>
+              <TextBlock title="User query" value={log.userQuery} />
+              <TextBlock title="Response" value={log.responseText} />
 
               <Separator />
 

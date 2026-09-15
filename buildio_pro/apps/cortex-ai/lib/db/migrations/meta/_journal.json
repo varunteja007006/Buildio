@@ -57,6 +57,41 @@
       "when": 1789464033415,
       "tag": "0007_flippant_callisto",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1789466380326,
+      "tag": "0008_messy_triathlon",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1789472431905,
+      "tag": "0009_lively_the_santerians",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1789472570117,
+      "tag": "0010_large_red_wolf",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1789474159030,
+      "tag": "0011_massive_queen_noir",
+      "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1789474731856,
+      "tag": "0012_true_serpent_society",
+      "breakpoints": true
     }
   ]
 }

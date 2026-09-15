@@ -1,0 +1,1 @@
+ALTER TABLE "documents" ADD COLUMN "last_ingest_error" text;

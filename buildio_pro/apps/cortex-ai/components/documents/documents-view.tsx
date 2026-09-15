@@ -50,6 +50,8 @@ export function DocumentsView() {
   >(null);
   const [renameTarget, setRenameTarget] = useState<ActionTarget | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<ActionTarget | null>(null);
+  /** Folder pinned as the upload destination (tree flow only; null = picker) */
+  const [uploadFolder, setUploadFolder] = useState<Folder | null>(null);
 
   const {
     data: docsInfinite,
@@ -68,8 +70,6 @@ export function DocumentsView() {
   const hasTopics = topics.length > 0;
   const isLoading = topicsLoading || foldersLoading || docsLoading;
 
-  const selectedFolder = folders.find((f) => f.id === selectedFolderId) ?? null;
-
   const {
     renamePending,
     renameError,
@@ -84,10 +84,7 @@ export function DocumentsView() {
   });
 
   const handleUploadClick = () => {
-    if (!selectedFolder) {
-      setView("tree");
-      return;
-    }
+    setUploadFolder(null);
     setUploadOpen(true);
   };
 
@@ -99,6 +96,7 @@ export function DocumentsView() {
 
   const handleNewFileInFolder = (folder: Folder) => {
     setSelectedFolderId(folder.id);
+    setUploadFolder(folder);
     setUploadOpen(true);
   };
 
@@ -215,11 +213,6 @@ export function DocumentsView() {
             onNewFolderInFolder={handleNewFolderInFolder}
             onNewFolderInTopic={handleNewFolderInTopic}
           />
-          {!selectedFolder && (
-            <p className="px-1 text-xs text-muted-foreground">
-              Select a folder in the tree to enable uploads.
-            </p>
-          )}
         </div>
       ) : (
         <DocumentsDataTable />
@@ -228,9 +221,11 @@ export function DocumentsView() {
       <UploadDocumentDialog
         open={uploadOpen}
         onOpenChange={setUploadOpen}
-        folderName={selectedFolder?.name ?? null}
-        folderId={selectedFolder?.id ?? null}
-        topicId={selectedFolder?.topicId ?? null}
+        folderName={uploadFolder?.name ?? null}
+        folderId={uploadFolder?.id ?? null}
+        topicId={uploadFolder?.topicId ?? null}
+        topics={topics}
+        folders={folders}
       />
 
       <NewTopicDialog

@@ -10,18 +10,32 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@workspace/ui/components/dialog";
+import { Label } from "@workspace/ui/components/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@workspace/ui/components/select";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import { documentKeys } from "@/api/documents/query";
+import type { Folder } from "@/api/folders/types";
+import type { Topic } from "@/api/topics/types";
 import { FileUpload, type FileUploadConfig } from "@/components/file-upload";
 
 interface UploadDocumentDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  /** Destination folder chosen from the tree (required before upload) */
-  folderName: string | null;
+  /** Destination folder chosen from the tree (skips the topic/folder picker) */
+  folderName?: string | null;
   folderId?: string | null;
   topicId?: string | null;
+  /** Topics/folders for the picker shown when no tree folder is selected */
+  topics?: Topic[];
+  folders?: Folder[];
   /** Optional config to override defaults (accept, maxFileSize, maxFileCount, multiple) */
   config?: FileUploadConfig;
 }
@@ -30,16 +44,40 @@ interface UploadDocumentDialogProps {
  * Upload dialog that wraps the reusable `FileUpload` drag-and-drop component.
  * Keeps a sticky header + footer and a scrollable body (max-h-[85vh]).
  * Forwards `folderId`/`topicId` as UploadThing input so the server can link the DB row.
+ *
+ * Two modes:
+ * - Tree flow: a folder was selected in the tree, so the destination is fixed.
+ * - Picker flow: opened from the header without a tree selection — pick a
+ *   topic, then a folder, before uploading.
  */
 export function UploadDocumentDialog({
   open,
   onOpenChange,
-  folderName,
+  folderName = null,
   folderId = null,
   topicId = null,
+  topics = [],
+  folders = [],
   config,
 }: UploadDocumentDialogProps) {
+  const [pickedTopicId, setPickedTopicId] = useState("");
+  const [pickedFolderId, setPickedFolderId] = useState("");
   const queryClient = useQueryClient();
+
+  const pickerMode = !folderId;
+
+  useEffect(() => {
+    if (open) {
+      setPickedTopicId("");
+      setPickedFolderId("");
+    }
+  }, [open]);
+
+  const effectiveFolderId = folderId ?? (pickedFolderId || null);
+  const pickedFolder = folders.find((f) => f.id === pickedFolderId);
+  const effectiveFolderName = folderName ?? pickedFolder?.name ?? null;
+  const effectiveTopicId = topicId ?? pickedFolder?.topicId ?? null;
+  const topicFolders = folders.filter((f) => f.topicId === pickedTopicId);
 
   const handleComplete = () => {
     // Refresh the documents table/tree after a successful UploadThing upload
@@ -48,7 +86,7 @@ export function UploadDocumentDialog({
     onOpenChange(false);
   };
 
-  const isReady = Boolean(folderId);
+  const isReady = Boolean(effectiveFolderId);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -56,11 +94,13 @@ export function UploadDocumentDialog({
         <DialogHeader className="sticky top-0 z-10 shrink-0 border-b bg-popover p-4">
           <DialogTitle>Upload documents</DialogTitle>
           <DialogDescription>
-            {isReady ? (
+            {pickerMode ? (
+              "Choose a topic and folder, then drop your files."
+            ) : isReady ? (
               <>
                 Uploading to{" "}
                 <span className="font-medium text-foreground">
-                  {folderName}
+                  {effectiveFolderName}
                 </span>
                 . Large files may take a moment to process.
               </>
@@ -70,14 +110,62 @@ export function UploadDocumentDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="flex-1 overflow-y-auto px-4 py-4">
+        <div className="flex-1 space-y-4 overflow-y-auto px-4 py-4">
+          {pickerMode && (
+            <div className="grid gap-2">
+              <Label htmlFor="upload-topic">Topic</Label>
+              <Select
+                value={pickedTopicId}
+                onValueChange={(value) => {
+                  setPickedTopicId(value);
+                  setPickedFolderId("");
+                }}
+              >
+                <SelectTrigger id="upload-topic" className="w-full">
+                  <SelectValue placeholder="Select a topic" />
+                </SelectTrigger>
+                <SelectContent>
+                  {topics.map((topic) => (
+                    <SelectItem key={topic.id} value={topic.id}>
+                      {topic.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Label htmlFor="upload-folder">Folder</Label>
+              <Select
+                value={pickedFolderId}
+                onValueChange={setPickedFolderId}
+                disabled={!pickedTopicId}
+              >
+                <SelectTrigger id="upload-folder" className="w-full">
+                  <SelectValue
+                    placeholder={
+                      pickedTopicId
+                        ? topicFolders.length === 0
+                          ? "No folders in this topic"
+                          : "Select a folder"
+                        : "Select a topic first"
+                    }
+                  />
+                </SelectTrigger>
+                <SelectContent>
+                  {topicFolders.map((folder) => (
+                    <SelectItem key={folder.id} value={folder.id}>
+                      {folder.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
           {isReady ? (
             <FileUpload
-              key={`${folderId}-${open ? "open" : "closed"}`}
+              key={`${effectiveFolderId}-${open ? "open" : "closed"}`}
               endpoint="documentUploader"
               input={{
-                ...(folderId ? { folderId } : {}),
-                ...(topicId ? { topicId } : {}),
+                ...(effectiveFolderId ? { folderId: effectiveFolderId } : {}),
+                ...(effectiveTopicId ? { topicId: effectiveTopicId } : {}),
               }}
               config={
                 config ?? {
@@ -92,8 +180,7 @@ export function UploadDocumentDialog({
             />
           ) : (
             <div className="rounded-lg border border-dashed p-8 text-center text-sm text-muted-foreground">
-              No folder selected. Pick a folder in the tree first, then open
-              this dialog.
+              Pick a topic and folder to start uploading.
             </div>
           )}
         </div>
