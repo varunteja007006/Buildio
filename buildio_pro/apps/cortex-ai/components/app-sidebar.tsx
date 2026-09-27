@@ -44,6 +44,8 @@ const navMain = [
     icon: <BotIcon />,
     items: [
       { title: "Builder", url: "/dashboard/agent/builder" },
+      { title: "Toolboxes", url: "/dashboard/agent/toolboxes" },
+      { title: "Instruction templates", url: "/dashboard/agent/templates" },
       { title: "Connectors", url: "/dashboard/agent/connectors" },
     ],
   },
