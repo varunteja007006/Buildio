@@ -30,6 +30,14 @@ export const endpoints = {
     restore: (id: string) => `/extraction-templates/${id}/restore`,
     permanent: (id: string) => `/extraction-templates/${id}/permanent`,
   },
+  connections: {
+    list: "/connections",
+    test: "/connections/test",
+    detail: (id: string) => `/connections/${id}`,
+    restore: (id: string) => `/connections/${id}/restore`,
+    permanent: (id: string) => `/connections/${id}/permanent`,
+    check: (id: string) => `/connections/${id}/check`,
+  },
   ingest: {
     run: "/ingest",
   },

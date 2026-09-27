@@ -92,6 +92,13 @@
       "when": 1789474731856,
       "tag": "0012_true_serpent_society",
       "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1790490939164,
+      "tag": "0013_aspiring_proemial_gods",
+      "breakpoints": true
     }
   ]
 }

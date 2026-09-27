@@ -1,7 +1,10 @@
 # External Database Connections Plan - cortex-ai
 
 **Date:** 2026-09-15
-**Status:** Planned
+**Status:** In progress — Postgres flow shipped (schema, encrypted secrets, probe,
+API, wizard UI at `/dashboard/agent/connectors`); MongoDB/MySQL/SQLite probes and
+the SQLite file-upload flow are still pending and surface as "Coming soon" in the
+type picker.
 **Scope:** Connector feature: user-provided credentials for external Postgres, MongoDB, MySQL databases and SQLite file uploads, with a pre-save connection check
 
 ## Goal
@@ -88,8 +91,8 @@ Shared zod schemas live in `lib/db/zod-schema/` equivalents for cortex-ai
 
 ## UI
 
-Page `app/(authenticated)/dashboard/connections/` split to stay under the 250-line
-limit:
+Page `app/(authenticated)/dashboard/agent/connectors/` (existing sidebar route)
+split to stay under the 250-line limit:
 
 - `page.tsx` — server shell
 - `connections-table.tsx` — columns: name, type badge, target (masked), status,
@@ -105,15 +108,18 @@ factory, mutation success handlers invalidating the connections list.
 
 ## Implementation phases
 
-1. [ ] Schema + migration: `connections` table, `db:generate`, `db:migrate`
-2. [ ] Secrets module: AES-256-GCM encrypt/decrypt, `ENCRYPTION_KEY` in
+1. [x] Schema + migration: `connections` table, `db:generate`, `db:migrate`
+2. [x] Secrets module: AES-256-GCM encrypt/decrypt, `ENCRYPTION_KEY` in
        `.env.example`, `environment.d.ts`, `turbo.json` `globalEnv`
 3. [ ] Probe module: per-driver connect check with timeouts; SQLite MinIO download
-       + `better-sqlite3` validation
-4. [ ] API module: test/create/list/update/delete/restore/permanent/check routes,
-       workspace scoping, pagination metadata
-5. [ ] Client layer: `api/connections/` module + endpoints registration
-6. [ ] UI: connections page, table, dialog with test-before-save, trash view
+       + `better-sqlite3` validation — Postgres probe done (`pg` Client with 3s
+       connect / 5s total timeout); other drivers pending
+4. [x] API module: test/create/list/update/delete/restore/permanent/check routes,
+       workspace scoping, pagination metadata — non-Postgres types rejected until
+       their probes land
+5. [x] Client layer: `api/connections/` module + endpoints registration
+6. [x] UI: connections page, table, dialog with test-before-save, trash view —
+       2-step wizard (type picker → connection details → check → save)
 7. [ ] Verify against compose targets (all four types), lint + typecheck
 
 ## Out of scope (later plans)

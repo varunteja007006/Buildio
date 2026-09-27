@@ -14,3 +14,4 @@ export * as extractionTemplates from "./extraction-templates";
 export * as extractions from "./extractions";
 export * as extractionVersions from "./extraction-versions";
 export * as documentAuditLogs from "./document-audit-logs";
+export * as connections from "./connections";

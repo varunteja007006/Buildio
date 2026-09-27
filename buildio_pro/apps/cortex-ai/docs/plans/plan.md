@@ -3,7 +3,7 @@
 | filename | short desc | status |
 | --- | --- | --- |
 | extraction-ingestion-optimization-2026-09-15.md | Extraction normalization, structure-aware chunking, embedding, and retrieval optimization | Planned |
-| database-connectors-2026-09-15.md | External DB connectors: user creds, connect check before save, SQLite upload | Planned |
+| database-connectors-2026-09-15.md | External DB connectors: user creds, connect check before save, SQLite upload | In progress |
 
 ## Done
 

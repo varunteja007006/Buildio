@@ -48,6 +48,9 @@ declare namespace NodeJS {
     MYSQL_PASSWORD?: string;
     MYSQL_ROOT_PASSWORD?: string;
 
+    // Connection credential encryption (AES-256-GCM key material)
+    ENCRYPTION_KEY: string;
+
     // Next.js
     NODE_ENV: "development" | "production" | "test";
   }
