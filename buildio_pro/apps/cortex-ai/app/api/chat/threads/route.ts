@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { getOrCreateEmptyThread } from "@/lib/chat/threads";
 import { db } from "@/lib/db";
+import { agents } from "@/lib/db/schema/agents";
 import { chatMessages } from "@/lib/db/schema/messages";
 import { chatThreads } from "@/lib/db/schema/threads";
 import { getCurrentUser } from "@/lib/session";
@@ -65,6 +66,8 @@ export async function GET(request: NextRequest) {
         and(
           eq(chatThreads.userId, user.id),
           eq(chatThreads.workspaceId, workspace.id),
+          // Agent playground threads live on the agent pages, not the sidebar.
+          isNull(chatThreads.agentId),
           showDeleted
             ? isNotNull(chatThreads.deletedAt)
             : isNull(chatThreads.deletedAt),
@@ -90,7 +93,7 @@ export async function GET(request: NextRequest) {
   }
 }
 
-export async function POST() {
+export async function POST(request: Request) {
   try {
     const user = await getCurrentUser();
     if (!user) {
@@ -108,7 +111,35 @@ export async function POST() {
       );
     }
 
-    const thread = await getOrCreateEmptyThread(user.id, workspace.id);
+    // Optional agent binding: playground threads are created agent-scoped.
+    const body = await request.json().catch(() => null);
+    const agentId =
+      typeof body?.agentId === "string" && body.agentId ? body.agentId : null;
+    if (agentId) {
+      const [agent] = await db
+        .select({ id: agents.id })
+        .from(agents)
+        .where(
+          and(
+            eq(agents.id, agentId),
+            eq(agents.workspaceId, workspace.id),
+            isNull(agents.deletedAt),
+          ),
+        )
+        .limit(1);
+      if (!agent) {
+        return NextResponse.json(
+          { success: false, error: "Agent not found" },
+          { status: 404 },
+        );
+      }
+    }
+
+    const thread = await getOrCreateEmptyThread(
+      user.id,
+      workspace.id,
+      agentId,
+    );
 
     return NextResponse.json({
       thread: { ...thread, messageCount: 0, lastMessage: null },

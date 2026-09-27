@@ -37,6 +37,7 @@ import { AppBreadcrumb } from "@/components/app-breadcrumb";
 import { ChatComposer } from "@/components/chat/chat-composer";
 import { ChatMessage } from "@/components/chat/chat-message";
 import { ChatModelSelector } from "@/components/chat/chat-model-selector";
+import { MessageFeedback } from "@/components/chat/message-feedback";
 
 /** Convert persisted message rows into AI SDK UI messages. */
 function toUIMessages(
@@ -239,7 +240,14 @@ export function ChatThreadPage({ threadId }: { threadId: string }) {
                         : undefined
                     }
                     labelForModel={labelForModel}
-                  />
+                  >
+                    {m.role === "assistant" ? (
+                      <MessageFeedback
+                        threadId={threadId}
+                        messageId={m.id}
+                      />
+                    ) : null}
+                  </ChatMessage>
                 ))}
 
                 {isStreaming && messages.length > 0 && (

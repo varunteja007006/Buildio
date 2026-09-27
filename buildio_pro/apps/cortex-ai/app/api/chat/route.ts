@@ -13,6 +13,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { createResource } from "@/lib/actions/resources";
+import { getAgentChatContext } from "@/lib/agents/chat-context";
 import { findRelevantContent } from "@/lib/ai/embedding";
 import {
   getLastUserQuery,
@@ -76,10 +77,11 @@ export async function POST(req: Request) {
     );
   }
 
-  const { messages, model, threadId }: {
+  const { messages, model, threadId, agentId }: {
     messages: UIMessage[];
     model?: string;
     threadId?: string;
+    agentId?: string;
   } = await req.json();
 
   let thread = null;
@@ -91,6 +93,18 @@ export async function POST(req: Request) {
         { status: 404 },
       );
     }
+  }
+
+  // Agent context: bound playground thread or explicit agentId in the body.
+  const effectiveAgentId = thread?.agentId ?? agentId ?? null;
+  const agentContext = effectiveAgentId
+    ? await getAgentChatContext(effectiveAgentId, workspace.id)
+    : null;
+  if (effectiveAgentId && !agentContext) {
+    return NextResponse.json(
+      { success: false, error: "Agent not found" },
+      { status: 404 },
+    );
   }
 
   let resolvedModel = DEFAULT_CHAT_MODEL_ID;
@@ -157,31 +171,46 @@ export async function POST(req: Request) {
     });
   }
 
+  const agentTools = agentContext?.toolKeys ?? [];
   const result = streamText({
     model: resolvedModel,
-    system: SYSTEM_PROMPT,
+    system: agentContext
+      ? `You are ${agentContext.name}, an AI agent. Follow these instructions:\n${agentContext.instructions}\n\nCheck your knowledge base before answering any questions. Only respond to questions using information from tool calls. If no relevant information is found in the tool calls, respond, "Sorry, I don't know."`
+      : SYSTEM_PROMPT,
     messages: await convertToModelMessages(messages),
     stopWhen: isStepCount(5),
     include: { requestBody: true, requestMessages: true },
     tools: {
-      addResource: tool({
-        description: `add a resource to your knowledge base.
+      ...(agentTools.includes("addResource")
+        ? {
+            addResource: tool({
+              description: `add a resource to your knowledge base.
 If the user provides a random piece of knowledge unprompted, use this tool without asking for confirmation.`,
-        inputSchema: z.object({
-          content: z
-            .string()
-            .describe("the content or resource to add to the knowledge base"),
-        }),
-        execute: async ({ content }) => createResource(content, workspace.id),
-      }),
-      getInformation: tool({
-        description: `get information from your knowledge base to answer questions.`,
-        inputSchema: z.object({
-          question: z.string().describe("the users question"),
-        }),
-        execute: async ({ question }) =>
-          findRelevantContent(question, workspace.id),
-      }),
+              inputSchema: z.object({
+                content: z
+                  .string()
+                  .describe("the content or resource to add to the knowledge base"),
+              }),
+              execute: async ({ content }) => createResource(content, workspace.id),
+            }),
+          }
+        : {}),
+      ...(agentTools.includes("getInformation")
+        ? {
+            getInformation: tool({
+              description: `get information from your knowledge base to answer questions.`,
+              inputSchema: z.object({
+                question: z.string().describe("the users question"),
+              }),
+              execute: async ({ question }) =>
+                findRelevantContent(
+                  question,
+                  workspace.id,
+                  agentContext?.topicIds,
+                ),
+            }),
+          }
+        : {}),
     },
     onEnd: (event) => {
       void recordChatAudit({

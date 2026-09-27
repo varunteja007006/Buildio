@@ -36,6 +36,21 @@ export async function sendChatMessage(
 }
 
 /**
+ * Upsert feedback (thumbs up/down + optional comment) on an assistant message.
+ */
+export async function upsertMessageFeedback(
+  threadId: string,
+  messageId: string,
+  input: { rating: "up" | "down"; comment?: string },
+) {
+  const { data } = await apiClient.put<{ feedback: unknown }>(
+    endpoints.chat.messageFeedback(threadId, messageId),
+    input,
+  );
+  return data;
+}
+
+/**
  * Fetch a page of chat threads (ordered by most recently updated).
  * Pass `deleted` to list soft-deleted threads instead.
  */
@@ -56,9 +71,12 @@ export async function getChatThreads(
  * returns the user's existing empty thread if one exists,
  * otherwise creates a new one.
  */
-export async function createOrGetEmptyThread(): Promise<ChatThreadResponse> {
+export async function createOrGetEmptyThread(
+  agentId?: string,
+): Promise<ChatThreadResponse> {
   const { data } = await apiClient.post<ChatThreadResponse>(
     endpoints.chat.threads,
+    agentId ? { agentId } : undefined,
   );
   return data;
 }

@@ -4,6 +4,7 @@ import { Bubble, BubbleContent } from "@workspace/ui/components/bubble";
 import { MessageScrollerItem } from "@workspace/ui/components/message-scroller";
 import { RelativeTime } from "@workspace/ui/components/relative-time";
 import { isToolUIPart, type UIMessage } from "ai";
+import type { ReactNode } from "react";
 
 import type { ChatMessageMetadata } from "@/api/chat/types";
 import { ToolCalls } from "@/components/chat/tool-calls";
@@ -14,6 +15,8 @@ type ChatMessageProps = {
   modelId?: string;
   /** Resolve a model id to a display label. */
   labelForModel?: (modelId: string) => string;
+  /** Optional extras (e.g. feedback controls) below the bubble. */
+  children?: ReactNode;
 };
 
 /** Renders a single chat turn (user or assistant) inside the message scroller. */
@@ -21,6 +24,7 @@ export function ChatMessage({
   message,
   modelId,
   labelForModel,
+  children,
 }: ChatMessageProps) {
   const isUser = message.role === "user";
   const toolParts = message.parts.filter(isToolUIPart);
@@ -64,6 +68,8 @@ export function ChatMessage({
             {createdAt ? <RelativeTime date={createdAt} /> : null}
           </div>
         ) : null}
+
+        {children ? <div className="mt-1">{children}</div> : null}
       </div>
     </MessageScrollerItem>
   );

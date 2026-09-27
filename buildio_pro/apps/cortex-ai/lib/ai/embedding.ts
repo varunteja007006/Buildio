@@ -1,5 +1,5 @@
 import { embed, embedMany } from "ai";
-import { and, cosineDistance, desc, eq, gt, isNull, sql } from "drizzle-orm";
+import { and, cosineDistance, desc, eq, gt, inArray, isNull, sql } from "drizzle-orm";
 
 import { embeddingModel, embeddingProviderOptions } from "@/lib/ai";
 import { db } from "@/lib/db";
@@ -94,10 +94,13 @@ export async function generateEmbeddings(
 /**
  * Finds the most relevant content chunks for a query using cosine similarity,
  * scoped to a single workspace. Only returns results above the similarity threshold.
+ * When `topicIds` is provided, only content from documents in those topics is
+ * considered (used by agent chats scoped to attached topics).
  */
 export async function findRelevantContent(
   userQuery: string,
   workspaceId: string,
+  topicIds?: string[],
 ): Promise<{ name: string; similarity: number }[]> {
   const userQueryEmbedded = await generateEmbedding(userQuery);
   const similarity = sql<number>`1 - (${cosineDistance(
@@ -115,6 +118,9 @@ export async function findRelevantContent(
         isNull(embeddings.deletedAt),
         isNull(resources.deletedAt),
         isNull(documents.deletedAt),
+        topicIds && topicIds.length
+          ? inArray(documents.topicId, topicIds)
+          : undefined,
         gt(similarity, 0.5),
       ),
     )

@@ -7,11 +7,15 @@ import { chatThreads } from "@/lib/db/schema/threads";
 /**
  * Returns the user's existing thread that has no messages yet, creating one
  * if none exists. Powers "New Chat" without spamming empty threads.
+ * Playground threads pass an `agentId`; empty-thread reuse is then scoped to
+ * that agent so normal and agent chats never share threads.
  */
 export async function getOrCreateEmptyThread(
   userId: string,
   workspaceId: string,
+  agentId?: string | null,
 ) {
+  const scopedAgentId = agentId ?? null;
   return db.transaction(async (tx) => {
     // Serialize per user+workspace so concurrent "New chat" clicks can't both
     // see "no empty thread" and create duplicates.
@@ -26,6 +30,9 @@ export async function getOrCreateEmptyThread(
         and(
           eq(chatThreads.userId, userId),
           eq(chatThreads.workspaceId, workspaceId),
+          scopedAgentId
+            ? eq(chatThreads.agentId, scopedAgentId)
+            : isNull(chatThreads.agentId),
           isNull(chatThreads.deletedAt),
           sql`NOT EXISTS (
             SELECT 1 FROM ${chatMessages}
@@ -42,7 +49,7 @@ export async function getOrCreateEmptyThread(
 
     const [thread] = await tx
       .insert(chatThreads)
-      .values({ userId, workspaceId })
+      .values({ userId, workspaceId, agentId: scopedAgentId })
       .returning();
 
     return thread;
