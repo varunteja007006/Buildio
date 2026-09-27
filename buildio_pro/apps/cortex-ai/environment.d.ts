@@ -11,7 +11,6 @@ declare namespace NodeJS {
 
     // Vercel AI Gateway
     AI_GATEWAY_API_KEY: string;
-    OPENAI_API_KEY?: string;
     VERCEL_OIDC_TOKEN?: string;
 
     // Chat guardrail (defaults to enabled)
@@ -36,7 +35,6 @@ declare namespace NodeJS {
     S3_ACCESS_KEY?: string;
     S3_SECRET_KEY?: string;
     S3_BUCKET?: string;
-    S3_USE_SSL?: string;
 
     // Connector dev servers (docker-compose defaults apply)
     CONNECTOR_POSTGRES_USER?: string;

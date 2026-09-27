@@ -25,7 +25,7 @@ export type ServerProbeConfig = {
   password: string;
 };
 
-function isBlockedHost(host: string): boolean {
+export function isBlockedHost(host: string): boolean {
   const normalized = host.toLowerCase();
   return BLOCKED_HOST_PATTERNS.some((blocked) => normalized === blocked);
 }
