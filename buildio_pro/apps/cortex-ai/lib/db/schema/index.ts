@@ -15,3 +15,7 @@ export * as extractions from "./extractions";
 export * as extractionVersions from "./extraction-versions";
 export * as documentAuditLogs from "./document-audit-logs";
 export * as connections from "./connections";
+export * as agents from "./agents";
+export * as toolboxes from "./toolboxes";
+export * as agentInstructionTemplates from "./agent-templates";
+export * as feedback from "./feedback";

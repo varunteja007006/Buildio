@@ -1,0 +1,1 @@
+ALTER TABLE "agent_tools" ADD CONSTRAINT "agent_tools_tool_or_toolbox_check" CHECK (("agent_tools"."tool_key" IS NOT NULL AND "agent_tools"."toolbox_id" IS NULL) OR ("agent_tools"."tool_key" IS NULL AND "agent_tools"."toolbox_id" IS NOT NULL));
