@@ -21,7 +21,7 @@ export const connectionTypeOptions: ConnectionTypeOption[] = [
     label: "MongoDB",
     description: "Connect to a MongoDB server.",
     icon: Leaf,
-    enabled: false,
+    enabled: true,
   },
   {
     value: "mysql",

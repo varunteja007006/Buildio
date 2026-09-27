@@ -14,7 +14,11 @@ import {
   useTestConnection,
   useUpdateConnection,
 } from "@/api/connections/query";
-import type { Connection, ProbeResult } from "@/api/connections/types";
+import type {
+  Connection,
+  ConnectionInputType,
+  ProbeResult,
+} from "@/api/connections/types";
 import { AppBreadcrumb } from "@/components/app-breadcrumb";
 import { getConnectionColumns } from "@/components/connections/connection-columns";
 import {
@@ -27,6 +31,7 @@ import {
 } from "@/components/connections/connection-details-form";
 import { ConnectionDialog } from "@/components/connections/connection-dialog";
 import { ConnectionList } from "@/components/connections/connection-list";
+import { DEFAULT_PORTS } from "@/lib/connectors/validation";
 
 const PAGE_SIZE = 10;
 
@@ -38,6 +43,8 @@ export function AgentConnectorsPage() {
     undefined,
   );
   const [step, setStep] = useState<1 | 2>(1);
+  const [connectionType, setConnectionType] =
+    useState<ConnectionInputType>("postgres");
   const [form, setForm] = useState<DetailsFormState>(emptyDetailsForm);
   const [error, setError] = useState<string | null>(null);
   const [probe, setProbe] = useState<ProbeResult | null>(null);
@@ -60,13 +67,23 @@ export function AgentConnectorsPage() {
     setStep(1);
     setDialog(null);
   };
+  const selectType = (type: ConnectionInputType) => {
+    setConnectionType(type);
+    setForm((current) => ({
+      ...current,
+      port: String(DEFAULT_PORTS[type]),
+    }));
+    setStep(2);
+  };
+
   const openEdit = (connection: Connection) => {
     setError(null);
     setProbe(null);
+    setConnectionType(connection.type as ConnectionInputType);
     setForm({
       name: connection.name,
       host: connection.host ?? "",
-      port: String(connection.port ?? 5432),
+      port: String(connection.port ?? DEFAULT_PORTS[connection.type as ConnectionInputType] ?? 5432),
       database: connection.database ?? "",
       username: connection.username ?? "",
       password: "",
@@ -84,6 +101,7 @@ export function AgentConnectorsPage() {
 
   const buildInput = () => ({
     name: form.name.trim(),
+    type: connectionType,
     host: form.host.trim(),
     port: Number(form.port),
     database: form.database.trim(),
@@ -177,7 +195,7 @@ export function AgentConnectorsPage() {
   const canSave = Boolean(probe?.ok) || (editing && !form.password);
 
   const openTables = (connection: Connection) => {
-    if (connection.type !== "postgres") {
+    if (connection.type !== "postgres" && connection.type !== "mongodb") {
       toast.info(`Table browsing is not supported for ${connection.type} yet`);
       return;
     }
@@ -215,6 +233,8 @@ export function AgentConnectorsPage() {
         step={step}
         form={form}
         editing={editing}
+        selectedType={connectionType}
+        onTypeSelect={selectType}
         error={error}
         testing={test.isPending}
         probe={probe}

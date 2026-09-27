@@ -1,6 +1,7 @@
+import { MongoClient } from "mongodb";
 import { Client } from "pg";
 
-import { isBlockedHost, type ServerProbeConfig } from "./probe";
+import { buildMongoUri, isBlockedHost, type ServerProbeConfig } from "./probe";
 
 const CONNECT_TIMEOUT_MS = 3000;
 const TOTAL_TIMEOUT_MS = 8000;
@@ -43,11 +44,38 @@ export async function listPostgresTables(
   }
 }
 
+export async function listMongoCollections(
+  config: ServerProbeConfig,
+): Promise<ConnectorTable[]> {
+  if (isBlockedHost(config.host))
+    throw new Error("This host is not allowed");
+  const client = new MongoClient(buildMongoUri(config), {
+    connectTimeoutMS: CONNECT_TIMEOUT_MS,
+    serverSelectionTimeoutMS: CONNECT_TIMEOUT_MS,
+    socketTimeoutMS: CONNECT_TIMEOUT_MS,
+  });
+  try {
+    await client.connect();
+    const collections = await client
+      .db(config.database)
+      .listCollections({}, { nameOnly: true })
+      .toArray();
+    return collections
+      .map((collection) => collection.name)
+      .sort()
+      .map((name) => ({ schema: config.database, name }));
+  } finally {
+    await client.close().catch(() => undefined);
+  }
+}
+
 export async function listConnectionTables(
   config: ServerProbeConfig,
 ): Promise<ConnectorTable[]> {
   return Promise.race([
-    listPostgresTables(config),
+    config.type === "mongodb"
+      ? listMongoCollections(config)
+      : listPostgresTables(config),
     new Promise<never>((_, reject) =>
       setTimeout(() => reject(new Error("Listing tables timed out")), TOTAL_TIMEOUT_MS),
     ),

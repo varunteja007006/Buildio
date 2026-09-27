@@ -111,7 +111,7 @@ export async function POST(request: NextRequest) {
       );
 
     const probe = await probeConnection({
-      type: "postgres",
+      type: input.type,
       host: input.host,
       port: input.port,
       database: input.database,
@@ -131,7 +131,7 @@ export async function POST(request: NextRequest) {
       .values({
         workspaceId: workspace.id,
         name: input.name,
-        type: "postgres",
+        type: input.type,
         host: input.host,
         port: input.port,
         username: input.username,

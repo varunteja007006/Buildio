@@ -23,8 +23,11 @@ export type ConnectionPage = {
   pageCount: number;
 };
 
+export type ConnectionInputType = "postgres" | "mongodb";
+
 export type ConnectionInput = {
   name: string;
+  type: ConnectionInputType;
   host: string;
   port: number;
   database: string;

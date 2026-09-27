@@ -11,6 +11,19 @@ export type ConnectionType = (typeof CONNECTION_TYPES)[number];
 
 export const connectionTypeSchema = z.enum(CONNECTION_TYPES);
 
+const SUPPORTED_CONNECTION_TYPES = ["postgres", "mongodb"] as const;
+
+export const supportedConnectionTypeSchema = z.enum(
+  SUPPORTED_CONNECTION_TYPES,
+);
+
+export const DEFAULT_PORTS: Record<ConnectionType, number> = {
+  postgres: 5432,
+  mongodb: 27017,
+  mysql: 3306,
+  sqlite: 0,
+};
+
 const nonEmpty = (max: number) => z.string().trim().min(1).max(max);
 
 const hostSchema = nonEmpty(255).regex(
@@ -42,6 +55,7 @@ export const connectionTestSchema = z.discriminatedUnion("type", [
 
 export const connectionCreateSchema = z.object({
   name: nonEmpty(128),
+  type: supportedConnectionTypeSchema,
   ...serverFields,
 });
 

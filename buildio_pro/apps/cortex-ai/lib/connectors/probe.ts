@@ -1,3 +1,4 @@
+import { MongoClient } from "mongodb";
 import { Client } from "pg";
 
 import type { ConnectionType } from "./validation";
@@ -58,12 +59,42 @@ async function probePostgres(
   }
 }
 
+export function buildMongoUri(config: ServerProbeConfig): string {
+  const auth = `${encodeURIComponent(config.username)}:${encodeURIComponent(config.password)}@`;
+  return `mongodb://${auth}${config.host}:${config.port}/${config.database}?authSource=admin`;
+}
+
+async function probeMongo(config: ServerProbeConfig): Promise<ProbeResult> {
+  if (isBlockedHost(config.host))
+    return { ok: false, error: "This host is not allowed" };
+  const client = new MongoClient(buildMongoUri(config), {
+    connectTimeoutMS: CONNECT_TIMEOUT_MS,
+    serverSelectionTimeoutMS: CONNECT_TIMEOUT_MS,
+    socketTimeoutMS: CONNECT_TIMEOUT_MS,
+  });
+  const startedAt = Date.now();
+  try {
+    await client.connect();
+    await client.db(config.database).command({ ping: 1 });
+    return { ok: true, latencyMs: Date.now() - startedAt };
+  } catch (error) {
+    return {
+      ok: false,
+      error: error instanceof Error ? error.message : "Connection failed",
+    };
+  } finally {
+    await client.close().catch(() => undefined);
+  }
+}
+
 export async function probeConnection(
   config: ServerProbeConfig,
 ): Promise<ProbeResult> {
   try {
     return await Promise.race([
-      probePostgres(config),
+      config.type === "mongodb"
+        ? probeMongo(config)
+        : probePostgres(config),
       new Promise<ProbeResult>((_, reject) =>
         setTimeout(
           () => reject(new Error("Connection check timed out")),

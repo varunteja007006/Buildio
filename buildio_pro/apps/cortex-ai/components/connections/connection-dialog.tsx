@@ -25,6 +25,8 @@ type ConnectionDialogProps = {
   step: 1 | 2;
   form: DetailsFormState;
   editing: boolean;
+  selectedType: string;
+  onTypeSelect: (type: "postgres" | "mongodb") => void;
   error: string | null;
   testing: boolean;
   probe: ProbeResult | null;
@@ -42,6 +44,8 @@ export function ConnectionDialog({
   step,
   form,
   editing,
+  selectedType,
+  onTypeSelect,
   error,
   testing,
   probe,
@@ -69,13 +73,16 @@ export function ConnectionDialog({
             <div className="grid gap-2 sm:grid-cols-2">
               {connectionTypeOptions.map((option) => {
                 const Icon = option.icon;
-                const selected = option.value === "postgres";
+                const selected = option.value === selectedType;
                 return (
                   <button
                     key={option.value}
                     type="button"
                     disabled={!option.enabled}
-                    onClick={() => option.enabled && onStepChange(2)}
+                    onClick={() =>
+                      option.enabled &&
+                      onTypeSelect(option.value as "postgres" | "mongodb")
+                    }
                     className={`flex flex-col gap-1 rounded-lg border p-4 text-left transition-colors ${
                       selected
                         ? "border-primary bg-primary/5"

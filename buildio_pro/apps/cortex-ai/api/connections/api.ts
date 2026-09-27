@@ -32,7 +32,7 @@ export async function getConnection(id: string) {
 export async function testConnection(input: ConnectionInput) {
   const { data } = await apiClient.post<ProbeResult>(
     endpoints.connections.test,
-    { type: "postgres", ...input },
+    input,
   );
   return data;
 }

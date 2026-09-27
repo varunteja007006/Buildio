@@ -3,7 +3,11 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { decryptSecret, encryptSecret } from "@/lib/connectors/crypto";
 import { probeConnection } from "@/lib/connectors/probe";
-import { connectionUpdateSchema } from "@/lib/connectors/validation";
+import {
+  connectionUpdateSchema,
+  DEFAULT_PORTS,
+  type ConnectionType,
+} from "@/lib/connectors/validation";
 import { toConnectionView } from "@/lib/connectors/view";
 import { db } from "@/lib/db";
 import { connections } from "@/lib/db/schema/connections";
@@ -84,7 +88,7 @@ export async function PATCH(request: NextRequest, { params }: Params) {
         ),
       )
       .limit(1);
-    if (!existing || existing.type !== "postgres")
+    if (!existing || existing.type === "sqlite" || existing.type === "mysql")
       return NextResponse.json(
         { error: "Connection not found" },
         { status: 404 },
@@ -109,8 +113,9 @@ export async function PATCH(request: NextRequest, { params }: Params) {
         );
     }
 
+    const type = existing.type as ConnectionType;
     const host = input.host ?? existing.host ?? "";
-    const port = input.port ?? existing.port ?? 5432;
+    const port = input.port ?? existing.port ?? DEFAULT_PORTS[type];
     const database = input.database ?? existing.database ?? "";
     const username = input.username ?? existing.username ?? "";
     const password = input.password
@@ -120,7 +125,7 @@ export async function PATCH(request: NextRequest, { params }: Params) {
         : "";
 
     const probe = await probeConnection({
-      type: "postgres",
+      type,
       host,
       port,
       database,

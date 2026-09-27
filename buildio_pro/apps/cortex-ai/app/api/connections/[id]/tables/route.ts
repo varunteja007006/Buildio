@@ -3,6 +3,8 @@ import { NextResponse } from "next/server";
 
 import { decryptSecret } from "@/lib/connectors/crypto";
 import { listConnectionTables } from "@/lib/connectors/schema";
+import { DEFAULT_PORTS } from "@/lib/connectors/validation";
+import type { ConnectionType } from "@/lib/connectors/validation";
 import { db } from "@/lib/db";
 import { connections } from "@/lib/db/schema/connections";
 import { getCurrentUser } from "@/lib/session";
@@ -38,16 +40,16 @@ export async function GET(_request: Request, { params }: Params) {
         { error: "Connection not found" },
         { status: 404 },
       );
-    if (existing.type !== "postgres")
+    if (existing.type === "sqlite" || existing.type === "mysql")
       return NextResponse.json(
         { error: `Table listing is not supported for ${existing.type} yet` },
         { status: 400 },
       );
 
     const tables = await listConnectionTables({
-      type: "postgres",
+      type: existing.type as ConnectionType,
       host: existing.host ?? "",
-      port: existing.port ?? 5432,
+      port: existing.port ?? DEFAULT_PORTS[existing.type as ConnectionType],
       database: existing.database ?? "",
       username: existing.username ?? "",
       password: existing.passwordEncrypted

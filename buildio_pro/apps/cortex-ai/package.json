@@ -43,6 +43,7 @@
     "embla-carousel-react": "^8.6.0",
     "input-otp": "^1.5.0",
     "lucide-react": "catalog:",
+    "mongodb": "^7.6.0",
     "next": "catalog:",
     "next-themes": "catalog:",
     "nuqs": "^2.10.1",

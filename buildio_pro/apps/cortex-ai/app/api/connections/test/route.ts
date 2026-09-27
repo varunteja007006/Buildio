@@ -19,7 +19,7 @@ export async function POST(request: NextRequest) {
       );
     const input = parsed.data;
 
-    if (input.type !== "postgres")
+    if (input.type === "sqlite" || input.type === "mysql")
       return NextResponse.json(
         { ok: false, error: `${input.type} connections are not supported yet` },
         { status: 400 },

@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 
 import { decryptSecret } from "@/lib/connectors/crypto";
 import { probeConnection } from "@/lib/connectors/probe";
+import { DEFAULT_PORTS, type ConnectionType } from "@/lib/connectors/validation";
 import { toConnectionView } from "@/lib/connectors/view";
 import { db } from "@/lib/db";
 import { connections } from "@/lib/db/schema/connections";
@@ -34,16 +35,16 @@ export async function POST(_request: Request, { params }: Params) {
         ),
       )
       .limit(1);
-    if (!existing || existing.type !== "postgres")
+    if (!existing || existing.type === "sqlite" || existing.type === "mysql")
       return NextResponse.json(
         { error: "Connection not found" },
         { status: 404 },
       );
 
     const probe = await probeConnection({
-      type: "postgres",
+      type: existing.type as ConnectionType,
       host: existing.host ?? "",
-      port: existing.port ?? 5432,
+      port: existing.port ?? DEFAULT_PORTS[existing.type as ConnectionType],
       database: existing.database ?? "",
       username: existing.username ?? "",
       password: existing.passwordEncrypted

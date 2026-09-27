@@ -1,11 +1,12 @@
 # External Database Connections Plan - cortex-ai
 
 **Date:** 2026-09-15
-**Status:** In progress — Postgres flow shipped (schema, encrypted secrets, probe,
-API, wizard UI at `/dashboard/agent/connectors`); row click navigates to a
-connector detail page at `/dashboard/agent/connectors/[id]` listing the
-database's tables (`GET /api/connections/:id/tables`, Postgres only, with a
-`GET /api/connections/:id` detail endpoint for direct links). MongoDB/MySQL/SQLite
+**Status:** In progress — Postgres and MongoDB flows shipped (schema, encrypted
+secrets, probe, API, wizard UI at `/dashboard/agent/connectors`); row click
+navigates to a connector detail page at `/dashboard/agent/connectors/[id]`
+listing the database's tables (Postgres `information_schema`, MongoDB
+`listCollections`, via `GET /api/connections/:id/tables`, with a
+`GET /api/connections/:id` detail endpoint for direct links). MySQL/SQLite
 probes and the SQLite file-upload flow are still pending and surface as
 "Coming soon" in the type picker.
 **Scope:** Connector feature: user-provided credentials for external Postgres, MongoDB, MySQL databases and SQLite file uploads, with a pre-save connection check
@@ -116,19 +117,23 @@ factory, mutation success handlers invalidating the connections list.
        `.env.example`, `environment.d.ts`, `turbo.json` `globalEnv`
 3. [ ] Probe module: per-driver connect check with timeouts; SQLite MinIO download
        + `better-sqlite3` validation — Postgres probe done (`pg` Client with 3s
-       connect / 5s total timeout); other drivers pending
+       connect / 5s total timeout); MongoDB probe done (`mongodb` driver,
+       `authSource=admin`, 3s timeouts, `ping` against the target db); MySQL and
+       SQLite drivers pending
 4. [x] API module: test/create/list/update/delete/restore/permanent/check routes,
-       workspace scoping, pagination metadata — non-Postgres types rejected until
-       their probes land
+       workspace scoping, pagination metadata — create/update/check/tables accept
+       postgres and mongodb; mysql/sqlite rejected until their probes land
 5. [x] Client layer: `api/connections/` module + endpoints registration
 6. [x] UI: connections page, table, dialog with test-before-save, trash view —
        2-step wizard (type picker → connection details → check → save)
 7. [x] Tables browsing: `lib/connectors/schema.ts` + `GET
-       /api/connections/:id/tables` (Postgres, information_schema), a `GET
-       /api/connections/:id` detail endpoint, and a connector detail page at
-       `/dashboard/agent/connectors/[id]` opened by row click (non-Postgres rows
-       show a "coming soon" toast)
-8. [ ] Verify against compose targets (all four types), lint + typecheck
+       /api/connections/:id/tables` (Postgres information_schema, MongoDB
+       listCollections), a `GET /api/connections/:id` detail endpoint, and a
+       connector detail page at `/dashboard/agent/connectors/[id]` opened by row
+       click (non-supported rows show a "coming soon" toast)
+8. [ ] Verify against compose targets (all four types), lint + typecheck —
+       MongoDB probe and collection listing verified live against
+       `cortex_ai_mongo` (good creds + auth-failure path); lint + typecheck pass
 
 ## Out of scope (later plans)
 

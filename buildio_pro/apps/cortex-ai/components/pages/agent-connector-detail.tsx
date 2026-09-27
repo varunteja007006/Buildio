@@ -16,8 +16,14 @@ export function AgentConnectorDetailPage({
 }: AgentConnectorDetailPageProps) {
   const detail = useConnection(connectionId);
   const connection = detail.data?.connection ?? null;
-  const isPostgres = connection?.type === "postgres";
-  const tables = useConnectionTables(connectionId, Boolean(isPostgres));
+  const supportsTables =
+    connection?.type === "postgres" || connection?.type === "mongodb";
+  const tables = useConnectionTables(connectionId, Boolean(supportsTables));
+  const heading = supportsTables
+    ? connection?.type === "mongodb"
+      ? "Collections"
+      : "Tables"
+    : "Tables";
 
   if (detail.isLoading)
     return (
@@ -66,7 +72,7 @@ export function AgentConnectorDetailPage({
           </div>
         </div>
         <section className="flex flex-col gap-2">
-          <h2 className="text-sm font-medium">Tables</h2>
+          <h2 className="text-sm font-medium">{heading}</h2>
           {tables.isLoading ? (
             <div className="flex h-40 items-center justify-center text-muted-foreground">
               <Loader2 className="h-5 w-5 animate-spin" />
