@@ -4,6 +4,8 @@ export const endpoints = {
     threads: "/chat/threads",
     thread: (id: string) => `/chat/threads/${id}`,
     threadRestore: (id: string) => `/chat/threads/${id}/restore`,
+    messageFeedback: (threadId: string, messageId: string) =>
+      `/chat/threads/${threadId}/messages/${messageId}/feedback`,
     models: "/chat/models",
     preferences: "/chat/preferences",
   },
@@ -29,6 +31,38 @@ export const endpoints = {
     detail: (id: string) => `/extraction-templates/${id}`,
     restore: (id: string) => `/extraction-templates/${id}/restore`,
     permanent: (id: string) => `/extraction-templates/${id}/permanent`,
+  },
+  agents: {
+    list: "/agents",
+    detail: (id: string) => `/agents/${id}`,
+    restore: (id: string) => `/agents/${id}/restore`,
+    permanent: (id: string) => `/agents/${id}/permanent`,
+    deploy: (id: string) => `/agents/${id}/deploy`,
+    undeploy: (id: string) => `/agents/${id}/undeploy`,
+    topics: (id: string) => `/agents/${id}/topics`,
+    topic: (id: string, topicId: string) =>
+      `/agents/${id}/topics?topicId=${topicId}`,
+    tools: (id: string) => `/agents/${id}/tools`,
+    tool: (id: string, toolKey: string) =>
+      `/agents/${id}/tools?toolKey=${encodeURIComponent(toolKey)}`,
+    agentToolbox: (id: string, toolboxId: string) =>
+      `/agents/${id}/tools?toolboxId=${toolboxId}`,
+    feedback: (id: string) => `/agents/${id}/feedback`,
+  },
+  toolboxes: {
+    list: "/toolboxes",
+    detail: (id: string) => `/toolboxes/${id}`,
+    restore: (id: string) => `/toolboxes/${id}/restore`,
+    permanent: (id: string) => `/toolboxes/${id}/permanent`,
+    tools: (id: string) => `/toolboxes/${id}/tools`,
+    tool: (id: string, toolKey: string) =>
+      `/toolboxes/${id}/tools?toolKey=${encodeURIComponent(toolKey)}`,
+  },
+  agentTemplates: {
+    list: "/agent-templates",
+    detail: (id: string) => `/agent-templates/${id}`,
+    restore: (id: string) => `/agent-templates/${id}/restore`,
+    permanent: (id: string) => `/agent-templates/${id}/permanent`,
   },
   connections: {
     list: "/connections",
