@@ -17,6 +17,7 @@ type ConnectionListProps = {
   onStatusChange: (status: "active" | "deleted") => void;
   onPageChange: (page: number) => void;
   onNew: () => void;
+  onRowClick: (connection: Connection) => void;
 };
 
 export function ConnectionList({
@@ -29,6 +30,7 @@ export function ConnectionList({
   onStatusChange,
   onPageChange,
   onNew,
+  onRowClick,
 }: ConnectionListProps) {
   const pageCount = data?.pageCount || 1;
   return (
@@ -65,6 +67,7 @@ export function ConnectionList({
         data={connections}
         keyExtractor={(connection) => connection.id}
         loading={isLoading}
+        onRowClick={onRowClick}
         emptyMessage={
           status === "active"
             ? "No database connections yet."

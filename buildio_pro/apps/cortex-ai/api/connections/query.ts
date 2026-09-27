@@ -6,7 +6,9 @@ import {
   checkConnection,
   createConnection,
   deleteConnection,
+  getConnection,
   getConnections,
+  getConnectorTables,
   permanentlyDeleteConnection,
   restoreConnection,
   testConnection,
@@ -18,7 +20,16 @@ export const connectionKeys = {
   all: ["connections"] as const,
   list: (page: number, pageSize: number, status: "active" | "deleted") =>
     ["connections", "list", page, pageSize, status] as const,
+  tables: (id: string) => ["connections", "tables", id] as const,
+  detail: (id: string) => ["connections", "detail", id] as const,
 };
+
+export function useConnection(id: string) {
+  return useQuery({
+    queryKey: connectionKeys.detail(id),
+    queryFn: () => getConnection(id),
+  });
+}
 
 export function useConnections(
   page: number,
@@ -28,6 +39,14 @@ export function useConnections(
   return useQuery({
     queryKey: connectionKeys.list(page, pageSize, status),
     queryFn: () => getConnections(page, pageSize, status),
+  });
+}
+
+export function useConnectionTables(id: string, enabled: boolean) {
+  return useQuery({
+    queryKey: connectionKeys.tables(id),
+    queryFn: () => getConnectorTables(id),
+    enabled,
   });
 }
 

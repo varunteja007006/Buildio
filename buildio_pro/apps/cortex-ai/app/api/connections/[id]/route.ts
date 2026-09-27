@@ -12,6 +12,41 @@ import { getActiveWorkspace } from "@/lib/workspaces";
 
 type Params = { params: Promise<{ id: string }> };
 
+export async function GET(_request: Request, { params }: Params) {
+  try {
+    const user = await getCurrentUser();
+    if (!user)
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const workspace = await getActiveWorkspace(user.id);
+    if (!workspace)
+      return NextResponse.json(
+        { error: "No active workspace" },
+        { status: 400 },
+      );
+    const { id } = await params;
+    const [row] = await db
+      .select()
+      .from(connections)
+      .where(
+        and(
+          eq(connections.id, id),
+          eq(connections.workspaceId, workspace.id),
+          isNull(connections.deletedAt),
+        ),
+      )
+      .limit(1);
+    if (!row)
+      return NextResponse.json(
+        { error: "Connection not found" },
+        { status: 404 },
+      );
+    return NextResponse.json({ connection: toConnectionView(row) });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Unknown error";
+    return NextResponse.json({ error: message }, { status: 500 });
+  }
+}
+
 export async function PATCH(request: NextRequest, { params }: Params) {
   try {
     const user = await getCurrentUser();

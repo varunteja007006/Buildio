@@ -17,7 +17,7 @@ type ColumnActions = {
   permanentDeletePending: boolean;
 };
 
-function StatusBadge({ status }: { status: string }) {
+export function StatusBadge({ status }: { status: string }) {
   if (status === "connected")
     return (
       <Badge className="bg-emerald-500/15 text-emerald-600 dark:text-emerald-400">
@@ -78,7 +78,10 @@ export function getConnectionColumns({
     {
       header: "",
       accessor: (connection) => (
-        <div className="flex justify-end gap-2">
+        <div
+          className="flex justify-end gap-2"
+          onClick={(event) => event.stopPropagation()}
+        >
           {status === "active" ? (
             <>
               <Button

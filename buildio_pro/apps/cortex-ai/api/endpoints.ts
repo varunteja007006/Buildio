@@ -37,6 +37,7 @@ export const endpoints = {
     restore: (id: string) => `/connections/${id}/restore`,
     permanent: (id: string) => `/connections/${id}/permanent`,
     check: (id: string) => `/connections/${id}/check`,
+    tables: (id: string) => `/connections/${id}/tables`,
   },
   ingest: {
     run: "/ingest",

@@ -5,6 +5,7 @@ import type {
   Connection,
   ConnectionInput,
   ConnectionPage,
+  ConnectorTable,
   DeleteResponse,
   ProbeResult,
 } from "./types";
@@ -17,6 +18,13 @@ export async function getConnections(
   const { data } = await apiClient.get<ConnectionPage>(
     endpoints.connections.list,
     { params: { page, pageSize, ...(status === "deleted" ? { status } : {}) } },
+  );
+  return data;
+}
+
+export async function getConnection(id: string) {
+  const { data } = await apiClient.get<{ connection: Connection }>(
+    endpoints.connections.detail(id),
   );
   return data;
 }
@@ -66,6 +74,13 @@ export async function deleteConnection(id: string) {
 export async function restoreConnection(id: string) {
   const { data } = await apiClient.post<{ connection: { id: string } }>(
     endpoints.connections.restore(id),
+  );
+  return data;
+}
+
+export async function getConnectorTables(id: string) {
+  const { data } = await apiClient.get<{ tables: ConnectorTable[] }>(
+    endpoints.connections.tables(id),
   );
   return data;
 }

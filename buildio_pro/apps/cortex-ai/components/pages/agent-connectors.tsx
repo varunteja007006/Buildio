@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -17,20 +18,20 @@ import type { Connection, ProbeResult } from "@/api/connections/types";
 import { AppBreadcrumb } from "@/components/app-breadcrumb";
 import { getConnectionColumns } from "@/components/connections/connection-columns";
 import {
+  type ConnectionConfirmAction,
+  ConnectionDeleteDialog,
+} from "@/components/connections/connection-delete-dialog";
+import {
   emptyDetailsForm,
   type DetailsFormState,
 } from "@/components/connections/connection-details-form";
 import { ConnectionDialog } from "@/components/connections/connection-dialog";
 import { ConnectionList } from "@/components/connections/connection-list";
-import { DeleteDialog } from "@/components/documents/delete-dialog";
 
 const PAGE_SIZE = 10;
 
-type ConfirmAction =
-  | { kind: "delete"; connection: Connection }
-  | { kind: "permanent"; connection: Connection };
-
 export function AgentConnectorsPage() {
+  const router = useRouter();
   const [page, setPage] = useState(1);
   const [status, setStatus] = useState<"active" | "deleted">("active");
   const [dialog, setDialog] = useState<Connection | null | undefined>(
@@ -40,7 +41,7 @@ export function AgentConnectorsPage() {
   const [form, setForm] = useState<DetailsFormState>(emptyDetailsForm);
   const [error, setError] = useState<string | null>(null);
   const [probe, setProbe] = useState<ProbeResult | null>(null);
-  const [confirm, setConfirm] = useState<ConfirmAction | null>(null);
+  const [confirm, setConfirm] = useState<ConnectionConfirmAction | null>(null);
   const { data, isLoading } = useConnections(page, PAGE_SIZE, status);
   const test = useTestConnection();
   const create = useCreateConnection();
@@ -162,12 +163,11 @@ export function AgentConnectorsPage() {
     permanentDeletePending: permanent.isPending,
   });
 
-  const confirmDelete = async () => {
-    if (!confirm) return;
+  const confirmDelete = async (action: ConnectionConfirmAction) => {
     try {
-      if (confirm.kind === "delete")
-        await remove.mutateAsync(confirm.connection.id);
-      else await permanent.mutateAsync(confirm.connection.id);
+      if (action.kind === "delete")
+        await remove.mutateAsync(action.connection.id);
+      else await permanent.mutateAsync(action.connection.id);
       setConfirm(null);
     } catch {
       // Error surfaced by mutation state; keep dialog open for retry.
@@ -175,6 +175,14 @@ export function AgentConnectorsPage() {
   };
 
   const canSave = Boolean(probe?.ok) || (editing && !form.password);
+
+  const openTables = (connection: Connection) => {
+    if (connection.type !== "postgres") {
+      toast.info(`Table browsing is not supported for ${connection.type} yet`);
+      return;
+    }
+    router.push(`/dashboard/agent/connectors/${connection.id}`);
+  };
 
   return (
     <>
@@ -199,6 +207,7 @@ export function AgentConnectorsPage() {
           }}
           onPageChange={setPage}
           onNew={openCreate}
+          onRowClick={openTables}
         />
       </div>
       <ConnectionDialog
@@ -217,27 +226,12 @@ export function AgentConnectorsPage() {
         onSave={save}
         onClose={closeDialog}
       />
-      <DeleteDialog
-        open={confirm !== null}
-        onOpenChange={(open) => {
-          if (!open) setConfirm(null);
-        }}
-        title={
-          confirm?.kind === "permanent"
-            ? "Delete connection permanently?"
-            : "Move connection to trash?"
-        }
-        description={
-          confirm?.kind === "permanent"
-            ? `This permanently deletes "${confirm.connection.name}". This cannot be undone.`
-            : confirm
-              ? `"${confirm.connection.name}" moves to trash and can be restored from the Deleted tab.`
-              : ""
-        }
-        isPending={
-          confirm?.kind === "permanent" ? permanent.isPending : remove.isPending
-        }
-        onConfirm={confirmDelete}
+      <ConnectionDeleteDialog
+        confirm={confirm}
+        onClose={() => setConfirm(null)}
+        deletePending={remove.isPending}
+        permanentDeletePending={permanent.isPending}
+        onConfirm={(action) => void confirmDelete(action)}
       />
     </>
   );

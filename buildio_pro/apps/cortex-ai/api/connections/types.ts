@@ -39,3 +39,5 @@ export type ProbeResult = {
 };
 
 export type DeleteResponse = { success: boolean; id: string };
+
+export type ConnectorTable = { schema: string; name: string };
