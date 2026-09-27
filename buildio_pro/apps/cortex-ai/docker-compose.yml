@@ -75,6 +75,9 @@ services:
       - "5434:5432"
     volumes:
       - connector_postgres_data:/var/lib/postgresql/data
+      # Sample data for testing the connector feature (runs on a fresh volume
+      # only; see docker/connector-postgres-init.sql for a manual apply)
+      - ./docker/connector-postgres-init.sql:/docker-entrypoint-initdb.d/10-init.sql:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${CONNECTOR_POSTGRES_USER:-connector_test} -d ${CONNECTOR_POSTGRES_DB:-connector_test}"]
       interval: 5s
