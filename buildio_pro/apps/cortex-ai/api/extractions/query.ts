@@ -11,6 +11,7 @@ import {
   createExtractions,
   deleteExtraction,
   getExtraction,
+  getExtractedDocuments,
   getExtractionVersions,
   getExtractions,
   restoreExtraction,
@@ -19,7 +20,7 @@ import {
 } from "./api";
 import type {
   CreateExtractionsInput,
-  ExtractionStatusRow,
+  ExtractionStatus,
   UpdateExtractionInput,
 } from "./types";
 
@@ -29,11 +30,12 @@ export const extractionKeys = {
     ["extractions", "list", documentIds] as const,
   detail: (id: string) => ["extractions", "detail", id] as const,
   versions: (id: string) => ["extractions", "versions", id] as const,
+  documents: (page: number) => ["extractions", "documents", page] as const,
 };
 
 export const EXTRACTION_POLL_INTERVAL_MS = 3000;
 
-function hasActiveJob(rows: ExtractionStatusRow[] | undefined): boolean {
+function hasActiveJob(rows: { status: ExtractionStatus }[] | undefined) {
   return (
     rows?.some(
       (row) => row.status === "pending" || row.status === "processing",
@@ -49,6 +51,18 @@ export function useExtractionStatuses(documentIds: string[] = []) {
   return useQuery({
     queryKey: extractionKeys.list(documentIds),
     queryFn: () => getExtractions(documentIds),
+    refetchInterval: (query) =>
+      hasActiveJob(query.state.data?.extractions)
+        ? EXTRACTION_POLL_INTERVAL_MS
+        : false,
+  });
+}
+
+/** Paginated list of extractions with document/template info. */
+export function useExtractedDocuments(page: number, pageSize = 10) {
+  return useQuery({
+    queryKey: extractionKeys.documents(page),
+    queryFn: () => getExtractedDocuments(page, pageSize),
     refetchInterval: (query) =>
       hasActiveJob(query.state.data?.extractions)
         ? EXTRACTION_POLL_INTERVAL_MS

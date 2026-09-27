@@ -1,3 +1,4 @@
+import { Toaster } from "@workspace/ui/components/sonner";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Source_Sans_3, DM_Sans } from "next/font/google";
 import { ThemeProvider } from "next-themes";
@@ -56,6 +57,7 @@ export default function RootLayout({
           <NuqsAdapter>
             <QueryProvider>
               <main className="flex flex-1 flex-col">{children}</main>
+              <Toaster position="bottom-right" />
             </QueryProvider>
           </NuqsAdapter>
         </ThemeProvider>

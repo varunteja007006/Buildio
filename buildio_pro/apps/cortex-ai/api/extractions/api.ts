@@ -9,6 +9,7 @@ import type {
   ExtractionDetailResponse,
   ExtractionVersionsResponse,
   ExtractionsListResponse,
+  ExtractedDocumentsPage,
   UpdateExtractionInput,
 } from "./types";
 
@@ -19,6 +20,18 @@ export async function getExtractions(
   const { data } = await apiClient.get<ExtractionsListResponse>(
     endpoints.extractions.list,
     { params: { documentId: documentIds } },
+  );
+  return data;
+}
+
+/** Paginated list of extractions with document/template info. */
+export async function getExtractedDocuments(
+  page = 1,
+  pageSize = 10,
+): Promise<ExtractedDocumentsPage> {
+  const { data } = await apiClient.get<ExtractedDocumentsPage>(
+    endpoints.extractions.documents,
+    { params: { page, pageSize } },
   );
   return data;
 }

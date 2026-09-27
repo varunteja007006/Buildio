@@ -81,3 +81,24 @@ export type ExtractionVersionsResponse = {
 };
 
 export type DeleteResponse = { success: boolean; id: string };
+
+/** Extraction row with document/template info for the "Extracted docs" list. */
+export type ExtractedDocumentRow = {
+  id: string;
+  documentId: string;
+  filename: string;
+  templateId: string | null;
+  templateName: string | null;
+  status: ExtractionStatus;
+  approved: boolean;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type ExtractedDocumentsPage = {
+  extractions: ExtractedDocumentRow[];
+  total: number;
+  page: number;
+  pageSize: number;
+  pageCount: number;
+};

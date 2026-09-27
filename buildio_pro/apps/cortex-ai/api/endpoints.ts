@@ -43,6 +43,7 @@ export const endpoints = {
   },
   extractions: {
     list: "/extraction",
+    documents: "/extraction/documents",
     detail: (id: string) => `/extraction/${id}`,
     run: (id: string) => `/extraction/${id}/run`,
     versions: (id: string) => `/extraction/${id}/versions`,

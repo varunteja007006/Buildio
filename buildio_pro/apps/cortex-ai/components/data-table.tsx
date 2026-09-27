@@ -26,6 +26,7 @@ type DataTableProps<T> = {
   keyExtractor: (item: T) => string | number;
   loading?: boolean;
   emptyMessage?: ReactNode;
+  onRowClick?: (item: T) => void;
 };
 
 export function DataTable<T>({
@@ -34,6 +35,7 @@ export function DataTable<T>({
   keyExtractor,
   loading = false,
   emptyMessage = "No data.",
+  onRowClick,
 }: DataTableProps<T>) {
   return (
     <div className="rounded-lg border">
@@ -68,7 +70,11 @@ export function DataTable<T>({
             </TableRow>
           ) : (
             data.map((item) => (
-              <TableRow key={keyExtractor(item)}>
+              <TableRow
+                key={keyExtractor(item)}
+                className={onRowClick ? "cursor-pointer" : undefined}
+                onClick={onRowClick ? () => onRowClick(item) : undefined}
+              >
                 {columns.map((col) => (
                   <TableCell key={col.header} className={col.cellClassName}>
                     {col.accessor(item)}
