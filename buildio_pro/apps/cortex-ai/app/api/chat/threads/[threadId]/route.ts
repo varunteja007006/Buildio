@@ -8,7 +8,7 @@ import { chatThreads } from "@/lib/db/schema/threads";
 import { getCurrentUser } from "@/lib/session";
 import { getActiveWorkspace } from "@/lib/workspaces";
 
-type Params = { params: Promise<{ id: string }> };
+type Params = { params: Promise<{ threadId: string }> };
 
 export async function GET(_request: NextRequest, { params }: Params) {
   try {
@@ -28,7 +28,7 @@ export async function GET(_request: NextRequest, { params }: Params) {
       );
     }
 
-    const { id } = await params;
+    const { threadId: id } = await params;
 
     const [thread] = await db
       .select()
@@ -83,7 +83,7 @@ export async function PATCH(request: NextRequest, { params }: Params) {
       );
     }
 
-    const { id } = await params;
+    const { threadId: id } = await params;
 
     const body = await request.json().catch(() => null);
     const title = typeof body?.title === "string" ? body.title.trim() : "";
@@ -143,7 +143,7 @@ export async function DELETE(_request: NextRequest, { params }: Params) {
       );
     }
 
-    const { id } = await params;
+    const { threadId: id } = await params;
 
     const thread = await softDeleteThread(id, user.id, workspace.id);
     if (!thread) {

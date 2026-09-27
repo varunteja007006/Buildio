@@ -7,7 +7,7 @@ import { chatThreads } from "@/lib/db/schema/threads";
 import { getCurrentUser } from "@/lib/session";
 import { getWorkspaceMembership } from "@/lib/workspaces";
 
-type Params = { params: Promise<{ id: string }> };
+type Params = { params: Promise<{ threadId: string }> };
 
 export async function POST(_request: Request, { params }: Params) {
   try {
@@ -19,7 +19,7 @@ export async function POST(_request: Request, { params }: Params) {
       );
     }
 
-    const { id } = await params;
+    const { threadId: id } = await params;
 
     const [deleted] = await db
       .select()
