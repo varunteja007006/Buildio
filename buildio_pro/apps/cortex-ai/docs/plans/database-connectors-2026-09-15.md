@@ -2,9 +2,12 @@
 
 **Date:** 2026-09-15
 **Status:** In progress — Postgres flow shipped (schema, encrypted secrets, probe,
-API, wizard UI at `/dashboard/agent/connectors`); MongoDB/MySQL/SQLite probes and
-the SQLite file-upload flow are still pending and surface as "Coming soon" in the
-type picker.
+API, wizard UI at `/dashboard/agent/connectors`); row click navigates to a
+connector detail page at `/dashboard/agent/connectors/[id]` listing the
+database's tables (`GET /api/connections/:id/tables`, Postgres only, with a
+`GET /api/connections/:id` detail endpoint for direct links). MongoDB/MySQL/SQLite
+probes and the SQLite file-upload flow are still pending and surface as
+"Coming soon" in the type picker.
 **Scope:** Connector feature: user-provided credentials for external Postgres, MongoDB, MySQL databases and SQLite file uploads, with a pre-save connection check
 
 ## Goal
@@ -120,10 +123,17 @@ factory, mutation success handlers invalidating the connections list.
 5. [x] Client layer: `api/connections/` module + endpoints registration
 6. [x] UI: connections page, table, dialog with test-before-save, trash view —
        2-step wizard (type picker → connection details → check → save)
-7. [ ] Verify against compose targets (all four types), lint + typecheck
+7. [x] Tables browsing: `lib/connectors/schema.ts` + `GET
+       /api/connections/:id/tables` (Postgres, information_schema), a `GET
+       /api/connections/:id` detail endpoint, and a connector detail page at
+       `/dashboard/agent/connectors/[id]` opened by row click (non-Postgres rows
+       show a "coming soon" toast)
+8. [ ] Verify against compose targets (all four types), lint + typecheck
 
 ## Out of scope (later plans)
 
-- Schema/data browsing of connected databases
-- Ingestion pipelines from connectors into resources/embeddings
+- Column/detail browsing of connected databases and ingestion from connectors
+  into resources/embeddings (tables list view shipped on the connector detail
+  page; column/detail browsing and safe query tools are planned in
+  `database-connector-semantic-context-2026-09-27.md`)
 - OAuth-style managed connectors or connection pooling

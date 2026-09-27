@@ -3,7 +3,8 @@
 | filename | short desc | status |
 | --- | --- | --- |
 | extraction-ingestion-optimization-2026-09-15.md | Extraction normalization, structure-aware chunking, embedding, and retrieval optimization | Planned |
-| database-connectors-2026-09-15.md | External DB connectors: user creds, connect check before save, SQLite upload | In progress |
+| database-connectors-2026-09-15.md | External DB connectors: user creds, connect check before save, tables browse (Postgres), SQLite upload | In progress |
+| database-connector-semantic-context-2026-09-27.md | Persisted Postgres schema, semantic context, access policy, and safe AI query tools | Planned |
 
 ## Done
 
