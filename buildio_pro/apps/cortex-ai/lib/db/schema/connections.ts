@@ -21,6 +21,7 @@ export const connections = pgTable(
       .notNull()
       .references(() => workspaces.id, { onDelete: "cascade" }),
     name: text("name").notNull(),
+    description: text("description"),
     type: text("type").notNull(), // postgres | mongodb | mysql | sqlite
     host: text("host"),
     port: integer("port"),

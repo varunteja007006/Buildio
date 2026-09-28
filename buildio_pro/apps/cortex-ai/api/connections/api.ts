@@ -85,6 +85,14 @@ export async function getConnectorTables(id: string) {
   return data;
 }
 
+export async function updateConnectorContext(id: string, description: string) {
+  const { data } = await apiClient.patch<{ success: boolean }>(
+    endpoints.connections.context(id),
+    { description },
+  );
+  return data;
+}
+
 export async function permanentlyDeleteConnection(id: string) {
   const { data } = await apiClient.delete<DeleteResponse>(
     endpoints.connections.permanent(id),

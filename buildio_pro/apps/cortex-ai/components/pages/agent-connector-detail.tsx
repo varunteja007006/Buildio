@@ -2,10 +2,17 @@
 
 import { Badge } from "@workspace/ui/components/badge";
 import { Button } from "@workspace/ui/components/button";
-import { ArrowLeft, Loader2, Table2 } from "lucide-react";
+import { Textarea } from "@workspace/ui/components/textarea";
+import { ArrowLeft, Loader2, Save, Table2 } from "lucide-react";
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
-import { useConnection, useConnectionTables } from "@/api/connections/query";
+import {
+  useConnection,
+  useConnectionTables,
+  useUpdateConnectorContext,
+} from "@/api/connections/query";
 import { AppBreadcrumb } from "@/components/app-breadcrumb";
 import { StatusBadge } from "@/components/connections/connection-columns";
 
@@ -16,6 +23,12 @@ export function AgentConnectorDetailPage({
 }: AgentConnectorDetailPageProps) {
   const detail = useConnection(connectionId);
   const connection = detail.data?.connection ?? null;
+  const [description, setDescription] = useState("");
+  const updateContext = useUpdateConnectorContext();
+  useEffect(
+    () => setDescription(connection?.description ?? ""),
+    [connection?.description],
+  );
   const supportsTables =
     connection?.type === "postgres" || connection?.type === "mongodb";
   const tables = useConnectionTables(connectionId, Boolean(supportsTables));
@@ -71,6 +84,51 @@ export function AgentConnectorDetailPage({
             </p>
           </div>
         </div>
+        <section className="flex max-w-2xl flex-col gap-2">
+          <div>
+            <h2 className="text-sm font-medium">About this connector</h2>
+            <p className="text-sm text-muted-foreground">
+              Explain what this data source contains and how an AI agent should
+              interpret it.
+            </p>
+          </div>
+          <Textarea
+            value={description}
+            onChange={(event) => setDescription(event.target.value)}
+            maxLength={4000}
+            rows={5}
+            placeholder="For example: This database contains sales orders. Use completed orders for revenue reporting; refunds are stored separately."
+            aria-label="Connector explanation"
+          />
+          <Button
+            className="self-start"
+            disabled={
+              updateContext.isPending ||
+              description === (connection.description ?? "")
+            }
+            onClick={() =>
+              updateContext.mutate(
+                { id: connectionId, description },
+                {
+                  onSuccess: () => toast.success("Connector explanation saved"),
+                  onError: (error) =>
+                    toast.error(
+                      error instanceof Error
+                        ? error.message
+                        : "Unable to save explanation",
+                    ),
+                },
+              )
+            }
+          >
+            {updateContext.isPending ? (
+              <Loader2 className="animate-spin" />
+            ) : (
+              <Save />
+            )}
+            Save explanation
+          </Button>
+        </section>
         <section className="flex flex-col gap-2">
           <h2 className="text-sm font-medium">{heading}</h2>
           {tables.isLoading ? (

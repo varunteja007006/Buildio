@@ -2,6 +2,7 @@ export type Connection = {
   id: string;
   workspaceId: string;
   name: string;
+  description: string | null;
   type: string;
   host: string | null;
   port: number | null;

@@ -13,6 +13,7 @@ import {
   restoreConnection,
   testConnection,
   updateConnection,
+  updateConnectorContext,
 } from "./api";
 import type { ConnectionInput, ProbeResult } from "./types";
 
@@ -81,6 +82,16 @@ export function useUpdateConnection() {
       input: Partial<ConnectionInput>;
     }) => updateConnection(id, input),
     onSuccess: () => invalidateConnections(queryClient),
+  });
+}
+
+export function useUpdateConnectorContext() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, description }: { id: string; description: string }) =>
+      updateConnectorContext(id, description),
+    onSuccess: (_data, { id }) =>
+      queryClient.invalidateQueries({ queryKey: connectionKeys.detail(id) }),
   });
 }
 

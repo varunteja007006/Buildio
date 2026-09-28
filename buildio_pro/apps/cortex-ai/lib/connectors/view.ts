@@ -6,6 +6,7 @@ export type ConnectionView = {
   id: string;
   workspaceId: string;
   name: string;
+  description: string | null;
   type: string;
   host: string | null;
   port: number | null;
@@ -28,6 +29,7 @@ export function toConnectionView(row: ConnectionRow): ConnectionView {
     id: row.id,
     workspaceId: row.workspaceId,
     name: row.name,
+    description: row.description,
     type: row.type,
     host: row.host,
     port: row.port,
