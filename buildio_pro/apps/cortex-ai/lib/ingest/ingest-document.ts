@@ -8,6 +8,7 @@ import { documents } from "@/lib/db/schema/documents";
 import { embeddings } from "@/lib/db/schema/embeddings";
 import { extractions } from "@/lib/db/schema/extractions";
 import { resources } from "@/lib/db/schema/resources";
+import { getDocumentObject } from "@/lib/storage/s3";
 
 const SUPPORTED_EXTENSIONS = new Set([".txt", ".md", ".mdx", ".csv"]);
 
@@ -39,8 +40,7 @@ export async function ingestDocument(
   } catch (error) {
     outcome = {
       success: false,
-      error:
-        error instanceof Error ? error.message : "Unknown ingest error",
+      error: error instanceof Error ? error.message : "Unknown ingest error",
     };
   }
   await db
@@ -101,17 +101,16 @@ async function runIngest(
         error: `No approved extraction and unsupported file format: ${ext}. Run an extraction first for PDFs.`,
       };
     }
-    if (!document.filepath.startsWith("https://")) {
-      return { success: false, error: "Document has no downloadable file URL" };
-    }
-    const fileResponse = await fetch(document.filepath);
-    if (!fileResponse.ok) {
+    try {
+      content = new TextDecoder().decode(
+        await getDocumentObject(document.filepath),
+      );
+    } catch (error) {
       return {
         success: false,
-        error: `Failed to fetch file: HTTP ${fileResponse.status}`,
+        error: error instanceof Error ? error.message : "Failed to fetch file",
       };
     }
-    content = await fileResponse.text();
   }
 
   // 3. Supersede the document's previous active resources (E5)
@@ -119,10 +118,7 @@ async function runIngest(
     .update(resources)
     .set({ deletedAt: new Date() })
     .where(
-      and(
-        eq(resources.documentId, document.id),
-        isNull(resources.deletedAt),
-      ),
+      and(eq(resources.documentId, document.id), isNull(resources.deletedAt)),
     );
 
   // 4. Insert the new resource

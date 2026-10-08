@@ -18,6 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@workspace/ui/components/select";
+import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
 import { useChatModels } from "@/api/chat/query";
@@ -132,7 +133,15 @@ export function ExtractDocumentsDialog({
             </Select>
             {templates.length === 0 && !templatesLoading && (
               <p className="text-xs text-muted-foreground">
-                No templates yet — create one under Documents → Templates.
+                No templates yet —{" "}
+                <Link
+                  href="/dashboard/documents/extraction-templates"
+                  onClick={() => onOpenChange(false)}
+                  className="text-foreground font-medium underline underline-offset-4 hover:text-foreground/80"
+                >
+                  create one under Documents → Templates
+                </Link>
+                .
               </p>
             )}
           </div>

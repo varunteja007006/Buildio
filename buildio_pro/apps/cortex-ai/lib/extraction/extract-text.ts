@@ -2,6 +2,8 @@ import path from "node:path";
 
 import type { FilePart, TextPart } from "ai";
 
+import { getDocumentObject } from "@/lib/storage/s3";
+
 /** File extensions extracted inline as plain text. */
 const TEXT_EXTENSIONS = new Set([".txt", ".md", ".mdx", ".csv"]);
 
@@ -21,16 +23,9 @@ export type DocumentFile = {
   isPdf: boolean;
 };
 
-/** Fetch the uploaded file bytes from its UploadThing CDN URL. */
+/** Load legacy remote URLs or current MinIO object keys. */
 export async function fetchDocumentFile(filepath: string): Promise<Uint8Array> {
-  if (!filepath.startsWith("https://")) {
-    throw new Error("Document has no downloadable file URL");
-  }
-  const response = await fetch(filepath);
-  if (!response.ok) {
-    throw new Error(`Failed to fetch file: HTTP ${response.status}`);
-  }
-  return new Uint8Array(await response.arrayBuffer());
+  return getDocumentObject(filepath);
 }
 
 /** Load a document's file and classify it for extraction. */
@@ -51,7 +46,9 @@ export async function loadDocumentFile(
  * Build the document content parts for a model message: PDFs become a
  * multimodal file part; text files are inlined with a filename header.
  */
-export function buildDocumentParts(file: DocumentFile): (TextPart | FilePart)[] {
+export function buildDocumentParts(
+  file: DocumentFile,
+): (TextPart | FilePart)[] {
   if (file.isPdf) {
     return [
       {

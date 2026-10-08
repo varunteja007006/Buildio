@@ -43,7 +43,7 @@ interface UploadDocumentDialogProps {
 /**
  * Upload dialog that wraps the reusable `FileUpload` drag-and-drop component.
  * Keeps a sticky header + footer and a scrollable body (max-h-[85vh]).
- * Forwards `folderId`/`topicId` as UploadThing input so the server can link the DB row.
+ * Forwards the selected folder so the server can link the stored document row.
  *
  * Two modes:
  * - Tree flow: a folder was selected in the tree, so the destination is fixed.
@@ -80,7 +80,7 @@ export function UploadDocumentDialog({
   const topicFolders = folders.filter((f) => f.topicId === pickedTopicId);
 
   const handleComplete = () => {
-    // Refresh the documents table/tree after a successful UploadThing upload
+    // Refresh the documents table/tree after a successful MinIO upload.
     void queryClient.invalidateQueries({ queryKey: documentKeys.all });
     toast.success("Documents queued for ingestion");
     onOpenChange(false);
@@ -162,7 +162,6 @@ export function UploadDocumentDialog({
           {isReady ? (
             <FileUpload
               key={`${effectiveFolderId}-${open ? "open" : "closed"}`}
-              endpoint="documentUploader"
               input={{
                 ...(effectiveFolderId ? { folderId: effectiveFolderId } : {}),
                 ...(effectiveTopicId ? { topicId: effectiveTopicId } : {}),

@@ -5,7 +5,7 @@ import { recordDocumentAudit } from "@/lib/audit/document-audit";
 import { db } from "@/lib/db";
 import { documents } from "@/lib/db/schema/documents";
 import {
-  deleteUploadThingFiles,
+  deleteDocumentFiles,
   hardDeleteDocumentRows,
 } from "@/lib/documents/permanent-delete";
 import { getCurrentUser } from "@/lib/session";
@@ -15,7 +15,7 @@ type Params = { params: Promise<{ id: string }> };
 
 /**
  * H3: permanently delete a document (owner only) — hard-deletes its
- * extractions, resources, and embeddings plus the UploadThing file. The
+ * extractions, resources, and embeddings plus its stored file. The
  * audit row (with the filename) is the only trace left behind.
  */
 export async function DELETE(_request: Request, { params }: Params) {
@@ -33,7 +33,10 @@ export async function DELETE(_request: Request, { params }: Params) {
       .where(eq(documents.id, id))
       .limit(1);
     if (!existing)
-      return NextResponse.json({ error: "Document not found" }, { status: 404 });
+      return NextResponse.json(
+        { error: "Document not found" },
+        { status: 404 },
+      );
     const membership = await getWorkspaceMembership(
       user.id,
       existing.workspaceId,
@@ -50,7 +53,7 @@ export async function DELETE(_request: Request, { params }: Params) {
       .where(eq(documents.id, id))
       .limit(1);
     await hardDeleteDocumentRows([id]);
-    await deleteUploadThingFiles(file ? [file.filepath] : []);
+    await deleteDocumentFiles(file ? [file.filepath] : []);
 
     // F6: audit the permanent delete — the document row is gone, so the
     // audit row keeps its filename for traceability

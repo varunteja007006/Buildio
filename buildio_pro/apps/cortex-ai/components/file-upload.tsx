@@ -3,7 +3,6 @@
 import * as React from "react";
 import { toast } from "sonner";
 
-import type { OurFileRouter } from "@/app/api/uploadthing/core";
 import {
   FileUploadDropzone,
   FileUploadQueue,
@@ -13,7 +12,6 @@ import {
   matchesAccept,
   parseFileSize,
 } from "@/lib/file-upload.utils";
-import { useUploadThing } from "@/lib/uploadthing";
 import { cn } from "@/lib/utils";
 
 export type FileUploadConfig = {
@@ -28,9 +26,7 @@ export type FileUploadConfig = {
 };
 
 export interface FileUploadProps {
-  /** UploadThing endpoint key – must exist in `OurFileRouter`. */
-  endpoint: keyof OurFileRouter;
-  /** Optional input forwarded to UploadThing (e.g. `{ folderId, topicId }`). */
+  /** Optional document destination (e.g. `{ folderId }`). */
   input?: Record<string, unknown>;
   /** Config that controls validation + UI copy. */
   config?: FileUploadConfig;
@@ -38,10 +34,8 @@ export interface FileUploadProps {
   disabled?: boolean;
   /** Additional container classes. */
   className?: string;
-  /** Called when UploadThing finishes successfully. */
-  onUploadComplete?: (
-    files: { name: string; url: string; key: string; serverData: unknown }[],
-  ) => void;
+  /** Called when all files are saved successfully. */
+  onUploadComplete?: (files: { name: string; key: string }[]) => void;
   /** Called on upload error. */
   onUploadError?: (error: Error) => void;
   /** If true, files are uploaded immediately on drop/select instead of waiting for the button. */
@@ -49,7 +43,6 @@ export interface FileUploadProps {
 }
 
 export function FileUpload({
-  endpoint,
   input,
   config,
   disabled = false,
@@ -72,31 +65,9 @@ export function FileUpload({
 
   const [files, setFiles] = React.useState<File[]>([]);
   const [isDragActive, setIsDragActive] = React.useState(false);
+  const [isUploading, setIsUploading] = React.useState(false);
   const [progress, setProgress] = React.useState<number>(0);
   const inputRef = React.useRef<HTMLInputElement>(null);
-
-  const { startUpload, isUploading, routeConfig } = useUploadThing(
-    endpoint as never,
-    {
-      onClientUploadComplete: (res) => {
-        toast.success(`${res.length} file(s) uploaded`);
-        setFiles([]);
-        setProgress(0);
-        onUploadComplete?.(res as never);
-      },
-      onUploadError: (error: Error) => {
-        toast.error(error.message || "Upload failed");
-        setProgress(0);
-        onUploadError?.(error);
-      },
-      onUploadBegin: () => {
-        setProgress(0);
-      },
-      onUploadProgress: (p) => {
-        setProgress(p);
-      },
-    },
-  );
 
   const handleUpload = React.useCallback(
     async (overrideFiles?: File[]) => {
@@ -105,15 +76,69 @@ export function FileUpload({
         toast.error("No files to upload");
         return;
       }
+      setIsUploading(true);
+      setProgress(0);
       try {
-        await startUpload(toUpload, input as never);
+        const uploaded: { name: string; key: string }[] = [];
+        for (const [index, file] of toUpload.entries()) {
+          const digest = await crypto.subtle.digest(
+            "SHA-256",
+            await file.arrayBuffer(),
+          );
+          const fileHash = Array.from(new Uint8Array(digest), (byte) =>
+            byte.toString(16).padStart(2, "0"),
+          ).join("");
+          const details = {
+            filename: file.name,
+            fileSize: file.size,
+            contentType: file.type || "application/octet-stream",
+            ...input,
+          };
+          const setup = await fetch("/api/documents/upload", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(details),
+          });
+          const upload = await setup.json();
+          if (!setup.ok) throw new Error(upload.error ?? "Upload setup failed");
+
+          const put = await fetch(upload.uploadUrl, {
+            method: "PUT",
+            body: file,
+            headers: { "Content-Type": details.contentType },
+          });
+          if (!put.ok) throw new Error("Failed to upload file to MinIO");
+
+          const complete = await fetch("/api/documents/complete", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              key: upload.key,
+              filename: file.name,
+              fileSize: file.size,
+              fileHash,
+              folderId: input?.folderId,
+            }),
+          });
+          const result = await complete.json();
+          if (!complete.ok)
+            throw new Error(result.error ?? "Failed to save document");
+          uploaded.push(result);
+          setProgress(Math.round(((index + 1) / toUpload.length) * 100));
+        }
+        toast.success(`${uploaded.length} file(s) uploaded`);
+        setFiles([]);
+        onUploadComplete?.(uploaded);
       } catch (err) {
         const message = err instanceof Error ? err.message : "Upload failed";
         toast.error(message);
         onUploadError?.(err instanceof Error ? err : new Error(message));
+      } finally {
+        setIsUploading(false);
+        setProgress(0);
       }
     },
-    [files, input, startUpload, onUploadError],
+    [files, input, onUploadComplete, onUploadError],
   );
 
   const addFiles = React.useCallback(
@@ -202,14 +227,7 @@ export function FileUpload({
     }
   };
 
-  const allowedText = routeConfig
-    ? Object.entries(routeConfig as Record<string, { maxFileSize: string }>)
-        .map(
-          ([type, cfg]) =>
-            `${type} (${(cfg as { maxFileSize: string }).maxFileSize})`,
-        )
-        .join(", ")
-    : `${accept} up to ${maxFileSize}`;
+  const allowedText = `${accept} up to ${maxFileSize}`;
 
   return (
     <div className={cn("flex w-full flex-col gap-3", className)}>

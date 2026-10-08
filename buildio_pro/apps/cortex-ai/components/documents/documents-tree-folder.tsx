@@ -41,7 +41,7 @@ export function FolderRow({
   const isOpen = props.expandedFolders.has(id);
   const isSelected = props.selectedFolderId === id;
 
-  // Per-folder infinite fetch — ensures uploadthing files appear inside correct folder
+  // Per-folder infinite fetch — ensures files appear inside the correct folder
   // even when global pagination hasn't loaded them and handles 100s of files per folder
   const {
     data: folderData,

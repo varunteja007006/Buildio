@@ -5,7 +5,7 @@ import { recordDocumentAudit } from "@/lib/audit/document-audit";
 import { db } from "@/lib/db";
 import { documents } from "@/lib/db/schema/documents";
 import {
-  deleteUploadThingFiles,
+  deleteDocumentFiles,
   hardDeleteDocumentRows,
 } from "@/lib/documents/permanent-delete";
 import { getCurrentUser } from "@/lib/session";
@@ -14,7 +14,7 @@ import { getActiveWorkspace, getWorkspaceMembership } from "@/lib/workspaces";
 /**
  * Empty trash (H8): permanently delete every trashed document in the
  * workspace (owner only), including their extractions, resources,
- * embeddings, and UploadThing files.
+ * embeddings and their stored files.
  */
 export async function DELETE() {
   try {
@@ -47,8 +47,7 @@ export async function DELETE() {
       return NextResponse.json({ success: true, deleted: 0 });
 
     await hardDeleteDocumentRows(trashed.map((doc) => doc.id));
-    await deleteUploadThingFiles(trashed.map((doc) => doc.filepath));
-
+    await deleteDocumentFiles(trashed.map((doc) => doc.filepath));
     void recordDocumentAudit({
       userId: user.id,
       workspaceId: workspace.id,

@@ -107,7 +107,7 @@ export function DocumentsTree({
 
   // Group documents by destination (for topic-level direct files & uncategorized)
   // Folder-level files will be fetched per-folder via useInfiniteDocuments({ folderId })
-  // to ensure uploadthing files appear inside correct folder even with 100s of files
+  // to ensure uploaded files appear inside the correct folder even with 100s of files
   const docsByFolder = new Map<string, Document[]>();
   const docsByTopic = new Map<string, Document[]>();
   const uncategorized: Document[] = [];
