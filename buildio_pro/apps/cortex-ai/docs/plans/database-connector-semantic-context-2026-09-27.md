@@ -1,7 +1,7 @@
 # Database Connector Semantic Context and Query Tools Plan - cortex-ai
 
 **Date:** 2026-09-27
-**Status:** Planned
+**Status:** In progress
 **Depends on:** `database-connectors-2026-09-15.md` Postgres connection and
 table-browsing flow
 **Scope:** Postgres schema synchronization, human-reviewed semantic metadata,
@@ -32,6 +32,9 @@ The first usable release should let a workspace member:
 - `GET /api/connections/:id/tables` returns only `{ schema, name }`.
 - `/dashboard/agent/connectors/[id]` displays a flat table list with no detail or
   configuration UI.
+- Connector-level explanation is now editable and persisted on the connection.
+  AI-generated explanations and chat-time use of connector context are not yet
+  implemented.
 - `app/api/chat/route.ts` currently exposes only knowledge-base tools and has no
   connector or thread-to-connector context.
 - `chat_audit_logs` stores generic model tool calls/results, but there is no
@@ -53,8 +56,13 @@ The first usable release should let a workspace member:
 - **One connector per thread in the MVP:** this avoids ambiguous table names and
   cross-database joins. The server authorizes the selection on every request.
 - **No automatic data sampling:** schema refresh reads metadata only. Future AI
-  drafting may use names, comments, types, and relationships, but sample values
-  require a separate explicit opt-in design.
+  drafting uses names, comments, types, and relationships by default. Row samples
+  require explicit per-generation opt-in, table/column selection, and must be
+  disclosed before sending them to the model.
+- **Visible AI access:** before generation, show users what context may be sent;
+  during generation, show metadata tool calls and requested schema objects; after
+  generation, summarize what was actually accessed. Never expose credentials or
+  persist sampled values in application logs/audits.
 - **Database defense in depth:** recommend a dedicated read-only Postgres user;
   also execute each query in a read-only transaction with server-side limits.
 - **No raw result retention:** chat can consume approved query results, but
@@ -275,6 +283,37 @@ UX rules:
   descriptions.
 - Long forms use a constrained dialog with fixed header/footer and scrollable body.
 
+### AI-generated connector explanation
+
+Add a **Generate with AI** action beside the editable connector explanation. Use
+server-side metadata tools rather than sending credentials or accepting arbitrary
+SQL from the model.
+
+Before generation, show a confirmation dialog with:
+
+- Connector type and database name resolved from the authorized connector id.
+- Schema metadata available to the model: table/column names, types, comments,
+  keys, and relationships, clearly marked as metadata rather than row data.
+- Row sampling state and exact selected tables/columns. Sampling is off by default;
+  require a separate explicit opt-in for each generation.
+- A clear notice that selected sample values will be sent to the model. Exclude
+  columns marked sensitive and never include credentials, host, or username.
+
+During generation, show each metadata tool/query, requested schema/table, and
+status. Do not show returned sample values in activity logs. On completion, show
+which tools ran, which tables/columns were accessed, and sample row counts. Put
+the generated text in the editor as an unsaved draft; user reviews and saves it.
+
+Sampling limits and execution rules:
+
+- Sample only explicitly selected tables and columns, using read-only Postgres
+  queries with server-resolved identifiers.
+- Hard cap of 5 rows per sample query and 5 sample queries per generation (25 rows
+  maximum total). Disclose these limits before the user confirms.
+- Do not sample automatically during schema refresh or ordinary AI generation.
+- Never persist sample values in connector metadata, chat audit, tool audit, or
+  application logs. Treat values returned to the model as user-approved context.
+
 ## Structured AI tools
 
 Expose a small generic set only when the thread has an authorized connector:
@@ -410,7 +449,22 @@ practical, a read-only login and display a warning when that cannot be confirmed
 - [ ] Add discovered and manual relationship management.
 - [ ] Add review-before-enable validation and sensitive-data warnings.
 - [ ] Add removed schema object/drift view.
-- [ ] Verify loading, empty, error, stale, disconnected, and mobile states.
+- [x] Add **Generate with AI** action beside connector explanation editor.
+- [x] Add pre-generation dialog showing authorized connector type/database name,
+      metadata categories, selected tables/columns, and exactly what will be shared.
+- [x] Add explicit row-sampling opt-in and table/column selection; sampling is off
+      by default and sensitive columns cannot be selected.
+- [x] Require confirmation before sending metadata or opted-in samples to the model.
+- [x] Show live metadata tool/query activity with requested schema objects and
+      progress, without displaying or logging returned sample values.
+- [x] Show post-generation access summary: tools run, tables/columns accessed,
+      sample row counts, and any query failures or limits.
+- [x] Keep generated description in dialog as a reviewable draft; user explicitly
+      applies it to editor, then saves it.
+- [x] Handle cancellation, timeout, empty schema, disconnected connector, and
+      generation failure without losing existing unsaved editor text.
+- [x] Handle loading, empty, error, stale, disconnected, and cancellation states.
+- [ ] Manually verify UI on desktop and mobile.
 
 ### Phase 4 - Safe query service
 
@@ -424,6 +478,17 @@ practical, a read-only login and display a warning when that cannot be confirmed
 - [ ] Normalize supported Postgres result values for JSON/model consumption.
 - [ ] Add stable rejection/error codes and sanitized user-facing messages.
 - [ ] Record redacted query audit events for success, refusal, timeout, and failure.
+- [x] Add a narrowly scoped `sampleDatabaseRows` metadata tool for description
+      generation only; require explicit opt-in, selected tables/columns, read-only
+      execution, and per-run/per-query caps.
+- [x] Resolve connector id to workspace-authorized type/database/schema server-side;
+      never accept credentials or database identifiers from the client as authority.
+- [x] Emit structured, value-free tool activity events for the generation UI and
+      final access summary.
+- [x] Enforce 5 rows per sample query and 5 sample queries per generation on the
+      server, regardless of client input.
+- [x] Ensure sampled values appear only in the confirmed model request/response;
+      exclude them from logs, persisted audits, error messages, and saved context.
 
 ### Phase 5 - Chat tools and connector selection
 
@@ -447,8 +512,13 @@ practical, a read-only login and display a warning when that cannot be confirmed
       are rejected before reaching Postgres.
 - [ ] Verify statement timeout, result truncation, byte cap, and client cleanup.
 - [ ] Verify audit records are useful but contain no row/filter-value data.
-- [ ] Run focused Cortex AI typecheck and lint.
-- [ ] Run the Cortex AI production build.
+- [x] Verify generation dialog matches data actually sent and tool activity lists
+      every metadata query without exposing sampled values.
+- [x] Verify sampling is off by default, requires fresh consent, excludes sensitive
+      columns, and cannot exceed 5 rows/query or 25 rows/generation.
+- [x] Verify sampled values never enter logs, persisted audits, or connector state.
+- [x] Run focused Cortex AI typecheck and lint.
+- [x] Run the Cortex AI production build.
 - [ ] Perform manual browser checks on desktop and mobile.
 - [ ] Roll out behind a server-side feature flag until query audit behavior and
       production limits are reviewed.
@@ -459,6 +529,10 @@ practical, a read-only login and display a warning when that cannot be confirmed
   foreign-key relationships without overwriting semantic context.
 - Schema additions/removals are visible, and removed objects cannot be queried.
 - A user can describe and govern each table/column and explicitly enable it.
+- A user can generate a connector explanation only after seeing and confirming
+  the proposed context; generation reports metadata actually queried.
+- Row samples are off by default, explicitly selected/consented, limited to 5 rows
+  per query and 25 rows per generation, and never persisted in logs/audits.
 - A chat thread can use one workspace-authorized connector.
 - The model sees only enabled, active, non-sensitive metadata.
 - Database questions execute only through the structured query schema.
@@ -471,11 +545,13 @@ practical, a read-only login and display a warning when that cannot be confirmed
 
 ## Follow-up plan candidates
 
-- AI-drafted descriptions from schema names/comments with mandatory human review.
+- Richer AI-drafted descriptions or semantic suggestions beyond the connector-level
+  explanation, with mandatory human review.
 - Verified example questions and structured query specs for few-shot guidance and
   regression evaluation.
 - Saved business metrics and dimensions with versioned definitions.
-- Explicit opt-in masked sampling for enum/value discovery.
+- Masked sampling for enum/value discovery beyond the narrowly scoped description
+  generation sample tool.
 - Cursor pagination and asynchronous exports outside the model context.
 - Read-only views after view security semantics are designed.
 - Additional database drivers implementing the normalized metadata/query adapter.
