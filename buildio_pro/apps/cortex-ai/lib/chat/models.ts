@@ -51,7 +51,20 @@ export const FALLBACK_CHAT_MODELS: ChatModelOption[] = [
   },
 ];
 
-export const DEFAULT_CHAT_MODEL_ID = "openai/gpt-4o";
+/**
+ * Returns the default chat model id. There is no hardcoded fallback:
+ * `CHAT_DEFAULT_MODEL` must be configured (see .env.example).
+ */
+export function getDefaultChatModelId(): string {
+  const value = process.env.CHAT_DEFAULT_MODEL?.trim();
+  if (!value) {
+    throw new Error(
+      "CHAT_DEFAULT_MODEL is required — set it to a gateway model id " +
+        '(e.g. "openai/gpt-4o"). No hardcoded fallback exists.',
+    );
+  }
+  return value;
+}
 
 /**
  * Loose shape check for a gateway model id (`provider/model`). Strict

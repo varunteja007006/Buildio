@@ -3,8 +3,20 @@ import "server-only";
 
 import { getItem, setItem } from "@/lib/redis";
 
-export const DEFAULT_EXTRACTION_MODEL =
-  process.env.AI_EXTRACTION_MODEL ?? "openai/gpt-5.6-luna";
+/**
+ * Returns the default statement-extraction model. There is no hardcoded
+ * fallback: `AI_EXTRACTION_MODEL` must be configured (see .env.example).
+ */
+export function getDefaultExtractionModel(): string {
+  const value = process.env.AI_EXTRACTION_MODEL?.trim();
+  if (!value) {
+    throw new Error(
+      "AI_EXTRACTION_MODEL is required — set it to a gateway model id " +
+        '(e.g. "openai/gpt-5.6-luna"). No hardcoded fallback exists.',
+    );
+  }
+  return value;
+}
 
 export const gateway = createGateway({
   apiKey: process.env.AI_GATEWAY_API_KEY,

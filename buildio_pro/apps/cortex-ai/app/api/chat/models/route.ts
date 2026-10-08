@@ -1,12 +1,15 @@
 import { NextResponse } from "next/server";
 
 import { getChatModels } from "@/lib/chat/catalog";
-import { DEFAULT_CHAT_MODEL_ID } from "@/lib/chat/models";
+import { getDefaultChatModelId } from "@/lib/chat/models";
 
 export async function GET() {
   try {
     const models = await getChatModels();
-    return NextResponse.json({ models, defaultModel: DEFAULT_CHAT_MODEL_ID });
+    return NextResponse.json({
+      models,
+      defaultModel: getDefaultChatModelId(),
+    });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown error";
     return NextResponse.json(

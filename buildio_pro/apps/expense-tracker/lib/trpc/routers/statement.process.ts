@@ -2,8 +2,8 @@ import { TRPCError } from "@trpc/server";
 import { and, eq } from "drizzle-orm";
 
 import {
-  DEFAULT_EXTRACTION_MODEL,
   extractStatement,
+  getDefaultExtractionModel,
   ingestStatementExtraction,
 } from "@/lib/ai";
 import { getStatementObject } from "@/lib/storage/s3";
@@ -43,7 +43,7 @@ export const processUpload = protectedProcedure
       });
     }
 
-    const model = input.model ?? DEFAULT_EXTRACTION_MODEL;
+    const model = input.model ?? getDefaultExtractionModel();
     const documentType = input.documentType ?? record.documentType;
 
     await db

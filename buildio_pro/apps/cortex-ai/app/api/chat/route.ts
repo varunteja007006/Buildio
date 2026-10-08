@@ -29,7 +29,7 @@ import {
   persistUserMessage,
 } from "@/lib/chat/messages";
 import {
-  DEFAULT_CHAT_MODEL_ID,
+  getDefaultChatModelId,
   isWellFormedChatModelId,
 } from "@/lib/chat/models";
 import { getOrCreateChatPreferences } from "@/lib/chat/preferences";
@@ -107,7 +107,7 @@ export async function POST(req: Request) {
     );
   }
 
-  let resolvedModel = DEFAULT_CHAT_MODEL_ID;
+  let resolvedModel = getDefaultChatModelId();
   if (model != null) {
     if (!isWellFormedChatModelId(model)) {
       return NextResponse.json(

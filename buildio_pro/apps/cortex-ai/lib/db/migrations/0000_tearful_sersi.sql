@@ -1,3 +1,7 @@
+-- Manually maintained: pgvector extension is required by the "embeddings" table
+-- (vector(1536) column + hnsw index). Kept idempotent so it is safe on re-run.
+CREATE EXTENSION IF NOT EXISTS vector;--> statement-breakpoint
+
 CREATE TABLE "account" (
 	"id" text PRIMARY KEY NOT NULL,
 	"user_id" text NOT NULL,

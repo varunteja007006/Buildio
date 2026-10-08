@@ -1,3 +1,6 @@
+-- Manually maintained: pgvector extension (see 0000_tearful_sersi.sql)
+CREATE EXTENSION IF NOT EXISTS vector;
+
 CREATE TABLE "account" (
 	"id" text PRIMARY KEY NOT NULL,
 	"user_id" text NOT NULL,

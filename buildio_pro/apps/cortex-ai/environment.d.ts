@@ -13,7 +13,13 @@ declare namespace NodeJS {
     AI_GATEWAY_API_KEY: string;
     VERCEL_OIDC_TOKEN?: string;
 
-    // Chat guardrail (defaults to enabled)
+    // AI model configuration — required, no hardcoded fallbacks
+    AI_EMBEDDING_MODEL: string;
+    /** Must match the embeddings.embedding vector column dimension. */
+    AI_EMBEDDING_DIMENSIONS: string;
+    CHAT_DEFAULT_MODEL: string;
+
+    // Chat guardrail (defaults to enabled; model required while enabled)
     CHAT_GUARDRAIL_ENABLED?: string;
     CHAT_GUARDRAIL_MODEL?: string;
 
@@ -27,10 +33,7 @@ declare namespace NodeJS {
     GOOGLE_CLIENT_ID: string;
     GOOGLE_CLIENT_SECRET: string;
 
-    // UploadThing
-    UPLOADTHING_TOKEN: string;
-
-    // MinIO (S3-compatible object storage, connector file uploads)
+    // MinIO (S3-compatible object storage, document and connector uploads)
     S3_ENDPOINT?: string;
     S3_ACCESS_KEY?: string;
     S3_SECRET_KEY?: string;

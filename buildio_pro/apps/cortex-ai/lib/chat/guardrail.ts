@@ -23,7 +23,22 @@ const SEVERITY_RANK: Record<GuardrailSeverity, number> = {
 /** Severities at or above this level refuse the chat request. */
 export const GUARDRAIL_BLOCK_THRESHOLD: GuardrailSeverity = "medium";
 
-export const DEFAULT_GUARDRAIL_MODEL = "openai/gpt-4o-mini";
+/**
+ * Returns the guardrail classification model. There is no hardcoded
+ * fallback: `CHAT_GUARDRAIL_MODEL` must be configured whenever the
+ * guardrail is enabled (see .env.example).
+ */
+export function getGuardrailModel(): string {
+  const value = process.env.CHAT_GUARDRAIL_MODEL?.trim();
+  if (!value) {
+    throw new Error(
+      "CHAT_GUARDRAIL_MODEL is required while the guardrail is enabled — " +
+        'set it to a gateway model id (e.g. "openai/gpt-4o-mini"). ' +
+        "No hardcoded fallback exists.",
+    );
+  }
+  return value;
+}
 
 /** Shown to the user when the guardrail blocks a query. */
 export const GUARDRAIL_REFUSAL =
@@ -60,10 +75,6 @@ export function isGuardrailEnabled(): boolean {
   const raw = process.env.CHAT_GUARDRAIL_ENABLED;
   if (raw == null || raw.trim() === "") return true;
   return !["false", "0", "off", "no"].includes(raw.trim().toLowerCase());
-}
-
-export function getGuardrailModel(): string {
-  return process.env.CHAT_GUARDRAIL_MODEL?.trim() || DEFAULT_GUARDRAIL_MODEL;
 }
 
 function severityRank(severity: GuardrailSeverity): number {

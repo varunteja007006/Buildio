@@ -1,0 +1,1 @@
+ALTER TABLE "chat_preferences" ALTER COLUMN "default_model" DROP DEFAULT;

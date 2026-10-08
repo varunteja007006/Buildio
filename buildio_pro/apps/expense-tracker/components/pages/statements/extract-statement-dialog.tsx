@@ -47,7 +47,7 @@ export function ExtractStatementDialog({
   onOpenChange: (open: boolean) => void;
 }) {
   const {
-    data: models,
+    data: modelsData,
     isLoading: modelsLoading,
     isError: modelsError,
   } = useStatementModels();
@@ -57,12 +57,12 @@ export function ExtractStatementDialog({
 
   const options = React.useMemo(
     () =>
-      (models ?? []).map((model) => ({
+      (modelsData?.models ?? []).map((model) => ({
         value: model.id,
         label: model.id,
         searchValue: `${model.id} ${model.name} ${model.description ?? ""}`,
       })),
-    [models],
+    [modelsData],
   );
 
   const [selectedModel, setSelectedModel] = React.useState("");
@@ -73,13 +73,12 @@ export function ExtractStatementDialog({
     if (!open || !statement) return;
     setSelectedModel(
       statement.extractionModel ??
-        options.find((option) => option.value === "openai/gpt-5.6-luna")
-          ?.value ??
+        modelsData?.defaultModel ??
         options[0]?.value ??
         "",
     );
     setSelectedType(statement.documentType);
-  }, [open, statement, options]);
+  }, [open, statement, options, modelsData]);
 
   const canStart =
     !modelsLoading && Boolean(selectedModel) && Boolean(statement);
@@ -149,7 +148,8 @@ export function ExtractStatementDialog({
               AI_GATEWAY_API_KEY is configured on the server.
             </p>
           )}
-          {!modelsLoading && !modelsError && models && models.length === 0 && (
+          {!modelsLoading && !modelsError &&
+            modelsData && modelsData.models.length === 0 && (
             <p className="text-xs text-destructive">
               No models were returned by the gateway. Verify that
               AI_GATEWAY_API_KEY is configured on the server.

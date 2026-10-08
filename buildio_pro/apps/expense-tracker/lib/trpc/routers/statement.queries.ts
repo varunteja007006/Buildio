@@ -1,7 +1,7 @@
 import { TRPCError } from "@trpc/server";
 import { and, count, eq, inArray, isNotNull } from "drizzle-orm";
 
-import { listGatewayModels } from "@/lib/ai";
+import { getDefaultExtractionModel, listGatewayModels } from "@/lib/ai";
 import { getPresignedDownloadUrl } from "@/lib/storage/s3";
 
 import { protectedProcedure } from "../init";
@@ -109,5 +109,6 @@ export const getDownloadUrl = protectedProcedure
   });
 
 export const listExtractionModels = protectedProcedure.query(async () => {
-  return listGatewayModels();
+  const models = await listGatewayModels();
+  return { models, defaultModel: getDefaultExtractionModel() };
 });

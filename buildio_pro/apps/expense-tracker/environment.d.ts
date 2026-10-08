@@ -39,7 +39,8 @@ declare namespace NodeJS {
     // ai extraction - vercel ai gateway
     AI_GATEWAY_API_KEY?: string;
     AI_GATEWAY_TEAM_ID_OR_SLUG?: string;
-    AI_EXTRACTION_MODEL?: string;
+    /** Required — default statement-extraction model, no hardcoded fallback. */
+    AI_EXTRACTION_MODEL: string;
 
     // Next.js
     NODE_ENV: "development" | "production" | "test";

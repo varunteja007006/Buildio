@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
 
-import { DEFAULT_CHAT_MODEL_ID } from "@/lib/chat/models";
+import { getDefaultChatModelId } from "@/lib/chat/models";
 import { db } from "@/lib/db";
 import { chatPreferences } from "@/lib/db/schema/chat-preferences";
 
@@ -35,7 +35,7 @@ export async function getOrCreateChatPreferences(
     .limit(1);
 
   return (
-    created ?? { userId, defaultModel: DEFAULT_CHAT_MODEL_ID }
+    created ?? { userId, defaultModel: getDefaultChatModelId() }
   );
 }
 

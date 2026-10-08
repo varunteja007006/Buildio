@@ -1,5 +1,5 @@
 export {
-  DEFAULT_EXTRACTION_MODEL,
+  getDefaultExtractionModel,
   gateway,
   listGatewayModels,
   type GatewayModelInfo,
