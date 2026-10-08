@@ -3,7 +3,7 @@
 import { Badge } from "@workspace/ui/components/badge";
 import { Button } from "@workspace/ui/components/button";
 import { Textarea } from "@workspace/ui/components/textarea";
-import { ArrowLeft, Loader2, Save, Table2 } from "lucide-react";
+import { ArrowLeft, Loader2, Save, Sparkles, Table2 } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -15,6 +15,7 @@ import {
 } from "@/api/connections/query";
 import { AppBreadcrumb } from "@/components/app-breadcrumb";
 import { StatusBadge } from "@/components/connections/connection-columns";
+import { ConnectorDescriptionDialog } from "@/components/pages/connector-description-dialog";
 
 type AgentConnectorDetailPageProps = { connectionId: string };
 
@@ -24,6 +25,7 @@ export function AgentConnectorDetailPage({
   const detail = useConnection(connectionId);
   const connection = detail.data?.connection ?? null;
   const [description, setDescription] = useState("");
+  const [generateOpen, setGenerateOpen] = useState(false);
   const updateContext = useUpdateConnectorContext();
   useEffect(
     () => setDescription(connection?.description ?? ""),
@@ -100,34 +102,46 @@ export function AgentConnectorDetailPage({
             placeholder="For example: This database contains sales orders. Use completed orders for revenue reporting; refunds are stored separately."
             aria-label="Connector explanation"
           />
-          <Button
-            className="self-start"
-            disabled={
-              updateContext.isPending ||
-              description === (connection.description ?? "")
-            }
-            onClick={() =>
-              updateContext.mutate(
-                { id: connectionId, description },
-                {
-                  onSuccess: () => toast.success("Connector explanation saved"),
-                  onError: (error) =>
-                    toast.error(
-                      error instanceof Error
-                        ? error.message
-                        : "Unable to save explanation",
-                    ),
-                },
-              )
-            }
-          >
-            {updateContext.isPending ? (
-              <Loader2 className="animate-spin" />
-            ) : (
-              <Save />
+          <div className="flex flex-wrap gap-2">
+            {connection.type === "postgres" && (
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setGenerateOpen(true)}
+              >
+                <Sparkles /> Generate with AI
+              </Button>
             )}
-            Save explanation
-          </Button>
+            <Button
+              className="self-start"
+              disabled={
+                updateContext.isPending ||
+                description === (connection.description ?? "")
+              }
+              onClick={() =>
+                updateContext.mutate(
+                  { id: connectionId, description },
+                  {
+                    onSuccess: () =>
+                      toast.success("Connector explanation saved"),
+                    onError: (error) =>
+                      toast.error(
+                        error instanceof Error
+                          ? error.message
+                          : "Unable to save explanation",
+                      ),
+                  },
+                )
+              }
+            >
+              {updateContext.isPending ? (
+                <Loader2 className="animate-spin" />
+              ) : (
+                <Save />
+              )}
+              Save explanation
+            </Button>
+          </div>
         </section>
         <section className="flex flex-col gap-2">
           <h2 className="text-sm font-medium">{heading}</h2>
@@ -163,6 +177,12 @@ export function AgentConnectorDetailPage({
           )}
         </section>
       </div>
+      <ConnectorDescriptionDialog
+        connectionId={connectionId}
+        open={generateOpen}
+        onOpenChange={setGenerateOpen}
+        onGenerated={setDescription}
+      />
     </>
   );
 }

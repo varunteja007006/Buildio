@@ -6,6 +6,7 @@ import type {
   ConnectionInput,
   ConnectionPage,
   ConnectorTable,
+  ConnectorMetadata,
   DeleteResponse,
   ProbeResult,
 } from "./types";
@@ -91,6 +92,17 @@ export async function updateConnectorContext(id: string, description: string) {
     { description },
   );
   return data;
+}
+
+export async function getConnectorDescriptionMetadata(
+  id: string,
+  signal?: AbortSignal,
+) {
+  const { data } = await apiClient.get<{ metadata: ConnectorMetadata }>(
+    endpoints.connections.descriptionPreview(id),
+    { signal },
+  );
+  return data.metadata;
 }
 
 export async function permanentlyDeleteConnection(id: string) {

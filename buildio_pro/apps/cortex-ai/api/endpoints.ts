@@ -73,6 +73,10 @@ export const endpoints = {
     check: (id: string) => `/connections/${id}/check`,
     tables: (id: string) => `/connections/${id}/tables`,
     context: (id: string) => `/connections/${id}/context`,
+    descriptionPreview: (id: string) =>
+      `/connections/${id}/description/preview`,
+    descriptionGenerate: (id: string) =>
+      `/connections/${id}/description/generate`,
   },
   ingest: {
     run: "/ingest",

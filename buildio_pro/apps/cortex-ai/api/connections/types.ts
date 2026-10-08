@@ -45,3 +45,25 @@ export type ProbeResult = {
 export type DeleteResponse = { success: boolean; id: string };
 
 export type ConnectorTable = { schema: string; name: string };
+
+export type ConnectorMetadata = {
+  database: string;
+  tables: {
+    schema: string;
+    name: string;
+    comment: string | null;
+    columns: {
+      name: string;
+      type: string;
+      nullable: boolean;
+      primaryKey: boolean;
+      comment: string | null;
+    }[];
+    relationships: {
+      column: string;
+      referencedSchema: string;
+      referencedTable: string;
+      referencedColumn: string;
+    }[];
+  }[];
+};
